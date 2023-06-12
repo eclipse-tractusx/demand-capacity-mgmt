@@ -25,7 +25,7 @@ Reduced costs by avoiding expensive re-planning and improved material procuremen
 Increased delivery reliability and customer satisfaction.
 
 
-# This project
+# This repository
 
 This repository serves to attach any documentation about demand-capacity-mgmt, for now you can check the folder images to see the following:
 
