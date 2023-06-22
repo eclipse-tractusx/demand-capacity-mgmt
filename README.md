@@ -29,5 +29,18 @@ Increased delivery reliability and customer satisfaction.
 
 This repository serves to attach any documentation about demand-capacity-mgmt, for now you can check the folder images to see the following:
 
+App Flow Diagram
+
 ![App Flow](images/AppFlow.jpg "App Flow Diagram")
 
+Components Architecture Diagram
+
+![Components Architecture](images/ComponentsArchitecture.jpg "Components Architecture Diagram")
+
+Deployment Architecture Diagram
+
+![Deployment Architecture](images/DeploymentArchitecture.jpg "Deployment Architecture Diagram")
+
+Personas and Capabilities Diagram
+
+![Personas and Capabilities](images/PersonasAndCapabilities.jpg "Personas and Capabilities Diagram")
