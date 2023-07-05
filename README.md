@@ -1,6 +1,6 @@
 # Demand and Capacity Management
 
-Turbulence in the global economy, technological change, and limited availability of resources are impacting industries. Catena-X enables a secure exchange of demand and capacity data of all partners involved in the automotive network: from raw material to n-tier suppliers to car manufacturers.
+Turbulence in the global economy, technological change, and limited availability of resources are impacting industries. Eclipse-Tractus-X, which hosts the components for a Catena-X network, enables a secure exchange of demand and capacity data of all partners involved in the automotive network: from raw material to n-tier suppliers to car manufacturers.
 
 # Resilient supply chains
 
