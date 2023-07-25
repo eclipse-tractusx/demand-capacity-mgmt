@@ -32,6 +32,7 @@ import lombok.Setter;
 public class ExceptionResponse {
 
     private static final long serialVersionUID = 1L;
+    
     private String code;
     private String message;
     private List<String> details;
