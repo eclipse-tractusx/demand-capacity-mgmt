@@ -51,7 +51,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Run Tests
-        run: ./mvnw -B test
+        run: ./demand-capacity-mgmt-backend/mvnw -B test
 
       - name: Build
         run: mvn -B package
