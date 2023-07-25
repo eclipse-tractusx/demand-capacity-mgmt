@@ -28,6 +28,10 @@ on:
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: 'demand-capacity-mgmt-frontend'
+
 jobs:
   build-and-push-image-frontend:
     runs-on: ubuntu-latest
