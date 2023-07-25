@@ -49,7 +49,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      
+
 
       - name: Run Tests
         run: ./demand-capacity-mgmt-backend/mvnw -B test
