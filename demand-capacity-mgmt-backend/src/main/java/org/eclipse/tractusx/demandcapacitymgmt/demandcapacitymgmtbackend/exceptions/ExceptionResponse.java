@@ -35,5 +35,5 @@ public class ExceptionResponse {
     private String code;
     private String message;
     private List<String> details;
-    
+
 }
