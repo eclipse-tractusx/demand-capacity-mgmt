@@ -29,8 +29,9 @@ on:
       - 'v*.*.*'
       - 'v*.*.*-*'
 env:
-  REGISTRY: ghcr.io
   IMAGE_NAME: 'demand-capacity-mgmt-frontend'
+  REGISTRY: 'ghcr.io'
+  IMAGE_NAMESPACE: 'tractusx'
 
 jobs:
   build-and-push-image-frontend:
@@ -58,7 +59,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -80,5 +81,5 @@ jobs:
           context: .
           file: ./build/frontend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}, ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ steps.meta.outputs.tags }}, ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
