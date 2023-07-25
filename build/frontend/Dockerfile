@@ -28,7 +28,8 @@ FROM node:16.15.1
 WORKDIR /app
 
 # Copy package.json and yarn.lock from two folders up
-COPY ../../demand-capacity-mgmt-frontend/package.json yarn.lock ./
+COPY ../../demand-capacity-mgmt-frontend/package.json ./
+COPY ../../demand-capacity-mgmt-frontend/yarn.lock ./
 
 # Install dependencies
 RUN yarn install
