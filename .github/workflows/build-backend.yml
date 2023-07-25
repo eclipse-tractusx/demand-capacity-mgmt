@@ -19,22 +19,22 @@
 #   ********************************************************************************
 
 
-name: build-master
+name: build-backend
 
 on:
-  push:
-    branches:
-      - 'main'
-    tags:
-      - 'v*.*.*'
-      - 'v*.*.*-*'
+    pull_request:
+      paths:
+        - 'demand-capacity-mgmt-backend/**'
+        - 'demand-capacity-mgmt-specification/**'
+      branches:
+        - 'main'
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push-image:
+  build-and-analyze-backend:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -56,34 +56,22 @@ jobs:
       - name: Build
         run: mvn -B package
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Create SemVer or ref tags dependent of trigger event
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver ,pattern={{major}}
-            type=semver,pattern={{major}}.{{minor}}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./build/Dockerfile
-          #push: ${{ github.event_name != 'pull_request' }}
-          push: true
-          # build tag :latest
-          tags: ${{ steps.meta.outputs.tags }}, ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          labels: ${{ steps.meta.outputs.labels }}
+#      - name: Cache SonarCloud packages
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.sonar/cache
+#          key: ${{ runner.os }}-sonar
+#          restore-keys: ${{ runner.os }}-sonar
+#
+#      - name: Cache Maven packages
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.m2
+#          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: ${{ runner.os }}-m2
+#
+#      - name: Build and analyze
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=catenax-ng_tx-demand-capacity-mgmt-backend

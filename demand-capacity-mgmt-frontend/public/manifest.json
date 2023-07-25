@@ -1,0 +1,27 @@
+{
+  "comment": "Copyright (c) 2021,2023 Contributors to the Eclipse Foundation\n\nSee the NOTICE file(s) distributed with this work for additional\ninformation regarding copyright ownership.\n\nThis program and the accompanying materials are made available under the\nterms of the Apache License, Version 2.0 which is available at\nhttps://www.apache.org/licenses/LICENSE-2.0.\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT\nWARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the\nLicense for the specific language governing permissions and limitations\nunder the License.\n\nSPDX-License-Identifier: Apache-2.0",
+ 
+  "short_name": "React App",
+  "name": "Create React App Sample",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
