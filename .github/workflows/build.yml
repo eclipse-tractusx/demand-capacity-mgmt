@@ -24,7 +24,7 @@ name: build
 on:
     pull_request:
       paths:
-        -demand-capacity-mgmt-backend/**
+        - 'demand-capacity-mgmt-backend/**'
       branches:
         - 'main'
       tags:
