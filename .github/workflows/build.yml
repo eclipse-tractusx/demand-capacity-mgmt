@@ -51,11 +51,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      
-     # - name: Get version from pom.xml
-     #   run: mvn help:evaluate -Dexpression='project.version' -q -DforceStdout
-     #   id: version
-     #   shell: bash
+
 
       - name: Run Tests
         run: ./demand-capacity-mgmt-backend/mvnw -B test
