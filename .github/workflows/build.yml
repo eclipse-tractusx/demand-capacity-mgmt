@@ -56,7 +56,7 @@ jobs:
      #   shell: bash
 
       - name: Run Tests
-        run: ../demand-capacity-mgmt-backend/mvnw -B test
+        run: ./demand-capacity-mgmt-backend/mvnw -B test
 
       - name: Build
         run: mvn -B package
