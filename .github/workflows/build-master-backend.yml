@@ -23,8 +23,11 @@ name: build-and-push-image-backend
 
 on:
   push:
+    paths:
+      - 'demand-capacity-mgmt-backend/**'
+      - 'demand-capacity-mgmt-specification/**'
     branches:
-      - 'feat/DCMFOSS-56'
+      - 'main'
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'
