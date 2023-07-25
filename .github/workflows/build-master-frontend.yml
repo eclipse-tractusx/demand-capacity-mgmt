@@ -41,12 +41,12 @@ jobs:
 
       - name: Install Dependencies
         run: | 
-          cd ./demand-capacity-mgmt frontend 
+          cd ./demand-capacity-mgmt-frontend 
           yarn
 
       - name: Build Frontend
         run: |
-          cd ./demand-capacity-mgmt frontend 
+          cd ./demand-capacity-mgmt-frontend 
           yarn build
 
       - name: Docker meta
