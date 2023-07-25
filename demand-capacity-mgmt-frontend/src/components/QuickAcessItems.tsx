@@ -11,7 +11,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import {AiOutlineStock, AiOutlineLink} from 'react-icons/ai';
+//import {AiOutlineStock, AiOutlineLink} from 'react-icons/ai';
 import { Modal, Button } from 'react-bootstrap';
 import { useState } from 'react';
 import DemandsPage from './DemandPage';
@@ -22,14 +22,14 @@ function QuickAcessItems() {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+ // const handleShow = () => setShow(true);
 
   return (
   <>
   <div className="float-left" style={{position: 'absolute', top: '50%',left:5, transform: 'translate(0%, -50%)'}}>
-    <a className="btn btn-primary m-1 display-4"  onClick={handleShow}  href="#"><AiOutlineStock/></a>
+    {/*<a className="btn btn-primary m-1 display-4"  onClick={handleShow}  href="#"><AiOutlineStock/></a>*/}
     <br />
-    <a className="btn btn-primary m-1 h2" href="#"><AiOutlineLink/></a>
+    {/*<a className="btn btn-primary m-1 h2" href="#"><AiOutlineLink/></a>*/}
 </div>
 <Modal
         show={show}
