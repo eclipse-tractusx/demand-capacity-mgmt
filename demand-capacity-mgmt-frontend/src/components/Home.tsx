@@ -22,11 +22,9 @@ import CapacityGroupContext from "../contexts/CapacityGroupsContextProvider";
 import TopMenu from "./TopMenu";
 import QuickAcessItems from "./QuickAcessItems";
 import DemandContextProvider from "../contexts/DemandContextProvider";
-import useModal from "../hooks/ToggleModal";
+
 
 function Home() {
-    const { isOpen, toggle } = useModal();
-
     return (
         <><TopMenu></TopMenu>
         <div className="container-xl">

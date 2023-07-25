@@ -37,10 +37,10 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
     updateDemand(demand);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /*const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setDemand((prevDemand) => ({ ...prevDemand, [name]: value }));
-  };
+  };*/
 
   return (
 
