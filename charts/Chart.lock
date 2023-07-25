@@ -1,0 +1,12 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 11.9.13
+- name: demand-capacity-management-backend
+  repository: ""
+  version: 0.1.0
+- name: demand-capacity-management-frontend
+  repository: ""
+  version: 0.1.0
+digest: sha256:f74903e90415c9ced4a2f1077b295ad06d61b68db68a7e7fcf342437d6a02363
+generated: "2023-07-10T23:02:40.988211+01:00"
