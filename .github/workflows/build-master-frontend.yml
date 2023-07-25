@@ -40,14 +40,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Dependencies
-        with:
-          context: ./demand-capacity-mgmt-frontend
-        run: yarn
+        run: | 
+          cd ./demand-capacity-mgmt frontend 
+          yarn
 
       - name: Build Frontend
-        with:
-          context: ./demand-capacity-mgmt-frontend
-        run: yarn build
+        run: |
+          cd ./demand-capacity-mgmt frontend 
+          yarn build
 
       - name: Docker meta
         id: meta
