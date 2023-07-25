@@ -56,7 +56,7 @@ jobs:
 
       - name: Add Helm repos
         run: |
-          cd charts/dftbackend
+          cd charts
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm dependency update
 
