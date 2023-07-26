@@ -1,4 +1,3 @@
-
 /*
  *  *******************************************************************************
  *  Copyright (c) 2023 BMW AG
@@ -20,18 +19,22 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
-import { useState } from "react";
-
-export default function useModal() {
-  const [isOpen, setisOpen] = useState(false);
-
-  const toggle = () => {
-    setisOpen(!isOpen);
-  };
-
-  return {
-    isOpen,
-    toggle
-  };
-}
+export interface Supplier {
+    bpn: string
+    companyName: string
+    street: string
+    number: string
+    zipCode: string
+    country: string
+    myCompany: string
+  }
+  
+  export interface ExpectedSupplierLocation {
+    bpn: string
+    companyName: string
+    street: string
+    number: string
+    zipCode: string
+    country: string
+    myCompany: string
+  }

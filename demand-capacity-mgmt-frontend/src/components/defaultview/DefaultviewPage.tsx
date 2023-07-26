@@ -20,9 +20,10 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useMemo } from 'react';
+import React, { useContext, useState, useMemo, useCallback } from 'react';
 import { Modal, Button,Form,Col,Row } from 'react-bootstrap';
-import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import { CapacityGroupContext  } from '../../contexts/CapacityGroupsContextProvider';
+import { CapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import AddForm from '../AddForm';
 import Pagination from '../Pagination';
 import CapacityGroupsTable from './CapacityGroupsTable';
@@ -30,8 +31,8 @@ import Search from '../Search';
 import CapacityGroupsModal from './CapacityGroupsModal';
 
 const CapacityGroupsList: React.FC = () => {
- // const [, setShowEditModal] = useState(false);
- // const [, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);
 
   const { capacitygroups } = useContext(CapacityGroupContext)!;
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,9 +42,9 @@ const CapacityGroupsList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState('');
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
 
-  /*const handleShow = () => {
+  const handleShow = () => {
     setShow(true);
-  };*/
+  };
 
   const handleClose = () => {
     setShow(false);
@@ -60,14 +61,14 @@ const CapacityGroupsList: React.FC = () => {
     }
   };
 
- /* const handleEdit = (capacitygroup: CapacityGroup) => {
+  const handleEdit = (capacitygroup: CapacityGroup) => {
     setSelectedCapacityGroup(capacitygroup);
     setShowEditModal(true);
-  };*/
+  };
 
- /* const handleCloseEditModal = () => {
+  const handleCloseEditModal = () => {
     setShowEditModal(false);
-  };*/
+  };
 
   const filteredcapacitygroups = useMemo(() => {
     let sortedcapacitygroups = [...capacitygroups];

@@ -1,37 +1,30 @@
 /*
- *  *******************************************************************************
- *  Copyright (c) 2023 BMW AG
- *  Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
- *    See the NOTICE file(s) distributed with this work for additional
- *    information regarding copyright ownership.
+ *  See the NOTICE file(s) distributed with this work for additional information regarding copyright ownership.
  *
- *    This program and the accompanying materials are made available under the
- *    terms of the Apache License, Version 2.0 which is available at
- *    https://www.apache.org/licenses/LICENSE-2.0.
+ *  This program and the accompanying materials are made available under the terms of the Apache License, Version 2.0 which is available at https://www.apache.org/licenses/LICENSE-2.0.
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- *    License for the specific language governing permissions and limitations
- *    under the License.
+ *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  *
- *    SPDX-License-Identifier: Apache-2.0
- *    ********************************************************************************
+ *  SPDX-License-Identifier: Apache-2.0
  */
 
 import React, { useContext, useState, useMemo, useCallback } from 'react';
 import { Modal, Button,Form,Col,Row } from 'react-bootstrap';
-import { DemandContext, Demand } from '../contexts/DemandContextProvider';
+import { DemandContext } from '../contexts/DemandContextProvider';
+import { Demand } from '../interfaces/demand_interfaces';
 import Pagination from './Pagination';
 import DemandsTable from './DemandsTable';
 import DemandsSearch from './Search';
 import EditForm from './EditForm';
 import { FcCancel } from 'react-icons/fc';
+import AddForm from './AddForm';
 
 
 const DemandsPage: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDemand, setSelectedDemand] = useState<Demand | null>(null);
   const { demands, deleteDemand } = useContext(DemandContext)!;
 
@@ -69,6 +62,7 @@ const DemandsPage: React.FC = () => {
   };
 
   const handleCloseEdit = () => setShowEditModal(false);
+  const handleCloseAdd = () => setShowAddModal(false);
 
 
   const filteredDemands = useMemo(() => {
@@ -158,7 +152,7 @@ const DemandsPage: React.FC = () => {
           />
           </div>
           <div className="col-sm-6">
-            <Button className="btn btn-success float-end" data-toggle="modal">
+            <Button className="btn btn-success float-end" data-toggle="modal" onClick={() =>  setShowAddModal(true)}>
               <i className="material-icons">&#xE147;</i> <span>Add New Demand</span>
             </Button>
           </div>
@@ -216,6 +210,21 @@ const DemandsPage: React.FC = () => {
         </Modal.Header>
         <Modal.Body>
         {selectedDemand && <EditForm theDemand={selectedDemand} />}
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={showAddModal}
+        onHide={handleCloseAdd}
+        backdrop="static"
+        keyboard={false}
+        size="lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>New Material Demand</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        <AddForm/>
         </Modal.Body>
       </Modal>
     </>

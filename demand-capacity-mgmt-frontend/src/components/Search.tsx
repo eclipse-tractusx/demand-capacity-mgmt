@@ -19,7 +19,6 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
