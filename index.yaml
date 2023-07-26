@@ -1,0 +1,25 @@
+apiVersion: v1
+entries:
+  demand-capacity-management-backend:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2023-07-26T13:43:40.817771299Z"
+    description: A Helm chart for Kubernetes to deploy tx-dcm-backend
+    digest: 83bd1995f5b7531dc9fd9f91ba881a78afd2c587b801637688ce8254b3971736
+    name: demand-capacity-management-backend
+    type: application
+    urls:
+    - https://github.com/catenax-ng/tx-demand-capacity-mgmt/releases/download/demand-capacity-management-backend-0.1.0/demand-capacity-management-backend-0.1.0.tgz
+    version: 0.1.0
+  demand-capacity-management-frontend:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2023-07-26T13:43:40.982060743Z"
+    description: A Helm chart for Kubernetes
+    digest: 5daa81925f336b13fc2553e186180f2239a7fbd131a74d8b7262dcf8b1c83b59
+    name: demand-capacity-management-frontend
+    type: application
+    urls:
+    - https://github.com/catenax-ng/tx-demand-capacity-mgmt/releases/download/demand-capacity-management-frontend-0.1.0/demand-capacity-management-frontend-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-07-26T13:43:40.982065343Z"
