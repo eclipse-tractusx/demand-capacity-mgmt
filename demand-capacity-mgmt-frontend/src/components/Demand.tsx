@@ -21,12 +21,13 @@
  */
 
 import React, { useContext, useState } from 'react';
-import { DemandContext, Demand } from '../contexts/DemandContextProvider';
+import { DemandContext } from '../contexts/DemandContextProvider';
+import { DemandProp } from '../interfaces/demand_interfaces';
 import { Modal, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import EditForm from './EditForm';
 
 interface DemandProps {
-  demand: Demand;
+  demand: DemandProp;
 }
 
 const DemandComponent: React.FC<DemandProps> = ({ demand }) => {
@@ -38,8 +39,8 @@ const DemandComponent: React.FC<DemandProps> = ({ demand }) => {
 
  
 
-  const startDate = new Date(demand.startDate);
-  const endDate = new Date(demand.endDate);
+  const startDate = new Date();
+  const endDate = new Date();
 
   const formattedStartDate = startDate.toISOString().split('T')[0];
   const formattedEndDate = endDate.toISOString().split('T')[0];
