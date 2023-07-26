@@ -22,20 +22,7 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-
-export interface CapacityGroup {
-  id: number;
-  product: string;
-  companyId: string;
-  requiredValue: number;
-  deliveredValue: number;
-  maximumValue: number;
-  category: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  [key: string]: any;
-}
+import { CapacityGroup } from '../interfaces/capacitygroup_interfaces';
 
 interface CapacityGroupContextData {
   capacitygroups: CapacityGroup[];
@@ -47,16 +34,13 @@ interface CapacityGroupContextData {
 export const CapacityGroupContext = createContext<CapacityGroupContextData | undefined>(undefined);
 
 const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-  const api = axios.create({
-    baseURL: 'http://localhost:8080', // Set the correct API URL here
-  });
 
   const [capacitygroups, setCapacityGroups] = useState<CapacityGroup[]>([]);
 
   useEffect(() => {
     const fetchCapacityGroups = async () => {
       try {
-        const response = await api.get('/capacitygroup', {
+        const response = await axios.get('/capacitygroup', {
           params: {
             project_id: 1, // Adjust the project ID parameter as needed
           },
@@ -75,7 +59,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
   const deleteCapacityGroup = async (id: number) => {
     try {
-      await api.delete(`/capacitygroup/${id}`);
+      await axios.delete(`/capacitygroup/${id}`);
       setCapacityGroups((prevCapacityGroups) => prevCapacityGroups.filter((capacitygroup) => capacitygroup.id !== id));
     } catch (error) {
       console.error('Error deleting capacitygroup:', error);
@@ -84,7 +68,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
   const createCapacityGroup = async (newCapacityGroup: CapacityGroup) => {
     try {
-      const response = await api.post('/demand', newCapacityGroup);
+      const response = await axios.post('/demand', newCapacityGroup);
       const createdDemand: CapacityGroup = response.data;
       setCapacityGroups((prevCapacityGroups) => [...prevCapacityGroups, createdDemand]);
     } catch (error) {
@@ -94,7 +78,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
   const updateCapacityGroup = async (updatedCapacityGroup: CapacityGroup) => {
     try {
-      const response = await api.put(`/demand/${updatedCapacityGroup.id}`, updatedCapacityGroup);
+      const response = await axios.put(`/demand/${updatedCapacityGroup.id}`, updatedCapacityGroup);
       const modifiedDemand: CapacityGroup = response.data;
       setCapacityGroups((prevCapacityGroups) =>
         prevCapacityGroups.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
