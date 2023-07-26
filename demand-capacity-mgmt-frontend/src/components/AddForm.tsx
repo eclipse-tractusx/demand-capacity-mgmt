@@ -21,180 +21,199 @@
  */
 
 import React, { useContext, useState, ChangeEvent, FormEvent } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Row,Col } from 'react-bootstrap';
 import { DemandContext } from '../contexts/DemandContextProvider';
+import DemandCategoryContextProvider from '../contexts/DemandCategoryProvider';
+import DemandCategoryOptions from './DemandCategoryOptions';
+import CompanyContextProvider from '../contexts/CompanyContextProvider';
+import CompanyOptions from './CompanyOptions';
+import UnitsofMeasureContextContextProvider from '../contexts/UnitsOfMeasureContextProvider';
+import UnitsOfMeasureOptions from './UnitsofMeasureOptions';
+import {Demand} from '../interfaces/demand_interfaces'
+
 
 const AddForm: React.FC = () => {
   const { createDemand } = useContext(DemandContext)!;
 
-  const [description, setDescription] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [requiredValue, setRequiredValue] = useState('');
-  const [deliveredValue, setDeliveredValue] = useState('');
-  const [maximumValue, setMaximumValue] = useState('');
-  const [demandCategory, setDemandCategory] = useState('');
-  
+  const initialFormState: Demand = {
+    id: '',
+    materialDescriptionCustomer: '',
+    materialNumberCustomer: '',
+    materialNumberSupplier: '',
+    customerId: '5d210fb8-260d-4190-9578-f62f9c459703', //Id do submiter
+    supplierId: '',
+    unitMeasureId: '',
+    materialDemandSeries: {
+      customerLocationId: 'string',
+      expectedSupplierLocationId: [],
+      demandCategoryId: '',
+      demandSeriesValues: []
+    }
+  };
+
+  const [formState, setFormState] = useState<Demand>(initialFormState);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
-    const newDemand = {
-      id: 0, // Assign an appropriate ID here
-      product: '', // Assign the product name here
-      startDate,
-      endDate,
-      requiredValue: parseInt(requiredValue),
-      deliveredValue: parseInt(deliveredValue),
-      maximumValue: parseInt(maximumValue),
-      productId: '1',
-      projectId: '1',
-      demandCategory,
-      companyId: '1',
-      description,
-    };
-
-    createDemand(newDemand);
-    resetForm();
+    createDemand(formState);
+    {/*resetForm();*/}
   };
 
   const resetForm = () => {
-    setDescription('');
-    setStartDate('');
-    setEndDate('');
-    setRequiredValue('');
-    setDeliveredValue('');
-    setMaximumValue('');
-    setDemandCategory('');
+    setFormState(initialFormState);
   };
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    switch (name) {
-      case 'description':
-        setDescription(value);
-        break;
-      case 'startDate':
-        setStartDate(value);
-        break;
-      case 'endDate':
-        setEndDate(value);
-        break;
-      case 'requiredValue':
-        if (value >= '0') {
-          setRequiredValue(value);
-        }
-        break;
-      case 'deliveredValue':
-        if (value >= '0') {
-          setDeliveredValue(value);
-        }
-        break;
-      case 'maximumValue':
-        if (value >= '0') {
-          setMaximumValue(value);
-        }
-        break;
-      case 'demandCategory':
-        setDemandCategory(value);
-        break;
-      default:
-        break;
+    setFormState((prevFormState) => ({
+      ...prevFormState,
+      [name]: value
+    }));
+  };
+
+  const onInputChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    if (name === 'supplierId') {
+      setFormState((prevFormState) => ({
+        ...prevFormState,
+        supplierId: value, // Update supplierId in the top-level formState
+        materialDemandSeries: {
+          ...prevFormState.materialDemandSeries,
+          expectedSupplierLocationId: [value], // Fill the expectedSupplierLocationId array with the value of supplierId
+        },
+      }));
+    } else if (name === 'demandCategoryId') {
+      setFormState((prevFormState) => ({
+        ...prevFormState,
+        materialDemandSeries: {
+          ...prevFormState.materialDemandSeries,
+          [name]: value,
+        },
+      }));
+    } else {
+      setFormState((prevFormState) => ({
+        ...prevFormState,
+        [name]: value,
+      }));
     }
   };
 
   return (
     <Form onSubmit={handleSubmit}>
-      <p>Description *</p>
-      <Form.Group>
+      <Row className="mb-3">
+        <Form.Group as={Col} controlId="formgridStartDate">
+          <Form.Label>Start Date</Form.Label>
+          <Form.Control 
+            type="date"
+            placeholder="Start Date"
+            name="startDate"
+            id="startDate"
+            pattern="\d{4}-\d{2}-\d{2}"
+            onChange={onInputChange}
+            required
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridPassword">
+        <Form.Label>End Date</Form.Label>
+        <Form.Control 
+            type="date"
+            placeholder="End Date"
+            name="endDate"
+            id="endDate"
+            onChange={onInputChange}
+            pattern="\d{4}-\d{2}-\d{2}"
+            required
+          />
+        </Form.Group>
+      </Row>
+
+      <Row className="mb-3">
+      <Form.Group as={Col} >
+      <Form.Label>Unit of Measure</Form.Label>
+        <Form.Select
+                  name="unitMeasureId"
+                  id="unitMeasureId"
+                  onChange={onInputChangeSelect}
+                  value={formState.unitMeasureId}
+                  required>
+                    <UnitsofMeasureContextContextProvider>
+                      <UnitsOfMeasureOptions/>
+                    </UnitsofMeasureContextContextProvider>
+        </Form.Select>
+      </Form.Group>
+    </Row>
+    <Form.Group className="mb-3">
+      <Form.Label>Supplier</Form.Label>
+      <Form.Select aria-label="Default select example"
+                  name="supplierId"
+                  id="supplierId"
+                  onChange={onInputChangeSelect}
+                  value={formState.supplierId}
+                  required>
+                    <CompanyContextProvider>
+                      <CompanyOptions/>
+                    </CompanyContextProvider>
+
+        </Form.Select>
+      </Form.Group>
+
+    <Form.Group className="mb-3">
+      <Form.Label>Demand Category</Form.Label>
+      <Form.Select aria-label="Default select example"
+                  placeholder="Demand Category"
+                  name="demandCategoryId"
+                  id="demandCategoryId"
+                  value={formState.materialDemandSeries.demandCategoryId} 
+                  onChange={onInputChangeSelect}
+                  required>
+                    <DemandCategoryContextProvider>
+                      <DemandCategoryOptions/>
+                    </DemandCategoryContextProvider>
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+      <Form.Label>Material Number Customer</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Material Number"
+          id="materialNumberCustomer"
+          name="materialNumberCustomer"
+          value={formState.materialNumberCustomer}
+          onChange={onInputChange}
+          required
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+      <Form.Label>Material Number Supplier</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Material Number"
+          id="materialNumberSupplier"
+          name="materialNumberSupplier"
+          value={formState.materialNumberSupplier}
+          onChange={onInputChange}
+          disabled
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+      <Form.Label>Description</Form.Label>
         <Form.Control
           type="text"
           placeholder="Description"
-          name="description"
-          value={description}
+          id="materialDescriptionCustomer"
+          name="materialDescriptionCustomer"
+          value={formState.materialDescriptionCustomer}
           onChange={onInputChange}
           required
         />
       </Form.Group>
-      <p />
-      <p>Start Date *</p>
-      <Form.Group>
-        <Form.Control
-          type="date"
-          placeholder="Start Date"
-          name="startDate"
-          value={startDate}
-          pattern="\d{4}-\d{2}-\d{2}"
-          onChange={onInputChange}
-          required
-        />
-      </Form.Group>
-      <p />
-      <p>End Date *</p>
-      <Form.Group>
-        <Form.Control
-          type="date"
-          placeholder="End Date"
-          name="endDate"
-          value={endDate}
-          onChange={onInputChange}
-          pattern="\d{4}-\d{2}-\d{2}"
-          required
-        />
-      </Form.Group>
-      <p />
-      <p>Required Value *</p>
-      <Form.Group>
-        <Form.Control
-          type="number"
-          placeholder="Required Value"
-          name="requiredValue"
-          value={requiredValue}
-          onChange={onInputChange}
-          required
-        />
-      </Form.Group>
-      <p />
-      <p>Delivered Value *</p>
-      <Form.Group>
-        <Form.Control
-          type="number"
-          placeholder="Delivered Value"
-          name="deliveredValue"
-          value={deliveredValue}
-          onChange={onInputChange}
-          required
-        />
-      </Form.Group>
-      <p />
-      <p>Maximum Value *</p>
-      <Form.Group>
-        <Form.Control
-          type="number"
-          placeholder="Maximum Value"
-          name="maximumValue"
-          value={maximumValue}
-          onChange={onInputChange}
-          required
-        />
-      </Form.Group>
-      <p />
 
-      <p>Demand Category *</p>
-      <Form.Group>
-        <Form.Control
-          type="text"
-          placeholder="Demand Category"
-          name="demandCategory"
-          value={demandCategory}
-          onChange={onInputChange}
-          required
-        />
-      </Form.Group>
-      <p />
 
       <Button variant="success" type="submit">
-        Add New Demand
+        Add New Demand  
       </Button>
     </Form>
   );

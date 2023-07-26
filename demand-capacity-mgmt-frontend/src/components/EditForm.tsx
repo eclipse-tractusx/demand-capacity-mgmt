@@ -22,7 +22,8 @@
 
 import React, { useContext, useState, useEffect } from 'react';
 import { Form, Button, Col,Row} from 'react-bootstrap';
-import { DemandContext, Demand } from '../contexts/DemandContextProvider';
+import { DemandContext} from '../contexts/DemandContextProvider';
+import { Demand } from '../interfaces/demand_interfaces';
 
 interface EditFormProps {
   theDemand: Demand;
@@ -47,10 +48,10 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
     updateDemand(demand);
   };
 
-  /*const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setDemand((prevDemand) => ({ ...prevDemand, [name]: value }));
-  };*/
+  };
 
   return (
 

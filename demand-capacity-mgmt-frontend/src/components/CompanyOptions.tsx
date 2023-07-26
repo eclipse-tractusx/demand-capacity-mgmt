@@ -20,32 +20,27 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsList from "./defaultview/DefaultviewPage";
-import CapacityGroupContext from "../contexts/CapacityGroupsContextProvider";
-import TopMenu from "./TopMenu";
-import QuickAcessItems from "./QuickAcessItems";
-import DemandContextProvider from "../contexts/DemandContextProvider";
-function Home() {
+import React, { useContext } from 'react';
+import { CompanyContext } from '../contexts/CompanyContextProvider';
 
-    return (
-        <><TopMenu></TopMenu>
-        <div className="container-xl">
-            <br />
-            <div className="table">
-                <div className="table-wrapper">
-                    <CapacityGroupContext>
-                        <CapacityGroupsList />
-                    </CapacityGroupContext>
-                </div>
-            </div>
-        </div>
-        <DemandContextProvider>
-        <QuickAcessItems></QuickAcessItems>
-        </DemandContextProvider>
-        
-        </>
 
-    );
-}
+const CompanyOptions: React.FC = () => {
+  const companiesContextData = useContext(CompanyContext);
+  const { companies } = companiesContextData || {}; // Ensure context data is available
 
-export default Home;
+  // Use the demandcategories array to fill the <select> options
+  return (
+<>
+<option disabled={true} value="">
+          --Choose an option--
+        </option>
+        {companies &&
+          companies.map((company) => (
+            <option key={company.bpn} value={company.bpn}>
+              {company.companyName}
+            </option>
+          ))}
+</>
+  );
+};
+ export default CompanyOptions;

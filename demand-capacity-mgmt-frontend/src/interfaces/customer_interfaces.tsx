@@ -20,32 +20,22 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsList from "./defaultview/DefaultviewPage";
-import CapacityGroupContext from "../contexts/CapacityGroupsContextProvider";
-import TopMenu from "./TopMenu";
-import QuickAcessItems from "./QuickAcessItems";
-import DemandContextProvider from "../contexts/DemandContextProvider";
-function Home() {
+export interface Customer {
+    bpn: string
+    companyName: string
+    street: string
+    number: string
+    zipCode: string
+    country: string
+    myCompany: string
+  }
 
-    return (
-        <><TopMenu></TopMenu>
-        <div className="container-xl">
-            <br />
-            <div className="table">
-                <div className="table-wrapper">
-                    <CapacityGroupContext>
-                        <CapacityGroupsList />
-                    </CapacityGroupContext>
-                </div>
-            </div>
-        </div>
-        <DemandContextProvider>
-        <QuickAcessItems></QuickAcessItems>
-        </DemandContextProvider>
-        
-        </>
-
-    );
-}
-
-export default Home;
+  export interface CustomerLocation {
+    bpn: string
+    companyName: string
+    street: string
+    number: string
+    zipCode: string
+    country: string
+    myCompany: string
+  }

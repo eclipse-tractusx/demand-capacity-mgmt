@@ -20,32 +20,26 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsList from "./defaultview/DefaultviewPage";
-import CapacityGroupContext from "../contexts/CapacityGroupsContextProvider";
-import TopMenu from "./TopMenu";
-import QuickAcessItems from "./QuickAcessItems";
-import DemandContextProvider from "../contexts/DemandContextProvider";
-function Home() {
+import React, { useContext } from 'react';
+import { DemandCategoryContext} from '../contexts/DemandCategoryProvider';
 
-    return (
-        <><TopMenu></TopMenu>
-        <div className="container-xl">
-            <br />
-            <div className="table">
-                <div className="table-wrapper">
-                    <CapacityGroupContext>
-                        <CapacityGroupsList />
-                    </CapacityGroupContext>
-                </div>
-            </div>
-        </div>
-        <DemandContextProvider>
-        <QuickAcessItems></QuickAcessItems>
-        </DemandContextProvider>
-        
-        </>
+const DemandCategoryOptions: React.FC = () => {
+  const demandCategoryContextData = useContext(DemandCategoryContext);
+  const { demandcategories } = demandCategoryContextData || {}; // Ensure context data is available
 
-    );
-}
-
-export default Home;
+  // Use the demandcategories array to fill the <select> options
+  return (
+<>
+<option disabled={true} value="">
+          --Choose an option--
+        </option>
+        {demandcategories &&
+          demandcategories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.demandCategoryName}
+            </option>
+          ))}
+</>
+  );
+};
+ export default DemandCategoryOptions;
