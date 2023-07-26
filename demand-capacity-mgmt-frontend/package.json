@@ -1,5 +1,4 @@
 {
-  "comment": "Copyright (c) 2021,2023 Contributors to the Eclipse Foundation\n\nSee the NOTICE file(s) distributed with this work for additional\ninformation regarding copyright ownership.\n\nThis program and the accompanying materials are made available under the\nterms of the Apache License, Version 2.0 which is available at\nhttps://www.apache.org/licenses/LICENSE-2.0.\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT\nWARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the\nLicense for the specific language governing permissions and limitations\nunder the License.\n\nSPDX-License-Identifier: Apache-2.0",
   "name": "tx-demand-capacity-mgmt",
   "version": "0.1.0",
   "private": true,
