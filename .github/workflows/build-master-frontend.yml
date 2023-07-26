@@ -23,8 +23,10 @@ name: build-and-push-image-frontend
 
 on:
   push:
+    paths:
+      - 'demand-capacity-mgmt-frontend/**'
     branches:
-      - 'feat/DCMFOSS-56'
+      - 'main'
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'
