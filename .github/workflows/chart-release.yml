@@ -49,12 +49,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Add Helm repos
-        run: |
-          cd charts
-          helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm dependency update
-
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.1
         env:
