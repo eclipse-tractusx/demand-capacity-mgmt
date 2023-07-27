@@ -478,6 +478,8 @@ components:
     CompanyDto:
       type: object
       properties:
+        id:
+          type: string
         bpn:
           type: string
         companyName:

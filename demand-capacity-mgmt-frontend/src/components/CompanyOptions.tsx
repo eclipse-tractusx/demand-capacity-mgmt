@@ -36,7 +36,7 @@ const CompanyOptions: React.FC = () => {
         </option>
         {companies &&
           companies.map((company) => (
-            <option key={company.bpn} value={company.bpn}>
+            <option key={company.id} value={company.id}>
               {company.companyName}
             </option>
           ))}

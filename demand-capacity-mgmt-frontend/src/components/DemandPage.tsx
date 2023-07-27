@@ -11,9 +11,9 @@
  */
 
 import React, { useContext, useState, useMemo, useCallback } from 'react';
-import { Modal, Button,Form,Col,Row } from 'react-bootstrap';
+import { Modal, Button,Form,Col,Row, Toast, ToastContainer } from 'react-bootstrap';
 import { DemandContext } from '../contexts/DemandContextProvider';
-import { Demand } from '../interfaces/demand_interfaces';
+import { DemandProp } from '../interfaces/demand_interfaces';
 import Pagination from './Pagination';
 import DemandsTable from './DemandsTable';
 import DemandsSearch from './Search';
@@ -25,7 +25,7 @@ import AddForm from './AddForm';
 const DemandsPage: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedDemand, setSelectedDemand] = useState<Demand | null>(null);
+  const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
   const { demands, deleteDemand } = useContext(DemandContext)!;
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,7 +56,7 @@ const DemandsPage: React.FC = () => {
     [deleteDemand]
   );
 
-  const handleEdit = (demand: Demand) => {
+  const handleEdit = (demand: DemandProp) => {
     setSelectedDemand(demand);
     setShowEditModal(true);
   };
@@ -66,13 +66,15 @@ const DemandsPage: React.FC = () => {
 
 
   const filteredDemands = useMemo(() => {
-    let sortedDemands = [...demands];
+    let sortedDemands = [...demand];
 
     if (searchQuery !== '') {
       sortedDemands = sortedDemands.filter((demand) =>
-        demand.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        demand.materialDescriptionCustomer.toLowerCase().includes(searchQuery.toLowerCase()) ||
         demand.id.toString().includes(searchQuery.toLowerCase()) ||
-        demand.companyId.toString().includes(searchQuery.toLowerCase())
+        demand.customerId.toString().includes(searchQuery.toLowerCase())||
+        demand.materialDemandSeries.demandCategoryId.toString().includes(searchQuery.toLowerCase())||
+        demand.materialNumberCustomer.toString().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -116,12 +118,12 @@ const DemandsPage: React.FC = () => {
     () =>
       slicedDemands.map((demand) => (
         <tr key={demand.id}>
+          <td><span className="badge rounded-pill text-bg-primary" id="tag-ok">Details</span></td>
           <td>{demand.id}</td>
-          <td>{demand.companyId}</td>
-          <td>{demand.requiredValue}</td>
-          <td>{demand.deliveredValue}</td>
-          <td>{demand.maximumValue}</td>
-          <td>{demand.description}</td>
+          <td>{demand.customerId}</td>
+          <td>{demand.materialNumberCustomer}</td>
+          <td>{demand.materialDemandSeries?.demandCategoryId}</td>
+          <td>{demand.materialDescriptionCustomer}</td>
           <td>{demand.startDate.split('T')[0]}</td>
           <td>{demand.endDate.split('T')[0]}</td>
           <td>
@@ -153,7 +155,7 @@ const DemandsPage: React.FC = () => {
           </div>
           <div className="col-sm-6">
             <Button className="btn btn-success float-end" data-toggle="modal" onClick={() =>  setShowAddModal(true)}>
-              <i className="material-icons">&#xE147;</i> <span>Add New Demand</span>
+              <i className="material-icons">&#xE147;</i> <span>New Material Demand</span>
             </Button>
           </div>
         </div>
@@ -227,6 +229,7 @@ const DemandsPage: React.FC = () => {
         <AddForm/>
         </Modal.Body>
       </Modal>
+
     </>
   );
 };

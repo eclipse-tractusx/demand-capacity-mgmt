@@ -29,8 +29,25 @@ import CompanyContextProvider from '../contexts/CompanyContextProvider';
 import CompanyOptions from './CompanyOptions';
 import UnitsofMeasureContextContextProvider from '../contexts/UnitsOfMeasureContextProvider';
 import UnitsOfMeasureOptions from './UnitsofMeasureOptions';
-import {Demand} from '../interfaces/demand_interfaces'
+import {Demand} from '../interfaces/demand_interfaces';
 
+
+const getMondaysBetweenDates = (startDate: Date, endDate: Date): string[] => {
+  const mondays: string[] = [];
+  const current = new Date(startDate);
+
+  while (current <= endDate) {
+    if (current.getDay() === 1) {
+      // Monday has index 1 in JS (0 is Sunday, 1 is Monday, etc.)
+      const formattedDate = current.toISOString().slice(0, 10);
+      mondays.push(formattedDate);
+    }
+
+    current.setDate(current.getDate() + 1);
+  }
+
+  return mondays;
+};
 
 const AddForm: React.FC = () => {
   const { createDemand } = useContext(DemandContext)!;
@@ -40,11 +57,13 @@ const AddForm: React.FC = () => {
     materialDescriptionCustomer: '',
     materialNumberCustomer: '',
     materialNumberSupplier: '',
-    customerId: '5d210fb8-260d-4190-9578-f62f9c459703', //Id do submiter
+    startDate:'',
+    endDate:'',
+    customerId: '5d210fb8-260d-4190-9578-f62f9c459703', //Id do submiter TODO
     supplierId: '',
     unitMeasureId: '',
     materialDemandSeries: {
-      customerLocationId: 'string',
+      customerLocationId: '5d210fb8-260d-4190-9578-f62f9c459703', //In this case im the customer so its my ID
       expectedSupplierLocationId: [],
       demandCategoryId: '',
       demandSeriesValues: []
@@ -52,16 +71,35 @@ const AddForm: React.FC = () => {
   };
 
   const [formState, setFormState] = useState<Demand>(initialFormState);
+  const [demandSeriesValues, setDemandSeriesValues] = useState<{ calendarWeek: string; demand: number }[]>([]);
+
+  // Utility function to calculate the Mondays between the start and end dates
+  const calculateDemandSeriesValues = (startDate: Date, endDate: Date) => {
+    const mondays = getMondaysBetweenDates(startDate, endDate);
+    const values = mondays.map((monday) => ({
+      calendarWeek: monday,
+      demand: 0,
+    }));
+    return values;
+  };
+
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    createDemand(formState);
-    {/*resetForm();*/}
+
+    const startDateObj = new Date(formState.startDate);
+    const endDateObj = new Date(formState.endDate);
+    if (startDateObj && endDateObj) {
+      const calculatedValues = calculateDemandSeriesValues(startDateObj, endDateObj);
+      // Call createDemand after setting the demandSeriesValues
+      createDemand({ ...formState, materialDemandSeries: { ...formState.materialDemandSeries, demandSeriesValues: calculatedValues } });
+    }
   };
 
-  const resetForm = () => {
+
+{/*  const resetForm = () => {
     setFormState(initialFormState);
-  };
+  };*/}
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -87,7 +125,7 @@ const AddForm: React.FC = () => {
         ...prevFormState,
         materialDemandSeries: {
           ...prevFormState.materialDemandSeries,
-          [name]: value,
+          demandCategoryId: value, // Ensure demandCategoryId is set properly
         },
       }));
     } else {
@@ -98,10 +136,39 @@ const AddForm: React.FC = () => {
     }
   };
 
+  const getNextMonday = () => {
+    const today = new Date();
+    const nextMonday = new Date(today);
+    nextMonday.setDate(today.getDate() + ((1 + 7 - today.getDay()) % 7));
+    return nextMonday;
+  };
+  
+  const [startDateValid, setStartDateValid] = useState(true);
+  const [endDateValid, setEndDateValid] = useState(true);
+  
+  const onStartDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = new Date(e.target.value);
+    setStartDateValid(selectedDate.getDay() === 1);
+    setEndDateValid(true);
+    setFormState((prevFormState) => ({
+      ...prevFormState,
+      [e.target.name]: e.target.value,
+    }));
+  };
+  
+  const onEndDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = new Date(e.target.value);
+    setEndDateValid(selectedDate.getDay() === 1 && selectedDate >= new Date(formState.startDate));
+    setFormState((prevFormState) => ({
+      ...prevFormState,
+      [e.target.name]: e.target.value,
+    }));
+  };
+  
   return (
     <Form onSubmit={handleSubmit}>
       <Row className="mb-3">
-        <Form.Group as={Col} controlId="formgridStartDate">
+        <Form.Group as={Col}>
           <Form.Label>Start Date</Form.Label>
           <Form.Control 
             type="date"
@@ -109,21 +176,31 @@ const AddForm: React.FC = () => {
             name="startDate"
             id="startDate"
             pattern="\d{4}-\d{2}-\d{2}"
-            onChange={onInputChange}
+            min={getNextMonday().toISOString().slice(0, 10)}
+            onChange={onStartDateChange}
             required
+            isInvalid={!startDateValid}
           />
+          <Form.Control.Feedback type="invalid">
+            Please select a Monday for the Start Date.
+          </Form.Control.Feedback>
         </Form.Group>
-        <Form.Group as={Col} controlId="formGridPassword">
-        <Form.Label>End Date</Form.Label>
-        <Form.Control 
+        <Form.Group as={Col}>
+          <Form.Label>End Date</Form.Label>
+          <Form.Control 
             type="date"
             placeholder="End Date"
             name="endDate"
             id="endDate"
-            onChange={onInputChange}
             pattern="\d{4}-\d{2}-\d{2}"
+            min={getNextMonday().toISOString().slice(0, 10)}
+            onChange={onEndDateChange}
             required
+            isInvalid={!endDateValid}
           />
+          <Form.Control.Feedback type="invalid">
+            End Date has to be a Monday after Start Date.
+          </Form.Control.Feedback>
         </Form.Group>
       </Row>
 
