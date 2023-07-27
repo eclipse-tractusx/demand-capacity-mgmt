@@ -25,10 +25,12 @@ import CapacityGroupContext from "../contexts/CapacityGroupsContextProvider";
 import TopMenu from "./TopMenu";
 import QuickAcessItems from "./QuickAcessItems";
 import DemandContextProvider from "../contexts/DemandContextProvider";
+import { Toast, ToastContainer } from "react-bootstrap";
 function Home() {
 
     return (
-        <><TopMenu></TopMenu>
+        <>
+        <TopMenu></TopMenu>
         <div className="container-xl">
             <br />
             <div className="table">
@@ -40,9 +42,9 @@ function Home() {
             </div>
         </div>
         <DemandContextProvider>
-        <QuickAcessItems></QuickAcessItems>
+            <QuickAcessItems></QuickAcessItems>
         </DemandContextProvider>
-        
+
         </>
 
     );

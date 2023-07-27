@@ -26,6 +26,8 @@ import { ExpectedSupplierLocation, Supplier } from "./supplier_interfaces";
 
 export interface Demand {
     id: string;
+    startDate:string,
+    endDate:string,
     materialDescriptionCustomer: string
     materialNumberCustomer: string
     materialNumberSupplier: string
@@ -49,6 +51,7 @@ export interface Demand {
 
   /* Demand List */
   export interface DemandProp {
+    id: string;
     materialDescriptionCustomer: string
     materialNumberCustomer: string
     materialNumberSupplier: string
