@@ -20,7 +20,7 @@
 
 
 apiVersion: v2
-name: tx-dcm
+name: tx-dcm-2
 description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
