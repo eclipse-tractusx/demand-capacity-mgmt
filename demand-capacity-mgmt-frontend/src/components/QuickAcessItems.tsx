@@ -22,7 +22,7 @@
 import {AiOutlineStock, AiOutlineLink} from 'react-icons/ai';
 import { Modal, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import DemandsPage from './DemandPage';
+import DemandsPage from './demands/DemandPage';
 import DemandContextProvider from '../contexts/DemandContextProvider';
 
 function QuickAcessItems() {

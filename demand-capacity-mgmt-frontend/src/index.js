@@ -24,7 +24,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter as Router, Route,Routes } from "react-router-dom";
-import Home from "./components/CapacityGroupPage";
+
 
 
 //Import Default always visible components.
@@ -32,10 +32,10 @@ import TopMenu from "./components/TopMenu";
 import QuickAcessItems from "./components/QuickAcessItems";
 
 //Import Context Providers
-import CapacityGroupContext from "../src/contexts/CapacityGroupsContextProvider";
 import DemandContextProvider from "../src/contexts/DemandContextProvider";
 
 // Import your components for different routes
+import Home from "./components/defaultview/CapacityGroupPage";
 import CapacityGroupsList from "./components/defaultview/CapacityGroupsView";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

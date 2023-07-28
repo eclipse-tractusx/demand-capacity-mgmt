@@ -22,15 +22,15 @@
 
 import React, { useContext, useState, ChangeEvent, FormEvent } from 'react';
 import { Form, Button, Row,Col } from 'react-bootstrap';
-import { DemandContext } from '../contexts/DemandContextProvider';
-import DemandCategoryContextProvider from '../contexts/DemandCategoryProvider';
+import { DemandContext } from '../../contexts/DemandContextProvider';
+import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import DemandCategoryOptions from './DemandCategoryOptions';
-import CompanyContextProvider from '../contexts/CompanyContextProvider';
-import CompanyOptions from './CompanyOptions';
-import UnitsofMeasureContextContextProvider from '../contexts/UnitsOfMeasureContextProvider';
-import UnitsOfMeasureOptions from './UnitsofMeasureOptions';
-import {Demand} from '../interfaces/demand_interfaces';
-import '../App.css';
+import CompanyContextProvider from '../../contexts/CompanyContextProvider';
+import CompanyOptions from '../CompanyOptions';
+import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
+import UnitsOfMeasureOptions from '../UnitsofMeasureOptions';
+import {Demand} from '../../interfaces/demand_interfaces';
+import '../../App.css';
 
 const getMondaysBetweenDates = (startDate: Date, endDate: Date): string[] => {
   const mondays: string[] = [];
