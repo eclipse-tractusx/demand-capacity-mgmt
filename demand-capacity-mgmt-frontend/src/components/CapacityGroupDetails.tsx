@@ -20,17 +20,13 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsList from "./defaultview/DefaultviewPage";
+import CapacityGroupsList from "./defaultview/CapacityGroupsView";
 import CapacityGroupContext from "../contexts/CapacityGroupsContextProvider";
-import TopMenu from "./TopMenu";
-import QuickAcessItems from "./QuickAcessItems";
-import DemandContextProvider from "../contexts/DemandContextProvider";
 
-function Home() {
+function CapacityGroupDetails() {
 
     return (
         <>
-        <TopMenu></TopMenu>
         <div className="container-xl">
             <br />
             <div className="table">
@@ -41,13 +37,9 @@ function Home() {
                 </div>
             </div>
         </div>
-        <DemandContextProvider>
-            <QuickAcessItems></QuickAcessItems>
-        </DemandContextProvider>
-
         </>
 
     );
 }
 
-export default Home;
+export default CapacityGroupDetails;

@@ -24,20 +24,36 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter as Router, Route,Routes } from "react-router-dom";
-import Home from "./components/Home";
+import Home from "./components/CapacityGroupPage";
+
+
+//Import Default always visible components.
+import TopMenu from "./components/TopMenu";
+import QuickAcessItems from "./components/QuickAcessItems";
+
+//Import Context Providers
+import CapacityGroupContext from "../src/contexts/CapacityGroupsContextProvider";
+import DemandContextProvider from "../src/contexts/DemandContextProvider";
+
+// Import your components for different routes
+import CapacityGroupsList from "./components/defaultview/CapacityGroupsView";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+<>
+    <TopMenu></TopMenu>
 
     <Router>
-        <Routes>
-
-            <Route path="/" element={<Home/>} />
-
-
-        </Routes>
-    </Router>
-
+    <Routes>
+        <Route  path="/" element={<Home/>} />
+        <Route path="/about" />
+        <Route path="/contact" />
+    </Routes>
+</Router>
+<DemandContextProvider>
+            <QuickAcessItems></QuickAcessItems>
+        </DemandContextProvider>
+</>
 
 );
 
