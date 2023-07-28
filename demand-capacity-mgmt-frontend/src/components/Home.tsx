@@ -25,7 +25,7 @@ import CapacityGroupContext from "../contexts/CapacityGroupsContextProvider";
 import TopMenu from "./TopMenu";
 import QuickAcessItems from "./QuickAcessItems";
 import DemandContextProvider from "../contexts/DemandContextProvider";
-import { Toast, ToastContainer } from "react-bootstrap";
+
 function Home() {
 
     return (
