@@ -26,7 +26,8 @@ const DemandsPage: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
-  const { demands, deleteDemand } = useContext(DemandContext)!;
+  const { demands, deleteDemand } = useContext(DemandContext)!; //HERE
+  
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,7 +67,7 @@ const DemandsPage: React.FC = () => {
 
 
   const filteredDemands = useMemo(() => {
-    let sortedDemands = [...demand];
+    let sortedDemands = [...demands];
 
     if (searchQuery !== '') {
       sortedDemands = sortedDemands.filter((demand) =>
