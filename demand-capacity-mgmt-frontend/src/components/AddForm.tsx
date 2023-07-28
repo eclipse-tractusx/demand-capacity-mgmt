@@ -30,7 +30,7 @@ import CompanyOptions from './CompanyOptions';
 import UnitsofMeasureContextContextProvider from '../contexts/UnitsOfMeasureContextProvider';
 import UnitsOfMeasureOptions from './UnitsofMeasureOptions';
 import {Demand} from '../interfaces/demand_interfaces';
-
+import '../App.css';
 
 const getMondaysBetweenDates = (startDate: Date, endDate: Date): string[] => {
   const mondays: string[] = [];
@@ -168,8 +168,8 @@ const AddForm: React.FC = () => {
   return (
     <Form onSubmit={handleSubmit}>
       <Row className="mb-3">
-        <Form.Group as={Col}>
-          <Form.Label>Start Date</Form.Label>
+        <Form.Group className="form-group required"as={Col}>
+          <Form.Label className="control-label required-field-label" >Start Date</Form.Label>
           <Form.Control 
             type="date"
             placeholder="Start Date"
@@ -185,8 +185,8 @@ const AddForm: React.FC = () => {
             Please select a Monday for the Start Date.
           </Form.Control.Feedback>
         </Form.Group>
-        <Form.Group as={Col}>
-          <Form.Label>End Date</Form.Label>
+        <Form.Group className="form-group required" as={Col}>
+          <Form.Label className="control-label required-field-label">End Date</Form.Label>
           <Form.Control 
             type="date"
             placeholder="End Date"
@@ -205,8 +205,8 @@ const AddForm: React.FC = () => {
       </Row>
 
       <Row className="mb-3">
-      <Form.Group as={Col} >
-      <Form.Label>Unit of Measure</Form.Label>
+      <Form.Group className="form-group required" as={Col} >
+      <Form.Label className="control-label required-field-label">Unit of Measure</Form.Label>
         <Form.Select
                   name="unitMeasureId"
                   id="unitMeasureId"
@@ -219,8 +219,8 @@ const AddForm: React.FC = () => {
         </Form.Select>
       </Form.Group>
     </Row>
-    <Form.Group className="mb-3">
-      <Form.Label>Supplier</Form.Label>
+    <Form.Group className="mb-3 form-group required">
+      <Form.Label className="control-label required-field-label">Supplier</Form.Label>
       <Form.Select aria-label="Default select example"
                   name="supplierId"
                   id="supplierId"
@@ -234,8 +234,8 @@ const AddForm: React.FC = () => {
         </Form.Select>
       </Form.Group>
 
-    <Form.Group className="mb-3">
-      <Form.Label>Demand Category</Form.Label>
+    <Form.Group className="mb-3 form-group required">
+      <Form.Label className="control-label required-field-label">Demand Category</Form.Label>
       <Form.Select aria-label="Default select example"
                   placeholder="Demand Category"
                   name="demandCategoryId"
@@ -249,8 +249,8 @@ const AddForm: React.FC = () => {
         </Form.Select>
       </Form.Group>
 
-      <Form.Group className="mb-3">
-      <Form.Label>Material Number Customer</Form.Label>
+      <Form.Group className="mb-3 form-group required">
+      <Form.Label className="control-label required-field-label"l>Material Number Customer</Form.Label>
         <Form.Control
           type="text"
           placeholder="Material Number"
@@ -262,7 +262,7 @@ const AddForm: React.FC = () => {
         />
       </Form.Group>
 
-      <Form.Group className="mb-3">
+      <Form.Group className="mb-3 required  ">
       <Form.Label>Material Number Supplier</Form.Label>
         <Form.Control
           type="text"
@@ -271,12 +271,11 @@ const AddForm: React.FC = () => {
           name="materialNumberSupplier"
           value={formState.materialNumberSupplier}
           onChange={onInputChange}
-          disabled
         />
       </Form.Group>
 
-      <Form.Group className="mb-3">
-      <Form.Label>Description</Form.Label>
+      <Form.Group className="mb-3 form-group required">
+      <Form.Label className="control-label required-field-label"l>Description</Form.Label>
         <Form.Control
           type="text"
           placeholder="Description"
