@@ -24,7 +24,7 @@ import React, { useContext, useState, useMemo, useCallback } from 'react';
 import { Modal, Button,Form,Col,Row } from 'react-bootstrap';
 import { CapacityGroupContext  } from '../../contexts/CapacityGroupsContextProvider';
 import { CapacityGroup } from '../../interfaces/capacitygroup_interfaces';
-import AddForm from '../AddForm';
+import AddForm from '../demands/DemandAddForm';
 import Pagination from '../Pagination';
 import CapacityGroupsTable from './CapacityGroupsTable';
 import Search from '../Search';
