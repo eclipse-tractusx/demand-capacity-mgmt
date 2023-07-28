@@ -21,7 +21,7 @@
  */
 
 import React, { useContext } from 'react';
-import { DemandCategoryContext} from '../contexts/DemandCategoryProvider';
+import { DemandCategoryContext} from '../../contexts/DemandCategoryProvider';
 
 const DemandCategoryOptions: React.FC = () => {
   const demandCategoryContextData = useContext(DemandCategoryContext);

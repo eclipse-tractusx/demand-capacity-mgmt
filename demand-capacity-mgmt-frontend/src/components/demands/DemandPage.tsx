@@ -12,14 +12,14 @@
 
 import React, { useContext, useState, useMemo, useCallback } from 'react';
 import { Modal, Button,Form,Col,Row, Toast, ToastContainer } from 'react-bootstrap';
-import { DemandContext } from '../contexts/DemandContextProvider';
-import { DemandProp } from '../interfaces/demand_interfaces';
-import Pagination from './Pagination';
+import { DemandContext } from '../../contexts/DemandContextProvider';
+import { DemandProp } from '../../interfaces/demand_interfaces';
+import Pagination from '../Pagination';
 import DemandsTable from './DemandsTable';
-import DemandsSearch from './Search';
-import EditForm from './EditForm';
+import DemandsSearch from '../Search';
+import EditForm from './DemandEditForm';
 import { FcCancel } from 'react-icons/fc';
-import AddForm from './AddForm';
+import AddForm from './DemandAddForm';
 
 
 const DemandsPage: React.FC = () => {
