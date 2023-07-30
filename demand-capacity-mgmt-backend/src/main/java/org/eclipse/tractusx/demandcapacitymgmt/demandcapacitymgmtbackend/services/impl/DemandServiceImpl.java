@@ -131,10 +131,10 @@ public class DemandServiceImpl implements DemandService {
         responseDto.setSupplier(supplier);
         responseDto.setChangedAt(materialDemandEntity.getChangedAt().toString());
 
-        MaterialDemandSeriesResponse materialDemandSeriesResponse = enrichMaterialDemandSeriesResponse(
-            materialDemandEntity.getDemandSeries()
-        );
-        responseDto.setDemandSeries(materialDemandSeriesResponse);
+        //        MaterialDemandSeriesResponse materialDemandSeriesResponse = enrichMaterialDemandSeriesResponse(
+        //            materialDemandEntity.getDemandSeries()
+        //        );
+        //responseDto.setDemandSeries(materialDemandSeriesResponse);
 
         return responseDto;
     }
@@ -148,50 +148,51 @@ public class DemandServiceImpl implements DemandService {
             throw new BadRequestException("not a valid ID");
         }
 
-        if (!UUIDUtil.checkValidUUID(materialDemandRequest.getMaterialDemandSeries().getCustomerLocationId())) {
-            throw new BadRequestException("not a valid ID");
-        }
-
-        if (!UUIDUtil.checkValidUUID(materialDemandRequest.getMaterialDemandSeries().getDemandCategoryId())) {
-            throw new BadRequestException("not a valid category");
-        }
-
-        List<LocalDateTime> dates = materialDemandRequest
-            .getMaterialDemandSeries()
-            .getDemandSeriesValues()
-            .stream()
-            .map(
-                materialDemandSeriesValue ->
-                    DataConverterUtil.convertFromString(materialDemandSeriesValue.getCalendarWeek())
-            )
-            .toList();
-
-        if (!DataConverterUtil.checkListAllMonday(dates) || !DataConverterUtil.checkDatesSequence(dates)) {
-            throw new BadRequestException("not a valid dates");
-        }
-
         materialDemandRequest
             .getMaterialDemandSeries()
-            .getExpectedSupplierLocationId()
-            .forEach(UUIDUtil::checkValidUUID);
+            .forEach(
+                materialDemandSeries -> {
+                    if (!UUIDUtil.checkValidUUID(materialDemandSeries.getCustomerLocationId())) {
+                        throw new BadRequestException("not a valid ID");
+                    }
 
-        List<UUID> expectedSuppliersLocation = materialDemandRequest
-            .getMaterialDemandSeries()
-            .getExpectedSupplierLocationId()
-            .stream()
-            .map(UUIDUtil::generateUUIDFromString)
-            .toList();
+                    if (!UUIDUtil.checkValidUUID(materialDemandSeries.getDemandCategoryId())) {
+                        throw new BadRequestException("not a valid category");
+                    }
 
-        List<CompanyEntity> companyEntities = companyService.getCompanyIn(expectedSuppliersLocation);
+                    List<LocalDateTime> dates = materialDemandSeries
+                        .getDemandSeriesValues()
+                        .stream()
+                        .map(
+                            materialDemandSeriesValue ->
+                                DataConverterUtil.convertFromString(materialDemandSeriesValue.getCalendarWeek())
+                        )
+                        .toList();
 
-        boolean hasAllCompanies = companyEntities
-            .stream()
-            .map(CompanyEntity::getId)
-            .allMatch(expectedSuppliersLocation::contains);
+                    if (!DataConverterUtil.checkListAllMonday(dates) || !DataConverterUtil.checkDatesSequence(dates)) {
+                        throw new BadRequestException("not a valid dates");
+                    }
 
-        if (!hasAllCompanies) {
-            throw new BadRequestException("Some Invalid Company");
-        }
+                    materialDemandSeries.getExpectedSupplierLocationId().forEach(UUIDUtil::checkValidUUID);
+
+                    List<UUID> expectedSuppliersLocation = materialDemandSeries
+                        .getExpectedSupplierLocationId()
+                        .stream()
+                        .map(UUIDUtil::generateUUIDFromString)
+                        .toList();
+
+                    List<CompanyEntity> companyEntities = companyService.getCompanyIn(expectedSuppliersLocation);
+
+                    boolean hasAllCompanies = companyEntities
+                        .stream()
+                        .map(CompanyEntity::getId)
+                        .allMatch(expectedSuppliersLocation::contains);
+
+                    if (!hasAllCompanies) {
+                        throw new BadRequestException("Some Invalid Company");
+                    }
+                }
+            );
     }
 
     private MaterialDemandEntity convertDtoToEntity(MaterialDemandRequest materialDemandRequest) {
@@ -210,15 +211,15 @@ public class DemandServiceImpl implements DemandService {
             UUID.fromString(materialDemandRequest.getUnitMeasureId())
         );
 
-        DemandCategoryEntity demandCategory = demandCategoryService.findById(
-            UUIDUtil.generateUUIDFromString(materialDemandRequest.getMaterialDemandSeries().getDemandCategoryId())
-        );
+        List<DemandSeries> demandSeriesList = materialDemandRequest.getMaterialDemandSeries()
+                .stream()
+                .map(materialDemandSeries -> {
 
-        DemandSeries demandSeries = enrichDemandSeries(
-            materialDemandRequest.getMaterialDemandSeries(),
-            customerEntity,
-            demandCategory
-        );
+                    DemandCategoryEntity demandCategory = demandCategoryService.findById(UUIDUtil.generateUUIDFromString(materialDemandSeries.getDemandCategoryId()));
+                    return enrichDemandSeries(materialDemandSeries, customerEntity, demandCategory);
+
+                })
+                .toList();
 
         return MaterialDemandEntity
             .builder()
@@ -228,7 +229,7 @@ public class DemandServiceImpl implements DemandService {
             .customerId(customerEntity)
             .supplierId(supplierEntity)
             .unitMeasure(unitMeasure)
-            .demandSeries(demandSeries)
+            .demandSeries(demandSeriesList)
             .changedAt(LocalDateTime.now())
             .build();
     }

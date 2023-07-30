@@ -23,11 +23,14 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandWeekSeriesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.SupplierEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
@@ -91,7 +94,39 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     }
 
     @Override
-    public void createWeekBasedMaterialRequestFromEntity(MaterialDemandEntity materialDemandEntity) {}
+    public void createWeekBasedMaterialRequestFromEntity(MaterialDemandEntity materialDemandEntity) {
+        WeekBasedMaterialDemandRequestDto basedMaterialDemandRequestDto = new WeekBasedMaterialDemandRequestDto();
+
+        basedMaterialDemandRequestDto.setMaterialDemandId(materialDemandEntity.getId().toString());
+        basedMaterialDemandRequestDto.setMaterialNumberCustomer(materialDemandEntity.getMaterialNumberCustomer());
+        basedMaterialDemandRequestDto.setMaterialDescriptionCustomer(
+            materialDemandEntity.getMaterialDescriptionCustomer()
+        );
+        basedMaterialDemandRequestDto.setCustomer(materialDemandEntity.getCustomerId().getBpn());
+        basedMaterialDemandRequestDto.setSupplier(materialDemandEntity.getSupplierId().getBpn());
+        basedMaterialDemandRequestDto.setUnityOfMeasure(materialDemandEntity.getUnitMeasure().getCodeValue());
+
+        //DemandSeries demandSeries = materialDemandEntity.getDemandSeries();
+
+        DemandWeekSeriesDto demandWeekSeriesDto = new DemandWeekSeriesDto();
+        //demandWeekSeriesDto.setCustomerLocation(demandSeries.getCustomerLocation().getBpn());
+
+        //        List<DemandSeriesDto> demandSeriesDtos = materialDemandEntity
+        //            .getDemandSeries()
+        //            .getDemandSeriesValues()
+        //            .stream()
+        //            .map(
+        //                demandSeriesValues -> {
+        //                    DemandSeriesDto demandSeriesDto = new DemandSeriesDto();
+        //                    demandSeriesDto.setDemand(demandSeriesValues.getDemand().toString());
+        //                    demandSeriesDto.setCalendarWeek(demandSeriesValues.getCalendarWeek().toString());
+        //                    return demandSeriesDto;
+        //                }
+        //            )
+        //            .toList();
+
+        //demandWeekSeriesDto.setDemands(demandSeriesDtos);
+    }
 
     private void validateFields(WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto) {
         if (!UUIDUtil.checkValidUUID(weekBasedMaterialDemandRequestDto.getMaterialDemandId())) {
