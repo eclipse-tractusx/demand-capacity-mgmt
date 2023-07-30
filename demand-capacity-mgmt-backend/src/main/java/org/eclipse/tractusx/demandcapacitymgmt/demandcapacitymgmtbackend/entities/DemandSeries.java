@@ -64,14 +64,14 @@ public class DemandSeries {
     @Convert(converter = ListToStringConverter.class)
     private List<String> expectedSupplierLocation;
 
-    @ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "material_demand_id", referencedColumnName = "ID")
-    private MaterialDemandEntity materialDemandEntity;
-
     @OneToOne
     @JoinColumn(name = "demand_category_code_id", referencedColumnName = "ID")
     private DemandCategoryEntity demandCategory;
 
-    @OneToMany(mappedBy = "demandSeries", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "demand_series_id")
     private List<DemandSeriesValues> demandSeriesValues;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private MaterialDemandEntity materialDemand;
 }

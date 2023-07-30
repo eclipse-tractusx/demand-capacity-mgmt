@@ -429,7 +429,9 @@ components:
         unitMeasureId:
           type: string
         materialDemandSeries:
-          $ref: '#/components/schemas/MaterialDemandSeries'
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialDemandSeries'
 
     MaterialDemandSeries:
       type: object
