@@ -43,6 +43,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeriesValues;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UnitMeasureEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
@@ -104,6 +105,11 @@ public class DemandServiceImpl implements DemandService {
         MaterialDemandEntity demand = getDemandEntity(demandId);
 
         materialDemandRepository.delete(demand);
+    }
+
+    @Override
+    public List<MaterialDemandEntity> getAllByStatus(MaterialDemandStatus status) {
+        return materialDemandRepository.findAllByStatus(status);
     }
 
     private MaterialDemandEntity getDemandEntity(String demandId) {

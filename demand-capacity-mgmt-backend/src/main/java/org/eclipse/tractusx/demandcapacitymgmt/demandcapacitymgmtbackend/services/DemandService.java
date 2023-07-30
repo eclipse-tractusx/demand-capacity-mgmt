@@ -28,6 +28,9 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandRequestUp
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandResponseDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
+
 import java.util.List;
 
 public interface DemandService {
@@ -40,4 +43,6 @@ public interface DemandService {
     MaterialDemandResponse updateDemand(String demandId, DemandRequestUpdateDto demandRequestUpdateDto);
 
     void deleteDemandById(String demandId);
+
+    List<MaterialDemandEntity> getAllByStatus(MaterialDemandStatus status);
 }

@@ -29,6 +29,8 @@ import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -40,6 +42,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 
 @Entity
 @Table(name = "material_demand")
@@ -81,4 +84,9 @@ public class MaterialDemandEntity {
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinColumn(name = "material_demand_id")
     private List<DemandSeries> demandSeries;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private MaterialDemandStatus status;
+
 }
