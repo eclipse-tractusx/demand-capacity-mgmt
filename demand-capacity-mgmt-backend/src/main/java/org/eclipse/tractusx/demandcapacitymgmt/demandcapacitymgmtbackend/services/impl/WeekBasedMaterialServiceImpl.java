@@ -37,9 +37,11 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.SupplierEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.SupplierRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LinkDemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
@@ -58,6 +60,8 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     private final SupplierRepository supplierRepository;
 
     private final LinkDemandService linkDemandService;
+
+    private final DemandService demandService;
 
     @Override
     public void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDtoList) {
@@ -85,6 +89,10 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
             //TODO create the Actual Demand and send to the supplier
             ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
         }
+
+        List<MaterialDemandEntity> demandEntityList =  demandService.getAllByStatus(MaterialDemandStatus.READY_SYNCHRONIZE);
+
+        demandEntityList.forEach(this::createWeekBasedMaterialRequestFromEntity);
     }
 
     @Override

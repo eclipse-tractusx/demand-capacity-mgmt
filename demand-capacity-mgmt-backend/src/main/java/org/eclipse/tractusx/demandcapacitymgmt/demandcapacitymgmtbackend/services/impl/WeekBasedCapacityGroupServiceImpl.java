@@ -71,6 +71,8 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
             false
         );
 
+
+
         weekBasedCapacityGroupRepository.saveAll(weekBasedCapacityGroupEntities);
     }
 
@@ -89,6 +91,8 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
             //TODO create the Actual Demand and send to the supplier
             ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
         }
+
+
     }
 
     private void validateFields(WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest) {
