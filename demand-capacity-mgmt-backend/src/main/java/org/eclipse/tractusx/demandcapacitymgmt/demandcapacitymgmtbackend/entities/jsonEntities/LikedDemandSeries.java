@@ -33,5 +33,5 @@ public class LikedDemandSeries {
     private String materialNumberCustomer;
     private String materialNumberSupplier;
     private String customerLocation;
-    private DemandCategory demandCategory;
+    private DemandCategory demandCategory; //
 }
