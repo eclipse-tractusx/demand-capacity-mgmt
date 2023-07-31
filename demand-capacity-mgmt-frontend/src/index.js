@@ -35,8 +35,8 @@ import QuickAcessItems from "./components/QuickAcessItems";
 import DemandContextProvider from "../src/contexts/DemandContextProvider";
 
 // Import your components for different routes
-import Home from "./components/defaultview/CapacityGroupPage";
-import CapacityGroupsList from "./components/defaultview/CapacityGroupsView";
+import Home from "./components/capacitygroup/CapacityGroupPage";
+import CapacityGroupDetailsPage from './components/capacitygroup/CapacityGroupDetailsPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -46,7 +46,7 @@ root.render(
     <Router>
     <Routes>
         <Route  path="/" element={<Home/>} />
-        <Route path="/about" />
+        <Route path="/details" element={<CapacityGroupDetailsPage/>} />
         <Route path="/contact" />
     </Routes>
 </Router>
