@@ -4,5 +4,5 @@ public enum MaterialDemandStatus {
     DRAFT,
     READY_SYNCHRONIZE,
     SYNCHRONIZED,
-    DELETED
+    DELETED,
 }

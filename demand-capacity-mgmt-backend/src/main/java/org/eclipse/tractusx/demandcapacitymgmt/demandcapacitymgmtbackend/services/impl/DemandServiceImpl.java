@@ -217,15 +217,18 @@ public class DemandServiceImpl implements DemandService {
             UUID.fromString(materialDemandRequest.getUnitMeasureId())
         );
 
-        List<DemandSeries> demandSeriesList = materialDemandRequest.getMaterialDemandSeries()
-                .stream()
-                .map(materialDemandSeries -> {
-
-                    DemandCategoryEntity demandCategory = demandCategoryService.findById(UUIDUtil.generateUUIDFromString(materialDemandSeries.getDemandCategoryId()));
+        List<DemandSeries> demandSeriesList = materialDemandRequest
+            .getMaterialDemandSeries()
+            .stream()
+            .map(
+                materialDemandSeries -> {
+                    DemandCategoryEntity demandCategory = demandCategoryService.findById(
+                        UUIDUtil.generateUUIDFromString(materialDemandSeries.getDemandCategoryId())
+                    );
                     return enrichDemandSeries(materialDemandSeries, customerEntity, demandCategory);
-
-                })
-                .toList();
+                }
+            )
+            .toList();
 
         return MaterialDemandEntity
             .builder()
