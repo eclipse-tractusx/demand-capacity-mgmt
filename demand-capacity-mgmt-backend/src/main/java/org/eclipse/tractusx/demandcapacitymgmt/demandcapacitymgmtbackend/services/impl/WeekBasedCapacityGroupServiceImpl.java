@@ -27,6 +27,8 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacitiesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedDemandSeriesRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.WeekBasedCapacityGroup;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CustomerRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
@@ -56,6 +59,8 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
     private final CapacityGroupService capacityGroupService;
 
+    private final MaterialDemandRepository materialDemandRepository;
+
     @Override
     public void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequestList) {
         weekBasedCapacityGroupRequestList.forEach(
@@ -68,18 +73,35 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         );
     }
 
-    @Override
+
     public void receiveWeekBasedCapacityGroup() {
-        List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository.getAllByViewed(
-            false
-        );
+        List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository
+                .getAllByViewed(false);
+        List<MaterialDemandEntity> materialDemandEntities = new ArrayList<>();
 
-        //apanhamos todos os que estão a false
+        for (WeekBasedCapacityGroupEntity entity : weekBasedCapacityGroupEntities) {
+            WeekBasedCapacityGroup weekBasedCapacityGroup = entity.getWeekBasedCapacityGroup();
+            if (weekBasedCapacityGroup != null) {
+                List<LikedDemandSeries> likedDemandSeriesList = weekBasedCapacityGroup.getLikedDemandSeries();
+                if (likedDemandSeriesList != null) {
+                    for (LikedDemandSeries likedDemandSeries : likedDemandSeriesList) {
+                        String materialNumberCustomer = likedDemandSeries.getMaterialNumberCustomer();
+                        String customerLocation = likedDemandSeries.getCustomerLocation();
+                        String demandCategoryCode = likedDemandSeries.getMaterialNumberSupplier();
 
-        //  para cada um deles queremos apanhar a combinaçãpod que faz referencia para aos material demand
 
-        weekBasedCapacityGroupRepository.saveAll(weekBasedCapacityGroupEntities);
+                        List<MaterialDemandEntity> matchingDemands = materialDemandRepository
+                                .findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
+                                materialNumberCustomer, customerLocation, demandCategoryCode);
+
+                        materialDemandEntities.addAll(matchingDemands);
+                    }
+                }
+            }
+        }
     }
+
+
 
     @Override
     public void sendWeekBasedCapacityGroup() {
