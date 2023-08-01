@@ -65,10 +65,10 @@ function CapacityGroupDetailsPage() {
                 >
                   Edit
                 </ToggleButton>
-                <Button variant="secondary" name="radio" onClick={handleSave}>
+                <Button variant="secondary" name="save" onClick={handleSave}>
                   Save
                 </Button>
-                <Button variant="secondary" name="radio" onClick={handleRevert}>
+                <Button variant="secondary" name="revert" onClick={handleRevert}>
                   Revert Changes
                 </Button>
               </ButtonGroup>
