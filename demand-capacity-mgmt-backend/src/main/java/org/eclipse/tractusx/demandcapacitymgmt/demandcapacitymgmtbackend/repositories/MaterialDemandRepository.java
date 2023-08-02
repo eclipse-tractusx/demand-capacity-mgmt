@@ -35,11 +35,16 @@ import org.springframework.stereotype.Repository;
 public interface MaterialDemandRepository extends JpaRepository<MaterialDemandEntity, UUID> {
     List<MaterialDemandEntity> findAllByStatus(MaterialDemandStatus status);
 
-    @Query("SELECT DISTINCT md FROM MaterialDemandEntity md " +
-            "JOIN md.demandSeries ds " +
-            "WHERE md.materialNumberCustomer = :materialNumberCustomer " +
-            "AND ds.customerLocation.bpn = :customerLocationBpn " +
-            "AND ds.demandCategory.demandCategoryCode = :demandCategoryCode")
+    @Query(
+        "SELECT DISTINCT md FROM MaterialDemandEntity md " +
+        "JOIN md.demandSeries ds " +
+        "WHERE md.materialNumberCustomer = :materialNumberCustomer " +
+        "AND ds.customerLocation.bpn = :customerLocationBpn " +
+        "AND ds.demandCategory.demandCategoryCode = :demandCategoryCode"
+    )
     List<MaterialDemandEntity> findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
-            String materialNumberCustomer, String customerLocationBpn, String demandCategoryCode);
+        String materialNumberCustomer,
+        String customerLocationBpn,
+        String demandCategoryCode
+    );
 }

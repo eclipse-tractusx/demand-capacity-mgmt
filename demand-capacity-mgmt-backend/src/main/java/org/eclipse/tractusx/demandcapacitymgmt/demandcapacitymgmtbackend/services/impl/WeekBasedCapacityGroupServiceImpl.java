@@ -27,7 +27,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacitiesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedDemandSeriesRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -73,10 +72,10 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         );
     }
 
-
     public void receiveWeekBasedCapacityGroup() {
-        List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository
-                .getAllByViewed(false);
+        List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository.getAllByViewed(
+            false
+        );
         List<MaterialDemandEntity> materialDemandEntities = new ArrayList<>();
 
         for (WeekBasedCapacityGroupEntity entity : weekBasedCapacityGroupEntities) {
@@ -89,10 +88,11 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
                         String customerLocation = likedDemandSeries.getCustomerLocation();
                         String demandCategoryCode = likedDemandSeries.getMaterialNumberSupplier();
 
-
-                        List<MaterialDemandEntity> matchingDemands = materialDemandRepository
-                                .findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
-                                materialNumberCustomer, customerLocation, demandCategoryCode);
+                        List<MaterialDemandEntity> matchingDemands = materialDemandRepository.findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
+                            materialNumberCustomer,
+                            customerLocation,
+                            demandCategoryCode
+                        );
 
                         materialDemandEntities.addAll(matchingDemands);
                     }
@@ -100,8 +100,6 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
             }
         }
     }
-
-
 
     @Override
     public void sendWeekBasedCapacityGroup() {
