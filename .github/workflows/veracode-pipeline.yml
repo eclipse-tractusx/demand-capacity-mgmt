@@ -23,9 +23,9 @@ name: Veracode Static Analysis Pipeline Scan
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "feat/dependecies" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "feat/dependecies" ]
   schedule:
     - cron: '27 12 * * 6'
 
@@ -65,4 +65,4 @@ jobs:
           filepath: "./veracode-scan-target.zip"
           vid: "${{ secrets.VERACODE_API_ID }}"
           vkey: "${{ secrets.VERACODE_API_KEY }}"
-          
+
