@@ -20,14 +20,16 @@
  *    ********************************************************************************
  */
 export interface Supplier {
-    bpn: string
-    companyName: string
-    street: string
-    number: string
-    zipCode: string
-    country: string
-    myCompany: string
-  }
+  id: string
+  bpn: string
+  companyName: string
+  street: string
+  number: string
+  zipCode: string
+  country: string
+  myCompany: string
+}
+
   
   export interface ExpectedSupplierLocation {
     bpn: string

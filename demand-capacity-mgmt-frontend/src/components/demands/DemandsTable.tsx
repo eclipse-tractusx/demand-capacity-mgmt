@@ -35,20 +35,20 @@ const DemandsTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, hand
     <table className="table table-striped table-hover">
       <thead>
         <tr>
-          <th>
-            
-          </th>
           <th onClick={() => handleSort('id')}>
             Id {sortColumn === 'id' && <i className="material-icons">&#x25B2;</i>}
           </th>
           <th onClick={() => handleSort('companyId')}>
             Company Id {sortColumn === 'companyId' && <i className="material-icons">&#x25B2;</i>}
           </th>
-          <th onClick={() => handleSort('materialNumber')}>
-            Material Number {sortColumn === 'materialNumber' && <i className="material-icons">&#x25B2;</i>}
+          <th onClick={() => handleSort('materialNumberCustomer')}>
+            Material No. Customer {sortColumn === 'materialNumberCustomer' && <i className="material-icons">&#x25B2;</i>}
           </th>
-          <th onClick={() => handleSort('demandCategoryCode')}>
-            Demand Cat. Code{sortColumn === 'demandCategoryCode' && <i className="material-icons">&#x25B2;</i>}
+          <th onClick={() => handleSort('materialNumberSupplier')}>
+            Material No. Supplier {sortColumn === 'materialNumberSupplier' && <i className="material-icons">&#x25B2;</i>}
+          </th>
+          <th onClick={() => handleSort('demandCategory')}>
+            Demand cat.{sortColumn === 'demandCategory' && <i className="material-icons">&#x25B2;</i>}
           </th>
           <th onClick={() => handleSort('description')}>
             Description {sortColumn === 'description' && <i className="material-icons">&#x25B2;</i>}
