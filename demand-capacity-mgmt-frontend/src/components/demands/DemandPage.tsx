@@ -10,32 +10,32 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useContext, useState, useMemo, useCallback } from 'react';
-import { Modal, Button,Form,Col,Row, Toast, ToastContainer } from 'react-bootstrap';
-import { DemandContext } from '../../contexts/DemandContextProvider';
-import { DemandProp } from '../../interfaces/demand_interfaces';
+import React, { useContext, useState, useMemo ,useCallback} from 'react';
+import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
+import { DemandPropContext } from '../../contexts/DemandPropContextProvider';
+import { Demand, DemandProp } from '../../interfaces/demand_interfaces';
 import Pagination from '../Pagination';
 import DemandsTable from './DemandsTable';
 import DemandsSearch from '../Search';
 import EditForm from './DemandEditForm';
 import { FcCancel } from 'react-icons/fc';
 import AddForm from './DemandAddForm';
-
+import { DemandContext } from '../../contexts/DemandContextProvider';
 
 const DemandsPage: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
-  const { demands, deleteDemand } = useContext(DemandContext)!; //HERE
-  
+  const [selectedDemand, setSelectedDemand] = useState<Demand | null>(null);
+  const { demands, deleteDemand } = useContext(DemandContext)!;
+  const { demandprops } = useContext(DemandPropContext)!;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortColumn, setSortColumn] = useState('');
+  const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
   const [sortOrder, setSortOrder] = useState('');
-  const [demandsPerPage, setDemandsPerPage] = useState(5); // Set the default value here
+  const [demandsPerPage, setDemandsPerPage] = useState(5); 
 
-  const handleSort = (column: string) => {
+  const handleSort = (column: keyof DemandProp) => { // Adjust the parameter type here
     if (sortColumn === column) {
       // If the same column is clicked again, toggle the sort order
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -57,52 +57,56 @@ const DemandsPage: React.FC = () => {
     [deleteDemand]
   );
 
-  const handleEdit = (demand: DemandProp) => {
+  const handleEdit = (demand: Demand) => {
+    //GetDemand with demand ID TODO
     setSelectedDemand(demand);
     setShowEditModal(true);
   };
 
   const handleCloseEdit = () => setShowEditModal(false);
   const handleCloseAdd = () => setShowAddModal(false);
+  
 
 
   const filteredDemands = useMemo(() => {
-    let sortedDemands = [...demands];
+    let sortedDemands = [...demandprops];
 
     if (searchQuery !== '') {
       sortedDemands = sortedDemands.filter((demand) =>
         demand.materialDescriptionCustomer.toLowerCase().includes(searchQuery.toLowerCase()) ||
         demand.id.toString().includes(searchQuery.toLowerCase()) ||
-        demand.customerId.toString().includes(searchQuery.toLowerCase())||
-        demand.materialDemandSeries.demandCategoryId.toString().includes(searchQuery.toLowerCase())||
-        demand.materialNumberCustomer.toString().includes(searchQuery.toLowerCase())
+        demand.customer.id.toString().includes(searchQuery.toLowerCase()) ||
+        demand.materialNumberCustomer.toString().includes(searchQuery.toLowerCase()) ||
+        demand.materialNumberSupplier.toString().includes(searchQuery.toLowerCase())
       );
     }
 
-    if (sortColumn !== '') {
+    if (sortColumn) {
       sortedDemands.sort((a, b) => {
         const aValue = a[sortColumn];
         const bValue = b[sortColumn];
-
-        if (typeof aValue === 'string') {
+    
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
           // Sort strings alphabetically
           return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
-        } else if (typeof aValue === 'number') {
+        } else if (typeof aValue === 'number' && typeof bValue === 'number') {
           // Sort numbers numerically
           return aValue - bValue;
         }
-
+    
+        // If the types are not string or number, return 0 (no sorting)
         return 0;
       });
-
+    
       if (sortOrder === 'desc') {
         // Reverse the array if the sort order is descending
         sortedDemands.reverse();
       }
     }
+    
 
     return sortedDemands;
-  }, [demands, searchQuery, sortColumn, sortOrder]);
+  }, [demandprops, searchQuery, sortColumn, sortOrder]);
 
   const slicedDemands = useMemo(() => {
     const indexOfLastDemand = currentPage * demandsPerPage;
@@ -120,13 +124,15 @@ const DemandsPage: React.FC = () => {
       slicedDemands.map((demand) => (
         <tr key={demand.id}>
           <td><span className="badge rounded-pill text-bg-primary" id="tag-ok">Details</span></td>
-          <td>{demand.id}</td>
-          <td>{demand.customerId}</td>
+          <td>{demand.customer.id}</td>
           <td>{demand.materialNumberCustomer}</td>
-          <td>{demand.materialDemandSeries?.demandCategoryId}</td>
+          <td>{demand.materialNumberSupplier}</td>
+          <td>{demand.demandSeries?.demandCategory}</td>
           <td>{demand.materialDescriptionCustomer}</td>
-          <td>{demand.startDate.split('T')[0]}</td>
-          <td>{demand.endDate.split('T')[0]}</td>
+          <td></td>
+          <td></td>
+          {/*<td>{demand ? demand.startDate.split('T')[0] : ''}</td>
+          <td>{demand.endDate ? demand.endDate.split('T')[0] : ''}</td>*/}
           <td>
             {/* TODO Depending on status, this should be a different span*/}
         <span className="badge rounded-pill text-bg-success" id="tag-ok">OK</span>
@@ -137,7 +143,7 @@ const DemandsPage: React.FC = () => {
           <Button onClick={() => handleEdit(demand)} variant="outline-secondary">Edit</Button>
           </td>
           <td>
-          <Button onClick={() => handleDeleteDemand(demand.id)} variant="outline-danger"><FcCancel/></Button>
+          <Button onClick={() => handleDeleteDemand(Number(demand.id))} variant="outline-danger"><FcCancel/></Button>
           </td>
         </tr>
       )),

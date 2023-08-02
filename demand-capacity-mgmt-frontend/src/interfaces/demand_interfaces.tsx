@@ -26,18 +26,16 @@ import { ExpectedSupplierLocation, Supplier } from "./supplier_interfaces";
 
 export interface Demand {
     id: string;
-    startDate:string,
-    endDate:string,
     materialDescriptionCustomer: string
     materialNumberCustomer: string
     materialNumberSupplier: string
     customerId: string
     supplierId: string
     unitMeasureId: string
-    materialDemandSeries: MaterialDemandSeries
+    materialDemandSeries: MaterialDemandSery[]
   }
   
-  export interface MaterialDemandSeries {
+  export interface MaterialDemandSery {
     customerLocationId: string
     expectedSupplierLocationId: string[]
     demandCategoryId: string
@@ -51,36 +49,24 @@ export interface Demand {
 
   /* Demand List */
   export interface DemandProp {
-    id: string;
+    id: string
     materialDescriptionCustomer: string
     materialNumberCustomer: string
     materialNumberSupplier: string
     customer: Customer
     supplier: Supplier
-    unitMeasureId: UnitMeasureId
+    unitMeasureId: any
     changedAt: string
     demandSeries: DemandSeries
   }
-
-  export interface UnitMeasureId {
-    id: string
-    codeValue: string
-    displayValue: string
-  }
-  
+ 
   export interface DemandSeries {
     customerLocation: CustomerLocation
     expectedSupplierLocation: ExpectedSupplierLocation[]
-    demandCategory: DemandCategory
+    demandCategory: string
     demandSeriesValues: DemandSeriesValue[]
   }
-  
-  export interface DemandCategory {
-    id: string
-    demandCategoryCode: string
-    demandCategoryName: string
-  }
-  
+    
   export interface DemandSeriesValue {
     calendarWeek: string
     demand: number
