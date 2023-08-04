@@ -203,7 +203,7 @@ const CapacityGroupsList: React.FC = () => {
           <Modal.Title>Add Demand</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <AddForm />
+          {/* Add form for Capacitygroup here */}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>

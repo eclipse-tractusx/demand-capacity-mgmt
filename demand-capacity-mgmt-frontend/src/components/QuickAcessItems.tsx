@@ -25,8 +25,15 @@ import { useState } from 'react';
 import DemandsPage from './demands/DemandPage';
 import DemandContextProvider from '../contexts/DemandContextProvider';
 import DemandPropContextProvider from '../contexts/DemandPropContextProvider';
+import { DemandProp } from '../interfaces/demand_interfaces';
 
 function QuickAcessItems() {
+
+  const [demandprops, setDemandProps] = useState<DemandProp[]>([]);
+
+  const updateDemandProps = (updatedDemandProps: DemandProp[]) => {
+    setDemandProps(updatedDemandProps);
+  };
 
   const [show, setShow] = useState(false);
 

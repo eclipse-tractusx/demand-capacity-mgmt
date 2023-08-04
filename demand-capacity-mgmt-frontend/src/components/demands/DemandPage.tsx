@@ -10,7 +10,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useContext, useState, useMemo ,useCallback} from 'react';
+import React, { useContext, useState, useMemo ,useCallback, useEffect} from 'react';
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import { DemandPropContext } from '../../contexts/DemandPropContextProvider';
 import { Demand, DemandProp } from '../../interfaces/demand_interfaces';
@@ -21,21 +21,24 @@ import EditForm from './DemandEditForm';
 import { FcCancel } from 'react-icons/fc';
 import AddForm from './DemandAddForm';
 import { DemandContext } from '../../contexts/DemandContextProvider';
+import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
+import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
+import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 
 const DemandsPage: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDemand, setSelectedDemand] = useState<Demand | null>(null);
   const { demands, deleteDemand } = useContext(DemandContext)!;
-  const { demandprops } = useContext(DemandPropContext)!;
+  const { demandprops, fetchDemandProps } = useContext(DemandPropContext)!; // Make sure to get the fetchDemands function from the context.
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
   const [sortOrder, setSortOrder] = useState('');
-  const [demandsPerPage, setDemandsPerPage] = useState(5); 
-
+  const [demandsPerPage, setDemandsPerPage] = useState(5); //Only show 5 items by default
   const [refreshTable, setRefreshTable] = useState(false);
+  const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
 
   const handleSort = (column: keyof DemandProp) => { // Adjust the parameter type here
     if (sortColumn === column) {
@@ -49,9 +52,10 @@ const DemandsPage: React.FC = () => {
   };
 
   const handleDeleteDemand = useCallback(
-    async (id: number) => {
+    async (id: string) => {
       try {
         await deleteDemand(id);
+        fetchDemandProps();
       } catch (error) {
         console.error('Error deleting demand:', error);
       }
@@ -67,10 +71,8 @@ const DemandsPage: React.FC = () => {
 
   const handleCloseEdit = () => setShowEditModal(false);
   const handleCloseAdd = () => setShowAddModal(false);
-  
 
-
-  const filteredDemands = useMemo(() => {
+  useMemo(() => {
     let sortedDemands = [...demandprops];
 
     if (searchQuery !== '') {
@@ -107,7 +109,7 @@ const DemandsPage: React.FC = () => {
     }
     
 
-    return sortedDemands;
+    setFilteredDemands(sortedDemands);
   }, [demandprops, searchQuery, sortColumn, sortOrder]);
 
   const slicedDemands = useMemo(() => {
@@ -121,30 +123,35 @@ const DemandsPage: React.FC = () => {
     demandsPerPage,
   ]);
 
+  useEffect(() => {
+    setRefreshTable((prev) => !prev);
+  }, [demandprops]);
+
   const demandItems = useMemo(
     () =>
       slicedDemands.map((demand) => (
         <tr key={demand.id}>
           <td><span className="badge rounded-pill text-bg-primary" id={demand.id}>Details</span></td>
-          <td>{demand.customer.id}</td>
+          <td>{demand.customer.bpn}</td>
           <td>{demand.materialNumberCustomer}</td>
           <td>{demand.materialNumberSupplier}</td>
-          <td>{demand.demandSeries?.demandCategory}</td>
+          <td>
+              {demand.demandSeries && demand.demandSeries.length > 0
+                ? demand.demandSeries[0].demandCategory?.demandCategoryName || 'N/A'
+                : 'N/A'}
+            </td>
           <td>{demand.materialDescriptionCustomer}</td>
+            <td>
+            {demand.demandSeries && demand.demandSeries.length > 0 && demand.demandSeries[0].demandSeriesValues && demand.demandSeries[0].demandSeriesValues.length > 0
+              ? demand.demandSeries[0].demandSeriesValues[0]?.calendarWeek?.split('T')[0] ?? 'N/A'
+              : 'N/A'}
+          </td>
           <td>
-    {demand.demandSeries?.demandSeriesValues?.length > 1
-      ? demand.demandSeries.demandSeriesValues[0].calendarWeek
-      : 'N/A'
-    }
-  </td>
-  <td>
-    {demand.demandSeries?.demandSeriesValues?.length > 0
-      ? demand.demandSeries.demandSeriesValues[demand.demandSeries.demandSeriesValues.length - 1].calendarWeek
-      : 'N/A'
-    }
-  </td>
+            {demand.demandSeries && demand.demandSeries.length > 0 && demand.demandSeries[0].demandSeriesValues && demand.demandSeries[0].demandSeriesValues.length > 0
+              ? demand.demandSeries[0].demandSeriesValues[demand.demandSeries[0].demandSeriesValues.length - 1]?.calendarWeek?.split('T')[0] ?? 'N/A'
+              : 'N/A'}
+          </td>
           <td>
-            {/* TODO Depending on status, this should be a different span*/}
         <span className="badge rounded-pill text-bg-success" id="tag-ok">OK</span>
         {/*<span className="badge rounded-pill text-bg-warning" id="tag-warning">Warning</span>
         <span className="badge rounded-pill text-bg-danger" id="tag-danger">Danger</span>*/}
@@ -153,7 +160,7 @@ const DemandsPage: React.FC = () => {
           <Button onClick={() => handleEdit(demand)} variant="outline-secondary">Edit</Button>
           </td>
           <td>
-          <Button onClick={() => handleDeleteDemand(Number(demand.id))} variant="outline-danger"><FcCancel/></Button>
+          <Button onClick={() => handleDeleteDemand(demand.id)} variant="outline-danger"><FcCancel/></Button>
           </td>
         </tr>
       )),
@@ -183,7 +190,6 @@ const DemandsPage: React.FC = () => {
         sortOrder={sortOrder}
         handleSort={handleSort}
         demandItems={demandItems}
-        refreshTable={refreshTable}
       />
       <div className="container">
       <div className="row">
@@ -229,7 +235,13 @@ const DemandsPage: React.FC = () => {
           <Modal.Title>Edit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {selectedDemand && <EditForm theDemand={selectedDemand} />}
+          <UnitsofMeasureContextContextProvider>
+            <DemandCategoryContextProvider>
+              <CompanyContextProvider>
+              {selectedDemand && <EditForm theDemand={selectedDemand} />}
+              </CompanyContextProvider>
+            </DemandCategoryContextProvider>
+          </UnitsofMeasureContextContextProvider>
         </Modal.Body>
       </Modal>
 
@@ -244,7 +256,7 @@ const DemandsPage: React.FC = () => {
           <Modal.Title>New Material Demand</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <AddForm/>
+        <AddForm fetchDemandProps={fetchDemandProps}/>
         </Modal.Body>
       </Modal>
 

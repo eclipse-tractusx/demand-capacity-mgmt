@@ -33,7 +33,7 @@ import { Demand } from '../../interfaces/demand_interfaces';
 import '../../App.css';
 
 type AddFormProps = {
-  setRefreshTable: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchDemandProps: () => void; // Function to fetch demands
 };
 
 const getMondaysBetweenDates = (startDate: Date, endDate: Date): string[] => {
@@ -114,7 +114,7 @@ const useHandleSubmit = (initialFormState: Demand) => {
   return { submissionStatus, handleSubmit };
 };
 
-const AddForm: React.FC<AddFormProps> = ({ setRefreshTable }) => {
+const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
   const initialFormState: Demand = {
     id: '',
     materialDescriptionCustomer: '',
@@ -140,8 +140,8 @@ const AddForm: React.FC<AddFormProps> = ({ setRefreshTable }) => {
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
     await handleSubmit(formState);
-    setRefreshTable(true);
     setShowSuccessMessage(true);
+    fetchDemandProps();
   };
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -265,7 +265,7 @@ const AddForm: React.FC<AddFormProps> = ({ setRefreshTable }) => {
                 required
               >
                 <UnitsofMeasureContextContextProvider>
-                  <UnitsOfMeasureOptions />
+                  <UnitsOfMeasureOptions selectedUnitMeasureId=''/>
                 </UnitsofMeasureContextContextProvider>
               </Form.Select>
             </Form.Group>
@@ -281,7 +281,7 @@ const AddForm: React.FC<AddFormProps> = ({ setRefreshTable }) => {
               required
             >
               <CompanyContextProvider>
-                <CompanyOptions />
+                <CompanyOptions selectedCompanyName=''/>
               </CompanyContextProvider>
             </Form.Select>
           </Form.Group>
@@ -298,7 +298,7 @@ const AddForm: React.FC<AddFormProps> = ({ setRefreshTable }) => {
               required
             >
               <DemandCategoryContextProvider>
-                <DemandCategoryOptions />
+                <DemandCategoryOptions selectedDemandCategoryId=''/>
               </DemandCategoryContextProvider>
             </Form.Select>
           </Form.Group>

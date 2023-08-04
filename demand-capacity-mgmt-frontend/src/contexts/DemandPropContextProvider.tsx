@@ -19,45 +19,44 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { DemandProp } from '../interfaces/demand_interfaces';
 
-
 interface DemandPropContextData {
   demandprops: DemandProp[];
+  fetchDemandProps: () => void;
 }
 
 export const DemandPropContext = createContext<DemandPropContextData | undefined>(undefined);
 
 const DemandPropContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-
   const [demandprops, setDemands] = useState<DemandProp[]>([]);
 
-  useEffect(() => {
-    const fetchDemands = async () => {
-      try {
-        const response = await axios.get('/demand', {
-          params: {
-            project_id: 1, // Adjust the project ID parameter as needed
-          },
-        });
-        const result: DemandProp[] = response.data;
-        setDemands(result);
-      } catch (error) {
-        console.error('Error fetching demands:', error);
-      }
-    };
-  
-    fetchDemands();
+  const fetchDemandProps = useCallback(async () => {
+    try {
+      const response = await axios.get('/demand', {
+        params: {
+          project_id: 1, // Adjust the project ID parameter as needed
+        },
+      });
+      const result: DemandProp[] = response.data;
+      setDemands(result);
+    } catch (error) {
+      console.error('Error fetching demands:', error);
+    }
   }, []);
-  
+
+  useEffect(() => {
+    fetchDemandProps();
+  }, [fetchDemandProps]);
 
   return (
-    <DemandPropContext.Provider value={{ demandprops }}>
+    <DemandPropContext.Provider value={{ demandprops, fetchDemandProps }}>
       {props.children}
     </DemandPropContext.Provider>
   );
 };
 
 export default DemandPropContextProvider;
+

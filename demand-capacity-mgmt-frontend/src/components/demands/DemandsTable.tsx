@@ -27,33 +27,17 @@ type DemandsTableProps = {
   sortOrder: string;
   handleSort: (column: string) => void;
   demandItems: React.ReactNode;
-  refreshTable: boolean; // Add the refreshTable prop here
 };
 
-const DemandsTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, handleSort, demandItems, refreshTable }) => {
-  const [tableRefreshed, setTableRefreshed] = useState(false);
-
-  // When the refreshTable prop changes, set the tableRefreshed state to true to trigger the refresh
-  useEffect(() => {
-    if (refreshTable) {
-      setTableRefreshed(true);
-    }
-  }, [refreshTable]);
-
-  // Use the tableRefreshed state to re-render the table when it's set to true
-  useEffect(() => {
-    if (tableRefreshed) {
-      setTableRefreshed(false); // Reset the tableRefreshed state
-    }
-  }, [tableRefreshed]);
+const DemandsTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, handleSort, demandItems }) => {
 
   
   return (
     <table className="table table-striped table-hover">
       <thead>
         <tr>
-          <th onClick={() => handleSort('id')}>
-            Id {sortColumn === 'id' && <i className="material-icons">&#x25B2;</i>}
+          <th>
+           
           </th>
           <th onClick={() => handleSort('companyId')}>
             Company Id {sortColumn === 'companyId' && <i className="material-icons">&#x25B2;</i>}

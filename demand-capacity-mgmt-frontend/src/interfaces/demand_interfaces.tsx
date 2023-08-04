@@ -55,19 +55,31 @@ export interface Demand {
     materialNumberSupplier: string
     customer: Customer
     supplier: Supplier
-    unitMeasureId: any
+    unitMeasureId: UnitMeasureId
     changedAt: string
-    demandSeries: DemandSeries
+    demandSeries?: DemandSeries[] | undefined; 
   }
  
   export interface DemandSeries {
     customerLocation: CustomerLocation
     expectedSupplierLocation: ExpectedSupplierLocation[]
-    demandCategory: any
-    demandSeriesValues: DemandSeriesValue[]
+    demandCategory: DemandCategory
+    demandSeriesValues: DemandSeriesValue[];
   }
     
   export interface DemandSeriesValue {
     calendarWeek: string
     demand: number
+  }
+
+  export interface DemandCategory {
+    id: string
+    demandCategoryCode: string
+    demandCategoryName: string
+  }
+
+  export interface UnitMeasureId {
+    id: string
+    codeValue: string
+    displayValue: string
   }
