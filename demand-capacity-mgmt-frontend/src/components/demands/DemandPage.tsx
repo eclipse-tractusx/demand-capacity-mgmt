@@ -35,6 +35,8 @@ const DemandsPage: React.FC = () => {
   const [sortOrder, setSortOrder] = useState('');
   const [demandsPerPage, setDemandsPerPage] = useState(5); 
 
+  const [refreshTable, setRefreshTable] = useState(false);
+
   const handleSort = (column: keyof DemandProp) => { // Adjust the parameter type here
     if (sortColumn === column) {
       // If the same column is clicked again, toggle the sort order
@@ -173,6 +175,7 @@ const DemandsPage: React.FC = () => {
         sortOrder={sortOrder}
         handleSort={handleSort}
         demandItems={demandItems}
+        refreshTable={refreshTable}
       />
       <div className="container">
       <div className="row">
@@ -233,7 +236,7 @@ const DemandsPage: React.FC = () => {
           <Modal.Title>New Material Demand</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <AddForm/>
+        <AddForm setRefreshTable={setRefreshTable} />
         </Modal.Body>
       </Modal>
 

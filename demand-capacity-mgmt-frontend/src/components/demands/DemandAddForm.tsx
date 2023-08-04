@@ -32,6 +32,10 @@ import UnitsOfMeasureOptions from '../UnitsofMeasureOptions';
 import { Demand } from '../../interfaces/demand_interfaces';
 import '../../App.css';
 
+type AddFormProps = {
+  setRefreshTable: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
 const getMondaysBetweenDates = (startDate: Date, endDate: Date): string[] => {
   const mondays: string[] = [];
   const current = new Date(startDate);
@@ -110,20 +114,20 @@ const useHandleSubmit = (initialFormState: Demand) => {
   return { submissionStatus, handleSubmit };
 };
 
-const AddForm: React.FC = () => {
+const AddForm: React.FC<AddFormProps> = ({ setRefreshTable }) => {
   const initialFormState: Demand = {
     id: '',
     materialDescriptionCustomer: '',
     materialNumberCustomer: '',
     materialNumberSupplier: '',
-    customerId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6',
+    customerId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6', //This is my current login ID
     supplierId: '',
-    unitMeasureId: '6d923b18-2a57-47d5-a769-b8fde475c355',
+    unitMeasureId: '',
     materialDemandSeries: [
       {
-        customerLocationId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6',
+        customerLocationId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6',  //This is my current login ID
         expectedSupplierLocationId: [],
-        demandCategoryId: '1d185139-0d50-4bb6-9780-b1587da8e7f5',
+        demandCategoryId: '',
         demandSeriesValues: [],
       },
     ],
@@ -136,6 +140,7 @@ const AddForm: React.FC = () => {
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
     await handleSubmit(formState);
+    setRefreshTable(true);
     setShowSuccessMessage(true);
   };
 
