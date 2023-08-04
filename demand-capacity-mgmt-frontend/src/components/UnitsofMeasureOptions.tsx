@@ -23,24 +23,29 @@
 import React, { useContext } from 'react';
 import { UnitsofMeasureContext } from '../contexts/UnitsOfMeasureContextProvider';
 
+interface UnitsOfMeasureOptionsProps {
+  selectedUnitMeasureId: string;
+}
 
-const UnitsOfMeasureOptions: React.FC = () => {
+const UnitsOfMeasureOptions: React.FC<UnitsOfMeasureOptionsProps> = ({ selectedUnitMeasureId }) => {
   const UnitsOfMeasureContextData = useContext(UnitsofMeasureContext);
-  const { unitsofmeasure } = UnitsOfMeasureContextData || {}; // Ensure context data is available
+  const { unitsofmeasure } = UnitsOfMeasureContextData || {};
 
   // Use the demandcategories array to fill the <select> options
   return (
-<>
-<option disabled={true} value="">
-          --Choose an option--
-        </option>
-        {unitsofmeasure &&
-          unitsofmeasure.map((unit) => (
-            <option key={unit.id} value={unit.id}>
-              {unit.displayValue}
-            </option>
-          ))}
-</>
+    <>
+      <option disabled={true} value="">
+        --Choose an option--
+      </option>
+      {unitsofmeasure &&
+        unitsofmeasure.map((unit) => (
+          <option key={unit.id} value={unit.id} selected={unit.id === selectedUnitMeasureId}>
+            {unit.displayValue}
+          </option>
+        ))}
+    </>
   );
 };
- export default UnitsOfMeasureOptions;
+
+export default UnitsOfMeasureOptions;
+

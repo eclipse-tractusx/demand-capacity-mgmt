@@ -21,25 +21,30 @@
  */
 
 import React, { useContext } from 'react';
-import { DemandCategoryContext} from '../../contexts/DemandCategoryProvider';
+import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 
-const DemandCategoryOptions: React.FC = () => {
+interface DemandCategoryOptionsProps {
+  selectedDemandCategoryId: string;
+}
+
+const DemandCategoryOptions: React.FC<DemandCategoryOptionsProps> = ({ selectedDemandCategoryId }) => {
   const demandCategoryContextData = useContext(DemandCategoryContext);
-  const { demandcategories } = demandCategoryContextData || {}; // Ensure context data is available
+  const { demandcategories } = demandCategoryContextData || {};
 
   // Use the demandcategories array to fill the <select> options
   return (
-<>
-<option disabled={true} value="">
-          --Choose an option--
-        </option>
-        {demandcategories &&
-          demandcategories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.demandCategoryName}
-            </option>
-          ))}
-</>
+    <>
+      <option disabled={true} value="">
+        --Choose an option--
+      </option>
+      {demandcategories &&
+        demandcategories.map((category) => (
+          <option key={category.id} value={category.id} selected={category.id === selectedDemandCategoryId}>
+            {category.demandCategoryName}
+          </option>
+        ))}
+    </>
   );
 };
- export default DemandCategoryOptions;
+
+export default DemandCategoryOptions;

@@ -26,7 +26,7 @@ import { Demand } from '../interfaces/demand_interfaces';
 
 interface DemandContextData {
   demands: Demand[];
-  deleteDemand: (id: number) => Promise<void>;
+  deleteDemand: (id: string) => Promise<void>;
   createDemand: (newDemand: Demand) => Promise<void>;
   updateDemand: (updatedDemand: Demand) => Promise<void>;
 }
@@ -56,7 +56,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   }, []);
   
 
-  const deleteDemand = async (id: number) => {
+  const deleteDemand = async (id: string) => {
     try {
       await axios.delete(`/demand/${id}`);
       setDemands((prevDemands) => prevDemands.filter((demand) => demand.id !== id));
