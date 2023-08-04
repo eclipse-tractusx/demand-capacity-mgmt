@@ -24,6 +24,7 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CompanyDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandRequestUpdateDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
@@ -35,6 +36,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.UnitMeasure;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyEntity;
@@ -138,11 +141,16 @@ public class DemandServiceImpl implements DemandService {
         responseDto.setChangedAt(materialDemandEntity.getChangedAt().toString());
         responseDto.setId(materialDemandEntity.getId().toString());
 
+        UnitMeasure unitMeasure =  enrichUnitMeasure(materialDemandEntity.getUnitMeasure());
+
+
         List<MaterialDemandSeriesResponse> materialDemandSeriesResponse = materialDemandEntity
             .getDemandSeries()
             .stream()
             .map(this::enrichMaterialDemandSeriesResponse)
             .toList();
+
+        responseDto.setUnitMeasureId(unitMeasure);
 
         responseDto.setDemandSeries(materialDemandSeriesResponse);
 
@@ -306,6 +314,10 @@ public class DemandServiceImpl implements DemandService {
             .map(this::enrichMaterialDemandSeriesValue)
             .toList();
 
+        DemandCategoryResponse demandCategory = enrichDemandCategory(demandSeries.getDemandCategory());
+
+        materialDemandSeriesResponse.setDemandCategory(demandCategory);
+
         materialDemandSeriesResponse.setDemandSeriesValues(materialDemandSeriesValues);
 
         return materialDemandSeriesResponse;
@@ -317,5 +329,23 @@ public class DemandServiceImpl implements DemandService {
         materialDemandSeriesValue.setCalendarWeek(demandSeriesValues.getCalendarWeek().toString());
 
         return materialDemandSeriesValue;
+    }
+
+    private UnitMeasure enrichUnitMeasure(UnitMeasureEntity unitMeasureEntity){
+        UnitMeasure unitMeasure = new UnitMeasure();
+
+        unitMeasure.setId(unitMeasureEntity.getId().toString());
+        unitMeasure.setCodeValue(unitMeasureEntity.getCodeValue());
+        unitMeasure.setDisplayValue(unitMeasureEntity.getDisplayValue());
+
+        return unitMeasure;
+    }
+
+    private DemandCategoryResponse enrichDemandCategory(DemandCategoryEntity demandCategoryEntity){
+        DemandCategoryResponse demandCategory = new DemandCategoryResponse();
+        demandCategory.setId(demandCategoryEntity.getId().toString());
+        demandCategory.setDemandCategoryName(demandCategoryEntity.getDemandCategoryName());
+        demandCategory.setDemandCategoryCode(demandCategoryEntity.getDemandCategoryCode());
+        return demandCategory;
     }
 }
