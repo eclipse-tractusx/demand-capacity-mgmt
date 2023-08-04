@@ -4,5 +4,5 @@ public enum CapacityGroupStatus {
     DRAFT,
     READY_SYNCHRONIZE,
     SYNCHRONIZED,
-    DELETED
+    DELETED,
 }

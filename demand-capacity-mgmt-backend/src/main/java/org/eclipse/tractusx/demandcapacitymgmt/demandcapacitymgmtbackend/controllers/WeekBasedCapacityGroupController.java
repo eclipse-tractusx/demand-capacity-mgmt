@@ -38,12 +38,11 @@ public class WeekBasedCapacityGroupController implements WeekBasedCapacityGroupA
 
     private final WeekBasedCapacityGroupService weekBasedCapacityGroupService;
 
-      @Override
+    @Override
     public ResponseEntity<Void> postWeekBasedCapacityGroup(
         List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequest
     ) {
         weekBasedCapacityGroupService.createWeekBasedCapacityGroup(weekBasedCapacityGroupRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
 }

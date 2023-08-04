@@ -32,6 +32,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MaterialDemandRepository extends JpaRepository<MaterialDemandEntity, UUID> {
-
     List<MaterialDemandEntity> findAllByStatus(MaterialDemandStatus status);
 }

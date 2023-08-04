@@ -460,6 +460,8 @@ components:
     MaterialDemandResponse:
       type: object
       properties:
+        id:
+          type: string
         materialDescriptionCustomer:
           type: string
         materialNumberCustomer:
@@ -475,7 +477,9 @@ components:
         changedAt:
           type: string
         demandSeries:
-          $ref: '#/components/schemas/MaterialDemandSeriesResponse'
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialDemandSeriesResponse'
 
     CompanyDto:
       type: object

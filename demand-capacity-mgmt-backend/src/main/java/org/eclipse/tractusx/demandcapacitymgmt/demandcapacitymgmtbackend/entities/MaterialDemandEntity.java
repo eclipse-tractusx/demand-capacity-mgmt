@@ -88,5 +88,4 @@ public class MaterialDemandEntity {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private MaterialDemandStatus status;
-
 }
