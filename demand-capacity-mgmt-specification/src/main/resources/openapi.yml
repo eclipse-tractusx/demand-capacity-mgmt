@@ -311,7 +311,7 @@ components:
         demandCategory:
           type: string
 
-    LinkedDemandSeries:
+    LinkedDemandSeriesRequest:
       type: object
       properties:
         materialNumberCustomer:
@@ -341,7 +341,7 @@ components:
         linkedDemandSeries:
           type: array
           items:
-            $ref: '#/components/schemas/LinkedDemandSeries'
+            $ref: '#/components/schemas/LinkedDemandSeriesRequest'
         supplier:
           type: string
         name:

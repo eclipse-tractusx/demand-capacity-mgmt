@@ -28,9 +28,23 @@ import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MaterialDemandRepository extends JpaRepository<MaterialDemandEntity, UUID> {
     List<MaterialDemandEntity> findAllByStatus(MaterialDemandStatus status);
+
+    @Query(
+        "SELECT DISTINCT md FROM MaterialDemandEntity md " +
+        "JOIN md.demandSeries ds " +
+        "WHERE md.materialNumberCustomer = :materialNumberCustomer " +
+        "AND ds.customerLocation.bpn = :customerLocationBpn " +
+        "AND ds.demandCategory.demandCategoryCode = :demandCategoryCode"
+    )
+    List<MaterialDemandEntity> findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
+        String materialNumberCustomer,
+        String customerLocationBpn,
+        String demandCategoryCode
+    );
 }
