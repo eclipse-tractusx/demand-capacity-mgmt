@@ -125,16 +125,24 @@ const DemandsPage: React.FC = () => {
     () =>
       slicedDemands.map((demand) => (
         <tr key={demand.id}>
-          <td><span className="badge rounded-pill text-bg-primary" id="tag-ok">Details</span></td>
+          <td><span className="badge rounded-pill text-bg-primary" id={demand.id}>Details</span></td>
           <td>{demand.customer.id}</td>
           <td>{demand.materialNumberCustomer}</td>
           <td>{demand.materialNumberSupplier}</td>
           <td>{demand.demandSeries?.demandCategory}</td>
           <td>{demand.materialDescriptionCustomer}</td>
-          <td></td>
-          <td></td>
-          {/*<td>{demand ? demand.startDate.split('T')[0] : ''}</td>
-          <td>{demand.endDate ? demand.endDate.split('T')[0] : ''}</td>*/}
+          <td>
+    {demand.demandSeries?.demandSeriesValues?.length > 1
+      ? demand.demandSeries.demandSeriesValues[0].calendarWeek
+      : 'N/A'
+    }
+  </td>
+  <td>
+    {demand.demandSeries?.demandSeriesValues?.length > 0
+      ? demand.demandSeries.demandSeriesValues[demand.demandSeries.demandSeriesValues.length - 1].calendarWeek
+      : 'N/A'
+    }
+  </td>
           <td>
             {/* TODO Depending on status, this should be a different span*/}
         <span className="badge rounded-pill text-bg-success" id="tag-ok">OK</span>
@@ -236,7 +244,7 @@ const DemandsPage: React.FC = () => {
           <Modal.Title>New Material Demand</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <AddForm setRefreshTable={setRefreshTable} />
+        <AddForm/>
         </Modal.Body>
       </Modal>
 

@@ -63,7 +63,7 @@ export interface Demand {
   export interface DemandSeries {
     customerLocation: CustomerLocation
     expectedSupplierLocation: ExpectedSupplierLocation[]
-    demandCategory: string
+    demandCategory: any
     demandSeriesValues: DemandSeriesValue[]
   }
     
@@ -71,4 +71,3 @@ export interface Demand {
     calendarWeek: string
     demand: number
   }
-  
