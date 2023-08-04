@@ -136,11 +136,15 @@ public class DemandServiceImpl implements DemandService {
         responseDto.setCustomer(customer);
         responseDto.setSupplier(supplier);
         responseDto.setChangedAt(materialDemandEntity.getChangedAt().toString());
+        responseDto.setId(materialDemandEntity.getId().toString());
 
-        //        MaterialDemandSeriesResponse materialDemandSeriesResponse = enrichMaterialDemandSeriesResponse(
-        //            materialDemandEntity.getDemandSeries()
-        //        );
-        //responseDto.setDemandSeries(materialDemandSeriesResponse);
+        List<MaterialDemandSeriesResponse> materialDemandSeriesResponse = materialDemandEntity
+            .getDemandSeries()
+            .stream()
+            .map(this::enrichMaterialDemandSeriesResponse)
+            .toList();
+
+        responseDto.setDemandSeries(materialDemandSeriesResponse);
 
         return responseDto;
     }
@@ -217,21 +221,24 @@ public class DemandServiceImpl implements DemandService {
             UUID.fromString(materialDemandRequest.getUnitMeasureId())
         );
 
-        List<DemandSeries> demandSeriesList = materialDemandRequest.getMaterialDemandSeries()
-                .stream()
-                .map(materialDemandSeries -> {
-
-                    DemandCategoryEntity demandCategory = demandCategoryService.findById(UUIDUtil.generateUUIDFromString(materialDemandSeries.getDemandCategoryId()));
+        List<DemandSeries> demandSeriesList = materialDemandRequest
+            .getMaterialDemandSeries()
+            .stream()
+            .map(
+                materialDemandSeries -> {
+                    DemandCategoryEntity demandCategory = demandCategoryService.findById(
+                        UUIDUtil.generateUUIDFromString(materialDemandSeries.getDemandCategoryId())
+                    );
                     return enrichDemandSeries(materialDemandSeries, customerEntity, demandCategory);
-
-                })
-                .toList();
+                }
+            )
+            .toList();
 
         return MaterialDemandEntity
             .builder()
             .materialDescriptionCustomer(materialDemandRequest.getMaterialDescriptionCustomer())
             .materialNumberCustomer(materialDemandRequest.getMaterialNumberCustomer())
-            .materialNumberSupplier("")
+            .materialNumberSupplier(materialDemandRequest.getMaterialNumberSupplier())
             .customerId(customerEntity)
             .supplierId(supplierEntity)
             .unitMeasure(unitMeasure)
