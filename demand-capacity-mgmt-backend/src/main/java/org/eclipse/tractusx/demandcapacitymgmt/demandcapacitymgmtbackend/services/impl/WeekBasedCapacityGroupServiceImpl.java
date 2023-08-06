@@ -82,27 +82,45 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         );
         List<MaterialDemandEntity> materialDemandEntities = new ArrayList<>();
 
-        for (WeekBasedCapacityGroupEntity entity : weekBasedCapacityGroupEntities) {
-            WeekBasedCapacityGroup weekBasedCapacityGroup = entity.getWeekBasedCapacityGroup();
+        weekBasedCapacityGroupEntities.forEach(weekBasedCapacityGroupEntity -> {
+
+            WeekBasedCapacityGroupRequest weekBasedCapacityGroup  = weekBasedCapacityGroupEntity.getWeekBasedCapacityGroup();
+
             if (weekBasedCapacityGroup != null) {
-                List<LikedDemandSeries> likedDemandSeriesList = weekBasedCapacityGroup.getLikedDemandSeries();
+
+                List<LinkedDemandSeriesRequest> likedDemandSeriesList = weekBasedCapacityGroup.getLinkedDemandSeries();
+
                 if (likedDemandSeriesList != null) {
-                    for (LikedDemandSeries likedDemandSeries : likedDemandSeriesList) {
+
+                    for (LinkedDemandSeriesRequest likedDemandSeries : likedDemandSeriesList) {
+
                         String materialNumberCustomer = likedDemandSeries.getMaterialNumberCustomer();
                         String customerLocation = likedDemandSeries.getCustomerLocation();
-                        String demandCategoryCode = likedDemandSeries.getMaterialNumberSupplier();
+                        String demandCategoryCode = likedDemandSeries.getDemandCategory().getDemandCategory();
 
                         List<MaterialDemandEntity> matchingDemands = materialDemandRepository.findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
-                            materialNumberCustomer,
-                            customerLocation,
-                            demandCategoryCode
+                                materialNumberCustomer,
+                                customerLocation,
+                                demandCategoryCode
                         );
 
-                        materialDemandEntities.addAll(matchingDemands);
+                        matchingDemands.forEach(materialDemandEntity -> {
+                            materialDemandEntity.getDemandSeries().forEach(demandSeries -> {
+
+                                demandSeries.setCapacityGroupId(weekBasedCapacityGroup.getCapacityGroupId());
+                            });
+
+                        });
+
+                        materialDemandRepository.saveAll(matchingDemands);
+
                     }
                 }
+
             }
-        }
+
+        });
+
     }
 
     @Override
@@ -186,43 +204,11 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     }
 
     private WeekBasedCapacityGroupEntity convertEntity(WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest) {
-        List<Capacity> capacities = weekBasedCapacityGroupRequest
-            .getCapacities()
-            .stream()
-            .map(
-                capacitiesDto ->
-                    Capacity
-                        .builder()
-                        .actualCapacity(Double.valueOf(capacitiesDto.getActualCapacity()))
-                        .maximumCapacity(Double.valueOf(capacitiesDto.getMaximumCapacity()))
-                        .calendarWeek(capacitiesDto.getCalendarWeek())
-                        .build()
-            )
-            .toList();
 
-        List<LikedDemandSeries> likedDemandSeries = weekBasedCapacityGroupRequest
-            .getCapacities()
-            .stream()
-            .map(
-                capacitiesDto -> {
-                    DemandCategory demandCategory = DemandCategory.builder().build();
-                    return LikedDemandSeries.builder().demandCategory(demandCategory).build();
-                }
-            )
-            .toList();
-
-        WeekBasedCapacityGroup weekBasedCapacityGroup = WeekBasedCapacityGroup
-            .builder()
-            .name(weekBasedCapacityGroupRequest.getName())
-            .unityOfMeasure(weekBasedCapacityGroupRequest.getUnityOfMeasure())
-            .supplier(weekBasedCapacityGroupRequest.getSupplier())
-            .changedAt(weekBasedCapacityGroupRequest.getChangedAt())
-            .capacityGroupId(weekBasedCapacityGroupRequest.getCapacityGroupId())
-            .customer(weekBasedCapacityGroupRequest.getCustomer())
-            .capacities(capacities)
-            .likedDemandSeries(likedDemandSeries)
-            .build();
-
-        return WeekBasedCapacityGroupEntity.builder().weekBasedCapacityGroup(weekBasedCapacityGroup).build();
+        return WeekBasedCapacityGroupEntity
+                .builder()
+                .weekBasedCapacityGroup(weekBasedCapacityGroupRequest)
+                .viewed(false)
+                .build();
     }
 }

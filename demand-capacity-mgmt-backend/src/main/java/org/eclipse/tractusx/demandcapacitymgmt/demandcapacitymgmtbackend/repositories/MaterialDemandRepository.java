@@ -37,10 +37,10 @@ public interface MaterialDemandRepository extends JpaRepository<MaterialDemandEn
 
     @Query(
         "SELECT DISTINCT md FROM MaterialDemandEntity md " +
-        "JOIN md.demandSeries ds " +
+        "JOIN FETCH md.demandSeries ds JOIN FETCH ds.demandCategory dc " +
         "WHERE md.materialNumberCustomer = :materialNumberCustomer " +
         "AND ds.customerLocation.bpn = :customerLocationBpn " +
-        "AND ds.demandCategory.demandCategoryCode = :demandCategoryCode"
+        "AND dc.demandCategoryCode = :demandCategoryCode"
     )
     List<MaterialDemandEntity> findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
         String materialNumberCustomer,

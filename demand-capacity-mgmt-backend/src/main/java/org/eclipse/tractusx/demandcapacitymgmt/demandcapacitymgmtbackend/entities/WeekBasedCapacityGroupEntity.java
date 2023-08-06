@@ -30,6 +30,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,7 +43,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.hibernate.annotations.ColumnTransformer;
 
 @Entity
-@Table(name = "week_based_material_demand")
+@Table(name = "week_based_capacity")
 @Data
 @Builder
 @NoArgsConstructor
@@ -56,7 +58,7 @@ public class WeekBasedCapacityGroupEntity {
     @Convert(converter = WeekBasedCapacityGroupConverter.class)
     @Column(name = "data", columnDefinition = "jsonb")
     @ColumnTransformer(write = "?::jsonb")
-    private WeekBasedCapacityGroup weekBasedCapacityGroup;
+    private WeekBasedCapacityGroupRequest weekBasedCapacityGroup;
 
     @Column(name = "viewed")
     private Boolean viewed;
