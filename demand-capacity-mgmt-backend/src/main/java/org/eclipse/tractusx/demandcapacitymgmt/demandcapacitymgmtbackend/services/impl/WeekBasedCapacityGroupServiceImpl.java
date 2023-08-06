@@ -24,22 +24,15 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacitiesDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacitiesDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedDemandSeriesRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.Capacity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.DemandCategory;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.LikedDemandSeries;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.WeekBasedCapacityGroup;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CustomerRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
@@ -53,6 +46,7 @@ import org.springframework.web.client.RestTemplate;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroupService {
 
     private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
@@ -80,7 +74,6 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository.getAllByViewed(
             false
         );
-        List<MaterialDemandEntity> materialDemandEntities = new ArrayList<>();
 
         weekBasedCapacityGroupEntities.forEach(weekBasedCapacityGroupEntity -> {
 
@@ -113,10 +106,8 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
                         });
 
                         materialDemandRepository.saveAll(matchingDemands);
-
                     }
                 }
-
             }
 
         });
