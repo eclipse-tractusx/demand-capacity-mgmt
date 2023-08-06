@@ -56,6 +56,9 @@ public class DemandSeries {
     @Column(columnDefinition = "uuid", updatable = false, name = "id")
     private UUID id;
 
+    @Column(name = "capacity_group_id")
+    private String capacityGroupId;
+
     @OneToOne
     @JoinColumn(name = "customer_location_id", referencedColumnName = "ID")
     private CompanyEntity customerLocation;
@@ -74,4 +77,5 @@ public class DemandSeries {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private MaterialDemandEntity materialDemand;
+
 }

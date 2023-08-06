@@ -21,27 +21,5 @@
  *
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters;
-
-import com.google.gson.Gson;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.WeekBasedCapacityGroup;
-
-@Converter(autoApply = true)
-public class WeekBasedCapacityGroupConverter implements AttributeConverter<WeekBasedCapacityGroupRequest, String> {
-
-    private static final Gson GSON = new Gson();
-
-    @Override
-    public String convertToDatabaseColumn(WeekBasedCapacityGroupRequest attribute) {
-        return GSON.toJson(attribute);
-    }
-
-    @Override
-    public WeekBasedCapacityGroupRequest convertToEntityAttribute(String dbData) {
-        return GSON.fromJson(dbData, WeekBasedCapacityGroupRequest.class);
-    }
-}
+ALTER TABLE demand_series
+ADD COLUMN capacity_group_id varchar(200);
