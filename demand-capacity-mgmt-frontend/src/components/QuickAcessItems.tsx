@@ -24,16 +24,11 @@ import { Modal, Button } from 'react-bootstrap';
 import { useState } from 'react';
 import DemandsPage from './demands/DemandPage';
 import DemandContextProvider from '../contexts/DemandContextProvider';
-import DemandPropContextProvider from '../contexts/DemandPropContextProvider';
 import { DemandProp } from '../interfaces/demand_interfaces';
 
 function QuickAcessItems() {
 
   const [demandprops, setDemandProps] = useState<DemandProp[]>([]);
-
-  const updateDemandProps = (updatedDemandProps: DemandProp[]) => {
-    setDemandProps(updatedDemandProps);
-  };
 
   const [show, setShow] = useState(false);
 
@@ -47,7 +42,7 @@ function QuickAcessItems() {
   <br />
   <Button variant="primary" className=' m-1 display-4'><AiOutlineLink/></Button>
 </div>
-    <DemandPropContextProvider>
+    <DemandContextProvider>
     <Modal
             show={show}
             onHide={handleClose}
@@ -69,7 +64,7 @@ function QuickAcessItems() {
               </Button>
             </Modal.Footer>
           </Modal>
-      </DemandPropContextProvider>
+      </DemandContextProvider>
 </>
   );
 }

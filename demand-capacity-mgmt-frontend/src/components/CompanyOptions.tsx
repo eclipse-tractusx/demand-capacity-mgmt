@@ -39,7 +39,7 @@ const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName }) 
       </option>
       {companies &&
         companies.map((company) => (
-          <option key={company.id} value={company.companyName} selected={company.companyName === selectedCompanyName}>
+          <option key={company.id} value={company.id} selected={company.companyName === selectedCompanyName}>
             {company.companyName}
           </option>
         ))}

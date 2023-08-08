@@ -37,7 +37,6 @@ import DemandContextProvider from "../src/contexts/DemandContextProvider";
 // Import your components for different routes
 import Home from "./components/capacitygroup/CapacityGroupPage";
 import CapacityGroupDetailsPage from './components/capacitygroup/CapacityGroupDetailsPage';
-import DemandPropContextProvider from './contexts/DemandPropContextProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
