@@ -19,16 +19,19 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect,useCallback} from 'react';
 import axios from 'axios';
-import { Demand } from '../interfaces/demand_interfaces';
+import { Demand, DemandProp } from '../interfaces/demand_interfaces';
 
 
 interface DemandContextData {
-  demands: Demand[];
-  deleteDemand: (id: string) => Promise<void>;
+  demandprops: DemandProp[];
   createDemand: (newDemand: Demand) => Promise<void>;
-  updateDemand: (updatedDemand: Demand) => Promise<void>;
+  getDemandbyId: (id: string) =>Promise<DemandProp | undefined>;
+  deleteDemand: (id: string) => Promise<void>;
+  updateDemand: (updatedDemand: DemandProp) => Promise<void>;
+  fetchDemandProps: () => void;
+
 }
 
 export const DemandContext = createContext<DemandContextData | undefined>(undefined);
@@ -36,30 +39,42 @@ export const DemandContext = createContext<DemandContextData | undefined>(undefi
 const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
 
   const [demands, setDemands] = useState<Demand[]>([]);
+  const [demandprops, setDemandProps] = useState<DemandProp[]>([]);
+
+  const fetchDemandProps = useCallback(async () => {
+    try {
+      const response = await axios.get('/demand', {
+        params: {
+          project_id: 1, // Adjust the project ID parameter as needed
+        },
+      });
+      const result: DemandProp[] = response.data;
+      setDemandProps(result);
+    } catch (error) {
+      console.error('Error fetching demands:', error);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchDemands = async () => {
-      try {
-        const response = await axios.get('/demand', {
-          params: {
-            project_id: 1, // Adjust the project ID parameter as needed
-          },
-        });
-        const result: Demand[] = response.data;
-        setDemands(result);
-      } catch (error) {
-        console.error('Error fetching demands:', error);
-      }
-    };
+    fetchDemandProps();
+  }, [fetchDemandProps]);
   
-    fetchDemands();
-  }, []);
-  
+
+  const getDemandbyId = async (id: string): Promise<DemandProp | undefined> => {
+    try {
+      const response = await axios.get(`/demand/${id}`);
+      const fetchedDemand: DemandProp = response.data;
+      return fetchedDemand;
+    } catch (error) {
+      console.error('Error fetching demand by id:', error);
+      return undefined;
+    }
+  };
 
   const deleteDemand = async (id: string) => {
     try {
       await axios.delete(`/demand/${id}`);
-      setDemands((prevDemands) => prevDemands.filter((demand) => demand.id !== id));
+      setDemandProps((prevDemands) => prevDemands.filter((demand) => demand.id !== id));
     } catch (error) {
       console.error('Error deleting demand:', error);
     }
@@ -69,18 +84,17 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
     try {
       console.log(newDemand);
       const response = await axios.post('/demand', newDemand);
-      const createdDemand: Demand = response.data;
-      setDemands((prevDemands) => [...prevDemands, createdDemand]);
+      fetchDemandProps();
     } catch (error) {
       console.error('Error creating demand:', error);
     }
   };
 
-  const updateDemand = async (updatedDemand: Demand) => {
+  const updateDemand = async (updatedDemand: DemandProp) => {
     try {
       const response = await axios.put(`/demand/${updatedDemand.id}`, updatedDemand);
-      const modifiedDemand: Demand = response.data;
-      setDemands((prevDemands) =>
+      const modifiedDemand: DemandProp = response.data;
+      setDemandProps((prevDemands) =>
         prevDemands.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
       );
     } catch (error) {
@@ -89,7 +103,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   };
 
   return (
-    <DemandContext.Provider value={{ demands, deleteDemand, createDemand, updateDemand }}>
+    <DemandContext.Provider value={{ demandprops, deleteDemand, createDemand, updateDemand, getDemandbyId,fetchDemandProps }}>
       {props.children}
     </DemandContext.Provider>
   );

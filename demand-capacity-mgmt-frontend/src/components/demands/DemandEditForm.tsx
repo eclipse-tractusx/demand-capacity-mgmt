@@ -21,9 +21,9 @@
  */
 
 import React, { useContext, useState, useEffect } from 'react';
-import { Form, Button, Col,Row} from 'react-bootstrap';
-import { DemandContext} from '../../contexts/DemandContextProvider';
-import { DemandProp} from '../../interfaces/demand_interfaces';
+import { Form, Button, Col, Row } from 'react-bootstrap';
+import { DemandContext } from '../../contexts/DemandContextProvider';
+import { DemandProp } from '../../interfaces/demand_interfaces'; // Import DemandProp interface
 import CompanyOptions from '../CompanyOptions';
 import DemandCategoryOptions from './DemandCategoryOptions';
 import UnitsOfMeasureOptions from '../UnitsofMeasureOptions';
@@ -34,22 +34,38 @@ interface EditFormProps {
 }
 
 const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
-  const { updateDemand } = useContext(DemandContext)!;
-  const [demand, setDemand] = useState<DemandProp>(theDemand);
+  const { updateDemand, getDemandbyId } = useContext(DemandContext)!;
+  const [demand, setDemand] = useState<DemandProp | undefined>(undefined);
 
   useEffect(() => {
-    setDemand(theDemand);
-  }, [theDemand]);
+    const fetchDemand = async () => {
+      try {
+        const fetchedDemand = await getDemandbyId(theDemand.id);
+        setDemand(fetchedDemand);
+      } catch (error) {
+        console.error('Error fetching demand:', error);
+      }
+    };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    fetchDemand();
+  }, [theDemand, getDemandbyId]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    {/*updateDemand(demand);*/} //We need to map a demand prop to a demand
+    if (demand) {
+      await updateDemand(demand);
+    }
   };
 
+  if (!demand) {
+    return <div>Loading...</div>;
+  }
+
+  
   return (
 
-    <Form>
+    <Form onSubmit={handleSubmit}>
     <Row className="mb-3">
       <Form.Group className="form-group required" as={Col}>
         <Form.Label className="control-label required-field-label">Start Date</Form.Label>
@@ -121,7 +137,7 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
         placeholder="Material Number"
         id="materialNumberCustomer"
         name="materialNumberCustomer"
-        defaultValue={demand.materialNumberCustomer}
+        value={demand.materialNumberCustomer}
         required
       />
     </Form.Group>
@@ -144,7 +160,13 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
         placeholder="Description"
         id="materialDescriptionCustomer"
         name="materialDescriptionCustomer"
-        defaultValue={demand.materialDescriptionCustomer}
+        value={demand.materialDescriptionCustomer}
+        onChange={(e) =>
+          setDemand((prevDemand) => ({
+            ...prevDemand,
+            materialDescriptionCustomer: e.target.value,
+          }))
+        }
         required
       />
     </Form.Group>

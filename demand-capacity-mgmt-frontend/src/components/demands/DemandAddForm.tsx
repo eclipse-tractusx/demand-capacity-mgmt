@@ -154,33 +154,36 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
 
   const onInputChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    if (name === 'supplierId') {
-      setFormState((prevFormState) => ({
-        ...prevFormState,
-        supplierId: value, // Update supplierId in the top-level formState
-        materialDemandSeries: [
-          {
-            ...prevFormState.materialDemandSeries[0],
-            expectedSupplierLocationId: [value], // Fill the expectedSupplierLocationId array with the value of supplierId
-          },
-        ],
-      }));
-    } else if (name === 'demandCategoryId') {
-      setFormState((prevFormState) => ({
-        ...prevFormState,
-        materialDemandSeries: [
-          {
-            ...prevFormState.materialDemandSeries[0],
-            demandCategoryId: value, // Ensure demandCategoryId is set properly
-          },
-        ],
-      }));
-    } else {
-      setFormState((prevFormState) => ({
-        ...prevFormState,
-        [name]: value,
-      }));
-    }
+    
+    setFormState((prevFormState) => {
+      if (name === 'supplierId') {
+        return {
+          ...prevFormState,
+          supplierId: value,
+          materialDemandSeries: [
+            {
+              ...prevFormState.materialDemandSeries[0],
+              expectedSupplierLocationId: [value],
+            },
+          ],
+        };
+      } else if (name === 'demandCategoryId') {
+        return {
+          ...prevFormState,
+          materialDemandSeries: [
+            {
+              ...prevFormState.materialDemandSeries[0],
+              demandCategoryId: value,
+            },
+          ],
+        };
+      } else {
+        return {
+          ...prevFormState,
+          [name]: value,
+        };
+      }
+    });
   };
 
   const getNextMonday = () => {
@@ -217,7 +220,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
         {showSuccessMessage && submissionStatus === 'submitted' ? (
         <div className="alert alert-success" role="alert">
           Material demand has been created!
-          Please reach to the <a>Overview</a> to adjust the demand.
+          Please reach to the <a href='#overview'>Overview</a> to adjust the demand.
         </div>
       ) : (
         <Form>

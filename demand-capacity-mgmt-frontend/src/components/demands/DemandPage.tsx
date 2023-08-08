@@ -12,7 +12,6 @@
 
 import React, { useContext, useState, useMemo ,useCallback, useEffect} from 'react';
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
-import { DemandPropContext } from '../../contexts/DemandPropContextProvider';
 import { Demand, DemandProp } from '../../interfaces/demand_interfaces';
 import Pagination from '../Pagination';
 import DemandsTable from './DemandsTable';
@@ -28,16 +27,15 @@ import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 const DemandsPage: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedDemand, setSelectedDemand] = useState<Demand | null>(null);
-  const { demands, deleteDemand } = useContext(DemandContext)!;
-  const { demandprops, fetchDemandProps } = useContext(DemandPropContext)!; // Make sure to get the fetchDemands function from the context.
+  const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
+  const { deleteDemand } = useContext(DemandContext)!;
+  const { demandprops, fetchDemandProps } = useContext(DemandContext)!; // Make sure to get the fetchDemands function from the context.
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
   const [sortOrder, setSortOrder] = useState('');
   const [demandsPerPage, setDemandsPerPage] = useState(5); //Only show 5 items by default
-  const [refreshTable, setRefreshTable] = useState(false);
   const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
 
   const handleSort = (column: keyof DemandProp) => { // Adjust the parameter type here
@@ -63,7 +61,7 @@ const DemandsPage: React.FC = () => {
     [deleteDemand]
   );
 
-  const handleEdit = (demand: Demand) => {
+  const handleEdit = (demand: DemandProp) => {
     //GetDemand with demand ID TODO
     setSelectedDemand(demand);
     setShowEditModal(true);
@@ -79,9 +77,9 @@ const DemandsPage: React.FC = () => {
       sortedDemands = sortedDemands.filter((demand) =>
         demand.materialDescriptionCustomer.toLowerCase().includes(searchQuery.toLowerCase()) ||
         demand.id.toString().includes(searchQuery.toLowerCase()) ||
-        demand.customer.id.toString().includes(searchQuery.toLowerCase()) ||
-        demand.materialNumberCustomer.toString().includes(searchQuery.toLowerCase()) ||
-        demand.materialNumberSupplier.toString().includes(searchQuery.toLowerCase())
+        demand.customer.bpn.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+        demand.materialNumberCustomer.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+        demand.materialNumberSupplier.toString().toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -122,10 +120,6 @@ const DemandsPage: React.FC = () => {
     filteredDemands,
     demandsPerPage,
   ]);
-
-  useEffect(() => {
-    setRefreshTable((prev) => !prev);
-  }, [demandprops]);
 
   const demandItems = useMemo(
     () =>
