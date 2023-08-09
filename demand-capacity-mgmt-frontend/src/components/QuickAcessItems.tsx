@@ -24,11 +24,9 @@ import { Modal, Button } from 'react-bootstrap';
 import { useState } from 'react';
 import DemandsPage from './demands/DemandPage';
 import DemandContextProvider from '../contexts/DemandContextProvider';
-import { DemandProp } from '../interfaces/demand_interfaces';
+import '../index.css';
 
 function QuickAcessItems() {
-
-  const [demandprops, setDemandProps] = useState<DemandProp[]>([]);
 
   const [show, setShow] = useState(false);
 
@@ -48,7 +46,8 @@ function QuickAcessItems() {
             onHide={handleClose}
             backdrop="static"
             keyboard={false}
-            size="xl"
+            dialogClassName="custom-modal" 
+            fullscreen="xl"
           >
             <Modal.Header closeButton>
               <Modal.Title>Demand Management View</Modal.Title>
