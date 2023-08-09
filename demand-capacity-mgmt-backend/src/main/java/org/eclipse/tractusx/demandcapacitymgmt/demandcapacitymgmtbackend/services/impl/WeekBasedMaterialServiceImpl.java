@@ -83,9 +83,8 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
             SupplierEntity supplierEntity = supplierEntityOpt.get();
             RestTemplate restTemplate = new RestTemplate();
             String fooResourceUrl = supplierEntity.getEdcUrl();
-
             //TODO create the Actual Demand and send to the supplier
-            ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
+            //  ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
         }
 
         List<MaterialDemandEntity> demandEntityList = demandService.getAllByStatus(

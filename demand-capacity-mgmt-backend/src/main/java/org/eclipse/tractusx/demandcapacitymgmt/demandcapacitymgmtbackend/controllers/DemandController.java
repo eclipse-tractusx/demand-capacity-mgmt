@@ -24,9 +24,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.DemandApi;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandRequestDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandRequestUpdateDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandResponseDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
 import java.util.List;
@@ -69,9 +66,9 @@ public class DemandController implements DemandApi {
     @Override
     public ResponseEntity<MaterialDemandResponse> updateDemandsById(
         String demandId,
-        DemandRequestUpdateDto demandRequestUpdateDto
+        MaterialDemandRequest materialDemandRequest
     ) {
-        MaterialDemandResponse responseDto = demandService.updateDemand(demandId, demandRequestUpdateDto);
+        MaterialDemandResponse responseDto = demandService.updateDemand(demandId, materialDemandRequest);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

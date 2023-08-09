@@ -92,7 +92,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DemandRequestUpdateDto'
+              $ref: '#/components/schemas/MaterialDemandRequest'
       parameters:
         - in: 'path'
           name: 'demand_id'

@@ -39,7 +39,7 @@ public interface DemandService {
 
     MaterialDemandResponse getDemandById(String demandId);
 
-    MaterialDemandResponse updateDemand(String demandId, DemandRequestUpdateDto demandRequestUpdateDto);
+    MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest);
 
     void deleteDemandById(String demandId);
 
