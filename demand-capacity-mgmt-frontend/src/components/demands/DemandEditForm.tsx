@@ -19,15 +19,15 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
 import React, { useContext, useState, useEffect } from 'react';
 import { Form, Button, Col, Row } from 'react-bootstrap';
 import { DemandContext } from '../../contexts/DemandContextProvider';
-import { DemandProp } from '../../interfaces/demand_interfaces'; // Import DemandProp interface
+import { DemandProp } from '../../interfaces/demand_interfaces';
 import CompanyOptions from '../CompanyOptions';
 import DemandCategoryOptions from './DemandCategoryOptions';
 import UnitsOfMeasureOptions from '../UnitsofMeasureOptions';
 import { FiSave } from 'react-icons/fi';
+
 
 interface EditFormProps {
   theDemand: DemandProp;
@@ -54,15 +54,53 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
     e.preventDefault();
 
     if (demand) {
-      await updateDemand(demand);
+      try {
+        await updateDemand(demand);
+      } catch (error) {
+        console.error('Error updating demand:', error);
+      }
     }
   };
 
+  const handleFieldChange = (fieldName: string, newValue: any) => {
+    setDemand((prevDemand) =>
+      prevDemand
+        ? {
+            ...prevDemand,
+            [fieldName]: newValue,
+          }
+        : undefined
+    );
+  };
+
+  const handleUnitMeasureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedUnitMeasureId = e.target.value;
+    handleFieldChange('unitMeasureId', { id: selectedUnitMeasureId });
+  };
+  
+  const handleSupplierChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedSupplierId = e.target.value;
+    handleFieldChange('supplier', { id: selectedSupplierId });
+  };
+  
+  const handleDemandCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedCategoryId = e.target.value;
+    handleFieldChange('demandSeries', (demand?.demandSeries ?? []).map((series)=> ({
+      ...series,
+      demandCategory: {
+        ...series.demandCategory,
+        id: selectedCategoryId,
+      },
+    })));
+  };
+  
+  
+  
+  
   if (!demand) {
     return <div>Loading...</div>;
   }
 
-  
   return (
 
     <Form onSubmit={handleSubmit}>
@@ -99,6 +137,8 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
               <Form.Select
                 name="unitMeasureId"
                 id="unitMeasureId"
+                value={demand.unitMeasureId.id || ''}
+                onChange={handleUnitMeasureChange}
                 required
               >
                  <UnitsOfMeasureOptions selectedUnitMeasureId={demand.unitMeasureId.id} />
@@ -111,6 +151,8 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
         aria-label="Default select example"
         name="supplierId"
         id="supplierId"
+        value={demand.supplier.id || ''}
+        onChange={handleSupplierChange}
         required
       >
           <CompanyOptions selectedCompanyName={demand.supplier.companyName} />
@@ -125,6 +167,8 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
         name="demandCategoryId"
         id="demandCategoryId"
         required
+        value={demand.demandSeries?.[0]?.demandCategory?.id || ''}
+        onChange={handleDemandCategoryChange}
       >
           <DemandCategoryOptions selectedDemandCategoryId={demand.demandSeries?.[0]?.demandCategory?.id || ''}/>
       </Form.Select>
@@ -137,8 +181,17 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
         placeholder="Material Number"
         id="materialNumberCustomer"
         name="materialNumberCustomer"
-        value={demand.materialNumberCustomer}
-        required
+        defaultValue ={demand.materialNumberCustomer}
+        onChange={(e) =>
+          setDemand((prevDemand) =>
+            prevDemand
+              ? {
+                  ...prevDemand,
+                  materialNumberCustomer: e.target.value,
+                }
+              : undefined
+          )
+        }
       />
     </Form.Group>
 
@@ -149,7 +202,17 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
         placeholder="Material Number"
         id="materialNumberSupplier"
         name="materialNumberSupplier"
-        defaultValue={demand.materialNumberSupplier}
+        defaultValue ={demand.materialNumberSupplier}
+        onChange={(e) =>
+          setDemand((prevDemand) =>
+            prevDemand
+              ? {
+                  ...prevDemand,
+                  materialNumberSupplier: e.target.value,
+                }
+              : undefined
+          )
+        }
       />
     </Form.Group>
 
@@ -160,12 +223,16 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
         placeholder="Description"
         id="materialDescriptionCustomer"
         name="materialDescriptionCustomer"
-        value={demand.materialDescriptionCustomer}
+        defaultValue ={demand.materialDescriptionCustomer}
         onChange={(e) =>
-          setDemand((prevDemand) => ({
-            ...prevDemand,
-            materialDescriptionCustomer: e.target.value,
-          }))
+          setDemand((prevDemand) =>
+            prevDemand
+              ? {
+                  ...prevDemand,
+                  materialDescriptionCustomer: e.target.value,
+                }
+              : undefined
+          )
         }
         required
       />
