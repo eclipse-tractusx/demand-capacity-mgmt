@@ -1,9 +1,14 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesCategoryDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandWeekSeriesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
+import java.util.List;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.SupplierRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl.WeekBasedMaterialServiceImpl;
@@ -12,12 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(SpringExtension.class)
 public class WeekBasedMaterialServiceTest {
@@ -42,18 +41,14 @@ public class WeekBasedMaterialServiceTest {
 
     private static WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto = createWeekBasedMaterialDemandRequestDto();
 
-
     @Test
-    void shouldCreateWeekBasedMaterial(){
-
+    void shouldCreateWeekBasedMaterial() {
         weekBasedMaterialService.createWeekBasedMaterial(List.of(weekBasedMaterialDemandRequestDto));
 
         verify(weekBasedMaterialDemandRepository, times(1)).save(any());
     }
 
-
-    private static DemandSeriesDto createDemandSeriesDto(){
-
+    private static DemandSeriesDto createDemandSeriesDto() {
         DemandSeriesDto demandSeriesDto = new DemandSeriesDto();
         demandSeriesDto.setCalendarWeek("2023-06-19");
         demandSeriesDto.setDemand("1");
@@ -61,7 +56,7 @@ public class WeekBasedMaterialServiceTest {
         return demandSeriesDto;
     }
 
-    private static DemandWeekSeriesDto createDemandWeekSeriesDto(){
+    private static DemandWeekSeriesDto createDemandWeekSeriesDto() {
         DemandWeekSeriesDto demandWeekSeriesDto = new DemandWeekSeriesDto();
 
         DemandSeriesCategoryDto demandSeriesCategoryDto = new DemandSeriesCategoryDto();
@@ -75,8 +70,7 @@ public class WeekBasedMaterialServiceTest {
         return demandWeekSeriesDto;
     }
 
-    private static WeekBasedMaterialDemandRequestDto createWeekBasedMaterialDemandRequestDto(){
-
+    private static WeekBasedMaterialDemandRequestDto createWeekBasedMaterialDemandRequestDto() {
         WeekBasedMaterialDemandRequestDto basedMaterialDemandRequestDto = new WeekBasedMaterialDemandRequestDto();
         basedMaterialDemandRequestDto.setMaterialNumberCustomer("test");
         basedMaterialDemandRequestDto.setMaterialDemandId("f50c3e71-a1a7-44c9-9de6-2e7aaaf65ac4");
@@ -89,5 +83,4 @@ public class WeekBasedMaterialServiceTest {
 
         return basedMaterialDemandRequestDto;
     }
-
 }

@@ -23,10 +23,16 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacitiesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedDemandSeriesRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
+import java.util.List;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
@@ -39,13 +45,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class WeekBasedCapacityGroupServiceTest {
@@ -73,27 +72,30 @@ public class WeekBasedCapacityGroupServiceTest {
     private static MaterialDemandEntity materialDemandEntity = createMaterialDemandEntity();
 
     @Test
-    void shouldCreateWeekBasedCapacityGroup(){
-
+    void shouldCreateWeekBasedCapacityGroup() {
         weekBasedCapacityGroupService.createWeekBasedCapacityGroup(List.of(weekBasedCapacityGroupRequest));
 
         verify(weekBasedCapacityGroupRepository, times(1)).save(any());
     }
 
     @Test
-    void shouldReceiveWeekBasedCapacityGroup(){
-
+    void shouldReceiveWeekBasedCapacityGroup() {
         when(weekBasedCapacityGroupRepository.getAllByViewed(false)).thenReturn(List.of(weekBasedCapacityGroup));
-        when(materialDemandRepository.findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(any(),any(), any())).thenReturn(List.of(materialDemandEntity));
+        when(
+            materialDemandRepository.findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
+                any(),
+                any(),
+                any()
+            )
+        )
+            .thenReturn(List.of(materialDemandEntity));
 
         weekBasedCapacityGroupService.receiveWeekBasedCapacityGroup();
 
         verify(materialDemandRepository, times(1)).saveAll(any());
     }
 
-
-    private static WeekBasedCapacityGroupRequest createWeekBasedCapacityGroupRequest(){
-
+    private static WeekBasedCapacityGroupRequest createWeekBasedCapacityGroupRequest() {
         WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
 
         weekBasedCapacityGroupRequest.setName("test");
@@ -105,12 +107,10 @@ public class WeekBasedCapacityGroupServiceTest {
         weekBasedCapacityGroupRequest.setLinkedDemandSeries(List.of(linkedDemandSeriesRequest));
         weekBasedCapacityGroupRequest.setSupplierLocations(List.of(""));
 
-
         return weekBasedCapacityGroupRequest;
     }
 
-    private static CapacitiesDto createCapacitiesDto(){
-
+    private static CapacitiesDto createCapacitiesDto() {
         CapacitiesDto capacitiesDto = new CapacitiesDto();
         capacitiesDto.setActualCapacity("1");
         capacitiesDto.setMaximumCapacity("10");
@@ -119,8 +119,7 @@ public class WeekBasedCapacityGroupServiceTest {
         return capacitiesDto;
     }
 
-    private static LinkedDemandSeriesRequest createLinkedDemandSeriesRequest(){
-
+    private static LinkedDemandSeriesRequest createLinkedDemandSeriesRequest() {
         LinkedDemandSeriesRequest linkedDemandSeriesRequest = new LinkedDemandSeriesRequest();
 
         linkedDemandSeriesRequest.setDemandCategory(demandCategoryDto);
@@ -131,29 +130,25 @@ public class WeekBasedCapacityGroupServiceTest {
         return linkedDemandSeriesRequest;
     }
 
-    private static DemandCategoryDto createDemandCategoryDto(){
-
+    private static DemandCategoryDto createDemandCategoryDto() {
         DemandCategoryDto demandCategoryDto = new DemandCategoryDto();
         demandCategoryDto.setDemandCategory("default");
 
         return demandCategoryDto;
     }
 
-    private static WeekBasedCapacityGroupEntity createWeekBasedCapacityGroupEntity(){
-
+    private static WeekBasedCapacityGroupEntity createWeekBasedCapacityGroupEntity() {
         return WeekBasedCapacityGroupEntity
-                .builder()
-                .viewed(false)
-                .id(1l)
-                .weekBasedCapacityGroup(weekBasedCapacityGroupRequest)
-                .build();
+            .builder()
+            .viewed(false)
+            .id(1l)
+            .weekBasedCapacityGroup(weekBasedCapacityGroupRequest)
+            .build();
     }
 
-    private static MaterialDemandEntity createMaterialDemandEntity(){
-
+    private static MaterialDemandEntity createMaterialDemandEntity() {
         DemandSeries demandSeries = DemandSeries.builder().build();
 
         return MaterialDemandEntity.builder().demandSeries(List.of(demandSeries)).build();
     }
-
 }

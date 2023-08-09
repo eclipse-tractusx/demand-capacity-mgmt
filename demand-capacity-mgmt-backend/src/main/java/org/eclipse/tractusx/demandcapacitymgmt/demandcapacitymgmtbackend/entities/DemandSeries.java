@@ -77,5 +77,4 @@ public class DemandSeries {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private MaterialDemandEntity materialDemand;
-
 }

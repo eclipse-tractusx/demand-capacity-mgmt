@@ -25,19 +25,17 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CompanyDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandRequestUpdateDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandSeries;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandSeriesResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandSeriesValue;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.UnitMeasure;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.UnitMeasure;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyEntity;
@@ -73,7 +71,6 @@ public class DemandServiceImpl implements DemandService {
 
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest) {
-
         validateMaterialDemandRequestFields(materialDemandRequest);
 
         MaterialDemandEntity materialDemandEntity = convertDtoToEntity(materialDemandRequest);
@@ -97,8 +94,10 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
-    public MaterialDemandResponse updateDemand(String demandId, DemandRequestUpdateDto demandRequestUpdateDto) {
-        MaterialDemandEntity demand = getDemandEntity(demandId);
+    public MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest) {
+
+        MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest);
+        demand.setId(UUID.fromString(demandId));
 
         demand = materialDemandRepository.save(demand);
         return convertDemandResponseDto(demand);
@@ -142,8 +141,7 @@ public class DemandServiceImpl implements DemandService {
         responseDto.setChangedAt(materialDemandEntity.getChangedAt().toString());
         responseDto.setId(materialDemandEntity.getId().toString());
 
-        UnitMeasure unitMeasure =  enrichUnitMeasure(materialDemandEntity.getUnitMeasure());
-
+        UnitMeasure unitMeasure = enrichUnitMeasure(materialDemandEntity.getUnitMeasure());
 
         List<MaterialDemandSeriesResponse> materialDemandSeriesResponse = materialDemandEntity
             .getDemandSeries()
@@ -332,7 +330,7 @@ public class DemandServiceImpl implements DemandService {
         return materialDemandSeriesValue;
     }
 
-    private UnitMeasure enrichUnitMeasure(UnitMeasureEntity unitMeasureEntity){
+    private UnitMeasure enrichUnitMeasure(UnitMeasureEntity unitMeasureEntity) {
         UnitMeasure unitMeasure = new UnitMeasure();
 
         unitMeasure.setId(unitMeasureEntity.getId().toString());
@@ -342,7 +340,7 @@ public class DemandServiceImpl implements DemandService {
         return unitMeasure;
     }
 
-    private DemandCategoryResponse enrichDemandCategory(DemandCategoryEntity demandCategoryEntity){
+    private DemandCategoryResponse enrichDemandCategory(DemandCategoryEntity demandCategoryEntity) {
         DemandCategoryResponse demandCategory = new DemandCategoryResponse();
         demandCategory.setId(demandCategoryEntity.getId().toString());
         demandCategory.setDemandCategoryName(demandCategoryEntity.getDemandCategoryName());
