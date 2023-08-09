@@ -12,7 +12,7 @@
 
 import React, { useContext, useState, useMemo ,useCallback, useEffect} from 'react';
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
-import { Demand, DemandProp } from '../../interfaces/demand_interfaces';
+import { DemandProp } from '../../interfaces/demand_interfaces';
 import Pagination from '../Pagination';
 import DemandsTable from './DemandsTable';
 import DemandsSearch from '../Search';
@@ -33,23 +33,27 @@ const DemandsPage: React.FC = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  
   const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
-  const [sortOrder, setSortOrder] = useState('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  
   const [demandsPerPage, setDemandsPerPage] = useState(5); //Only show 5 items by default
   const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
 
-  const handleSort = (column: keyof DemandProp) => { // Adjust the parameter type here
+  const handleSort = (column: string | null) => {
+    console.log('Sorting column:', column);
     if (sortColumn === column) {
       // If the same column is clicked again, toggle the sort order
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       // If a different column is clicked, set it as the new sort column and default to ascending order
-      setSortColumn(column);
+      setSortColumn(column as keyof DemandProp | null);
       setSortOrder('asc');
     }
   };
-
-  const handleDeleteDemand = useCallback(
+  
+  
+ const handleDeleteDemand = useCallback(
     async (id: string) => {
       try {
         await deleteDemand(id);
@@ -87,7 +91,7 @@ const DemandsPage: React.FC = () => {
       sortedDemands.sort((a, b) => {
         const aValue = a[sortColumn];
         const bValue = b[sortColumn];
-    
+      
         if (typeof aValue === 'string' && typeof bValue === 'string') {
           // Sort strings alphabetically
           return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
@@ -95,10 +99,11 @@ const DemandsPage: React.FC = () => {
           // Sort numbers numerically
           return aValue - bValue;
         }
-    
+      
         // If the types are not string or number, return 0 (no sorting)
         return 0;
       });
+      
     
       if (sortOrder === 'desc') {
         // Reverse the array if the sort order is descending
@@ -179,12 +184,13 @@ const DemandsPage: React.FC = () => {
         </div>
       </div>
 
-      <DemandsTable
-        sortColumn={sortColumn}
-        sortOrder={sortOrder}
-        handleSort={handleSort}
-        demandItems={demandItems}
-      />
+              <DemandsTable
+          sortColumn={sortColumn}
+          sortOrder={sortOrder}
+          handleSort={(column: string| null) => handleSort(column)} // Pass the correct parameter type
+          demandItems={demandItems}
+        />
+
       <div className="container">
       <div className="row">
           <Pagination

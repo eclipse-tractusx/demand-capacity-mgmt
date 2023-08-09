@@ -20,53 +20,62 @@
  *    ********************************************************************************
  */
 
-import React, { useEffect, useState } from 'react';
-
 type DemandsTableProps = {
-  sortColumn: string;
+  sortColumn: string | null;
   sortOrder: string;
-  handleSort: (column: string) => void;
+  handleSort: (column: string | null) => void;
   demandItems: React.ReactNode;
 };
 
 const DemandsTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, handleSort, demandItems }) => {
 
-  
   return (
-    <table className="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th>
-           
-          </th>
-          <th onClick={() => handleSort('companyId')}>
-            Company Id {sortColumn === 'companyId' && <i className="material-icons">&#x25B2;</i>}
-          </th>
-          <th onClick={() => handleSort('materialNumberCustomer')}>
-            Material No. Customer {sortColumn === 'materialNumberCustomer' && <i className="material-icons">&#x25B2;</i>}
-          </th>
-          <th onClick={() => handleSort('materialNumberSupplier')}>
-            Material No. Supplier {sortColumn === 'materialNumberSupplier' && <i className="material-icons">&#x25B2;</i>}
-          </th>
-          <th onClick={() => handleSort('demandCategory')}>
-            Demand cat.{sortColumn === 'demandCategory' && <i className="material-icons">&#x25B2;</i>}
-          </th>
-          <th onClick={() => handleSort('description')}>
-            Description {sortColumn === 'description' && <i className="material-icons">&#x25B2;</i>}
-          </th>
-          <th onClick={() => handleSort('startDate')}>
-            Start Date {sortColumn === 'startDate' && <i className="material-icons">&#x25B2;</i>}
-          </th>
-          <th onClick={() => handleSort('endDate')}>
-            End Date {sortColumn === 'endDate' && <i className="material-icons">&#x25B2;</i>}
-          </th>
-          <th onClick={() => handleSort('status')}>
-            Status {sortColumn === 'status' && <i className="material-icons">&#x25B2;</i>}
-          </th>
-        </tr>
-      </thead>
-      <tbody>{demandItems}</tbody>
-    </table>
+<table className="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th></th>
+        <th onClick={() => handleSort('customer.bpn')}>
+          Company Id{' '}
+          {sortColumn === 'customer.bpn' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
+          {sortColumn === 'customer.bpn' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+          {!sortColumn && <i className="material-icons">...</i>}
+        </th>
+        <th onClick={() => handleSort('materialNumberCustomer')}>
+          Material No. Customer{' '}
+          {sortColumn === 'materialNumberCustomer' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
+          {sortColumn === 'materialNumberCustomer' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+        </th>
+        <th onClick={() => handleSort('materialNumberSupplier')}>
+          Material No. Supplier{' '}
+          {sortColumn === 'materialNumberSupplier' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
+          {sortColumn === 'materialNumberSupplier' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+        </th>
+        <th onClick={() => handleSort('demandSeries.demandCategory')}>
+          Demand cat.
+          {sortColumn === 'demandSeries.demandCategory' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
+          {sortColumn === 'demandSeries.demandCategory' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+        </th>
+        <th onClick={() => handleSort('materialDescriptionCustomer')}>
+          Description{' '}
+          {sortColumn === 'materialDescriptionCustomer' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
+          {sortColumn === 'materialDescriptionCustomer' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+        </th>
+        <th onClick={() => handleSort('startDate')}>
+          Start Date {sortColumn === 'startDate' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
+          {sortColumn === 'startDate' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+        </th>
+        <th onClick={() => handleSort('endDate')}>
+          End Date {sortColumn === 'endDate' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
+          {sortColumn === 'endDate' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+        </th>
+        <th onClick={() => handleSort('status')}>
+          Status {sortColumn === 'status' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
+          {sortColumn === 'status' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+        </th>
+      </tr>
+    </thead>
+    <tbody>{demandItems}</tbody>
+  </table>
   );
 };
 
