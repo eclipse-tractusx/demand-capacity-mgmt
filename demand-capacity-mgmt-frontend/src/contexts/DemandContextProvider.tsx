@@ -29,7 +29,7 @@ interface DemandContextData {
   createDemand: (newDemand: Demand) => Promise<void>;
   getDemandbyId: (id: string) =>Promise<DemandProp | undefined>;
   deleteDemand: (id: string) => Promise<void>;
-  updateDemand: (updatedDemand: DemandProp) => Promise<void>;
+  updateDemand: (updatedDemand: Demand) => Promise<void>;
   fetchDemandProps: () => void;
 
 }
@@ -90,13 +90,15 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
     }
   };
 
-  const updateDemand = async (updatedDemand: DemandProp) => {
+  const updateDemand = async (updatedDemand: Demand) => {
     try {
+      console.log(updatedDemand);
       const response = await axios.put(`/demand/${updatedDemand.id}`, updatedDemand);
-      const modifiedDemand: DemandProp = response.data;
-      setDemandProps((prevDemands) =>
+      const modifiedDemand: Demand = response.data;
+      setDemands((prevDemands) =>
         prevDemands.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
       );
+      fetchDemandProps();
     } catch (error) {
       console.error('Error updating demand:', error);
     }

@@ -24,11 +24,11 @@ import React, { useContext, useState, useMemo, useCallback } from 'react';
 import { Modal, Button,Form,Col,Row } from 'react-bootstrap';
 import { CapacityGroupContext  } from '../../contexts/CapacityGroupsContextProvider';
 import { CapacityGroup } from '../../interfaces/capacitygroup_interfaces';
-import AddForm from '../demands/DemandAddForm';
 import Pagination from '../Pagination';
 import CapacityGroupsTable from './CapacityGroupsTable';
 import Search from '../Search';
 import CapacityGroupsModal from './CapacityGroupsModal';
+import '../../index.css';
 
 const CapacityGroupsList: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);

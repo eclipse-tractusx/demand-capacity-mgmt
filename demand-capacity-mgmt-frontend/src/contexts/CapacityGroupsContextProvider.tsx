@@ -53,7 +53,6 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     };
   
     fetchCapacityGroups();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
 

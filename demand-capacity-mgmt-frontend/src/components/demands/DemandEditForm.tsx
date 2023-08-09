@@ -22,18 +22,58 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Form, Button, Col, Row } from 'react-bootstrap';
 import { DemandContext } from '../../contexts/DemandContextProvider';
-import { DemandProp } from '../../interfaces/demand_interfaces';
+import { Demand,DemandSeriesValue, DemandProp, DemandSeries } from '../../interfaces/demand_interfaces';
 import CompanyOptions from '../CompanyOptions';
 import DemandCategoryOptions from './DemandCategoryOptions';
 import UnitsOfMeasureOptions from '../UnitsofMeasureOptions';
+import Spinner from 'react-bootstrap/Spinner';
 import { FiSave } from 'react-icons/fi';
+
+function convertToDemand(demandProp: DemandProp): Demand {
+  const {
+    id,
+    materialDescriptionCustomer,
+    materialNumberCustomer,
+    materialNumberSupplier,
+    customer,
+    supplier,
+    unitMeasureId,
+    demandSeries,
+  } = demandProp;
+
+  const demandSeriesValues: DemandSeriesValue[] = demandSeries![0].demandSeriesValues.map((value) => ({
+    calendarWeek: value.calendarWeek.split('T')[0],
+    demand: value.demand,
+  }));
+
+  const convertedDemand: Demand = {
+    id,
+    materialDescriptionCustomer,
+    materialNumberCustomer,
+    materialNumberSupplier,
+    customerId: customer.id,
+    supplierId: supplier.id,
+    unitMeasureId: unitMeasureId.id,
+    materialDemandSeries: [
+      {
+        customerLocationId: customer.id,
+        expectedSupplierLocationId: [supplier.id],
+        demandCategoryId: demandSeries![0].demandCategory.id,
+        demandSeriesValues,
+      },
+    ],
+  };
+
+  return convertedDemand;
+}
 
 
 interface EditFormProps {
   theDemand: DemandProp;
+  onCloseModal: () => void;
 }
 
-const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
+const EditForm: React.FC<EditFormProps> = ({ theDemand , onCloseModal }) => {
   const { updateDemand, getDemandbyId } = useContext(DemandContext)!;
   const [demand, setDemand] = useState<DemandProp | undefined>(undefined);
 
@@ -52,26 +92,44 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     if (demand) {
+      const convertedDemand = convertToDemand(demand);
       try {
-        await updateDemand(demand);
+        await updateDemand(convertedDemand);
+        onCloseModal(); 
       } catch (error) {
         console.error('Error updating demand:', error);
       }
     }
   };
-
+  
   const handleFieldChange = (fieldName: string, newValue: any) => {
     setDemand((prevDemand) =>
       prevDemand
         ? {
             ...prevDemand,
-            [fieldName]: newValue,
+            [fieldName]:
+              fieldName === 'demandSeries'
+                ? newValue.map((series: DemandSeries) => ({
+                    ...series,
+                    demandSeriesValues: series.demandSeriesValues.map((value: DemandSeriesValue) => ({
+                      ...value,
+                      calendarWeek: value.calendarWeek.split('T')[0], // Extract date portion from datetime string
+                    })),
+                  }))
+                : fieldName === 'unitMeasureId'
+                ? { id: newValue } // Wrap unitMeasureId in an object with id property
+                : fieldName === 'supplier'
+                ? { id: newValue } // Wrap supplier in an object with id property
+                : fieldName === 'startDate' || fieldName === 'endDate'
+                ? newValue.split('T')[0] // Extract date portion from datetime string
+                : newValue,
           }
         : undefined
     );
   };
+  
 
   const handleUnitMeasureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedUnitMeasureId = e.target.value;
@@ -98,7 +156,11 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand }) => {
   
   
   if (!demand) {
-    return <div>Loading...</div>;
+    return (
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    );
   }
 
   return (

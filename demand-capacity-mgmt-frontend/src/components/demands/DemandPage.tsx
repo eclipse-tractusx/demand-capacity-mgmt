@@ -25,8 +25,9 @@ import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 
 const DemandsPage: React.FC = () => {
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+
   const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
   const { deleteDemand } = useContext(DemandContext)!;
   const { demandprops, fetchDemandProps } = useContext(DemandContext)!; // Make sure to get the fetchDemands function from the context.
@@ -66,12 +67,10 @@ const DemandsPage: React.FC = () => {
   );
 
   const handleEdit = (demand: DemandProp) => {
-    //GetDemand with demand ID TODO
     setSelectedDemand(demand);
-    setShowEditModal(true);
+    setIsEditModalOpen(true);
   };
 
-  const handleCloseEdit = () => setShowEditModal(false);
   const handleCloseAdd = () => setShowAddModal(false);
 
   useMemo(() => {
@@ -225,8 +224,8 @@ const DemandsPage: React.FC = () => {
       </div>
 
       <Modal
-        show={showEditModal}
-        onHide={handleCloseEdit}
+        show={isEditModalOpen}
+        onHide={() => setIsEditModalOpen(false)}
         backdrop="static"
         keyboard={false}
         size="lg"
@@ -238,7 +237,7 @@ const DemandsPage: React.FC = () => {
           <UnitsofMeasureContextContextProvider>
             <DemandCategoryContextProvider>
               <CompanyContextProvider>
-              {selectedDemand && <EditForm theDemand={selectedDemand} />}
+                {selectedDemand && <EditForm theDemand={selectedDemand} onCloseModal={() => setIsEditModalOpen(false)} />}
               </CompanyContextProvider>
             </DemandCategoryContextProvider>
           </UnitsofMeasureContextContextProvider>
