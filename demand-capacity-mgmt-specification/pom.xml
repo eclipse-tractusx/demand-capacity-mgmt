@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  *******************************************************************************
+  ~  Copyright (c) 2023 BMW AG
+  ~  Copyright (c) 2023 Contributors to the Eclipse Foundation
+  ~
+  ~    See the NOTICE file(s) distributed with this work for additional
+  ~    information regarding copyright ownership.
+  ~
+  ~    This program and the accompanying materials are made available under the
+  ~    terms of the Apache License, Version 2.0 which is available at
+  ~    https://www.apache.org/licenses/LICENSE-2.0.
+  ~
+  ~    Unless required by applicable law or agreed to in writing, software
+  ~    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  ~    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+  ~    License for the specific language governing permissions and limitations
+  ~    under the License.
+  ~
+  ~    SPDX-License-Identifier: Apache-2.0
+  ~    ********************************************************************************
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>2.7.4</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>org.eclipse.tractusx.demand-capacity-mgmt-specification</groupId>
+    <artifactId>demand-capacity-mgmt-specification</artifactId>
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
+        <codegen.api.package.name>eclipse.tractusx.demand-capacity-mgmt-specification.api</codegen.api.package.name>
+        <codegen.model.page.name>eclipse.tractusx.demand-capacity-mgmt-specification.model</codegen.model.page.name>
+        <swagger-annotations.version>2.2.8</swagger-annotations.version>
+        <jackson-databind-nullable.version>0.2.4</jackson-databind-nullable.version>
+        <openapi-generator-maven-plugin.version>6.2.1</openapi-generator-maven-plugin.version>
+
+        <codegen.server.package.name>eclipse.tractusx.demand-capacity-mgmt-specification.server</codegen.server.package.name>
+        <codegen.client.package.name>eclipse.tractusx.demand-capacity-mgmt-specification.client</codegen.client.package.name>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger-annotations.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>${jackson-databind-nullable.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-api-code</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi.yml</inputSpec>
+                            <output>${project.build.directory}/generated-sources/api</output>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <generatorName>spring</generatorName>
+                            <strictSpec>true</strictSpec>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <configOptions>
+                                <library>spring-boot</library>
+                                <interfaceOnly>true</interfaceOnly>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <useBeanValidation>true</useBeanValidation>
+                                <useClassLevelBeanValidation>false</useClassLevelBeanValidation>
+                                <useTags>true</useTags>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                                <dateLibrary>java8</dateLibrary>
+                                <bigDecimalAsString>true</bigDecimalAsString>
+                                <apiPackage>${codegen.api.package.name}</apiPackage>
+                                <modelPackage>${codegen.model.page.name}</modelPackage>
+                                <unhandledException>true</unhandledException>
+                            </configOptions>
+                            <typeMappings>
+                                <typeMapping>Timestamp=Instant</typeMapping>
+                            </typeMappings>
+                            <importMappings>
+                                <importMapping>Instant=java.time.Instant</importMapping>
+                                <importMapping>Pageable=org.springframework.data.domain.Pageable</importMapping>
+                                <importMapping>Page=org.springframework.data.domain.Page</importMapping>
+                            </importMappings>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>
