@@ -26,9 +26,6 @@ import { CapacityGroup } from '../interfaces/capacitygroup_interfaces';
 
 interface CapacityGroupContextData {
   capacitygroups: CapacityGroup[];
-  deleteCapacityGroup: (id: number) => Promise<void>;
-  createCapacityGroup: (newCapacityGroup: CapacityGroup) => Promise<void>;
-  updateCapacityGroup: (updatedCapacityGroup: CapacityGroup) => Promise<void>;
 }
 
 export const CapacityGroupContext = createContext<CapacityGroupContextData | undefined>(undefined);
@@ -40,11 +37,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   useEffect(() => {
     const fetchCapacityGroups = async () => {
       try {
-        const response = await axios.get('/capacitygroup', {
-          params: {
-            project_id: 1, // Adjust the project ID parameter as needed
-          },
-        });
+        const response = await axios.get('/capacityGroup', {});
         const result: CapacityGroup[] = response.data;
         setCapacityGroups(result);
       } catch (error) {
@@ -55,40 +48,8 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     fetchCapacityGroups();
   }, []);
   
-
-  const deleteCapacityGroup = async (id: number) => {
-    try {
-      await axios.delete(`/capacitygroup/${id}`);
-      setCapacityGroups((prevCapacityGroups) => prevCapacityGroups.filter((capacitygroup) => capacitygroup.id !== id));
-    } catch (error) {
-      console.error('Error deleting capacitygroup:', error);
-    }
-  };
-
-  const createCapacityGroup = async (newCapacityGroup: CapacityGroup) => {
-    try {
-      const response = await axios.post('/demand', newCapacityGroup);
-      const createdDemand: CapacityGroup = response.data;
-      setCapacityGroups((prevCapacityGroups) => [...prevCapacityGroups, createdDemand]);
-    } catch (error) {
-      console.error('Error creating demand:', error);
-    }
-  };
-
-  const updateCapacityGroup = async (updatedCapacityGroup: CapacityGroup) => {
-    try {
-      const response = await axios.put(`/demand/${updatedCapacityGroup.id}`, updatedCapacityGroup);
-      const modifiedDemand: CapacityGroup = response.data;
-      setCapacityGroups((prevCapacityGroups) =>
-        prevCapacityGroups.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
-      );
-    } catch (error) {
-      console.error('Error updating demand:', error);
-    }
-  };
-
   return ( 
-    <CapacityGroupContext.Provider value={{capacitygroups, deleteCapacityGroup, createCapacityGroup, updateCapacityGroup }}>
+    <CapacityGroupContext.Provider value={{capacitygroups}}>
       {props.children}
     </CapacityGroupContext.Provider>
   );

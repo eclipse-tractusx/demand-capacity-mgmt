@@ -21,36 +21,26 @@
  */
 
 import React, { useContext, useState, useMemo, useCallback } from 'react';
-import { Modal, Button,Form,Col,Row } from 'react-bootstrap';
+import { Form,Col,Row } from 'react-bootstrap';
 import { CapacityGroupContext  } from '../../contexts/CapacityGroupsContextProvider';
 import { CapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import Pagination from '../Pagination';
 import CapacityGroupsTable from './CapacityGroupsTable';
 import Search from '../Search';
-import CapacityGroupsModal from './CapacityGroupsModal';
 import '../../index.css';
 
 const CapacityGroupsList: React.FC = () => {
-  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);
 
   const { capacitygroups } = useContext(CapacityGroupContext)!;
   const [searchQuery, setSearchQuery] = useState('');
-  const [show, setShow] = useState(false); // Add setShow to manage modal visibility
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('');
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
 
-  const handleShow = () => {
-    setShow(true);
-  };
-
-  const handleClose = () => {
-    setShow(false);
-  };
-
   const handleSort = (column: string) => {
+    console.log('Sorting column:', column);
     if (sortColumn === column) {
       // If the same column is clicked again, toggle the sort order
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -61,40 +51,28 @@ const CapacityGroupsList: React.FC = () => {
     }
   };
 
-  const handleEdit = (capacitygroup: CapacityGroup) => {
-    setSelectedCapacityGroup(capacitygroup);
-    setShowEditModal(true);
-  };
-
-  const handleCloseEditModal = () => {
-    setShowEditModal(false);
-  };
-
   const filteredcapacitygroups = useMemo(() => {
     let sortedcapacitygroups = [...capacitygroups];
 
     if (searchQuery !== '') {
       sortedcapacitygroups = sortedcapacitygroups.filter((capacitygroup) =>
-        capacitygroup.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        capacitygroup.id.toString().includes(searchQuery.toLowerCase()) ||
-        capacitygroup.companyId.toString().includes(searchQuery.toLowerCase())
+      capacitygroup.internalId.toString().includes(searchQuery.toLowerCase()) ||
+        capacitygroup.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        capacitygroup.customerBPNL.toString().includes(searchQuery.toLowerCase()) ||
+        capacitygroup.customerName.toString().includes(searchQuery.toLowerCase()) ||
+        capacitygroup.supplierBNPL.toString().includes(searchQuery.toLowerCase()) ||
+        capacitygroup.numberOfMaterials.toString().includes(searchQuery.toLowerCase()) ||
+        capacitygroup.favoritedBy.toString().includes(searchQuery.toLowerCase()) ||
+        capacitygroup.status.toString().includes(searchQuery.toLowerCase())
       );
     }
 
     if (sortColumn !== '') {
       sortedcapacitygroups.sort((a, b) => {
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
-
-        if (typeof aValue === 'string') {
-          // Sort strings alphabetically
-          return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
-        } else if (typeof aValue === 'number') {
-          // Sort numbers numerically
-          return aValue - bValue;
-        }
-
-        return 0;
+        const aValue = String(a[sortColumn]); // Convert to string
+        const bValue = String(b[sortColumn]); // Convert to string
+      
+        return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
       });
 
       if (sortOrder === 'desc') {
@@ -120,15 +98,14 @@ const CapacityGroupsList: React.FC = () => {
   const capacitygroupsItems = useMemo(
     () =>
       slicedcapacitygroups.map((capacitygroup) => (
-        <tr key={capacitygroup.id}>
-          <td>{capacitygroup.id}</td>
-          <td>{capacitygroup.companyId}</td>
-          <td>{capacitygroup.requiredValue}</td>
-          <td>{capacitygroup.deliveredValue}</td>
-          <td>{capacitygroup.maximumValue}</td>
-          <td>{capacitygroup.description}</td>
-          <td>{capacitygroup.startDate.split('T')[0]}</td>
-          <td>{capacitygroup.endDate.split('T')[0]}</td>
+        <tr key={capacitygroup.internalId}>
+          <td>{capacitygroup.internalId}</td>
+          <td>{capacitygroup.name}</td>
+          <td>{capacitygroup.customerBPNL}</td>
+          <td>{capacitygroup.customerName}</td>
+          <td>{capacitygroup.supplierBNPL}</td>
+          <td>{capacitygroup.numberOfMaterials}</td>
+          <td>{capacitygroup.favoritedBy}</td>
           <td>
             {/* TODO Depending on status, this should be a different span*/}
         <span className="badge rounded-pill text-bg-success" id="tag-ok">OK</span>
@@ -194,23 +171,6 @@ const CapacityGroupsList: React.FC = () => {
         </div>
       </div>
       </div>
-
-      <CapacityGroupsModal
-        show={show}
-        handleClose={handleClose}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Add Demand</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {/* Add form for Capacitygroup here */}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close Button
-          </Button>
-        </Modal.Footer>
-      </CapacityGroupsModal>
           </>
   );
 };

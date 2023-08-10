@@ -42,7 +42,6 @@ const DemandsPage: React.FC = () => {
   const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
 
   const handleSort = (column: string | null) => {
-    console.log('Sorting column:', column);
     if (sortColumn === column) {
       // If the same column is clicked again, toggle the sort order
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
