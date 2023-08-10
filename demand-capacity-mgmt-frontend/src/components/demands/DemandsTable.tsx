@@ -20,6 +20,8 @@
  *    ********************************************************************************
  */
 
+import { BiCaretDown, BiCaretUp } from 'react-icons/bi';
+
 type DemandsTableProps = {
   sortColumn: string | null;
   sortOrder: string;
@@ -36,41 +38,41 @@ const DemandsTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, hand
         <th></th>
         <th onClick={() => handleSort('customer.bpn')}>
           Company Id{' '}
-          {sortColumn === 'customer.bpn' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
-          {sortColumn === 'customer.bpn' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+          {sortColumn === 'customer.bpn' && sortOrder === 'asc' && <BiCaretUp />}
+          {sortColumn === 'customer.bpn' && sortOrder === 'desc' && <BiCaretDown />}
           {!sortColumn && <i className="material-icons">...</i>}
         </th>
         <th onClick={() => handleSort('materialNumberCustomer')}>
           Material No. Customer{' '}
-          {sortColumn === 'materialNumberCustomer' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
-          {sortColumn === 'materialNumberCustomer' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+          {sortColumn === 'materialNumberCustomer' && sortOrder === 'asc' && <BiCaretUp />}
+          {sortColumn === 'materialNumberCustomer' && sortOrder === 'desc' && <BiCaretDown />}
         </th>
         <th onClick={() => handleSort('materialNumberSupplier')}>
           Material No. Supplier{' '}
-          {sortColumn === 'materialNumberSupplier' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
-          {sortColumn === 'materialNumberSupplier' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+          {sortColumn === 'materialNumberSupplier' && sortOrder === 'asc' && <BiCaretUp />}
+          {sortColumn === 'materialNumberSupplier' && sortOrder === 'desc' && <BiCaretDown />}
         </th>
         <th onClick={() => handleSort('demandSeries.demandCategory')}>
           Demand cat.
-          {sortColumn === 'demandSeries.demandCategory' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
-          {sortColumn === 'demandSeries.demandCategory' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+          {sortColumn === 'demandSeries.demandCategory' && sortOrder === 'asc' && <BiCaretUp />}
+          {sortColumn === 'demandSeries.demandCategory' && sortOrder === 'desc' && <BiCaretDown />}
         </th>
         <th onClick={() => handleSort('materialDescriptionCustomer')}>
           Description{' '}
-          {sortColumn === 'materialDescriptionCustomer' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
-          {sortColumn === 'materialDescriptionCustomer' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+          {sortColumn === 'materialDescriptionCustomer' && sortOrder === 'asc' && <BiCaretUp />}
+          {sortColumn === 'materialDescriptionCustomer' && sortOrder === 'desc' && <BiCaretDown />}
         </th>
         <th onClick={() => handleSort('startDate')}>
-          Start Date {sortColumn === 'startDate' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
-          {sortColumn === 'startDate' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+          Start Date {sortColumn === 'startDate' && sortOrder === 'asc' && <BiCaretUp />}
+          {sortColumn === 'startDate' && sortOrder === 'desc' && <BiCaretDown />}
         </th>
         <th onClick={() => handleSort('endDate')}>
-          End Date {sortColumn === 'endDate' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
-          {sortColumn === 'endDate' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+          End Date {sortColumn === 'endDate' && sortOrder === 'asc' && <BiCaretUp />}
+          {sortColumn === 'endDate' && sortOrder === 'desc' && <BiCaretDown />}
         </th>
         <th onClick={() => handleSort('status')}>
-          Status {sortColumn === 'status' && sortOrder === 'asc' && <i className="material-icons">&#x25B2;</i>}
-          {sortColumn === 'status' && sortOrder === 'desc' && <i className="material-icons">&#x25BC;</i>}
+          Status {sortColumn === 'status' && sortOrder === 'asc' && <BiCaretUp />}
+          {sortColumn === 'status' && sortOrder === 'desc' && <BiCaretDown />}
         </th>
       </tr>
     </thead>
