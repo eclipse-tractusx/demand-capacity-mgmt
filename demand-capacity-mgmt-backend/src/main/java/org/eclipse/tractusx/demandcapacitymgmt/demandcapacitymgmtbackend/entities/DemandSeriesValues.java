@@ -51,7 +51,6 @@ public class DemandSeriesValues {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "demand_series_id", referencedColumnName = "ID")
     private DemandSeries demandSeries;
 
     @Column(name = "calendar_week", nullable = false)

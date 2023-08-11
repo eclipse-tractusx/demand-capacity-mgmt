@@ -20,8 +20,9 @@
  *    ********************************************************************************
  */
 
+import CapacityGroupsProvider, { CapacityGroupContext } from "../../contexts/CapacityGroupsContextProvider";
 import CapacityGroupsList from "./CapacityGroupsView";
-import CapacityGroupContext from "../../contexts/CapacityGroupsContextProvider";
+
 
 function CapacityGroupPage() {
 
@@ -31,9 +32,9 @@ function CapacityGroupPage() {
             <br />
             <div className="table">
                 <div className="table-wrapper">
-                    <CapacityGroupContext>
+                    <CapacityGroupsProvider>
                         <CapacityGroupsList />
-                    </CapacityGroupContext>
+                    </CapacityGroupsProvider>
                 </div>
             </div>
         </div>

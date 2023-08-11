@@ -21,15 +21,14 @@
  */
 
 export interface CapacityGroup {
-    id: number;
-    product: string;
-    companyId: string;
-    requiredValue: number;
-    deliveredValue: number;
-    maximumValue: number;
-    category: string;
-    description: string;
-    startDate: string;
-    endDate: string;
-    [key: string]: any;
+  internalId: string
+  catXUuid: string
+  name: string
+  customerBPNL: string
+  customerName: string
+  supplierBNPL: string
+  numberOfMaterials: number
+  favoritedBy: string
+  status: string
+  [key: string]: string | number;
   }

@@ -30,11 +30,13 @@ import static org.mockito.Mockito.when;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityRequest;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LinkDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl.CapacityGroupServiceImpl;
@@ -68,12 +70,17 @@ public class CapacityGroupServiceTest {
 
     private LinkDemandEntity linkDemandEntity = createLinkDemandEntity();
 
+    private static UnitMeasureEntity unitMeasure = createUnitMeasureEntity();
+
+    private CapacityGroupEntity capacityGroupEntity = createCapacityGroupEntity();
+
     @Test
     void shouldCreateCapacityGroup() {
         when(companyService.getCompanyIn(any())).thenReturn(List.of(company));
         when(unityOfMeasureService.findById(any())).thenReturn(null);
         when(companyService.getCompanyById(any())).thenReturn(company);
         when(linkDemandRepository.findById(any())).thenReturn(Optional.of(linkDemandEntity));
+        when(capacityGroupRepository.save(any())).thenReturn(capacityGroupEntity);
 
         capacityGroupService.createCapacityGroup(capacityGroupRequest);
 
@@ -117,5 +124,60 @@ public class CapacityGroupServiceTest {
             .materialNumberSupplier("")
             .materialNumberCustomer("")
             .build();
+    }
+
+    private static UnitMeasureEntity createUnitMeasureEntity() {
+        return UnitMeasureEntity
+            .builder()
+            .id(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01643"))
+            .codeValue("Kilogram")
+            .displayValue("Kg")
+            .build();
+    }
+
+    private static CapacityGroupEntity createCapacityGroupEntity() {
+        CapacityGroupEntity capacityGroup = CapacityGroupEntity
+            .builder()
+            .id(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01642"))
+            .capacityGroupId(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01642"))
+            .materialDescriptionCustomer("08b95a75-11a7-4bea-a958-821b9cb01641")
+            .materialNumberCustomer("08b95a75-11a7-4bea-a958-821b9cb01641")
+            .changedAt(LocalDateTime.now())
+            .customerId(company)
+            .supplierId(company)
+            .unitMeasure(unitMeasure)
+            .linkedDemandSeries(new ArrayList<>())
+            .supplierLocation(new ArrayList<>())
+            .name("Test")
+            .status(CapacityGroupStatus.READY_SYNCHRONIZE)
+            .build();
+
+        List<CapacityTimeSeries> timeSeriesList = createCapacityTimeSeries(capacityGroup);
+
+        capacityGroup.setCapacityTimeSeries(timeSeriesList);
+
+        return capacityGroup;
+    }
+
+    private static List<CapacityTimeSeries> createCapacityTimeSeries(CapacityGroupEntity capacityGroup) {
+        CapacityTimeSeries capacityTimeSeries1 = new CapacityTimeSeries();
+        capacityTimeSeries1.setId(UUID.randomUUID());
+        capacityTimeSeries1.setCalendarWeek(LocalDateTime.now());
+        capacityTimeSeries1.setActualCapacity(100.0);
+        capacityTimeSeries1.setMaximumCapacity(150.0);
+        capacityTimeSeries1.setCapacityGroupEntity(capacityGroup);
+
+        CapacityTimeSeries capacityTimeSeries2 = new CapacityTimeSeries();
+        capacityTimeSeries2.setId(UUID.randomUUID());
+        capacityTimeSeries2.setCalendarWeek(LocalDateTime.now());
+        capacityTimeSeries2.setActualCapacity(120.0);
+        capacityTimeSeries2.setMaximumCapacity(160.0);
+        capacityTimeSeries2.setCapacityGroupEntity(capacityGroup);
+
+        List<CapacityTimeSeries> timeSeriesList = new ArrayList<>();
+        timeSeriesList.add(capacityTimeSeries1);
+        timeSeriesList.add(capacityTimeSeries2);
+
+        return timeSeriesList;
     }
 }

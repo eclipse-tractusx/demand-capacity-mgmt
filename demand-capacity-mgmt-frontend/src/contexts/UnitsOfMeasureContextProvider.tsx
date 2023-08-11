@@ -29,8 +29,6 @@ export interface UnitMeasure {
   displayValue: string
 }
 
-
-
 interface UnitsOfMeasureContextData {
   unitsofmeasure: UnitMeasure[];
 }
@@ -44,9 +42,7 @@ const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>
   useEffect(() => {
     const fetchUnitsofMeasure = async () => {
       try {
-        const response = await axios.get('/unitmeasure', {
-         
-        });
+        const response = await axios.get('/unitmeasure');
         const result: UnitMeasure[] = response.data;
         setUnitsofMeasure(result);
       } catch (error) {
@@ -56,6 +52,7 @@ const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>
   
     fetchUnitsofMeasure();
   }, []);
+  
   
 
 

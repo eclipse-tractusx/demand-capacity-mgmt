@@ -65,10 +65,10 @@ function CapacityGroupDetailsPage() {
                 >
                   Edit
                 </ToggleButton>
-                <Button variant="secondary" name="radio" onClick={handleSave}>
+                <Button variant="secondary" name="save" onClick={handleSave}>
                   Save
                 </Button>
-                <Button variant="secondary" name="radio" onClick={handleRevert}>
+                <Button variant="secondary" name="revert" onClick={handleRevert}>
                   Revert Changes
                 </Button>
               </ButtonGroup>
@@ -80,7 +80,11 @@ function CapacityGroupDetailsPage() {
           id="uncontrolled-tab-example"
           className="mb-3"
           activeKey={activeTab}
-          onSelect={(tabKey) => setActiveTab(tabKey)}
+          onSelect={(tabKey) => {
+            if (typeof tabKey === 'string') {
+              setActiveTab(tabKey);
+            }
+          }}
         >
           <Tab eventKey="overview" title="Overview">
             Element for Overview and chronogram here

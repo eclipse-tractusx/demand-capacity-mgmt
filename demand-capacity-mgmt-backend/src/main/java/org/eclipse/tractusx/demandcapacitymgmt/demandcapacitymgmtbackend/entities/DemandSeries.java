@@ -55,6 +55,9 @@ public class DemandSeries {
     @Column(columnDefinition = "uuid", updatable = false, name = "id")
     private UUID id;
 
+    @Column(name = "capacity_group_id")
+    private String capacityGroupId;
+
     @OneToOne
     @JoinColumn(name = "customer_location_id", referencedColumnName = "ID")
     private CompanyEntity customerLocation;
@@ -63,14 +66,14 @@ public class DemandSeries {
     @Convert(converter = ListToStringConverter.class)
     private List<String> expectedSupplierLocation;
 
-    @ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "material_demand_id", referencedColumnName = "ID")
-    private MaterialDemandEntity materialDemandEntity;
-
     @OneToOne
     @JoinColumn(name = "demand_category_code_id", referencedColumnName = "ID")
     private DemandCategoryEntity demandCategory;
 
-    @OneToMany(mappedBy = "demandSeries", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "demand_series_id")
     private List<DemandSeriesValues> demandSeriesValues;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private MaterialDemandEntity materialDemand;
 }
