@@ -60,7 +60,7 @@ public class WeekBasedMaterialServiceTest {
         DemandWeekSeriesDto demandWeekSeriesDto = new DemandWeekSeriesDto();
 
         DemandSeriesCategoryDto demandSeriesCategoryDto = new DemandSeriesCategoryDto();
-        demandSeriesCategoryDto.setDemandCategoryCode("default");
+        demandSeriesCategoryDto.setId("f50c3e71-a1a7-44c9-9de6-2e7aaaf65ac4");
 
         demandWeekSeriesDto.setCustomerLocation("");
         demandWeekSeriesDto.setDemands(List.of(demandSeriesDto));
