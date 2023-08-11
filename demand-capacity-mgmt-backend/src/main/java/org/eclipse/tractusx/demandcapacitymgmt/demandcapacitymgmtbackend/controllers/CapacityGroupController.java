@@ -27,10 +27,10 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.api.CapacityGroupApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupDefaultViewResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,14 +41,20 @@ public class CapacityGroupController implements CapacityGroupApi {
     private final CapacityGroupService capacityGroupService;
 
     @Override
-    public ResponseEntity<List<CapacityGroupDefaultViewResponse>> getCapacityGroup() throws Exception {
-        return null;
+    public ResponseEntity<List<CapacityGroupDefaultViewResponse>> getCapacityGroup() {
+        List<CapacityGroupDefaultViewResponse> capacityGroupDefaultViewResponseList = capacityGroupService.getAll();
+        return ResponseEntity.status(HttpStatus.OK).body(capacityGroupDefaultViewResponseList);
     }
 
     @Override
-    public ResponseEntity<CapacityGroupResponse> postCapacityGroup(CapacityGroupRequest capacityGroupRequest)
-        throws Exception {
-        capacityGroupService.createCapacityGroup(capacityGroupRequest);
-        return null;
+    public ResponseEntity<CapacityGroupResponse> getCapacityGroupById(String capacityGroupId) {
+        CapacityGroupResponse responseDto = capacityGroupService.getCapacityGroupById(capacityGroupId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    @Override
+    public ResponseEntity<CapacityGroupResponse> postCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
+        CapacityGroupResponse capacityGroupResponse = capacityGroupService.createCapacityGroup(capacityGroupRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(capacityGroupResponse);
     }
 }

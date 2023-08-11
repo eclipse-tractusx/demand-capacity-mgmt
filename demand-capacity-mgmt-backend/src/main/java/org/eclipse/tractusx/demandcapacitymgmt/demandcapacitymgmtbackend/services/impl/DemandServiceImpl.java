@@ -95,7 +95,6 @@ public class DemandServiceImpl implements DemandService {
 
     @Override
     public MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest) {
-
         MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest);
         demand.setId(UUID.fromString(demandId));
 
