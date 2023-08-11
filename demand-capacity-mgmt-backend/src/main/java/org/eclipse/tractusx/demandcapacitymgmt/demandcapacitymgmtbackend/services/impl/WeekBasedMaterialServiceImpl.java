@@ -129,9 +129,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                     );
 
                     DemandSeriesCategoryDto demandSeriesCategoryDto = new DemandSeriesCategoryDto();
-                    demandSeriesCategoryDto.setDemandCategoryCode(
-                        demandSeries.getDemandCategory().getDemandCategoryCode()
-                    );
+                    demandSeriesCategoryDto.setId(demandSeries.getDemandCategory().getId().toString());
 
                     demandWeekSeriesDto.setDemandCategory(demandSeriesCategoryDto);
 
