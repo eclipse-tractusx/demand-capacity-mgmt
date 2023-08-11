@@ -38,9 +38,8 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.excepti
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UnityOfMeasureService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
@@ -57,6 +56,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final CapacityGroupRepository capacityGroupRepository;
 
     private final LinkDemandRepository linkDemandRepository;
+
+    private final DemandCategoryService demandCategoryService;
 
     @Override
     public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
@@ -175,9 +176,17 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                         .findById(UUIDUtil.generateUUIDFromString(s))
                         .orElseThrow();
 
+                    WeekBasedMaterialDemandEntity weekBasedMaterialDemandEntity = linkDemandEntity.getWeekBasedMaterialDemand();
+                    WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto = weekBasedMaterialDemandEntity.getWeekBasedMaterialDemand();
+                    CompanyEntity customerId  = companyService.getCompanyById(UUID.fromString(weekBasedMaterialDemandRequestDto.getCustomer()));
+
                     materialNumberCustomer.set(linkDemandEntity.getMaterialNumberCustomer());
 
                     materialDescriptionCustomer.set(linkDemandEntity.getMaterialNumberCustomer());
+
+                    String demandCategoryId = linkDemandEntity.getDemandCategoryId();
+                    DemandCategoryEntity demandCategoryEntity = demandCategoryService.findById(UUID.fromString(demandCategoryId));
+
 
                     linkDemandEntity.setLinked(true);
                     linkDemandRepository.save(linkDemandEntity);
@@ -186,6 +195,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                         .builder()
                         .materialNumberSupplier(linkDemandEntity.getMaterialNumberSupplier())
                         .materialNumberCustomer(linkDemandEntity.getMaterialNumberCustomer())
+                        .customerId(customerId)
+                        .demandCategory(demandCategoryEntity)
                         .build();
                 }
             )
@@ -205,6 +216,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             .name(capacityGroupRequest.getName())
             .materialNumberCustomer(materialNumberCustomer.get())
             .materialDescriptionCustomer(materialDescriptionCustomer.get())
+            .status(CapacityGroupStatus.DRAFT)
             .build();
     }
 

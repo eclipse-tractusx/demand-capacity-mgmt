@@ -393,7 +393,7 @@ components:
     DemandSeriesCategoryDto:
       type: object
       properties:
-        demandCategoryCode:
+        id:
           type: string
 
     DemandWeekSeriesDto:

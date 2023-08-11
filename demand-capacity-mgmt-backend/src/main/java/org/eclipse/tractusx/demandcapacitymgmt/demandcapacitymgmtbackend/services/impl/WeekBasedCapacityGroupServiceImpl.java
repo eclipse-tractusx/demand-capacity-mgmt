@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CustomerRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
@@ -164,6 +165,18 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
             .toList();
 
         basedCapacityGroupRequest.setCapacities(capacitiesDtos);
+    }
+
+    @Override
+    public WeekBasedCapacityGroupEntity findById(String capacityGroupId)  {
+        Optional<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntityOptional = weekBasedCapacityGroupRepository.findById(Integer.getInteger(capacityGroupId));
+
+        if (weekBasedCapacityGroupEntityOptional.isEmpty()){
+            throw new NotFoundException("WeekBasedCapacity not found");
+        }
+
+        return  weekBasedCapacityGroupEntityOptional.get();
+
     }
 
     private static CapacitiesDto getCapacitiesDto(CapacityTimeSeries capacityTimeSeries) {
