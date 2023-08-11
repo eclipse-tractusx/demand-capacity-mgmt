@@ -26,18 +26,16 @@ import { ExpectedSupplierLocation, Supplier } from "./supplier_interfaces";
 
 export interface Demand {
     id: string;
-    startDate:string,
-    endDate:string,
     materialDescriptionCustomer: string
     materialNumberCustomer: string
     materialNumberSupplier: string
     customerId: string
     supplierId: string
     unitMeasureId: string
-    materialDemandSeries: MaterialDemandSeries
+    materialDemandSeries: MaterialDemandSery[]
   }
   
-  export interface MaterialDemandSeries {
+  export interface MaterialDemandSery {
     customerLocationId: string
     expectedSupplierLocationId: string[]
     demandCategoryId: string
@@ -51,7 +49,7 @@ export interface Demand {
 
   /* Demand List */
   export interface DemandProp {
-    id: string;
+    id: string
     materialDescriptionCustomer: string
     materialNumberCustomer: string
     materialNumberSupplier: string
@@ -59,7 +57,25 @@ export interface Demand {
     supplier: Supplier
     unitMeasureId: UnitMeasureId
     changedAt: string
-    demandSeries: DemandSeries
+    demandSeries?: DemandSeries[] | undefined; 
+  }
+ 
+  export interface DemandSeries {
+    customerLocation: CustomerLocation
+    expectedSupplierLocation: ExpectedSupplierLocation[]
+    demandCategory: DemandCategory
+    demandSeriesValues: DemandSeriesValue[];
+  }
+    
+  export interface DemandSeriesValue {
+    calendarWeek: string
+    demand: number
+  }
+
+  export interface DemandCategory {
+    id: string
+    demandCategoryCode: string
+    demandCategoryName: string
   }
 
   export interface UnitMeasureId {
@@ -67,22 +83,3 @@ export interface Demand {
     codeValue: string
     displayValue: string
   }
-  
-  export interface DemandSeries {
-    customerLocation: CustomerLocation
-    expectedSupplierLocation: ExpectedSupplierLocation[]
-    demandCategory: DemandCategory
-    demandSeriesValues: DemandSeriesValue[]
-  }
-  
-  export interface DemandCategory {
-    id: string
-    demandCategoryCode: string
-    demandCategoryName: string
-  }
-  
-  export interface DemandSeriesValue {
-    calendarWeek: string
-    demand: number
-  }
-  

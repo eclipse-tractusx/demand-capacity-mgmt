@@ -20,8 +20,8 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, ChangeEvent, FormEvent } from 'react';
-import { Form, Button, Row,Col } from 'react-bootstrap';
+import React, { useContext, useState, ChangeEvent, FormEvent, useCallback } from 'react';
+import { Form, Button, Row, Col } from 'react-bootstrap';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import DemandCategoryOptions from './DemandCategoryOptions';
@@ -29,8 +29,12 @@ import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import CompanyOptions from '../CompanyOptions';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
 import UnitsOfMeasureOptions from '../UnitsofMeasureOptions';
-import {Demand} from '../../interfaces/demand_interfaces';
+import { Demand } from '../../interfaces/demand_interfaces';
 import '../../App.css';
+
+type AddFormProps = {
+  fetchDemandProps: () => void; // Function to fetch demands
+};
 
 const getMondaysBetweenDates = (startDate: Date, endDate: Date): string[] => {
   const mondays: string[] = [];
@@ -49,91 +53,137 @@ const getMondaysBetweenDates = (startDate: Date, endDate: Date): string[] => {
   return mondays;
 };
 
-const AddForm: React.FC = () => {
+const useHandleSubmit = (initialFormState: Demand) => {
   const { createDemand } = useContext(DemandContext)!;
+  const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'submitting' | 'submitted'>('idle');
 
+  const handleSubmit = useCallback(async (formState: Demand) => {
+
+    // Utility function to calculate the Mondays between the start and end dates
+    const calculateDemandSeriesValues = (startDate: Date, endDate: Date) => {
+      const mondays = getMondaysBetweenDates(startDate, endDate);
+      const values = mondays.map((monday) => ({
+        calendarWeek: monday,
+        demand: 0,
+      }));
+      return values;
+    };
+
+    const startDateInput = document.querySelector<HTMLInputElement>('#startDate');
+    const endDateInput = document.querySelector<HTMLInputElement>('#endDate');
+
+    if (startDateInput && endDateInput) {
+      const startDateObj = new Date(startDateInput.value);
+      const endDateObj = new Date(endDateInput.value);
+
+      const calculatedValues = calculateDemandSeriesValues(startDateObj, endDateObj);
+
+      // Build the materialDemandSeries object
+      const materialDemandSeries = {
+        customerLocationId: formState.customerId,
+        expectedSupplierLocationId: [formState.supplierId],
+        demandCategoryId: formState.materialDemandSeries[0].demandCategoryId,
+        demandSeriesValues: calculatedValues,
+      };
+
+      // Build the final demand object
+      const demand = {
+        id: formState.id,
+        materialDescriptionCustomer: formState.materialDescriptionCustomer,
+        materialNumberCustomer: formState.materialNumberCustomer,
+        materialNumberSupplier: formState.materialNumberSupplier,
+        customerId: formState.customerId,
+        supplierId: formState.supplierId,
+        unitMeasureId: formState.unitMeasureId,
+        materialDemandSeries: [materialDemandSeries], // Wrap materialDemandSeries in an array
+      };
+
+      try {
+        setSubmissionStatus('submitting'); // Set the submission status to 'submitting' while the API call is in progress
+
+        await createDemand(demand);
+        setSubmissionStatus('submitted'); // Set the submission status to 'submitted' if the API call is successful
+      } catch (error) {
+        console.error('Error creating demand:', error);
+        setSubmissionStatus('idle'); // Set the submission status back to 'idle' if the API call fails
+        // Handle error if needed
+      }
+    }
+  }, []);
+
+  return { submissionStatus, handleSubmit };
+};
+
+const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
   const initialFormState: Demand = {
     id: '',
     materialDescriptionCustomer: '',
     materialNumberCustomer: '',
     materialNumberSupplier: '',
-    startDate:'',
-    endDate:'',
-    customerId: '5d210fb8-260d-4190-9578-f62f9c459703', //Id do submiter TODO
+    customerId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6', //This is my current login ID
     supplierId: '',
     unitMeasureId: '',
-    materialDemandSeries: {
-      customerLocationId: '5d210fb8-260d-4190-9578-f62f9c459703', //In this case im the customer so its my ID
-      expectedSupplierLocationId: [],
-      demandCategoryId: '',
-      demandSeriesValues: []
-    }
+    materialDemandSeries: [
+      {
+        customerLocationId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6',  //This is my current login ID
+        expectedSupplierLocationId: [],
+        demandCategoryId: '',
+        demandSeriesValues: [],
+      },
+    ],
   };
 
   const [formState, setFormState] = useState<Demand>(initialFormState);
-  const [demandSeriesValues, setDemandSeriesValues] = useState<{ calendarWeek: string; demand: number }[]>([]);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false); // New state to handle the success message
+  const { submissionStatus, handleSubmit } = useHandleSubmit(initialFormState);
 
-  // Utility function to calculate the Mondays between the start and end dates
-  const calculateDemandSeriesValues = (startDate: Date, endDate: Date) => {
-    const mondays = getMondaysBetweenDates(startDate, endDate);
-    const values = mondays.map((monday) => ({
-      calendarWeek: monday,
-      demand: 0,
-    }));
-    return values;
-  };
-
-
-  const handleSubmit = (e: FormEvent) => {
+  const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    const startDateObj = new Date(formState.startDate);
-    const endDateObj = new Date(formState.endDate);
-    if (startDateObj && endDateObj) {
-      const calculatedValues = calculateDemandSeriesValues(startDateObj, endDateObj);
-      // Call createDemand after setting the demandSeriesValues
-      createDemand({ ...formState, materialDemandSeries: { ...formState.materialDemandSeries, demandSeriesValues: calculatedValues } });
-    }
+    await handleSubmit(formState);
+    setShowSuccessMessage(true);
+    fetchDemandProps();
   };
-
-
-{/*  const resetForm = () => {
-    setFormState(initialFormState);
-  };*/}
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormState((prevFormState) => ({
       ...prevFormState,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const onInputChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    if (name === 'supplierId') {
-      setFormState((prevFormState) => ({
-        ...prevFormState,
-        supplierId: value, // Update supplierId in the top-level formState
-        materialDemandSeries: {
-          ...prevFormState.materialDemandSeries,
-          expectedSupplierLocationId: [value], // Fill the expectedSupplierLocationId array with the value of supplierId
-        },
-      }));
-    } else if (name === 'demandCategoryId') {
-      setFormState((prevFormState) => ({
-        ...prevFormState,
-        materialDemandSeries: {
-          ...prevFormState.materialDemandSeries,
-          demandCategoryId: value, // Ensure demandCategoryId is set properly
-        },
-      }));
-    } else {
-      setFormState((prevFormState) => ({
-        ...prevFormState,
-        [name]: value,
-      }));
-    }
+    
+    setFormState((prevFormState) => {
+      if (name === 'supplierId') {
+        return {
+          ...prevFormState,
+          supplierId: value,
+          materialDemandSeries: [
+            {
+              ...prevFormState.materialDemandSeries[0],
+              expectedSupplierLocationId: [value],
+            },
+          ],
+        };
+      } else if (name === 'demandCategoryId') {
+        return {
+          ...prevFormState,
+          materialDemandSeries: [
+            {
+              ...prevFormState.materialDemandSeries[0],
+              demandCategoryId: value,
+            },
+          ],
+        };
+      } else {
+        return {
+          ...prevFormState,
+          [name]: value,
+        };
+      }
+    });
   };
 
   const getNextMonday = () => {
@@ -142,156 +192,164 @@ const AddForm: React.FC = () => {
     nextMonday.setDate(today.getDate() + ((1 + 7 - today.getDay()) % 7));
     return nextMonday;
   };
-  
+
   const [startDateValid, setStartDateValid] = useState(true);
   const [endDateValid, setEndDateValid] = useState(true);
-  
+
   const onStartDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = new Date(e.target.value);
-    setStartDateValid(selectedDate.getDay() === 1);
+    const selectedStartDate = new Date(e.target.value);
+    setStartDateValid(selectedStartDate.getDay() === 1);
     setEndDateValid(true);
     setFormState((prevFormState) => ({
       ...prevFormState,
       [e.target.name]: e.target.value,
     }));
   };
-  
+
   const onEndDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = new Date(e.target.value);
-    setEndDateValid(selectedDate.getDay() === 1 && selectedDate >= new Date(formState.startDate));
+    const selectedEndDate = new Date(e.target.value);
+    setEndDateValid(selectedEndDate.getDay() === 1 && selectedEndDate >= new Date(e.target.value));
     setFormState((prevFormState) => ({
       ...prevFormState,
       [e.target.name]: e.target.value,
     }));
   };
-  
+
   return (
-    <Form onSubmit={handleSubmit}>
-      <Row className="mb-3">
-        <Form.Group className="form-group required"as={Col}>
-          <Form.Label className="control-label required-field-label" >Start Date</Form.Label>
-          <Form.Control 
-            type="date"
-            placeholder="Start Date"
-            name="startDate"
-            id="startDate"
-            pattern="\d{4}-\d{2}-\d{2}"
-            min={getNextMonday().toISOString().slice(0, 10)}
-            onChange={onStartDateChange}
-            required
-            isInvalid={!startDateValid}
-          />
-          <Form.Control.Feedback type="invalid">
-            Please select a Monday for the Start Date.
-          </Form.Control.Feedback>
-        </Form.Group>
-        <Form.Group className="form-group required" as={Col}>
-          <Form.Label className="control-label required-field-label">End Date</Form.Label>
-          <Form.Control 
-            type="date"
-            placeholder="End Date"
-            name="endDate"
-            id="endDate"
-            pattern="\d{4}-\d{2}-\d{2}"
-            min={getNextMonday().toISOString().slice(0, 10)}
-            onChange={onEndDateChange}
-            required
-            isInvalid={!endDateValid}
-          />
-          <Form.Control.Feedback type="invalid">
-            End Date has to be a Monday after Start Date.
-          </Form.Control.Feedback>
-        </Form.Group>
-      </Row>
+    <>
+        {showSuccessMessage && submissionStatus === 'submitted' ? (
+        <div className="alert alert-success" role="alert">
+          Material demand has been created!
+          Please reach to the <a href='#overview'>Overview</a> to adjust the demand.
+        </div>
+      ) : (
+        <Form>
+          <Row className="mb-3">
+            <Form.Group className="form-group required" as={Col}>
+              <Form.Label className="control-label required-field-label">Start Date</Form.Label>
+              <Form.Control
+                type="date"
+                placeholder="Start Date"
+                name="startDate"
+                id="startDate"
+                pattern="\d{4}-\d{2}-\d{2}"
+                min={getNextMonday().toISOString().slice(0, 10)}
+                onChange={onStartDateChange}
+                required
+                isInvalid={!startDateValid}
+              />
+              <Form.Control.Feedback type="invalid">Please select a Monday for the Start Date.</Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="form-group required" as={Col}>
+              <Form.Label className="control-label required-field-label">End Date</Form.Label>
+              <Form.Control
+                type="date"
+                placeholder="End Date"
+                name="endDate"
+                id="endDate"
+                pattern="\d{4}-\d{2}-\d{2}"
+                min={getNextMonday().toISOString().slice(0, 10)}
+                onChange={onEndDateChange}
+                required
+                isInvalid={!endDateValid}
+              />
+              <Form.Control.Feedback type="invalid">End Date has to be a Monday after Start Date.</Form.Control.Feedback>
+            </Form.Group>
+          </Row>
 
-      <Row className="mb-3">
-      <Form.Group className="form-group required" as={Col} >
-      <Form.Label className="control-label required-field-label">Unit of Measure</Form.Label>
-        <Form.Select
-                  name="unitMeasureId"
-                  id="unitMeasureId"
-                  onChange={onInputChangeSelect}
-                  value={formState.unitMeasureId}
-                  required>
-                    <UnitsofMeasureContextContextProvider>
-                      <UnitsOfMeasureOptions/>
-                    </UnitsofMeasureContextContextProvider>
-        </Form.Select>
-      </Form.Group>
-    </Row>
-    <Form.Group className="mb-3 form-group required">
-      <Form.Label className="control-label required-field-label">Supplier</Form.Label>
-      <Form.Select aria-label="Default select example"
-                  name="supplierId"
-                  id="supplierId"
-                  onChange={onInputChangeSelect}
-                  value={formState.supplierId}
-                  required>
-                    <CompanyContextProvider>
-                      <CompanyOptions/>
-                    </CompanyContextProvider>
+          <Row className="mb-3">
+            <Form.Group className="form-group required" as={Col}>
+              <Form.Label className="control-label required-field-label">Unit of Measure</Form.Label>
+              <Form.Select
+                name="unitMeasureId"
+                id="unitMeasureId"
+                onChange={onInputChangeSelect}
+                value={formState.unitMeasureId}
+                required
+              >
+                <UnitsofMeasureContextContextProvider>
+                  <UnitsOfMeasureOptions selectedUnitMeasureId=''/>
+                </UnitsofMeasureContextContextProvider>
+              </Form.Select>
+            </Form.Group>
+          </Row>
+          <Form.Group className="mb-3 form-group required">
+            <Form.Label className="control-label required-field-label">Supplier</Form.Label>
+            <Form.Select
+              aria-label="Default select example"
+              name="supplierId"
+              id="supplierId"
+              onChange={onInputChangeSelect}
+              value={formState.supplierId}
+              required
+            >
+              <CompanyContextProvider>
+                <CompanyOptions selectedCompanyName=''/>
+              </CompanyContextProvider>
+            </Form.Select>
+          </Form.Group>
 
-        </Form.Select>
-      </Form.Group>
+          <Form.Group className="mb-3 form-group required">
+            <Form.Label className="control-label required-field-label">Demand Category</Form.Label>
+            <Form.Select
+              aria-label="Default select example"
+              placeholder="Demand Category"
+              name="demandCategoryId"
+              id="demandCategoryId"
+              value={formState.materialDemandSeries[0].demandCategoryId}
+              onChange={onInputChangeSelect}
+              required
+            >
+              <DemandCategoryContextProvider>
+                <DemandCategoryOptions selectedDemandCategoryId=''/>
+              </DemandCategoryContextProvider>
+            </Form.Select>
+          </Form.Group>
 
-    <Form.Group className="mb-3 form-group required">
-      <Form.Label className="control-label required-field-label">Demand Category</Form.Label>
-      <Form.Select aria-label="Default select example"
-                  placeholder="Demand Category"
-                  name="demandCategoryId"
-                  id="demandCategoryId"
-                  value={formState.materialDemandSeries.demandCategoryId} 
-                  onChange={onInputChangeSelect}
-                  required>
-                    <DemandCategoryContextProvider>
-                      <DemandCategoryOptions/>
-                    </DemandCategoryContextProvider>
-        </Form.Select>
-      </Form.Group>
+          <Form.Group className="mb-3 form-group required">
+            <Form.Label className="control-label required-field-label">Material Number Customer</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Material Number"
+              id="materialNumberCustomer"
+              name="materialNumberCustomer"
+              value={formState.materialNumberCustomer}
+              onChange={onInputChange}
+              required
+            />
+          </Form.Group>
 
-      <Form.Group className="mb-3 form-group required">
-      <Form.Label className="control-label required-field-label"l>Material Number Customer</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Material Number"
-          id="materialNumberCustomer"
-          name="materialNumberCustomer"
-          value={formState.materialNumberCustomer}
-          onChange={onInputChange}
-          required
-        />
-      </Form.Group>
+          <Form.Group className="mb-3 required">
+            <Form.Label>Material Number Supplier</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Material Number"
+              id="materialNumberSupplier"
+              name="materialNumberSupplier"
+              value={formState.materialNumberSupplier}
+              onChange={onInputChange}
+            />
+          </Form.Group>
 
-      <Form.Group className="mb-3 required  ">
-      <Form.Label>Material Number Supplier</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Material Number"
-          id="materialNumberSupplier"
-          name="materialNumberSupplier"
-          value={formState.materialNumberSupplier}
-          onChange={onInputChange}
-        />
-      </Form.Group>
+          <Form.Group className="mb-3 form-group required">
+            <Form.Label className="control-label required-field-label">Description</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Description"
+              id="materialDescriptionCustomer"
+              name="materialDescriptionCustomer"
+              value={formState.materialDescriptionCustomer}
+              onChange={onInputChange}
+              required
+            />
+          </Form.Group>
 
-      <Form.Group className="mb-3 form-group required">
-      <Form.Label className="control-label required-field-label"l>Description</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Description"
-          id="materialDescriptionCustomer"
-          name="materialDescriptionCustomer"
-          value={formState.materialDescriptionCustomer}
-          onChange={onInputChange}
-          required
-        />
-      </Form.Group>
-
-
-      <Button variant="success" type="submit">
-        Add New Demand  
-      </Button>
-    </Form>
+          <Button variant="success" type="submit" onClick={handleFormSubmit} disabled={submissionStatus === 'submitting'}>
+          {submissionStatus === 'submitting' ? 'Adding...' : 'Add New Demand'}
+        </Button>
+        </Form>
+      )}
+    </>
   );
 };
 

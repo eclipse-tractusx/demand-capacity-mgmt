@@ -24,7 +24,7 @@ info:
   title: Spring Template API
   version: '1.0'
 servers:
-  - url: https://localhost:8080/api/v1
+  - url: https://localhost:8080/
 
 paths:
 
@@ -92,7 +92,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DemandRequestUpdateDto'
+              $ref: '#/components/schemas/MaterialDemandRequest'
       parameters:
         - in: 'path'
           name: 'demand_id'
@@ -155,6 +155,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CapacityGroupResponse'
+
+  /capacityGroup/{capacityGroup_id}:
+    get:
+      tags:
+        - capacityGroup
+      summary: get capacityGroup by ID
+      operationId: getCapacityGroupById
+      parameters:
+        - in: 'path'
+          name: 'capacityGroup_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapacityGroupResponse'
+
 
 
   /weekbasedcapacitygroup:
@@ -311,7 +332,7 @@ components:
         demandCategory:
           type: string
 
-    LinkedDemandSeries:
+    LinkedDemandSeriesRequest:
       type: object
       properties:
         materialNumberCustomer:
@@ -341,7 +362,7 @@ components:
         linkedDemandSeries:
           type: array
           items:
-            $ref: '#/components/schemas/LinkedDemandSeries'
+            $ref: '#/components/schemas/LinkedDemandSeriesRequest'
         supplier:
           type: string
         name:
@@ -429,7 +450,9 @@ components:
         unitMeasureId:
           type: string
         materialDemandSeries:
-          $ref: '#/components/schemas/MaterialDemandSeries'
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialDemandSeries'
 
     MaterialDemandSeries:
       type: object
@@ -458,6 +481,8 @@ components:
     MaterialDemandResponse:
       type: object
       properties:
+        id:
+          type: string
         materialDescriptionCustomer:
           type: string
         materialNumberCustomer:
@@ -473,7 +498,9 @@ components:
         changedAt:
           type: string
         demandSeries:
-          $ref: '#/components/schemas/MaterialDemandSeriesResponse'
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialDemandSeriesResponse'
 
     CompanyDto:
       type: object

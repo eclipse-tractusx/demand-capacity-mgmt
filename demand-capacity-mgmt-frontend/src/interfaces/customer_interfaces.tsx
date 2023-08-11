@@ -21,14 +21,15 @@
  */
 
 export interface Customer {
-    bpn: string
-    companyName: string
-    street: string
-    number: string
-    zipCode: string
-    country: string
-    myCompany: string
-  }
+  id: string
+  bpn: string
+  companyName: string
+  street: string
+  number: string
+  zipCode: string
+  country: string
+  myCompany: string
+}
 
   export interface CustomerLocation {
     bpn: string

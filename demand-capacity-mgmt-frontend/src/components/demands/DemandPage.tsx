@@ -10,9 +10,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useContext, useState, useMemo, useCallback } from 'react';
-import { Modal, Button,Form,Col,Row, Toast, ToastContainer } from 'react-bootstrap';
-import { DemandContext } from '../../contexts/DemandContextProvider';
+import React, { useContext, useState, useMemo ,useCallback, useEffect} from 'react';
+import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import { DemandProp } from '../../interfaces/demand_interfaces';
 import Pagination from '../Pagination';
 import DemandsTable from './DemandsTable';
@@ -20,36 +19,45 @@ import DemandsSearch from '../Search';
 import EditForm from './DemandEditForm';
 import { FcCancel } from 'react-icons/fc';
 import AddForm from './DemandAddForm';
-
+import { DemandContext } from '../../contexts/DemandContextProvider';
+import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
+import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
+import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 
 const DemandsPage: React.FC = () => {
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+
   const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
-  const { demands, deleteDemand } = useContext(DemandContext)!; //HERE
-  
+  const { deleteDemand } = useContext(DemandContext)!;
+  const { demandprops, fetchDemandProps } = useContext(DemandContext)!; // Make sure to get the fetchDemands function from the context.
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortColumn, setSortColumn] = useState('');
-  const [sortOrder, setSortOrder] = useState('');
-  const [demandsPerPage, setDemandsPerPage] = useState(5); // Set the default value here
+  
+  const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  
+  const [demandsPerPage, setDemandsPerPage] = useState(5); //Only show 5 items by default
+  const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
 
-  const handleSort = (column: string) => {
+  const handleSort = (column: string | null) => {
     if (sortColumn === column) {
       // If the same column is clicked again, toggle the sort order
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       // If a different column is clicked, set it as the new sort column and default to ascending order
-      setSortColumn(column);
+      setSortColumn(column as keyof DemandProp | null);
       setSortOrder('asc');
     }
   };
-
-  const handleDeleteDemand = useCallback(
-    async (id: number) => {
+  
+  
+ const handleDeleteDemand = useCallback(
+    async (id: string) => {
       try {
         await deleteDemand(id);
+        fetchDemandProps();
       } catch (error) {
         console.error('Error deleting demand:', error);
       }
@@ -59,50 +67,51 @@ const DemandsPage: React.FC = () => {
 
   const handleEdit = (demand: DemandProp) => {
     setSelectedDemand(demand);
-    setShowEditModal(true);
+    setIsEditModalOpen(true);
   };
 
-  const handleCloseEdit = () => setShowEditModal(false);
   const handleCloseAdd = () => setShowAddModal(false);
 
-
-  const filteredDemands = useMemo(() => {
-    let sortedDemands = [...demands];
+  useMemo(() => {
+    let sortedDemands = [...demandprops];
 
     if (searchQuery !== '') {
       sortedDemands = sortedDemands.filter((demand) =>
         demand.materialDescriptionCustomer.toLowerCase().includes(searchQuery.toLowerCase()) ||
         demand.id.toString().includes(searchQuery.toLowerCase()) ||
-        demand.customerId.toString().includes(searchQuery.toLowerCase())||
-        demand.materialDemandSeries.demandCategoryId.toString().includes(searchQuery.toLowerCase())||
-        demand.materialNumberCustomer.toString().includes(searchQuery.toLowerCase())
+        demand.customer.bpn.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+        demand.materialNumberCustomer.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+        demand.materialNumberSupplier.toString().toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    if (sortColumn !== '') {
+    if (sortColumn) {
       sortedDemands.sort((a, b) => {
         const aValue = a[sortColumn];
         const bValue = b[sortColumn];
-
-        if (typeof aValue === 'string') {
+      
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
           // Sort strings alphabetically
           return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
-        } else if (typeof aValue === 'number') {
+        } else if (typeof aValue === 'number' && typeof bValue === 'number') {
           // Sort numbers numerically
           return aValue - bValue;
         }
-
+      
+        // If the types are not string or number, return 0 (no sorting)
         return 0;
       });
-
+      
+    
       if (sortOrder === 'desc') {
         // Reverse the array if the sort order is descending
         sortedDemands.reverse();
       }
     }
+    
 
-    return sortedDemands;
-  }, [demands, searchQuery, sortColumn, sortOrder]);
+    setFilteredDemands(sortedDemands);
+  }, [demandprops, searchQuery, sortColumn, sortOrder]);
 
   const slicedDemands = useMemo(() => {
     const indexOfLastDemand = currentPage * demandsPerPage;
@@ -119,16 +128,27 @@ const DemandsPage: React.FC = () => {
     () =>
       slicedDemands.map((demand) => (
         <tr key={demand.id}>
-          <td><span className="badge rounded-pill text-bg-primary" id="tag-ok">Details</span></td>
-          <td>{demand.id}</td>
-          <td>{demand.customerId}</td>
+          <td><span className="badge rounded-pill text-bg-primary" id={demand.id}>Details</span></td>
+          <td>{demand.customer.bpn}</td>
           <td>{demand.materialNumberCustomer}</td>
-          <td>{demand.materialDemandSeries?.demandCategoryId}</td>
-          <td>{demand.materialDescriptionCustomer}</td>
-          <td>{demand.startDate.split('T')[0]}</td>
-          <td>{demand.endDate.split('T')[0]}</td>
+          <td>{demand.materialNumberSupplier}</td>
           <td>
-            {/* TODO Depending on status, this should be a different span*/}
+              {demand.demandSeries && demand.demandSeries.length > 0
+                ? demand.demandSeries[0].demandCategory?.demandCategoryName || 'N/A'
+                : 'N/A'}
+            </td>
+          <td>{demand.materialDescriptionCustomer}</td>
+            <td>
+            {demand.demandSeries && demand.demandSeries.length > 0 && demand.demandSeries[0].demandSeriesValues && demand.demandSeries[0].demandSeriesValues.length > 0
+              ? demand.demandSeries[0].demandSeriesValues[0]?.calendarWeek?.split('T')[0] ?? 'N/A'
+              : 'N/A'}
+          </td>
+          <td>
+            {demand.demandSeries && demand.demandSeries.length > 0 && demand.demandSeries[0].demandSeriesValues && demand.demandSeries[0].demandSeriesValues.length > 0
+              ? demand.demandSeries[0].demandSeriesValues[demand.demandSeries[0].demandSeriesValues.length - 1]?.calendarWeek?.split('T')[0] ?? 'N/A'
+              : 'N/A'}
+          </td>
+          <td>
         <span className="badge rounded-pill text-bg-success" id="tag-ok">OK</span>
         {/*<span className="badge rounded-pill text-bg-warning" id="tag-warning">Warning</span>
         <span className="badge rounded-pill text-bg-danger" id="tag-danger">Danger</span>*/}
@@ -162,12 +182,13 @@ const DemandsPage: React.FC = () => {
         </div>
       </div>
 
-      <DemandsTable
-        sortColumn={sortColumn}
-        sortOrder={sortOrder}
-        handleSort={handleSort}
-        demandItems={demandItems}
-      />
+              <DemandsTable
+          sortColumn={sortColumn}
+          sortOrder={sortOrder}
+          handleSort={(column: string| null) => handleSort(column)} // Pass the correct parameter type
+          demandItems={demandItems}
+        />
+
       <div className="container">
       <div className="row">
           <Pagination
@@ -202,8 +223,8 @@ const DemandsPage: React.FC = () => {
       </div>
 
       <Modal
-        show={showEditModal}
-        onHide={handleCloseEdit}
+        show={isEditModalOpen}
+        onHide={() => setIsEditModalOpen(false)}
         backdrop="static"
         keyboard={false}
         size="lg"
@@ -212,7 +233,13 @@ const DemandsPage: React.FC = () => {
           <Modal.Title>Edit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {selectedDemand && <EditForm theDemand={selectedDemand} />}
+          <UnitsofMeasureContextContextProvider>
+            <DemandCategoryContextProvider>
+              <CompanyContextProvider>
+                {selectedDemand && <EditForm theDemand={selectedDemand} onCloseModal={() => setIsEditModalOpen(false)} />}
+              </CompanyContextProvider>
+            </DemandCategoryContextProvider>
+          </UnitsofMeasureContextContextProvider>
         </Modal.Body>
       </Modal>
 
@@ -227,7 +254,7 @@ const DemandsPage: React.FC = () => {
           <Modal.Title>New Material Demand</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <AddForm/>
+        <AddForm fetchDemandProps={fetchDemandProps}/>
         </Modal.Body>
       </Modal>
 

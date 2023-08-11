@@ -23,24 +23,28 @@
 import React, { useContext } from 'react';
 import { CompanyContext } from '../contexts/CompanyContextProvider';
 
+interface CompanyOptionsProps {
+  selectedCompanyName: string;
+}
 
-const CompanyOptions: React.FC = () => {
+const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName }) => {
   const companiesContextData = useContext(CompanyContext);
-  const { companies } = companiesContextData || {}; // Ensure context data is available
+  const { companies } = companiesContextData || {};
 
-  // Use the demandcategories array to fill the <select> options
+  // Use the companies array to fill the <select> options
   return (
-<>
-<option disabled={true} value="">
-          --Choose an option--
-        </option>
-        {companies &&
-          companies.map((company) => (
-            <option key={company.id} value={company.id}>
-              {company.companyName}
-            </option>
-          ))}
-</>
+    <>
+      <option disabled={true} value="">
+        --Choose an option--
+      </option>
+      {companies &&
+        companies.map((company) => (
+          <option key={company.id} value={company.id} selected={company.companyName === selectedCompanyName}>
+            {company.companyName}
+          </option>
+        ))}
+    </>
   );
 };
- export default CompanyOptions;
+
+export default CompanyOptions;

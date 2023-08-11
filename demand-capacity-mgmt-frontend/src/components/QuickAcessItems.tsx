@@ -24,6 +24,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { useState } from 'react';
 import DemandsPage from './demands/DemandPage';
 import DemandContextProvider from '../contexts/DemandContextProvider';
+import '../index.css';
 
 function QuickAcessItems() {
 
@@ -39,27 +40,30 @@ function QuickAcessItems() {
   <br />
   <Button variant="primary" className=' m-1 display-4'><AiOutlineLink/></Button>
 </div>
-<Modal
-        show={show}
-        onHide={handleClose}
-        backdrop="static"
-        keyboard={false}
-        size="xl"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Demand Management View</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-        <DemandContextProvider>
-          <DemandsPage></DemandsPage>
-        </DemandContextProvider>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+    <DemandContextProvider>
+    <Modal
+            show={show}
+            onHide={handleClose}
+            backdrop="static"
+            keyboard={false}
+            dialogClassName="custom-modal" 
+            fullscreen="xl"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Demand Management View</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+            <DemandContextProvider>
+              <DemandsPage></DemandsPage>
+            </DemandContextProvider>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
+      </DemandContextProvider>
 </>
   );
 }

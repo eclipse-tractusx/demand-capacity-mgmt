@@ -24,7 +24,7 @@ spring:
     database: POSTGRESQL
     show-sql: true
   datasource:
-    url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dmc}
+    url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
     username: ${DCM_DATASOURCE_USER:dcm}
     password: ${DCM_DATASOURCE_PASS:dcm}
     driverClassName: org.postgresql.Driver

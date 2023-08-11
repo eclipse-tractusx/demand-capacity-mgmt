@@ -52,7 +52,7 @@ root.render(
 </Router>
 <DemandContextProvider>
             <QuickAcessItems></QuickAcessItems>
-        </DemandContextProvider>
+</DemandContextProvider>
 </>
 
 );
