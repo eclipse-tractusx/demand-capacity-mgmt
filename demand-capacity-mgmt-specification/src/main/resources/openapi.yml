@@ -24,7 +24,7 @@ info:
   title: Spring Template API
   version: '1.0'
 servers:
-  - url: https://localhost:8080/api/v1
+  - url: https://localhost:8080/
 
 paths:
 
@@ -155,6 +155,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CapacityGroupResponse'
+
+  /capacityGroup/{capacityGroup_id}:
+    get:
+      tags:
+        - capacityGroup
+      summary: get capacityGroup by ID
+      operationId: getCapacityGroupById
+      parameters:
+        - in: 'path'
+          name: 'capacityGroup_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapacityGroupResponse'
+
 
 
   /weekbasedcapacitygroup:
