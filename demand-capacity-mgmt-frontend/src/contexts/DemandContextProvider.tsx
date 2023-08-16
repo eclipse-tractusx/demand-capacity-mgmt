@@ -50,6 +50,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       });
       const result: DemandProp[] = response.data;
       setDemandProps(result);
+      console.log(demands)// todo clean
     } catch (error) {
       console.error('Error fetching demands:', error);
     }
@@ -84,6 +85,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
     try {
       console.log(newDemand);
       const response = await axios.post('/demand', newDemand);
+      console.log(response) //todo clean
       fetchDemandProps();
     } catch (error) {
       console.error('Error creating demand:', error);

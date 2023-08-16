@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsProvider, { CapacityGroupContext } from "../../contexts/CapacityGroupsContextProvider";
+import CapacityGroupsProvider from "../../contexts/CapacityGroupsContextProvider";
 import CapacityGroupsList from "./CapacityGroupsView";
 
 
