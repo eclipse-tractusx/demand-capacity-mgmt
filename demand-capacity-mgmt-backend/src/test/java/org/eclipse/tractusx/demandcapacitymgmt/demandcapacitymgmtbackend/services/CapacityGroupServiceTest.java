@@ -40,8 +40,8 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMateri
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CapacityGroupRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.DemandCategoryRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl.CapacityGroupServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,10 +65,10 @@ public class CapacityGroupServiceTest {
     private CapacityGroupRepository capacityGroupRepository;
 
     @Mock
-    private WeekBasedMaterialDemandRepository weekBasedMaterialDemandRepository;
+    private LinkDemandRepository linkDemandRepository;
 
     @Mock
-    private LinkDemandRepository linkDemandRepository;
+    private DemandCategoryService demandCategoryService;
 
     private static CapacityGroupRequest capacityGroupRequest = createCapacityGroupRequest();
 
@@ -78,8 +78,9 @@ public class CapacityGroupServiceTest {
 
     private static UnitMeasureEntity unitMeasure = createUnitMeasureEntity();
 
-    private static WeekBasedMaterialDemandEntity weekBasedMaterialDemand = createWeekBasedMaterialDemand();
+    private static WeekBasedMaterialDemandEntity weekBasedMaterialDemandEntity = createWeekBasedMaterialDemandEntity();
 
+    private static DemandCategoryEntity demandCategoryEntity = createDemandCategoryEntity();
     private CapacityGroupEntity capacityGroupEntity = createCapacityGroupEntity();
 
     @Test
@@ -87,8 +88,9 @@ public class CapacityGroupServiceTest {
         when(companyService.getCompanyIn(any())).thenReturn(List.of(company));
         when(unityOfMeasureService.findById(any())).thenReturn(null);
         when(companyService.getCompanyById(any())).thenReturn(company);
+        when(demandCategoryService.findById(any())).thenReturn(demandCategoryEntity);
         when(linkDemandRepository.findById(any())).thenReturn(Optional.of(linkDemandEntity));
-        when(weekBasedMaterialDemandRepository.findById(any())).thenReturn(Optional.of(weekBasedMaterialDemand));
+       // when(demandCategoryService.save(any())).thenReturn(demandCategoryEntity);
         when(capacityGroupRepository.save(any())).thenReturn(capacityGroupEntity);
 
         capacityGroupService.createCapacityGroup(capacityGroupRequest);
@@ -118,48 +120,50 @@ public class CapacityGroupServiceTest {
 
     private static CompanyEntity createCompanyEntity() {
         return CompanyEntity
-            .builder()
-            .id(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01641"))
-            .myCompany("Test")
-            .companyName("Test")
-            .build();
+                .builder()
+                .id(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01641"))
+                .myCompany("Test")
+                .companyName("Test")
+                .build();
     }
 
     private static LinkDemandEntity createLinkDemandEntity() {
         return LinkDemandEntity
-            .builder()
-            .linked(false)
-            .demandCategoryId("")
-            .materialNumberSupplier("")
-            .materialNumberCustomer("")
-            .build();
+                .builder()
+                .linked(false)
+                .demandCategoryId("08b95a75-11a7-4bea-a958-821b9cb01642")
+                .materialNumberSupplier("08b95a75-11a7-4bea-a958-821b9cb01642")
+                .materialNumberCustomer("08b95a75-11a7-4bea-a958-821b9cb01642")
+                .weekBasedMaterialDemand(weekBasedMaterialDemandEntity)
+
+                .build();
     }
 
     private static UnitMeasureEntity createUnitMeasureEntity() {
         return UnitMeasureEntity
-            .builder()
-            .id(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01643"))
-            .codeValue("Kilogram")
-            .displayValue("Kg")
-            .build();
+                .builder()
+                .id(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01643"))
+                .codeValue("Kilogram")
+                .displayValue("Kg")
+                .build();
     }
 
     private static CapacityGroupEntity createCapacityGroupEntity() {
         CapacityGroupEntity capacityGroup = CapacityGroupEntity
-            .builder()
-            .id(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01642"))
-            .capacityGroupId(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01642"))
-            .materialDescriptionCustomer("08b95a75-11a7-4bea-a958-821b9cb01641")
-            .materialNumberCustomer("08b95a75-11a7-4bea-a958-821b9cb01641")
-            .changedAt(LocalDateTime.now())
-            .customerId(company)
-            .supplierId(company)
-            .unitMeasure(unitMeasure)
-            .linkedDemandSeries(new ArrayList<>())
-            .supplierLocation(new ArrayList<>())
-            .name("Test")
-            .status(CapacityGroupStatus.READY_SYNCHRONIZE)
-            .build();
+                .builder()
+                .id(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01642"))
+                .capacityGroupId(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01642"))
+                .materialDescriptionCustomer("08b95a75-11a7-4bea-a958-821b9cb01641")
+                .materialNumberCustomer("08b95a75-11a7-4bea-a958-821b9cb01641")
+                .changedAt(LocalDateTime.now())
+                .customerId(company)
+                .supplierId(company)
+                .unitMeasure(unitMeasure)
+                .linkedDemandSeries(new ArrayList<>())
+                .supplierLocation(new ArrayList<>())
+                .name("08b95a75-11a7-4bea-a958-821b9cb01642")
+                .status(CapacityGroupStatus.READY_SYNCHRONIZE)
+                .build();
 
         List<CapacityTimeSeries> timeSeriesList = createCapacityTimeSeries(capacityGroup);
 
@@ -190,13 +194,34 @@ public class CapacityGroupServiceTest {
         return timeSeriesList;
     }
 
-    private static WeekBasedMaterialDemandEntity createWeekBasedMaterialDemand(){
-        WeekBasedMaterialDemandEntity entity = new WeekBasedMaterialDemandEntity();
 
-        entity.setViewed(false);
-        entity.setId(Long.valueOf("4"));
+    private static WeekBasedMaterialDemandEntity createWeekBasedMaterialDemandEntity(){
 
+        WeekBasedMaterialDemandRequestDto dto = new WeekBasedMaterialDemandRequestDto();
+        dto.setUnityOfMeasure("kg");
+        dto.setCustomer("08b95a75-11a7-4bea-a958-821b9cb01643");
+        dto.setMaterialDemandId("ID");
+        dto.setMaterialNumberCustomer("IDD");
+        dto.setMaterialDescriptionCustomer("08b95a75-11a7-4bea-a958-821b9cb01643");
+        dto.setChangedAt("now");
+
+
+        WeekBasedMaterialDemandEntity entity = WeekBasedMaterialDemandEntity
+                .builder()
+                .id(Long.valueOf("4"))
+                .viewed(false)
+                .weekBasedMaterialDemand(dto)
+                .build();
         return entity;
     }
 
+    private static DemandCategoryEntity createDemandCategoryEntity(){
+        DemandCategoryEntity demandCategoryEntity = DemandCategoryEntity
+                .builder()
+                .id(UUID.fromString("08b95a75-11a7-4bea-a958-821b9cb01642"))
+                .demandCategoryCode("Test")
+                .demandCategoryName("test2")
+                .build();
+        return demandCategoryEntity;
+    }
 }
