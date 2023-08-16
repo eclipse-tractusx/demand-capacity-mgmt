@@ -41,6 +41,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const [demands, setDemands] = useState<Demand[]>([]);
   const [demandprops, setDemandProps] = useState<DemandProp[]>([]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchDemandProps = useCallback(async () => {
     try {
       const response = await axios.get('/demand', {
@@ -50,11 +51,11 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       });
       const result: DemandProp[] = response.data;
       setDemandProps(result);
+      console.log(demands)// TODO clean
     } catch (error) {
       console.error('Error fetching demands:', error);
     }
-  }, [demands]); // Include 'demands' in the dependency array
-  
+  }, []);
 
   useEffect(() => {
     fetchDemandProps();
@@ -85,7 +86,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
     try {
       console.log(newDemand);
       const response = await axios.post('/demand', newDemand);
-      console.log(response) //todo clean
+      console.log(response) //TODO clean
       fetchDemandProps();
     } catch (error) {
       console.error('Error creating demand:', error);
