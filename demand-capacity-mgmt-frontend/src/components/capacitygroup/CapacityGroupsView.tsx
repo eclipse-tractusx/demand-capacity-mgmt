@@ -20,17 +20,17 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useMemo, useCallback } from 'react';
+import React, { useContext, useState, useMemo} from 'react';
 import { Form,Col,Row } from 'react-bootstrap';
 import { CapacityGroupContext  } from '../../contexts/CapacityGroupsContextProvider';
-import { CapacityGroup } from '../../interfaces/capacitygroup_interfaces';
+//import { CapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import Pagination from '../Pagination';
 import CapacityGroupsTable from './CapacityGroupsTable';
 import Search from '../Search';
 import '../../index.css';
 
 const CapacityGroupsList: React.FC = () => {
-  const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);
+  // to do clean /const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);
 
   const { capacitygroups } = useContext(CapacityGroupContext)!;
   const [searchQuery, setSearchQuery] = useState('');

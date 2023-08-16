@@ -10,7 +10,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useContext, useState, useMemo ,useCallback, useEffect} from 'react';
+import React, { useContext, useState, useMemo ,useCallback} from 'react';
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import { DemandProp } from '../../interfaces/demand_interfaces';
 import Pagination from '../Pagination';
@@ -53,7 +53,7 @@ const DemandsPage: React.FC = () => {
   };
   
   
- const handleDeleteDemand = useCallback(
+  const handleDeleteDemand = useCallback(
     async (id: string) => {
       try {
         await deleteDemand(id);
@@ -62,7 +62,7 @@ const DemandsPage: React.FC = () => {
         console.error('Error deleting demand:', error);
       }
     },
-    [deleteDemand]
+    [deleteDemand, fetchDemandProps]
   );
 
   const handleEdit = (demand: DemandProp) => {

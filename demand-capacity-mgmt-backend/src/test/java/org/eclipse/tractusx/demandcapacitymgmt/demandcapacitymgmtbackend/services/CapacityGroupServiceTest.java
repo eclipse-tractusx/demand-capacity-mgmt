@@ -35,10 +35,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl.CapacityGroupServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,6 +65,9 @@ public class CapacityGroupServiceTest {
     private CapacityGroupRepository capacityGroupRepository;
 
     @Mock
+    private WeekBasedMaterialDemandRepository weekBasedMaterialDemandRepository;
+
+    @Mock
     private LinkDemandRepository linkDemandRepository;
 
     private static CapacityGroupRequest capacityGroupRequest = createCapacityGroupRequest();
@@ -72,6 +78,8 @@ public class CapacityGroupServiceTest {
 
     private static UnitMeasureEntity unitMeasure = createUnitMeasureEntity();
 
+    private static WeekBasedMaterialDemandEntity weekBasedMaterialDemand = createWeekBasedMaterialDemand();
+
     private CapacityGroupEntity capacityGroupEntity = createCapacityGroupEntity();
 
     @Test
@@ -80,6 +88,7 @@ public class CapacityGroupServiceTest {
         when(unityOfMeasureService.findById(any())).thenReturn(null);
         when(companyService.getCompanyById(any())).thenReturn(company);
         when(linkDemandRepository.findById(any())).thenReturn(Optional.of(linkDemandEntity));
+        when(weekBasedMaterialDemandRepository.findById(any())).thenReturn(Optional.of(weekBasedMaterialDemand));
         when(capacityGroupRepository.save(any())).thenReturn(capacityGroupEntity);
 
         capacityGroupService.createCapacityGroup(capacityGroupRequest);
@@ -180,4 +189,14 @@ public class CapacityGroupServiceTest {
 
         return timeSeriesList;
     }
+
+    private static WeekBasedMaterialDemandEntity createWeekBasedMaterialDemand(){
+        WeekBasedMaterialDemandEntity entity = new WeekBasedMaterialDemandEntity();
+
+        entity.setViewed(false);
+        entity.setId(Long.valueOf("4"));
+
+        return entity;
+    }
+
 }
