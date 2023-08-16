@@ -109,7 +109,7 @@ const useHandleSubmit = (initialFormState: Demand) => {
         // Handle error if needed
       }
     }
-  }, []);
+  }, [createDemand]);
 
   return { submissionStatus, handleSubmit };
 };
