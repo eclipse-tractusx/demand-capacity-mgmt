@@ -32,6 +32,7 @@ function CapacityGroupDetailsPage() {
     // Perform save operation here
     setEditMode(false);
     setSavedChanges(true);
+    console.log(savedChanges);// todo clean
   };
 
   const handleRevert = () => {
