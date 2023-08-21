@@ -2,7 +2,7 @@ name: Veracode Static Analysis Pipeline Scan
 
 on:
   push:
-    branches: [ "feature/DCMFOSS-61" ]
+    branches: [ "main" ]
     paths:
       - 'demand-capacity-mgmt-frontend/**'
   pull_request:
