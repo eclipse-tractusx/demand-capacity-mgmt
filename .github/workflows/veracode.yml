@@ -21,11 +21,11 @@ name: Veracode Frontend Scan
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "feature/DCMFOSS-61" ]
     paths:
       - 'demand-capacity-mgmt-frontend/**'
   pull_request:
-    branches: [ "main" ]
+    branches: [ "feature/DCMFOSS-61" ]
   schedule:
     - cron: '27 12 * * 6'
 
