@@ -168,15 +168,16 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     }
 
     @Override
-    public WeekBasedCapacityGroupEntity findById(String capacityGroupId)  {
-        Optional<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntityOptional = weekBasedCapacityGroupRepository.findById(Integer.getInteger(capacityGroupId));
+    public WeekBasedCapacityGroupEntity findById(String capacityGroupId) {
+        Optional<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntityOptional = weekBasedCapacityGroupRepository.findById(
+            Integer.getInteger(capacityGroupId)
+        );
 
-        if (weekBasedCapacityGroupEntityOptional.isEmpty()){
+        if (weekBasedCapacityGroupEntityOptional.isEmpty()) {
             throw new NotFoundException("WeekBasedCapacity not found");
         }
 
-        return  weekBasedCapacityGroupEntityOptional.get();
-
+        return weekBasedCapacityGroupEntityOptional.get();
     }
 
     private static CapacitiesDto getCapacitiesDto(CapacityTimeSeries capacityTimeSeries) {

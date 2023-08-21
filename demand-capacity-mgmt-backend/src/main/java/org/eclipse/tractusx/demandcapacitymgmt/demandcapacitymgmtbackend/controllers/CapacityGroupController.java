@@ -55,6 +55,5 @@ public class CapacityGroupController implements CapacityGroupApi {
     public ResponseEntity<CapacityGroupResponse> postCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
         CapacityGroupResponse capacityGroupResponse = capacityGroupService.createCapacityGroup(capacityGroupRequest);
         return ResponseEntity.status(HttpStatus.OK).body(capacityGroupResponse);
-
     }
 }
