@@ -178,15 +178,18 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
                     WeekBasedMaterialDemandEntity weekBasedMaterialDemandEntity = linkDemandEntity.getWeekBasedMaterialDemand();
                     WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto = weekBasedMaterialDemandEntity.getWeekBasedMaterialDemand();
-                    CompanyEntity customerId  = companyService.getCompanyById(UUID.fromString(weekBasedMaterialDemandRequestDto.getCustomer()));
+                    CompanyEntity customerId = companyService.getCompanyById(
+                        UUID.fromString(weekBasedMaterialDemandRequestDto.getCustomer())
+                    );
 
                     materialNumberCustomer.set(linkDemandEntity.getMaterialNumberCustomer());
 
                     materialDescriptionCustomer.set(linkDemandEntity.getMaterialNumberCustomer());
 
                     String demandCategoryId = linkDemandEntity.getDemandCategoryId();
-                    DemandCategoryEntity demandCategoryEntity = demandCategoryService.findById(UUID.fromString(demandCategoryId));
-
+                    DemandCategoryEntity demandCategoryEntity = demandCategoryService.findById(
+                        UUID.fromString(demandCategoryId)
+                    );
 
                     linkDemandEntity.setLinked(true);
                     linkDemandRepository.save(linkDemandEntity);
