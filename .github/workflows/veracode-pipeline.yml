@@ -28,7 +28,8 @@ on:
   pull_request:
     branches: [ "main" ]
   schedule:
-    - cron: '27 12 * * 6'
+    # Once a day
+    - cron: "0 0 * * *"
 
 permissions:
   contents: read
