@@ -31,16 +31,16 @@ This repository serves to attach any documentation about demand-capacity-mgmt, f
 
 App Flow Diagram
 
-![App Flow](images/AppFlow.jpg "App Flow Diagram")
+![App Flow](docs/images/AppFlow.jpg "App Flow Diagram")
 
 Components Architecture Diagram
 
-![Components Architecture](images/ComponentsArchitecture.jpg "Components Architecture Diagram")
+![Components Architecture](docs/images/ComponentsArchitecture.jpg "Components Architecture Diagram")
 
 Deployment Architecture Diagram
 
-![Deployment Architecture](images/DeploymentArchitecture.jpg "Deployment Architecture Diagram")
+![Deployment Architecture](docs/images/DeploymentArchitecture.jpg "Deployment Architecture Diagram")
 
 Personas and Capabilities Diagram
 
-![Personas and Capabilities](images/PersonasAndCapabilities.jpg "Personas and Capabilities Diagram")
+![Personas and Capabilities](docs/images/PersonasAndCapabilities.jpg "Personas and Capabilities Diagram")
