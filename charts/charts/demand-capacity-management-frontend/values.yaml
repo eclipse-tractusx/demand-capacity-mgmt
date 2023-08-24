@@ -25,7 +25,7 @@ replicaCount: 1
 
 image:
   registry: "ghcr.io"
-  name: "catenax-ng/tx-demand-capacity-mgmt-frontend"
+  name: "catenax-ng/demand-capacity-mgmt-frontend"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
