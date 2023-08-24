@@ -45,14 +45,6 @@ version: 0.1.0
 appVersion: "latest"
 
 dependencies:
-  - name: postgresql
-    version: 11.*.*
-    repository: https://charts.bitnami.com/bitnami
-    alias: postgres
-    condition: postgres.enabled
-  - name: demand-capacity-management-backend
-    alias: dcm-backend
-    version: 0.1.0
   - name: demand-capacity-management-frontend
     alias: dcm-frontend
     version: 0.1.0
