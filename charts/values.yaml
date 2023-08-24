@@ -21,10 +21,10 @@
 # Default values for vas.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-dcm-backend:
-  image:
-   # -- Overrides the image tag whose default is the chart appVersion.
-    tag: "latest"
+#dcm-backend:
+#  image:
+#   # -- Overrides the image tag whose default is the chart appVersion.
+#    tag: "latest"
 
 dcm-frontend:
   image:
@@ -35,10 +35,10 @@ dcm-frontend:
     enabled: false
     #host: "dcm-capacity-mgmt-frontend.dev.demo.catena-x.net"
 
-postgres:
-  enabled: true
-  auth:
-    database: dcm
-    username: dcm
-    password: "dcm"
-    postgres-password: "dcm"
+#postgres:
+#  enabled: true
+#  auth:
+#    database: dcm
+#    username: dcm
+#    password: "dcm"
+#    postgres-password: "dcm"

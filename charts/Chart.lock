@@ -1,10 +1,4 @@
 dependencies:
-- name: postgresql
-  repository: https://charts.bitnami.com/bitnami
-  version: 11.9.13
-- name: demand-capacity-management-backend
-  repository: ""
-  version: 0.1.0
 - name: demand-capacity-management-frontend
   repository: ""
   version: 0.1.0
