@@ -22,37 +22,48 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { CapacityGroup } from '../interfaces/capacitygroup_interfaces';
 
-interface CapacityGroupContextData {
-  capacitygroups: CapacityGroup[];
+export interface DemandCategory {
+  id: string
+  demandCategoryCode: string
+  demandCategoryName: string
 }
 
-export const CapacityGroupContext = createContext<CapacityGroupContextData | undefined>(undefined);
+interface DemandContextData {
+  demandcategories: DemandCategory[];
+}
 
-const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
+export const DemandCategoryContext = createContext<DemandContextData | undefined>(undefined);
 
-  const [capacitygroups, setCapacityGroups] = useState<CapacityGroup[]>([]);
+const DemandCategoryContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
+
+  const [demandcategories, setDemandCategory] = useState<DemandCategory[]>([]);
 
   useEffect(() => {
-    const fetchCapacityGroups = async () => {
+    const fetchDemandCategories = async () => {
       try {
-        const response = await axios.get('/capacityGroup', {});
-        const result: CapacityGroup[] = response.data;
-        setCapacityGroups(result);
+        const response = await axios.get('/demandcategory', {
+          params: {
+            project_id: 1, // Adjust the project ID parameter as needed
+          },
+        });
+        const result: DemandCategory[] = response.data;
+        setDemandCategory(result);
       } catch (error) {
-        console.error('Error fetching capacitygroups:', error);
+        console.error('Error fetching demands:', error);
       }
     };
   
-    fetchCapacityGroups();
+    fetchDemandCategories();
   }, []);
   
-  return ( 
-    <CapacityGroupContext.Provider value={{capacitygroups}}>
+
+
+  return (
+    <DemandCategoryContext.Provider value={{ demandcategories}}>
       {props.children}
-    </CapacityGroupContext.Provider>
+    </DemandCategoryContext.Provider>
   );
 };
 
-export default CapacityGroupsProvider;
+export default DemandCategoryContextProvider;

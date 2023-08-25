@@ -20,21 +20,15 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
-
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
-import java.util.List;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
-
-public interface WeekBasedCapacityGroupService {
-    void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequest);
-
-    void receiveWeekBasedCapacityGroup();
-
-    void sendWeekBasedCapacityGroup();
-
-    void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity);
-
-    WeekBasedCapacityGroupEntity findById(String capacityGroupId);
-}
+export interface CapacityGroup {
+  internalId: string
+  catXUuid: string
+  name: string
+  customerBPNL: string
+  customerName: string
+  supplierBNPL: string
+  numberOfMaterials: number
+  favoritedBy: string
+  status: string
+  [key: string]: string | number;
+  }

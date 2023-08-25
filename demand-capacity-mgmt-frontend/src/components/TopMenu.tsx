@@ -1,4 +1,3 @@
-
 /*
  *  *******************************************************************************
  *  Copyright (c) 2023 BMW AG
@@ -20,6 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
+
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
