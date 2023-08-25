@@ -29,6 +29,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -40,6 +42,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters.ListToStringConverter;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
 
 @Entity
 @Table(name = "capacity_group")
@@ -93,4 +96,8 @@ public class CapacityGroupEntity {
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private CapacityGroupStatus status;
 }

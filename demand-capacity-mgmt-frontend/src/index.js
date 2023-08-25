@@ -1,4 +1,3 @@
-
 /*
  *  *******************************************************************************
  *  Copyright (c) 2023 BMW AG
@@ -25,20 +24,36 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter as Router, Route,Routes } from "react-router-dom";
-import Home from "./components/Home";
+
+
+
+//Import Default always visible components.
+import TopMenu from "./components/TopMenu";
+import QuickAcessItems from "./components/QuickAcessItems";
+
+//Import Context Providers
+import DemandContextProvider from "../src/contexts/DemandContextProvider";
+
+// Import your components for different routes
+import Home from "./components/capacitygroup/CapacityGroupPage";
+import CapacityGroupDetailsPage from './components/capacitygroup/CapacityGroupDetailsPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+<>
+    <TopMenu></TopMenu>
 
     <Router>
-        <Routes>
-
-            <Route path="/" element={<Home/>} />
-
-
-        </Routes>
-    </Router>
-
+    <Routes>
+        <Route  path="/" element={<Home/>} />
+        <Route path="/details" element={<CapacityGroupDetailsPage/>} />
+        <Route path="/contact" />
+    </Routes>
+</Router>
+<DemandContextProvider>
+            <QuickAcessItems></QuickAcessItems>
+</DemandContextProvider>
+</>
 
 );
 
