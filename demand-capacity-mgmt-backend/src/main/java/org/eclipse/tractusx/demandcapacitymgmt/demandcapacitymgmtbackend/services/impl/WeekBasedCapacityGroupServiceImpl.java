@@ -31,13 +31,10 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.NotFoundException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CustomerRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
@@ -49,13 +46,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
     private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
 
-
-    private final CustomerRepository customerRepository;
-
-    private final CapacityGroupService capacityGroupService;
-
     private final MaterialDemandRepository materialDemandRepository;
-
 
     @Override
     public void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequestList) {
@@ -118,26 +109,21 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
     @Override
     public void sendWeekBasedCapacityGroup() {
-
-        Optional<CustomerEntity> supplierEntityOpt = customerRepository.findById(1l);
-
-        //TODO we still dont have defined the demand or the capacity structure yet, this is just an example of the flux
-        if (supplierEntityOpt.isPresent()) {
-            CustomerEntity supplierEntity = supplierEntityOpt.get();
-
-            //todo put this part of the code in the ConsumerHTTP class
-            RestTemplate restTemplate = new RestTemplate();
-            String fooResourceUrl = supplierEntity.getEdcUrl();
-
-            //TODO create the Actual Demand and send to the supplier
-            //ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
-        }
-
-        List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupService.getAllByStatus(
-            CapacityGroupStatus.READY_SYNCHRONIZE
-        );
-
-        capacityGroupEntityList.forEach(this::createWeekBasedCapacityGroupRequestFromEntity);
+        //        Optional<CustomerEntity> supplierEntityOpt = customerRepository.findById(1l);
+        //
+        //        //TODO we still dont have defined the demand or the capacity structure yet, this is just an example of the flux
+        //        if (supplierEntityOpt.isPresent()) {
+        //            //todo change this to company entity
+        //            //CustomerEntity supplierEntity = supplierEntityOpt.get();
+        //
+        //            //todo put this part of the code in the ConsumerHTTP class
+        //            RestTemplate restTemplate = new RestTemplate();
+        //
+        //            //String fooResourceUrl = supplierEntity.getEdcUrl();
+        //
+        //            //TODO create the Actual Demand and send to the supplier
+        //            ResponseEntity<String> response = restTemplate.getForEntity("", String.class);
+        //        }
     }
 
     @Override
