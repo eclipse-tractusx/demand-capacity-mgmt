@@ -20,21 +20,26 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+import CapacityGroupsList from "./capacitygroup/CapacityGroupsView";
+import CapacityGroupContext from "../contexts/CapacityGroupsContextProvider";
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
-import java.util.List;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
+function CapacityGroupDetails() {
 
-public interface WeekBasedCapacityGroupService {
-    void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequest);
+    return (
+        <>
+        <div className="container-xl">
+            <br />
+            <div className="table">
+                <div className="table-wrapper">
+                    <CapacityGroupContext>
+                        <CapacityGroupsList />
+                    </CapacityGroupContext>
+                </div>
+            </div>
+        </div>
+        </>
 
-    void receiveWeekBasedCapacityGroup();
-
-    void sendWeekBasedCapacityGroup();
-
-    void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity);
-
-    WeekBasedCapacityGroupEntity findById(String capacityGroupId);
+    );
 }
+
+export default CapacityGroupDetails;

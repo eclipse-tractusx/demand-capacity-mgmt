@@ -22,14 +22,20 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesCategoryDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandWeekSeriesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
+import java.util.LinkedList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LinkDemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
@@ -45,6 +51,8 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
 
 
     private final LinkDemandService linkDemandService;
+
+    private final DemandService demandService;
 
     @Override
     public void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDtoList) {
@@ -63,16 +71,22 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     @Override
     public void sendWeekBasedMaterial() {
 
-//        Optional<SupplierEntity> supplierEntityOpt = supplierRepository.findById(1l);
-//
-//        if (supplierEntityOpt.isPresent()) {
-//            SupplierEntity supplierEntity = supplierEntityOpt.get();
-//            RestTemplate restTemplate = new RestTemplate();
-//            String fooResourceUrl = supplierEntity.getEdcUrl();
-//
-//            //TODO create the Actual Demand and send to the supplier
-//            ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
-//        }
+        Optional<SupplierEntity> supplierEntityOpt = supplierRepository.findById(1l);
+
+        if (supplierEntityOpt.isPresent()) {
+            SupplierEntity supplierEntity = supplierEntityOpt.get();
+            RestTemplate restTemplate = new RestTemplate();
+            String fooResourceUrl = supplierEntity.getEdcUrl();
+            //TODO create the Actual Demand and send to the supplier
+            //  ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
+        }
+
+        List<MaterialDemandEntity> demandEntityList = demandService.getAllByStatus(
+            MaterialDemandStatus.READY_SYNCHRONIZE
+        );
+
+        demandEntityList.forEach(this::createWeekBasedMaterialRequestFromEntity);
+
     }
 
     @Override
@@ -85,7 +99,57 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     }
 
     @Override
-    public void createWeekBasedMaterialRequestFromEntity(MaterialDemandEntity materialDemandEntity) {}
+    public void createWeekBasedMaterialRequestFromEntity(MaterialDemandEntity materialDemandEntity) {
+        WeekBasedMaterialDemandRequestDto basedMaterialDemandRequestDto = new WeekBasedMaterialDemandRequestDto();
+
+        basedMaterialDemandRequestDto.setMaterialDemandId(materialDemandEntity.getId().toString());
+        basedMaterialDemandRequestDto.setMaterialNumberCustomer(materialDemandEntity.getMaterialNumberCustomer());
+        basedMaterialDemandRequestDto.setMaterialDescriptionCustomer(
+            materialDemandEntity.getMaterialDescriptionCustomer()
+        );
+        basedMaterialDemandRequestDto.setCustomer(materialDemandEntity.getCustomerId().getBpn());
+        basedMaterialDemandRequestDto.setSupplier(materialDemandEntity.getSupplierId().getBpn());
+        basedMaterialDemandRequestDto.setUnityOfMeasure(materialDemandEntity.getUnitMeasure().getCodeValue());
+
+        List<DemandWeekSeriesDto> demandWeekSeriesDtoList = new LinkedList<>();
+
+        materialDemandEntity
+            .getDemandSeries()
+            .forEach(
+                demandSeries -> {
+                    DemandWeekSeriesDto demandWeekSeriesDto = new DemandWeekSeriesDto();
+
+                    demandWeekSeriesDto.setCustomerLocation(demandSeries.getCustomerLocation().getBpn());
+                    demandWeekSeriesDto.setExpectedSupplierLocation(
+                        demandSeries.getExpectedSupplierLocation().toString()
+                    );
+
+                    DemandSeriesCategoryDto demandSeriesCategoryDto = new DemandSeriesCategoryDto();
+                    demandSeriesCategoryDto.setId(demandSeries.getDemandCategory().getId().toString());
+
+                    demandWeekSeriesDto.setDemandCategory(demandSeriesCategoryDto);
+
+                    List<DemandSeriesDto> demandSeriesDtos = demandSeries
+                        .getDemandSeriesValues()
+                        .stream()
+                        .map(
+                            demandSeriesValues -> {
+                                DemandSeriesDto demandSeriesDto = new DemandSeriesDto();
+
+                                demandSeriesDto.setCalendarWeek(demandSeriesValues.getCalendarWeek().toString());
+                                demandSeriesValues.setDemand(demandSeriesValues.getDemand());
+
+                                return demandSeriesDto;
+                            }
+                        )
+                        .toList();
+
+                    demandWeekSeriesDto.setDemands(demandSeriesDtos);
+
+                    demandWeekSeriesDtoList.add(demandWeekSeriesDto);
+                }
+            );
+    }
 
     private void validateFields(WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto) {
         if (!UUIDUtil.checkValidUUID(weekBasedMaterialDemandRequestDto.getMaterialDemandId())) {
