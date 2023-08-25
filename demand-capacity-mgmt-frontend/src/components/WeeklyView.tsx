@@ -1,137 +1,161 @@
-/*
- *  *******************************************************************************
- *  Copyright (c) 2023 BMW AG
- *  Copyright (c) 2023 Contributors to the Eclipse Foundation
- *
- *    See the NOTICE file(s) distributed with this work for additional
- *    information regarding copyright ownership.
- *
- *    This program and the accompanying materials are made available under the
- *    terms of the Apache License, Version 2.0 which is available at
- *    https://www.apache.org/licenses/LICENSE-2.0.
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- *    License for the specific language governing permissions and limitations
- *    under the License.
- *
- *    SPDX-License-Identifier: Apache-2.0
- *    ********************************************************************************
- */
-
-import React, { useContext, useState, useEffect } from 'react';
-import '../../src/index.css';
+import React from 'react';
+import {useContext} from 'react';
+import './WeeklyView.css'; 
 import { DemandCategoryContext } from '../contexts/DemandCategoryProvider';
-import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSery } from '../interfaces/demand_interfaces';
-import { Button, ButtonGroup, ToggleButton, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { DemandContext } from '../contexts/DemandContextProvider';
-import moment from 'moment';
-import 'moment-weekday-calc';
+import { DemandCategory, DemandProp } from '../interfaces/demand_interfaces';
 
 
-import {getISOWeek, format,} from 'date-fns';
-
-interface WeeklyViewProps {
-  demandData: DemandProp;
-}
-
-function getISOWeekMonday(year: number, isoWeek: number): moment.Moment {
-  return moment().year(year).isoWeek(isoWeek).startOf('isoWeek');
-}
-
-function getYearOfWeek(date: moment.Moment): number {
-  return date.add(3, 'days').year();
-}
-
-
-function getWeeksInMonth(year: number, monthIndex: number, knownNextMonthWeeks?: Set<number>): number[] {
-  const weeks: Set<number> = new Set();
-
-  const firstDayOfMonth = moment().year(year).month(monthIndex).startOf('month');
-  const lastDayOfMonth = moment().year(year).month(monthIndex).endOf('month');
-  // Fetch weeks of the next month if not provided.
-  if (!knownNextMonthWeeks && monthIndex < 11) {
-    knownNextMonthWeeks = new Set(getWeeksInMonth(year, monthIndex + 1));
-  }
-
-  let currentDay = firstDayOfMonth;
-  while (currentDay <= lastDayOfMonth) {
-    const weekNum = currentDay.week();
-    const isoWeekYear = getYearOfWeek(currentDay);
-
-    // If the month is January and the week year is the previous year, skip it
-    if (monthIndex === 0 && isoWeekYear < year) {
-      currentDay = currentDay.add(1, 'days');
-      continue;
-    }
-
-    // If it's the last week of the month and it's also in the next month, skip it.
-    if (currentDay.isAfter(moment(new Date(year, monthIndex, 24))) && knownNextMonthWeeks?.has(weekNum)) {
-      currentDay = currentDay.add(1, 'days');
-      continue;
-    }
-
-    weeks.add(weekNum);
-    currentDay = currentDay.add(1, 'days');
-  }
-  return Array.from(weeks).sort((a, b) => a - b);
-}
-
-
-
-const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
-  const { updateDemand } = useContext(DemandContext)!;
-  const { demandcategories } = useContext(DemandCategoryContext) ?? {};
+const WeeklyView: React.FC = () => { 
+  const { demandcategories } = useContext(DemandCategoryContext) || {};
   const currentYear = new Date().getFullYear();
+  const previousYear = currentYear - 1;
+  const nextYear = currentYear + 1;
 
-  const [editMode, setEditMode] = useState(false);
+  // Function to get the number of weeks in a month for a given year and month index
+  function getWeeksInMonth(year: number, monthIndex: number): number {
+    const firstDay = new Date(year, monthIndex, 1);
+    const lastDay = new Date(year, monthIndex + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const firstDayOfWeek = firstDay.getDay();
 
-  const monthsPreviousYear = Array.from({ length: 1 }, (_, monthIndex) => {
-    const monthStart = new Date(currentYear - 1, monthIndex + 11, 1);
-    const monthName = format(monthStart, 'MMM'); // <-- This line
-    let weeks = getWeeksInMonth(currentYear - 1, monthIndex + 11);
-    return {
-      name: monthName,
-      year: currentYear - 1,
-      weeks: weeks,
-      monthIndex: monthIndex + 11,
-    };
-  });
+    const daysRemaining = daysInMonth - (7 - firstDayOfWeek);
+    return Math.ceil((daysRemaining + 1) / 7);
+  }
 
-  const monthsCurrentYear = Array.from({ length: 12 }, (_, monthIndex) => {
-    const monthStart = new Date(currentYear, monthIndex, 1);
-    const monthName = format(monthStart, 'MMM');
-    let weeks = getWeeksInMonth(currentYear, monthIndex);
-    return {
-      name: monthName,
-      year: currentYear,
-      weeks: weeks,
-      monthIndex: monthIndex,
-    };
-  });
-
-  const monthsNextYear = Array.from({ length: 1 }, (_, monthIndex) => {
-    const monthStart = new Date(currentYear + 1, monthIndex, 1);
-    const monthName = format(monthStart, 'MMM');
-    const weeks = getWeeksInMonth(currentYear + 1, monthIndex);
-    return {
-      name: monthName,
-      year: currentYear + 1,
-      weeks: weeks,
-      monthIndex: monthIndex,
-    };
-  });
+  const monthsPreviousYear = [
+    { name: 'Dec', year: previousYear, weeks: Array.from({ length: getWeeksInMonth(previousYear, 11) }, (_, index) => index + 48) },
+  ];
+  
+  const monthsCurrentYear = [
+    { name: 'Jan', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 0) }, (_, index) => index + 1) },
+    { name: 'Feb', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 1) }, (_, index) => index + 5) },
+    { name: 'Mar', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 2) }, (_, index) => index + 9) },
+    { name: 'Apr', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 3) }, (_, index) => index + 14) },
+    { name: 'May', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 4) }, (_, index) => index + 18) },
+    { name: 'Jun', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 5) }, (_, index) => index + 23) },
+    { name: 'Jul', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 6) }, (_, index) => index + 27) },
+    { name: 'Aug', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 7) }, (_, index) => index + 32) },
+    { name: 'Sep', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 8) }, (_, index) => index + 36) },
+    { name: 'Oct', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 9) }, (_, index) => index + 41) },
+    { name: 'Nov', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 10) }, (_, index) => index + 45) },
+    { name: 'Dec', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 11) }, (_, index) => index + 49) },
+  ];
+  
+  const monthsNextYear = [
+    { name: 'Jan', year: nextYear, weeks: Array.from({ length: getWeeksInMonth(nextYear, 0) }, (_, index) => index + 1) },
+  ];
+  
 
   const totalWeeksPreviousYear = monthsPreviousYear.reduce((total, month) => total + month.weeks.length, 0);
   const totalWeeksCurrentYear = monthsCurrentYear.reduce((total, month) => total + month.weeks.length, 0);
   const totalWeeksNextYear = monthsNextYear.reduce((total, month) => total + month.weeks.length, 0);
+      
+
+  const generateRandomDemandValues = (startDate: string, endDate: string) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const demandSeriesValues = [];
+  
+    // Generate demand values for each week between start and end dates
+    while (start <= end) {
+      const weekStartDate = new Date(start);
+      const weekEndDate = new Date(start);
+      weekEndDate.setDate(weekEndDate.getDate() + 6); // Calculate week end date
+  
+      const weekDemand = Math.floor(Math.random() * 100); // Generate a random demand value
+  
+      demandSeriesValues.push({
+        calendarWeek: weekStartDate.toISOString(),
+        demand: weekDemand,
+      });
+  
+      start.setDate(start.getDate() + 7); // Move to the next week
+    }
+  
+    return demandSeriesValues;
+  };
+  
+  const exampleData: DemandProp = {
+    id: "0a281cdc-050c-40db-a57f-7483c44391ad",
+    materialDescriptionCustomer: "Texthere",
+    materialNumberCustomer: "RT78856",
+    materialNumberSupplier: "0X225588",
+    customer: {
+      id: "5d210fb8-260d-4190-9578-f62f9c459703",
+      bpn: "BPN01",
+      companyName: "CGI",
+      street: "Test",
+      number: "Test",
+      zipCode: "Test",
+      country: "Test",
+      myCompany: "Test"
+    },
+    supplier: {
+      id: "5d210fb8-260d-4190-9578-f62f9c459703",
+      bpn: "BPN01",
+      companyName: "CGI",
+      street: "Test",
+      number: "Test",
+      zipCode: "Test",
+      country: "Test",
+      myCompany: "Test"
+    },
+    unitMeasureId: {
+      id: "a8ebe2f8-2af8-4573-9dd4-d7f33e682792",
+      codeValue: "un",
+      displayValue: "Unit"
+    },
+    changedAt: "2023-08-04T16:13:40.581402",
+    demandSeries: [
+      {
+        customerLocation: {
+          id: "5d210fb8-260d-4190-9578-f62f9c459703",
+          bpn: "BPN01",
+          companyName: "CGI",
+          street: "Test",
+          number: "Test",
+          zipCode: "Test",
+          country: "Test",
+          myCompany: "Test"
+        },
+        expectedSupplierLocation: [
+          {
+            id: "5d210fb8-260d-4190-9578-f62f9c459703",
+            bpn: "BPN01",
+            companyName: "CGI",
+            street: "Test",
+            number: "Test",
+            zipCode: "Test",
+            country: "Test",
+            myCompany: "Test"
+          }
+        ],
+        demandCategory: {
+          id: "1622ea81-f454-4800-a15f-16253ae1c93d",
+          demandCategoryCode: "DC006",
+          demandCategoryName: "Default"
+        },
+        demandSeriesValues: generateRandomDemandValues('2022-12-01', '2024-01-01'),
+      }
+    ]
+  };
 
   // Object to store the demand values based on year, month, and week
-  type DemandValuesMap = Record<string, Record<number, Record<string, number>>>;
-  let [demandValuesMap, setDemandValuesMap] = useState<DemandValuesMap>({});
+  const demandValuesMap: Record<string, Record<number, Record<string, number>>> = {};
 
-  //Mapping of categories
+  function getISOWeekNumber(date: Date): number {
+    const newDate = new Date(date);
+    newDate.setHours(0, 0, 0, 0);
+    newDate.setDate(newDate.getDate() + 4 - (newDate.getDay() || 7));
+  
+    const yearStart = new Date(newDate.getFullYear(), 0, 1);
+    const weekNumber = Math.floor(((+newDate - +yearStart) / 86400000 + 1) / 7);
+  
+    // Ensure there are only 52 weeks in a year
+    return weekNumber === 0 ? 52 : weekNumber;
+  }
+  
+
   const idToNumericIdMap: Record<string, number> = {};
 
   if (demandcategories) {
@@ -140,305 +164,115 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
     });
   }
 
-  // Function to get the beginning and end dates of the week
-  const getWeekDates = (year: number, month: string, week: number) => {
-    const startDate = getISOWeekMonday(year, week);
+  // Populate the demandValuesMap using demandSeriesValues
+  exampleData.demandSeries?.forEach((series) => {
+    const categoryId = series.demandCategory.id;
 
-    const endDate = startDate.clone().add(6, 'days'); // Instead of using native Date() methods
+    series.demandSeriesValues.forEach((value) => {
+      const date = new Date(value.calendarWeek);
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const week = getISOWeekNumber(date).toString();
 
-    return {
-      startDate: startDate.format('YYYY-MM-DD'),
-      endDate: endDate.format('YYYY-MM-DD'),
-    };
-  };
-
-
-
-
-  useEffect(() => {
-    console.log("aqui")
-    const newDemandValuesMap: DemandValuesMap = {};
-
-    demandData.demandSeries?.forEach((series) => {
-      const categoryId = series.demandCategory.id;
-
-      series.demandSeriesValues.forEach((value) => {
-        const date = moment(value.calendarWeek);
-        const year = moment().year();
-        const week = date.week();
-        console.log(week);
-
-        if (!newDemandValuesMap[categoryId]) {
-          newDemandValuesMap[categoryId] = {};
-        }
-        if (!newDemandValuesMap[categoryId][year]) {
-          newDemandValuesMap[categoryId][year] = {};
-        }
-        newDemandValuesMap[categoryId][year][week] = value.demand;
-      });
-    });
-
-    setDemandValuesMap(newDemandValuesMap);
-  }, [demandData]);
-
-  const handleSave = async () => {
-    if (!demandData.demandSeries) {
-      return;
-    }
-
-    // Create new MaterialDemandSery objects for categories with data
-    const updatedDemandSeries: (MaterialDemandSery | null)[] = demandcategories!.map((category) => {
-      const categoryId = category.id;
-      const demandSeriesValues: DemandSeriesValue[] = [];
-
-      // Check if there is data for this category in demandValuesMap
-      if (demandValuesMap[categoryId]) {
-        // Loop through months and weeks to populate demandSeriesValues
-        monthsCurrentYear.forEach((month) => {
-          month.weeks.forEach((week) => {
-            const isoWeekMonday = getISOWeekMonday(month.year, week);
-            isoWeekMonday.format('YYYY-MM-dd')
-            // Get the Monday of the ISO week
-            const demand = demandValuesMap[categoryId]?.[month.year]?.[week];
-            if (demand !== undefined) {
-              demandSeriesValues.push({
-                calendarWeek: isoWeekMonday.format('YYYY-MM-DD'),
-                demand: demand,
-              });
-            }
-          });
-        });
-
-        // Only return an updated demandSeries if demandSeriesValues are not empty
-        if (demandSeriesValues.length > 0) {
-          return {
-            customerLocationId: demandData.customer.id,
-            expectedSupplierLocationId: [demandData.supplier.id],
-            demandCategoryId: categoryId,
-            demandSeriesValues: demandSeriesValues,
-          } as MaterialDemandSery;
-        }
+      if (!demandValuesMap[categoryId]) {
+        demandValuesMap[categoryId] = {};
       }
-
-      return null; // Skip this category if it has no data
-    });
-
-    // Filter out null values and assert the type
-    const filteredUpdatedDemandSeries: MaterialDemandSery[] = updatedDemandSeries.filter(
-        (series): series is MaterialDemandSery => series !== null
-    );
-
-    const updatedDemand: Demand = {
-      id: demandData.id,
-      customerId: demandData.customer.id,
-      supplierId: demandData.supplier.id,
-      materialDemandSeries: filteredUpdatedDemandSeries,
-      materialDescriptionCustomer: demandData.materialDescriptionCustomer,
-      materialNumberCustomer: demandData.materialNumberCustomer,
-      materialNumberSupplier: demandData.materialNumberSupplier,
-      unitMeasureId: demandData.unitMeasureId.id,
-    };
-
-    // Perform save operation with updatedDemandData
-
-    if (filteredUpdatedDemandSeries.length > 0) {
-      try {
-        await updateDemand(updatedDemand);
-      } catch (error) {
-        console.error('Error updating demand:', error);
+      if (!demandValuesMap[categoryId][year]) {
+        demandValuesMap[categoryId][year] = {};
       }
-    }
-
-    setEditMode(false);
-  };
-
-
-  const handleRevert = () => {
-    // Reload data from demandData
-    // This can be done by updating the demandValuesMap with the original data from demandData
-    const newDemandValuesMap: DemandValuesMap = {};
-
-    demandData.demandSeries?.forEach((series) => {
-      const categoryId = series.demandCategory.id;
-
-      series.demandSeriesValues.forEach((value) => {
-        const date = new Date(value.calendarWeek);
-        const year = date.getFullYear();
-        const week = getISOWeek(date).toString();
-
-        if (!newDemandValuesMap[categoryId]) {
-          newDemandValuesMap[categoryId] = {};
-        }
-        if (!newDemandValuesMap[categoryId][year]) {
-          newDemandValuesMap[categoryId][year] = {};
-        }
-        newDemandValuesMap[categoryId][year][week] = value.demand;
-      });
+      demandValuesMap[categoryId][year][week] = value.demand;
     });
+  });
 
-    setDemandValuesMap(newDemandValuesMap);
-
-    // Set edit mode to false and clear savedChanges
-    setEditMode(false);
-  };
-
-  return (
-      <div className='container'>
-        <div className="row">
-          <div className="col"></div>
-          <div className="col-6 border d-flex align-items-center justify-content-center">
-            {demandData.id} - {demandData.materialDescriptionCustomer}
-          </div>
-          <div className="col d-flex justify-content-end">
-            <br />
-            <ButtonGroup className="mb-2 align-middle">
-              <ToggleButton
-                  id="toggle-edit"
-                  type="checkbox"
-                  variant="secondary"
-                  name="edit"
-                  value="0"
-                  checked={editMode}
-                  onChange={() => setEditMode(!editMode)}
-              >Edit
-              </ToggleButton>
-              <Button variant="secondary" name="save" onClick={handleSave} disabled={!editMode}>
-                Save
-              </Button>
-              <Button variant="secondary" name="revert" onClick={handleRevert} disabled={!editMode}>
-                Revert Changes
-              </Button>
-            </ButtonGroup>
-          </div>
-        </div>
-        <br />
-        <div className="table-container">
-          <div className="container">
-            <table className="vertical-table">
-              <thead>
+  
+    return (
+      <div className="table-container">
+        <div className="container">
+          <table className="vertical-table">
+            <thead>
               <tr>
                 <th className="empty-header-cell"></th>
                 <th colSpan={totalWeeksPreviousYear} className="header-cell">
-                  {currentYear-1}
+                  {previousYear}
                 </th>
                 <th colSpan={totalWeeksCurrentYear} className="header-cell">
                   {currentYear}
                 </th>
                 <th colSpan={totalWeeksNextYear} className="header-cell">
-                  {currentYear+1}
+                  {nextYear}
                 </th>
               </tr>
               <tr>
                 <th className="empty-header-cell"></th>
-                {monthsPreviousYear.map((month) => (
-                    <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                      {month.name}
-                    </th>
-                ))}
-                {monthsCurrentYear.map((month) => (
-                    <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                      {month.name}
-                    </th>
-                ))}
-                {monthsNextYear.map((month) => (
-                    <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                      {month.name}
-                    </th>
-                ))}
+                {monthsPreviousYear.map((month) =>
+                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
+                    {month.name}
+                  </th>
+                )}
+                {monthsCurrentYear.map((month) =>
+                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
+                    {month.name}
+                  </th>
+                )}
+                {monthsNextYear.map((month) =>
+                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
+                    {month.name}
+                  </th>
+                )}
               </tr>
               <tr>
                 <th className="empty-header-cell"></th>
-                {[monthsPreviousYear, monthsCurrentYear, monthsNextYear].reduce((acc, curr) => acc.concat(curr), []).map((month) =>
-                    month.weeks.map((week) => (
-                        <th key={month.name + week} className="header-cell week-header-cell">
-                          <OverlayTrigger
-                              placement="top"
-                              overlay={
-                                <Tooltip id={`week-tooltip-${month.year}-${week}`}>
-                                  {`Week ${week} - ${getWeekDates(month.year, month.name, week).startDate} to ${getWeekDates(
-                                      month.year,
-                                      month.name,
-                                      week
-                                  ).endDate}`}
-                                </Tooltip>
-                              }
-                          >
-                            <span>{week}</span>
-                          </OverlayTrigger>
-                        </th>
-                    ))
+                {monthsPreviousYear.map((month) =>
+                  month.weeks.map((week, index) =>
+                    <th key={month.name + week} className="header-cell week-header-cell">
+                      {week}
+                    </th>
+                  )
+                )}
+                {monthsCurrentYear.map((month) =>
+                  month.weeks.map((week, index) =>
+                    <th key={month.name + week} className="header-cell week-header-cell">
+                      {week}
+                    </th>
+                  )
+                )}
+                {monthsNextYear.map((month) =>
+                  month.weeks.map((week, index) =>
+                    <th key={month.name + week} className="header-cell week-header-cell">
+                      {week}
+                    </th>
+                  )
                 )}
               </tr>
-              {demandcategories?.sort((a, b) => a.id.localeCompare(b.id))
-                      .map((category: DemandCategory) => (
-                          <tr key={category.id}>
-                            <th className="sticky-header-cell">
-                              <div className="sticky-header-content">{category.demandCategoryName}</div>
-                            </th>
-                            {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) => (
-                                <React.Fragment key={`${category.id}-${month.name}-${month.year}`}>
-                                  {month.weeks.map((week: number) => (
-                                      <td key={`${category.id}-${month.name}-${week}`} className="data-cell">
-                                        {editMode ? (
-                                            <input
-                                                className="table-data-input"
-                                                type="text"
-                                                defaultValue={
-                                                  demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
-                                                      ? demandValuesMap[category.id]?.[month.year]?.[week].toString()
-                                                      : ''
-                                                }
-                                                onChange={(event) => {
-                                                  const inputValue = event.target.value;
-                                                  const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
-
-                                                  setDemandValuesMap((prevDemandValuesMap) => {
-                                                    const categoryMap = {
-                                                      ...(prevDemandValuesMap[category.id] || {}),
-                                                      [month.year]: {
-                                                        ...(prevDemandValuesMap[category.id]?.[month.year] || {}),
-                                                      },
-                                                    };
-
-                                                    if (inputValue === '' || numericValue === '0') {
-                                                      delete categoryMap[month.year]?.[week];
-
-                                                      if (Object.keys(categoryMap[month.year]).length === 0) {
-                                                        delete categoryMap[month.year];
-                                                      }
-                                                    } else if (/^[0-9]\d*$/.test(numericValue)) {
-                                                      categoryMap[month.year][week] = parseInt(numericValue, 10);
-                                                    }
-
-                                                    return {
-                                                      ...prevDemandValuesMap,
-                                                      [category.id]: categoryMap,
-                                                    };
-                                                  });
-                                                }}
-                                            />
-                                        ) : (
-                                            <span>
-                                  {demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
-                                      ? demandValuesMap[category.id]?.[month.year]?.[week] === 0
-                                          ? '0'
-                                          : demandValuesMap[category.id]?.[month.year]?.[week]
-                                      : ''}
-                                </span>
-                                        )}
-                                      </td>
-                                  ))}
-                                </React.Fragment>
-                            ))}
-                          </tr>
-                      ))}
-              </thead>
-            </table>
-          </div>
-        </div>
+              {demandcategories &&
+              demandcategories
+              .sort((a, b) => a.id.localeCompare(b.id)) // Sort by category ID
+              .map((category: DemandCategory) => (
+                <tr key={category.id}>
+                <th className="sticky-header-cell">
+                  <div className="sticky-header-content">{category.demandCategoryName}</div>
+                </th>
+                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) => (
+                  <React.Fragment key={`${category.id}-${month.name}-${month.year}`}>
+                    {month.weeks.map((week: number) => (
+                      <td key={`${category.id}-${month.name}-${week}`} className="data-cell">
+                          <input
+                          className='table-data-input'
+                            type="text"
+                            defaultValue={demandValuesMap[category.id]?.[month.year]?.[week.toString()] || ''}
+                          />
+                      </td>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </tr>
+              ))}
+          </thead>
+        </table>
       </div>
+    </div>
   );
 };
 
-
-export default WeeklyView;
+  
+  export default WeeklyView;
