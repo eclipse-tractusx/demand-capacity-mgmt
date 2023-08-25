@@ -20,33 +20,32 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsList from "./defaultview/DefaultviewPage";
-import CapacityGroupContext from "../contexts/CapacityGroupsContextProvider";
-import TopMenu from "./TopMenu";
-import QuickAcessItems from "./QuickAcessItems";
-import DemandContextProvider from "../contexts/DemandContextProvider";
+import React, { useContext } from 'react';
+import { UnitsofMeasureContext } from '../contexts/UnitsOfMeasureContextProvider';
 
-
-function Home() {
-    return (
-        <><TopMenu></TopMenu>
-        <div className="container-xl">
-            <br />
-            <div className="table">
-                <div className="table-wrapper">
-                    <CapacityGroupContext>
-                        <CapacityGroupsList />
-                    </CapacityGroupContext>
-                </div>
-            </div>
-        </div>
-        <DemandContextProvider>
-        <QuickAcessItems></QuickAcessItems>
-        </DemandContextProvider>
-        
-        </>
-
-    );
+interface UnitsOfMeasureOptionsProps {
+  selectedUnitMeasureId: string;
 }
 
-export default Home;
+const UnitsOfMeasureOptions: React.FC<UnitsOfMeasureOptionsProps> = ({ selectedUnitMeasureId }) => {
+  const UnitsOfMeasureContextData = useContext(UnitsofMeasureContext);
+  const { unitsofmeasure } = UnitsOfMeasureContextData || {};
+
+  // Use the demandcategories array to fill the <select> options
+  return (
+    <>
+      <option disabled={true} value="">
+        --Choose an option--
+      </option>
+      {unitsofmeasure &&
+        unitsofmeasure.map((unit) => (
+          <option key={unit.id} value={unit.id} selected={unit.id === selectedUnitMeasureId}>
+            {unit.displayValue}
+          </option>
+        ))}
+    </>
+  );
+};
+
+export default UnitsOfMeasureOptions;
+

@@ -22,37 +22,52 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { CapacityGroup } from '../interfaces/capacitygroup_interfaces';
 
-interface CapacityGroupContextData {
-  capacitygroups: CapacityGroup[];
+export interface Company {
+  id: string,
+  bpn: string
+  companyName: string
+  street: string
+  number: string
+  zipCode: string
+  country: string
+  myCompany: string
 }
 
-export const CapacityGroupContext = createContext<CapacityGroupContextData | undefined>(undefined);
 
-const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
+interface CompanyContextData {
+  companies: Company[];
+}
 
-  const [capacitygroups, setCapacityGroups] = useState<CapacityGroup[]>([]);
+export const CompanyContext = createContext<CompanyContextData | undefined>(undefined);
+
+const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
+
+  const [companies, setCompanies] = useState<Company[]>([]);
 
   useEffect(() => {
-    const fetchCapacityGroups = async () => {
+    const fetchCompanies = async () => {
       try {
-        const response = await axios.get('/capacityGroup', {});
-        const result: CapacityGroup[] = response.data;
-        setCapacityGroups(result);
+        const response = await axios.get('/company', {
+         
+        });
+        const result: Company[] = response.data;
+        setCompanies(result);
       } catch (error) {
-        console.error('Error fetching capacitygroups:', error);
+        console.error('Error fetching companies:', error);
       }
     };
   
-    fetchCapacityGroups();
+    fetchCompanies();
   }, []);
   
-  return ( 
-    <CapacityGroupContext.Provider value={{capacitygroups}}>
+
+
+  return (
+    <CompanyContext.Provider value={{ companies}}>
       {props.children}
-    </CapacityGroupContext.Provider>
+    </CompanyContext.Provider>
   );
 };
 
-export default CapacityGroupsProvider;
+export default CompanyContextProvider;

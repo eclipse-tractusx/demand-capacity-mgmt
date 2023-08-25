@@ -63,8 +63,8 @@ public class LinkDemandServiceImpl implements LinkDemandService {
                 demandWeekSeriesDto ->
                     LinkDemandEntity
                         .builder()
-                        .linked(false)
-                        .demandCategoryId(demandWeekSeriesDto.getDemandCategory().getDemandCategoryCode())
+                        .linked(false) //Id =id
+                        .demandCategoryId(demandWeekSeriesDto.getDemandCategory().getId())
                         .weekBasedMaterialDemand(weekBasedMaterialDemand)
                         .materialNumberSupplier(
                             weekBasedMaterialDemand.getWeekBasedMaterialDemand().getMaterialNumberSupplier()

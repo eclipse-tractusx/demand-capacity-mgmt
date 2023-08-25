@@ -23,20 +23,25 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 
 @Entity
 @Table(name = "material_demand")
@@ -75,7 +80,11 @@ public class MaterialDemandEntity {
     @JoinColumn(name = "unity_of_measure_id", referencedColumnName = "ID")
     private UnitMeasureEntity unitMeasure;
 
-    @OneToOne(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", referencedColumnName = "id")
-    private DemandSeries demandSeries;
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "material_demand_id")
+    private List<DemandSeries> demandSeries;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private MaterialDemandStatus status;
 }
