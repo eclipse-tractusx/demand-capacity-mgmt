@@ -1,4 +1,3 @@
-
 /*
  *  *******************************************************************************
  *  Copyright (c) 2023 BMW AG
@@ -21,17 +20,11 @@
  *    ********************************************************************************
  */
 
-import { useState } from "react";
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
 
-export default function useModal() {
-  const [isOpen, setisOpen] = useState(false);
-
-  const toggle = () => {
-    setisOpen(!isOpen);
-  };
-
-  return {
-    isOpen,
-    toggle
-  };
+public enum CapacityGroupStatus {
+    DRAFT,
+    READY_SYNCHRONIZE,
+    SYNCHRONIZED,
+    DELETED,
 }

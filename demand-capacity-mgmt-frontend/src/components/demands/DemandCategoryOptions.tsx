@@ -20,27 +20,31 @@
  *    ********************************************************************************
  */
 
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useContext } from 'react';
+import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface DemandCategoryOptionsProps {
+  selectedDemandCategoryId: string;
 }
 
-export default App;
+const DemandCategoryOptions: React.FC<DemandCategoryOptionsProps> = ({ selectedDemandCategoryId }) => {
+  const demandCategoryContextData = useContext(DemandCategoryContext);
+  const { demandcategories } = demandCategoryContextData || {};
+
+  // Use the demandcategories array to fill the <select> options
+  return (
+    <>
+      <option disabled={true} value="">
+        --Choose an option--
+      </option>
+      {demandcategories &&
+        demandcategories.map((category) => (
+          <option key={category.id} value={category.id} selected={category.id === selectedDemandCategoryId}>
+            {category.demandCategoryName}
+          </option>
+        ))}
+    </>
+  );
+};
+
+export default DemandCategoryOptions;

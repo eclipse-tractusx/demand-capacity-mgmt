@@ -64,7 +64,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public CompanyDto convertEntityToDto(CompanyEntity companyEntity) {
         CompanyDto companyDto = new CompanyDto();
-
+        companyDto.setId(String.valueOf(companyEntity.getId()));
         companyDto.setBpn(companyEntity.getBpn());
         companyDto.setMyCompany(companyEntity.getMyCompany());
         companyDto.setCompanyName(companyEntity.getCompanyName());

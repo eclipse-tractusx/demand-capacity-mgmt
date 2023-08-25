@@ -20,21 +20,31 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+import React, { useContext } from 'react';
+import { CompanyContext } from '../contexts/CompanyContextProvider';
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
-import java.util.List;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
-
-public interface WeekBasedCapacityGroupService {
-    void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequest);
-
-    void receiveWeekBasedCapacityGroup();
-
-    void sendWeekBasedCapacityGroup();
-
-    void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity);
-
-    WeekBasedCapacityGroupEntity findById(String capacityGroupId);
+interface CompanyOptionsProps {
+  selectedCompanyName: string;
 }
+
+const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName }) => {
+  const companiesContextData = useContext(CompanyContext);
+  const { companies } = companiesContextData || {};
+
+  // Use the companies array to fill the <select> options
+  return (
+    <>
+      <option disabled={true} value="">
+        --Choose an option--
+      </option>
+      {companies &&
+        companies.map((company) => (
+          <option key={company.id} value={company.id} selected={company.companyName === selectedCompanyName}>
+            {company.companyName}
+          </option>
+        ))}
+    </>
+  );
+};
+
+export default CompanyOptions;

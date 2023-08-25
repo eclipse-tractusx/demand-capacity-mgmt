@@ -20,11 +20,27 @@
  *    ********************************************************************************
  */
 
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import CapacityGroupsProvider from "../../contexts/CapacityGroupsContextProvider";
+import CapacityGroupsList from "./CapacityGroupsView";
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
-});
+
+function CapacityGroupPage() {
+
+    return (
+        <>
+        <div className="container-xl">
+            <br />
+            <div className="table">
+                <div className="table-wrapper">
+                    <CapacityGroupsProvider>
+                        <CapacityGroupsList />
+                    </CapacityGroupsProvider>
+                </div>
+            </div>
+        </div>
+        </>
+
+    );
+}
+
+export default CapacityGroupPage;

@@ -22,37 +22,45 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { CapacityGroup } from '../interfaces/capacitygroup_interfaces';
 
-interface CapacityGroupContextData {
-  capacitygroups: CapacityGroup[];
+export interface UnitMeasure {
+  id: string
+  codeValue: string
+  displayValue: string
 }
 
-export const CapacityGroupContext = createContext<CapacityGroupContextData | undefined>(undefined);
+interface UnitsOfMeasureContextData {
+  unitsofmeasure: UnitMeasure[];
+}
 
-const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
+export const UnitsofMeasureContext = createContext<UnitsOfMeasureContextData | undefined>(undefined);
 
-  const [capacitygroups, setCapacityGroups] = useState<CapacityGroup[]>([]);
+const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
+
+  const [unitsofmeasure, setUnitsofMeasure] = useState<UnitMeasure[]>([]);
 
   useEffect(() => {
-    const fetchCapacityGroups = async () => {
+    const fetchUnitsofMeasure = async () => {
       try {
-        const response = await axios.get('/capacityGroup', {});
-        const result: CapacityGroup[] = response.data;
-        setCapacityGroups(result);
+        const response = await axios.get('/unitmeasure');
+        const result: UnitMeasure[] = response.data;
+        setUnitsofMeasure(result);
       } catch (error) {
-        console.error('Error fetching capacitygroups:', error);
+        console.error('Error fetching units of measure:', error);
       }
     };
   
-    fetchCapacityGroups();
+    fetchUnitsofMeasure();
   }, []);
   
-  return ( 
-    <CapacityGroupContext.Provider value={{capacitygroups}}>
+  
+
+
+  return (
+    <UnitsofMeasureContext.Provider value={{ unitsofmeasure}}>
       {props.children}
-    </CapacityGroupContext.Provider>
+    </UnitsofMeasureContext.Provider>
   );
 };
 
-export default CapacityGroupsProvider;
+export default UnitsofMeasureContextContextProvider;
