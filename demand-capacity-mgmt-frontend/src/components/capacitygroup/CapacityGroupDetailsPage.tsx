@@ -22,6 +22,8 @@
 
 import { useState } from 'react';
 import { Tab, Tabs, ButtonGroup, Button, ToggleButton } from 'react-bootstrap';
+import WeeklyView from '../WeeklyView';
+import DemandCategoryContextProvider, { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 
 function CapacityGroupDetailsPage() {
   const [editMode, setEditMode] = useState(false);
@@ -88,7 +90,12 @@ function CapacityGroupDetailsPage() {
           }}
         >
           <Tab eventKey="overview" title="Overview">
-            Element for Overview and chronogram here
+
+            <DemandCategoryContextProvider>
+            <WeeklyView></WeeklyView>
+            </DemandCategoryContextProvider>
+
+            chronogram here
           </Tab>
           <Tab eventKey="materials" title="Materials">
             Materials Table here
