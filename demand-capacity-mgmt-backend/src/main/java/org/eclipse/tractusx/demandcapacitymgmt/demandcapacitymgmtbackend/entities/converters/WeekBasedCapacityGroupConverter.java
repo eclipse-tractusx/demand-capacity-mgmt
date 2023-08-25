@@ -23,22 +23,23 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters;
 
 import com.google.gson.Gson;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.WeekBasedCapacityGroup;
 
 @Converter(autoApply = true)
-public class WeekBasedCapacityGroupConverter implements AttributeConverter<WeekBasedCapacityGroup, String> {
+public class WeekBasedCapacityGroupConverter implements AttributeConverter<WeekBasedCapacityGroupRequest, String> {
 
     private static final Gson GSON = new Gson();
 
     @Override
-    public String convertToDatabaseColumn(WeekBasedCapacityGroup attribute) {
+    public String convertToDatabaseColumn(WeekBasedCapacityGroupRequest attribute) {
         return GSON.toJson(attribute);
     }
 
     @Override
-    public WeekBasedCapacityGroup convertToEntityAttribute(String dbData) {
-        return GSON.fromJson(dbData, WeekBasedCapacityGroup.class);
+    public WeekBasedCapacityGroupRequest convertToEntityAttribute(String dbData) {
+        return GSON.fromJson(dbData, WeekBasedCapacityGroupRequest.class);
     }
 }

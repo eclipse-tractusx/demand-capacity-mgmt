@@ -19,64 +19,64 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect,useCallback} from 'react';
 import axios from 'axios';
+import { Demand, DemandProp } from '../interfaces/demand_interfaces';
 
-export interface Demand {
-  id: number;
-  product: string;
-  companyId: string;
-  requiredValue: number;
-  deliveredValue: number;
-  maximumValue: number;
-  demandCategory: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  [key: string]: any;
-}
 
 interface DemandContextData {
-  demands: Demand[];
-  deleteDemand: (id: number) => Promise<void>;
+  demandprops: DemandProp[];
   createDemand: (newDemand: Demand) => Promise<void>;
+  getDemandbyId: (id: string) =>Promise<DemandProp | undefined>;
+  deleteDemand: (id: string) => Promise<void>;
   updateDemand: (updatedDemand: Demand) => Promise<void>;
+  fetchDemandProps: () => void;
+
 }
 
 export const DemandContext = createContext<DemandContextData | undefined>(undefined);
 
 const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-  const api = axios.create({
-    baseURL: 'http://localhost:8080', // Set the correct API URL here
-  });
 
   const [demands, setDemands] = useState<Demand[]>([]);
+  const [demandprops, setDemandProps] = useState<DemandProp[]>([]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchDemandProps = useCallback(async () => {
+    try {
+      const response = await axios.get('/demand', {
+        params: {
+          project_id: 1, // Adjust the project ID parameter as needed
+        },
+      });
+      const result: DemandProp[] = response.data;
+      setDemandProps(result);
+      console.log(demands)// TODO clean
+    } catch (error) {
+      console.error('Error fetching demands:', error);
+    }
+  }, [demands]);
 
   useEffect(() => {
-    const fetchDemands = async () => {
-      try {
-        const response = await api.get('/demand', {
-          params: {
-            project_id: 1, // Adjust the project ID parameter as needed
-          },
-        });
-        const result: Demand[] = response.data;
-        setDemands(result);
-      } catch (error) {
-        console.error('Error fetching demands:', error);
-      }
-    };
-  
-    fetchDemands();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    fetchDemandProps();
+  }, [fetchDemandProps]);
   
 
-  const deleteDemand = async (id: number) => {
+  const getDemandbyId = async (id: string): Promise<DemandProp | undefined> => {
     try {
-      await api.delete(`/demand/${id}`);
-      setDemands((prevDemands) => prevDemands.filter((demand) => demand.id !== id));
+      const response = await axios.get(`/demand/${id}`);
+      const fetchedDemand: DemandProp = response.data;
+      return fetchedDemand;
+    } catch (error) {
+      console.error('Error fetching demand by id:', error);
+      return undefined;
+    }
+  };
+
+  const deleteDemand = async (id: string) => {
+    try {
+      await axios.delete(`/demand/${id}`);
+      setDemandProps((prevDemands) => prevDemands.filter((demand) => demand.id !== id));
     } catch (error) {
       console.error('Error deleting demand:', error);
     }
@@ -84,9 +84,10 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const createDemand = async (newDemand: Demand) => {
     try {
-      const response = await api.post('/demand', newDemand);
-      const createdDemand: Demand = response.data;
-      setDemands((prevDemands) => [...prevDemands, createdDemand]);
+      console.log(newDemand);
+      const response = await axios.post('/demand', newDemand);
+      console.log(response) //TODO clean
+      fetchDemandProps();
     } catch (error) {
       console.error('Error creating demand:', error);
     }
@@ -94,18 +95,20 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const updateDemand = async (updatedDemand: Demand) => {
     try {
-      const response = await api.put(`/demand/${updatedDemand.id}`, updatedDemand);
+      console.log(updatedDemand);
+      const response = await axios.put(`/demand/${updatedDemand.id}`, updatedDemand);
       const modifiedDemand: Demand = response.data;
       setDemands((prevDemands) =>
         prevDemands.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
       );
+      fetchDemandProps();
     } catch (error) {
       console.error('Error updating demand:', error);
     }
   };
 
   return (
-    <DemandContext.Provider value={{ demands, deleteDemand, createDemand, updateDemand }}>
+    <DemandContext.Provider value={{ demandprops, deleteDemand, createDemand, updateDemand, getDemandbyId,fetchDemandProps }}>
       {props.children}
     </DemandContext.Provider>
   );
