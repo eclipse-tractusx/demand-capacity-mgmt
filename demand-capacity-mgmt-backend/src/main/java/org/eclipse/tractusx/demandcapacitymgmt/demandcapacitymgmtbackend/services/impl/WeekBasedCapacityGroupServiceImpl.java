@@ -109,7 +109,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
     @Override
     public void sendWeekBasedCapacityGroup() {
-     
+
     }
 
     @Override
