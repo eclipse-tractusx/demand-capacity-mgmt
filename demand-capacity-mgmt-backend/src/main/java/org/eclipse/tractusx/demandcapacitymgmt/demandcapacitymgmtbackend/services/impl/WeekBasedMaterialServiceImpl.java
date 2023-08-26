@@ -65,16 +65,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
 
     @Override
     public void sendWeekBasedMaterial() {
-        //        Optional<SupplierEntity> supplierEntityOpt = supplierRepository.findById(1l);
-        //
-        //        if (supplierEntityOpt.isPresent()) {
-        //            SupplierEntity supplierEntity = supplierEntityOpt.get();
-        //            RestTemplate restTemplate = new RestTemplate();
-        //            String fooResourceUrl = supplierEntity.getEdcUrl();
-        //
-        //            //TODO create the Actual Demand and send to the supplier
-        //            ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
-        //        }
+
     }
 
     @Override
