@@ -1,0 +1,184 @@
+# *******************************************************************************
+# Copyright (c) 2023 BMW AG
+# Copyright (c) 2023 Contributors to the Eclipse Foundation
+#
+#   See the NOTICE file(s) distributed with this work for additional
+#   information regarding copyright ownership.
+#
+#   This program and the accompanying materials are made available under the
+#   terms of the Apache License, Version 2.0 which is available at
+#   https://www.apache.org/licenses/LICENSE-2.0.
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#   License for the specific language governing permissions and limitations
+#   under the License.
+#
+#   SPDX-License-Identifier: Apache-2.0
+#   ********************************************************************************
+
+
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Backend Settings
+backend:
+  replicaCount: 1
+  image:
+    registry: "ghcr.io"
+    name: "catenax-ng/demand-capacity-management-backend"
+    pullPolicy: Always
+    tag: ""
+  certificate:
+    host: "localhost"
+  appName: demand-capacity-management-backend
+  imagePullSecrets: []
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 3000
+    capabilities:
+      drop:
+        - ALL
+  service:
+    type: ClusterIP
+    port: 8888
+  autoscaling:
+    enabled: false
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+  resources:
+    limits:
+      cpu: 300m
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 1Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: DoesNotExist
+            topologyKey: kubernetes.io/hostname
+  livenessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 300
+    periodSeconds: 30
+    successThreshold: 1
+    timeoutSeconds: 1
+    path: /actuator/health
+    port: 8080
+  readinessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 300
+    periodSeconds: 30
+    successThreshold: 1
+    timeoutSeconds: 1
+    path: /actuator/health
+    port: 8080
+  applicationSecret:
+    enabled: true
+    clientSecret: ""
+    clientId: ""
+  configmap:
+    create: true
+    data:
+      security_enabled: 'false'
+  elastic:
+    enabled: false
+    security:
+      tls:
+        restEncryption: false
+  postgres:
+    enabled: true
+    auth:
+      database: dcm
+      username: dcm
+      password: "dcm"
+      postgres-password: "dcm"
+
+# Frontend Settings
+frontend:
+  replicaCount: 1
+  image:
+    registry: "ghcr.io"
+    name: "catenax-ng/demand-capacity-management-frontend"
+    pullPolicy: Always
+    tag: ""
+  certificate:
+    host: "localhost"
+  appName: demand-capacity-management-frontend
+  imagePullSecrets: []
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 101
+    runAsGroup: 3000
+    capabilities:
+      drop:
+        - ALL
+  service:
+    type: ClusterIP
+    port: 8080
+  autoscaling:
+    enabled: false
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+  resources:
+    limits:
+      cpu: 300m
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 1Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: DoesNotExist
+            topologyKey: kubernetes.io/hostname
+  livenessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 1000
+    successThreshold: 1
+    timeoutSeconds: 1000
+  readinessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 1000
+    successThreshold: 1
+    timeoutSeconds: 1000
+  applicationSecret:
+    enabled: false
+  configmap:
+    create: true
+  elastic:
+    enabled: false
+    security:
+      tls:
+        restEncryption: false
