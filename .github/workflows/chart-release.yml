@@ -26,7 +26,7 @@ on:
     paths:
       - 'charts/demand-capacity-management/Chart.yaml'
     branches:
-      - feat/DCMFOSS-53
+      - 'feat/DCMFOSS-53'
 jobs:
   release:
     permissions:
