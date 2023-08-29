@@ -21,15 +21,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "demand-capacity-management-frontend.fullname" . }}
+  name: {{ .Values.frontend.name }}
+  namespace: {{ .Values.namespace }}
   labels:
-    {{- include "demand-capacity-management-frontend.labels" . | nindent 4 }}
+    {{- include "chart.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.frontend.service.type }}
   ports:
-    - port: {{ .Values.frontend.service.port }}
-      targetPort: http
+    - port: {{ .Values.frontend.service.port }}       # host port
+      targetPort: 8080                                # container port
       protocol: TCP
       name: http
   selector:
-    {{- include "demand-capacity-management-frontend.selectorLabels" . | nindent 4 }}
+    {{- include "chart.selectorLabels" . | nindent 4 }}
+    component: frontend
