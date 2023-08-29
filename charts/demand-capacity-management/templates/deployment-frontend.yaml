@@ -21,7 +21,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "demand-capacity-management-frontend.fullname" . }}
+  name: {{ include ".Values.frontend.fullname" . }}
   labels:
     {{- include ".Values.frontend.labels" . | nindent 4 }}
 spec:
