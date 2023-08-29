@@ -22,36 +22,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "demand-capacity-management-backend.fullname" . }}
+  name: {{ .Values.backend.name }}
   labels:
-    {{- include "demand-capacity-management-backend.labels" . | nindent 4 }}
+    {{- include "chart.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
 spec:
-  {{- if not .Values.backend.autoscaling.enabled }}
-  replicas: {{ .Values.backend.replicaCount }}
-  {{- end }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "demand-capacity-management-backend.selectorLabels" . | nindent 6 }}
+      {{- include "chart.selectorLabels" . | nindent 6 }}
+      component: backend
   template:
     metadata:
-      {{- with .Values.backend.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "demand-capacity-management-backend.selectorLabels" . | nindent 8 }}
+        {{- include "chart.selectorLabels" . | nindent 8 }}
+        component: backend
     spec:
       {{- with .Values.backend.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
+        runAsUser: 10000
+        fsGroup: 3000
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.backend.securityContext | nindent 12 }}
-          image: "{{ .Values.backend.image.registry }}/{{ .Values.backend.image.name }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           env:
             - name: DCM_DATASOURCE_HOST
