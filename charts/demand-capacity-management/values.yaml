@@ -28,10 +28,11 @@ replicaCount: 1
 namespace: ""
 
 backend:
-  name: "demand-capacity-management-backend"
+  name: "dcm-backend"
   image:
     registry: "ghcr.io"
     pullPolicy: Always
+    repository: ghcr.io/catenax-ng/tx-demand-capacity-mgmt/demand-capacity-mgmt-backend
     tag: ""
   certificate:
     host: "localhost"
@@ -115,10 +116,11 @@ backend:
 
 # Frontend Settings
 frontend:
-  name: "demand-capacity-management-frontend"
+  name: "dcm-frontend"
   image:
     registry: "ghcr.io"
     pullPolicy: Always
+    repository: ghcr.io/catenax-ng/tx-demand-capacity-mgmt/demand-capacity-mgmt-frontend
     tag: ""
   certificate:
     host: "localhost"
