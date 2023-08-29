@@ -21,52 +21,50 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include ".Values.frontend.fullname" . }}
+  name: {{ .Values.frontend.name }}
   labels:
-    {{- include ".Values.frontend.labels" . | nindent 4 }}
+    {{- include "chart.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
 spec:
-  {{- if not .Values.frontend.autoscaling.enabled }}
-  replicas: {{ .Values.frontend.replicaCount }}
-  {{- end }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include ".Values.frontend.selectorLabels" . | nindent 6 }}
+      {{- include "chart.selectorLabels" . | nindent 6 }}
+      component: frontend
   template:
     metadata:
-      {{- with .Values.frontend.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include ".Values.frontend.selectorLabels" . | nindent 8 }}
+        {{- include "chart.selectorLabels" . | nindent 8 }}
+        component: frontend
     spec:
       {{- with .Values.frontend.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.frontend.podSecurityContext | nindent 8 }}
+        runAsUser: 10000
+        fsGroup: 3000
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.frontend.securityContext | nindent 12 }}
-          image: "{{ .Values.frontend.image.registry }}/{{ .Values.frontend.image.name }}:{{ .Values.frontend.frontend.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: {{ .Values.frontend.service.port }}
+            - containerPort: 8080
+              name: http
               protocol: TCP
           resources:
-            {{- toYaml .Values.frontend.resources | nindent 12 }}
-      {{- with .Values.frontend.nodeSelector }}
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.frontend.affinity }}
+      {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.frontend.tolerations }}
+      {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
