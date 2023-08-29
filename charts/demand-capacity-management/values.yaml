@@ -23,11 +23,14 @@
 # Declare variables to be passed into your templates.
 
 # Backend Settings
+name: "demand-capacity-management"
+replicaCount: 1
+namespace: ""
+
 backend:
-  replicaCount: 1
+  name: "demand-capacity-management-backend"
   image:
     registry: "ghcr.io"
-    name: "catenax-ng/demand-capacity-management-backend"
     pullPolicy: Always
     tag: ""
   certificate:
@@ -112,10 +115,9 @@ backend:
 
 # Frontend Settings
 frontend:
-  replicaCount: 1
+  name: "demand-capacity-management-frontend"
   image:
     registry: "ghcr.io"
-    name: "catenax-ng/demand-capacity-management-frontend"
     pullPolicy: Always
     tag: ""
   certificate:
@@ -182,3 +184,4 @@ frontend:
     security:
       tls:
         restEncryption: false
+

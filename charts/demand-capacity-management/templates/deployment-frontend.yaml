@@ -23,14 +23,14 @@ kind: Deployment
 metadata:
   name: {{ include "demand-capacity-management-frontend.fullname" . }}
   labels:
-    {{- include "demand-capacity-management-frontend.labels" . | nindent 4 }}
+    {{- include ".Values.frontend.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.frontend.autoscaling.enabled }}
   replicas: {{ .Values.frontend.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "demand-capacity-management-frontend.selectorLabels" . | nindent 6 }}
+      {{- include ".Values.frontend.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.frontend.podAnnotations }}
@@ -38,7 +38,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "demand-capacity-management-frontend.selectorLabels" . | nindent 8 }}
+        {{- include ".Values.frontend.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.frontend.imagePullSecrets }}
       imagePullSecrets:
