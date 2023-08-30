@@ -26,22 +26,7 @@ import WeeklyView from '../WeeklyView';
 import DemandCategoryContextProvider, { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 
 function CapacityGroupDetailsPage() {
-  const [editMode, setEditMode] = useState(false);
-  const [savedChanges, setSavedChanges] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
-
-  const handleSave = () => {
-    // Perform save operation here
-    setEditMode(false);
-    setSavedChanges(true);
-    console.log(savedChanges);// todo clean
-  };
-
-  const handleRevert = () => {
-    // Revert changes here
-    setEditMode(false);
-    setSavedChanges(false);
-  };
   
 
   return (
@@ -55,27 +40,6 @@ function CapacityGroupDetailsPage() {
           </div>
             <div className="col d-flex justify-content-end">
               <br />
-              {activeTab === 'overview' && (
-              <ButtonGroup className="mb-2 align-middle">
-                <ToggleButton
-                  id="toggle-edit"
-                  type="checkbox"
-                  variant="secondary"
-                  name="edit"
-                  value="0"
-                  checked={editMode}
-                  onChange={() => setEditMode(!editMode)}
-                >
-                  Edit
-                </ToggleButton>
-                <Button variant="secondary" name="save" onClick={handleSave}>
-                  Save
-                </Button>
-                <Button variant="secondary" name="revert" onClick={handleRevert}>
-                  Revert Changes
-                </Button>
-              </ButtonGroup>
-                        )}
             </div>  
         </div>
         <Tabs
@@ -91,10 +55,7 @@ function CapacityGroupDetailsPage() {
         >
           <Tab eventKey="overview" title="Overview">
 
-            <DemandCategoryContextProvider>
-            <WeeklyView></WeeklyView>
-            </DemandCategoryContextProvider>
-
+            TABLE
             chronogram here
           </Tab>
           <Tab eventKey="materials" title="Materials">
