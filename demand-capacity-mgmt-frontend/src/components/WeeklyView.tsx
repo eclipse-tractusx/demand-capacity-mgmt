@@ -27,18 +27,18 @@ const WeeklyView: React.FC = () => {
   ];
   
   const monthsCurrentYear = [
-    { name: 'Jan', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 0) }, (_, index) => index + 1) },
-    { name: 'Feb', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 1) }, (_, index) => index + 5) },
-    { name: 'Mar', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 2) }, (_, index) => index + 9) },
-    { name: 'Apr', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 3) }, (_, index) => index + 14) },
-    { name: 'May', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 4) }, (_, index) => index + 18) },
-    { name: 'Jun', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 5) }, (_, index) => index + 23) },
-    { name: 'Jul', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 6) }, (_, index) => index + 27) },
-    { name: 'Aug', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 7) }, (_, index) => index + 32) },
-    { name: 'Sep', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 8) }, (_, index) => index + 36) },
-    { name: 'Oct', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 9) }, (_, index) => index + 41) },
-    { name: 'Nov', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 10) }, (_, index) => index + 45) },
-    { name: 'Dec', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 11) }, (_, index) => index + 49) },
+  { name: 'Jan', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 0) }, (_, index) => index + 1) },
+  { name: 'Feb', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 1) }, (_, index) => index + 5) },
+  { name: 'Mar', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 2) }, (_, index) => index + 9) },
+  { name: 'Apr', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 3) }, (_, index) => index + 13) },
+  { name: 'May', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 4) }, (_, index) => index + 18) },
+  { name: 'Jun', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 5) }, (_, index) => index + 22) },
+  { name: 'Jul', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 6) }, (_, index) => index + 26) },
+  { name: 'Aug', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 7) }, (_, index) => index + 31) },
+  { name: 'Sep', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 8) }, (_, index) => index + 35) },
+  { name: 'Oct', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 9) }, (_, index) => index + 40) },
+  { name: 'Nov', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 10) }, (_, index) => index + 44) },
+  { name: 'Dec', year: currentYear, weeks: Array.from({ length: getWeeksInMonth(currentYear, 11) }, (_, index) => index + 48) },
   ];
   
   const monthsNextYear = [
@@ -62,7 +62,7 @@ const WeeklyView: React.FC = () => {
       const weekEndDate = new Date(start);
       weekEndDate.setDate(weekEndDate.getDate() + 6); // Calculate week end date
   
-      const weekDemand = Math.floor(Math.random() * 100); // Generate a random demand value
+      const weekDemand = Math.floor(Math.random() * 100) +1; // Generate a random demand value
   
       demandSeriesValues.push({
         calendarWeek: weekStartDate.toISOString(),
@@ -145,17 +145,15 @@ const WeeklyView: React.FC = () => {
 
   function getISOWeekNumber(date: Date): number {
     const newDate = new Date(date);
-    newDate.setHours(0, 0, 0, 0);
-    newDate.setDate(newDate.getDate() + 4 - (newDate.getDay() || 7));
-  
-    const yearStart = new Date(newDate.getFullYear(), 0, 1);
-    const weekNumber = Math.floor(((+newDate - +yearStart) / 86400000 + 1) / 7);
-  
+    const dayOfWeek = newDate.getUTCDay();
+    newDate.setUTCDate(newDate.getUTCDate() + 4 - (dayOfWeek || 7));
+    const yearStart = new Date(Date.UTC(newDate.getUTCFullYear(), 0, 1));
+    const weekNumber = Math.ceil(((Date.UTC(newDate.getUTCFullYear(), newDate.getUTCMonth(), newDate.getUTCDate()) - +yearStart) / 86400000 + 1) / 7);
+    
     // Ensure there are only 52 weeks in a year
     return weekNumber === 0 ? 52 : weekNumber;
   }
   
-
   const idToNumericIdMap: Record<string, number> = {};
 
   if (demandcategories) {
@@ -181,9 +179,9 @@ const WeeklyView: React.FC = () => {
         demandValuesMap[categoryId][year] = {};
       }
       demandValuesMap[categoryId][year][week] = value.demand;
+      console.log(`Category: ${categoryId}, Year: ${year}, Month: ${month}, Week: ${week}, Demand: ${value.demand}`);
     });
   });
-
   
     return (
       <div className="table-container">
