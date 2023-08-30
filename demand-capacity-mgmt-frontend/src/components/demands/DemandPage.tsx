@@ -11,13 +11,13 @@
  */
 
 import React, { useContext, useState, useMemo, useCallback } from 'react';
-import { Modal, Button, Form, Col, Row, ButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Modal, Button, Form, Col, Row, ButtonGroup, ToggleButton, Breadcrumb } from 'react-bootstrap';
 import { DemandProp } from '../../interfaces/demand_interfaces';
 import Pagination from '../Pagination';
 import DemandsTable from './DemandsTable';
 import DemandsSearch from '../Search';
 import EditForm from './DemandEditForm';
-import { FcCancel } from 'react-icons/fc';
+import { FaPlus, FaSearch, FaTrashAlt } from 'react-icons/fa';
 import AddForm from './DemandAddForm';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
@@ -136,7 +136,13 @@ const DemandsPage: React.FC = () => {
     () =>
       slicedDemands.map((demand) => (
         <tr key={demand.id}>
-          <td><span className="badge rounded-pill text-bg-primary" data-toggle="modal" onClick={() => handleDetails(demand)}>Details</span></td>
+          <td>
+            <Button data-toggle="modal" onClick={() => handleDetails(demand)} variant="outline-primary" >
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <FaSearch size={20} />
+              </div>
+            </Button>
+          </td>
           <td>{demand.customer.bpn}</td>
           <td>{demand.materialNumberCustomer}</td>
           <td>{demand.materialNumberSupplier}</td>
@@ -165,7 +171,11 @@ const DemandsPage: React.FC = () => {
             <Button onClick={() => handleEdit(demand)} variant="outline-secondary">Edit</Button>
           </td>
           <td>
-            <Button onClick={() => handleDeleteDemand(demand.id)} variant="outline-danger"><FcCancel /></Button>
+            <Button onClick={() => handleDeleteDemand(demand.id)} variant="outline-danger">
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <FaTrashAlt size={23} />
+              </div>
+            </Button>
           </td>
         </tr>
       )),
@@ -184,7 +194,7 @@ const DemandsPage: React.FC = () => {
           </div>
           <div className="col-sm-6">
             <Button className="btn btn-success float-end" data-toggle="modal" onClick={() => setShowAddModal(true)}>
-              <i className="material-icons">&#xE147;</i> <span>New Material Demand</span>
+              <span> New Material Demand</span>
             </Button>
           </div>
         </div>
@@ -276,11 +286,16 @@ const DemandsPage: React.FC = () => {
         fullscreen="xl"
       >
         <Modal.Header closeButton>
+          <Breadcrumb>
+            <Breadcrumb.Item href="#" onClick={handleCloseDetails}>Demand Management</Breadcrumb.Item>
+            <Breadcrumb.Item href="#">{selectedDemand?.id}</Breadcrumb.Item>
+            <Breadcrumb.Item active>Overview</Breadcrumb.Item>
+          </Breadcrumb>
         </Modal.Header>
         <Modal.Body>
           <DemandCategoryContextProvider>
             <WeeklyView
-              demandData={selectedDemand!}/>
+              demandData={selectedDemand!} />
           </DemandCategoryContextProvider>
         </Modal.Body>
       </Modal>
