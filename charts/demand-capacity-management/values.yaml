@@ -84,7 +84,7 @@ backend:
     successThreshold: 1
     timeoutSeconds: 1
     path: /actuator/health
-    port: 8080
+    port: 8888
   readinessProbe:
     failureThreshold: 3
     initialDelaySeconds: 300
@@ -92,7 +92,7 @@ backend:
     successThreshold: 1
     timeoutSeconds: 1
     path: /actuator/health
-    port: 8080
+    port: 8888
   applicationSecret:
     enabled: true
     clientSecret: ""
@@ -106,13 +106,7 @@ backend:
     security:
       tls:
         restEncryption: false
-  postgres:
-    enabled: true
-    auth:
-      database: dcm
-      username: dcm
-      password: "dcm"
-      postgres-password: "dcm"
+
 
 # Frontend Settings
 frontend:
@@ -186,4 +180,12 @@ frontend:
     security:
       tls:
         restEncryption: false
+
+postgres:
+  enabled: true
+  auth:
+    database: dcm
+    username: dcm
+    password: dcm
+    postgres_password: "postgres-password"
 
