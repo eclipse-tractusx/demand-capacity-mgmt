@@ -55,14 +55,15 @@ spec:
             - name: DCM_DATASOURCE_HOST
               value: {{  include "dcm-backend.postgres.name" . }}
             - name: DCM_DATASOURCE_NAME
-              value: {{ .Values.backend.postgres.auth.database }}
+              value: {{ .Values.postgres.auth.database }}
             - name: DCM_DATASOURCE_USER
-              value: {{ .Values.backend.postgres.auth.username }}
+              value: {{ .Values.postgres.auth.username }}
             - name: DCM_DATASOURCE_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "dcm-backend.postgres.name" . }}
-                  key: password
+              value: {{ .Values.postgres.auth.password }}
+              #valueFrom:
+              #  secretKeyRef:
+              #    name: {{ include "dcm-backend.postgres.name" . }}
+              #    key: {{ .Values.postgres.auth.postgres_password }}
           ports:
             - name: http
               containerPort: {{ .Values.backend.service.port }}
