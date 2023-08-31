@@ -25,11 +25,15 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.except
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.ExceptionResponseImpl;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.InternalServerErrorException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @ControllerAdvice
@@ -43,5 +47,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public final ResponseEntity<Object> handleBadRequestException(BadRequestException ex) {
         return ResponseEntity.status(ex.getCode()).body(new ExceptionResponseImpl<>(ex));
+    }
+
+    @ExceptionHandler(Exception.class) //only used in 500
+    public final ResponseEntity<Object> handleInternalServerErrorException(Exception ex) {
+        return ResponseEntity.status(500).body(new ExceptionResponseImpl<>(
+                new InternalServerErrorException
+                        (
+                        500,
+                        "An internal server error has occurred",
+                        new ArrayList<>(List.of("Localised error : " + ex.getLocalizedMessage())))
+        ));
     }
 }
