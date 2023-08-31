@@ -48,6 +48,7 @@ public class CapacityGroupController implements CapacityGroupApi {
     public ResponseEntity<CapacityGroupResponse> postCapacityGroup(CapacityGroupRequest capacityGroupRequest)
         throws Exception {
         capacityGroupService.createCapacityGroup(capacityGroupRequest);
+
         return null;
     }
 }
