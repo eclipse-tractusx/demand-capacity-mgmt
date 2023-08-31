@@ -26,14 +26,12 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacitiesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedDemandSeriesRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.NotFoundException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CustomerRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
@@ -43,6 +41,10 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.U
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -95,17 +97,15 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
                             );
 
                             matchingDemands.forEach(
-                                materialDemandEntity -> {
-                                    materialDemandEntity
-                                        .getDemandSeries()
-                                        .forEach(
-                                            demandSeries -> {
-                                                demandSeries.setCapacityGroupId(
-                                                    weekBasedCapacityGroup.getCapacityGroupId()
-                                                );
-                                            }
-                                        );
-                                }
+                                materialDemandEntity -> materialDemandEntity
+                                    .getDemandSeries()
+                                    .forEach(
+                                        demandSeries -> {
+                                            demandSeries.setCapacityGroupId(
+                                                weekBasedCapacityGroup.getCapacityGroupId()
+                                            );
+                                        }
+                                    )
                             );
 
                             materialDemandRepository.saveAll(matchingDemands);
@@ -118,7 +118,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
     @Override
     public void sendWeekBasedCapacityGroup() {
-        Optional<CustomerEntity> supplierEntityOpt = customerRepository.findById(1l);
+        Optional<CustomerEntity> supplierEntityOpt = customerRepository.findById(1L);
 
         //TODO we still dont have defined the demand or the capacity structure yet, this is just an example of the flux
         if (supplierEntityOpt.isPresent()) {
@@ -174,7 +174,11 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         );
 
         if (weekBasedCapacityGroupEntityOptional.isEmpty()) {
-            throw new NotFoundException("WeekBasedCapacity not found");
+            throw new NotFoundException(
+                    404,
+                    "Weekly based capacity group not found",
+                    new ArrayList<>(List.of("the capacity group ID provided - " + capacityGroupId))
+            );
         }
 
         return weekBasedCapacityGroupEntityOptional.get();
@@ -205,7 +209,11 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
     private void validateFields(WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest) {
         if (!UUIDUtil.checkValidUUID(weekBasedCapacityGroupRequest.getCapacityGroupId())) {
-            throw new BadRequestException("not a valid ID");
+            throw new BadRequestException(
+                    400,
+                    "The ID provided is not valid, check UUID",
+                    new ArrayList<>(List.of("the provided ID - " + weekBasedCapacityGroupRequest.getCapacityGroupId()))
+            );
         }
     }
 

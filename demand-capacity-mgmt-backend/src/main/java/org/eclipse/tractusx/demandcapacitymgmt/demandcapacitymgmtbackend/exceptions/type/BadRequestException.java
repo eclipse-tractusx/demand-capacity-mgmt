@@ -20,11 +20,35 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type;
 
-public class BadRequestException extends RuntimeException {
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.CustomException;
 
-    public BadRequestException(String message) {
-        super(message);
+import java.util.List;
+
+public class BadRequestException extends RuntimeException implements CustomException<BadRequestException> {
+    private final int code;
+    private final String message;
+    private final List<String> details;
+
+    public BadRequestException(int code, String message, List<String> details) {
+        this.code = code;
+        this.message = message;
+        this.details = details;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public int getCode() {
+        return code;
+    }
+
+    @Override
+    public List<String> getDetails() {
+        return details;
     }
 }

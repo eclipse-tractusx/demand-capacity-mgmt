@@ -26,16 +26,13 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesCat
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandWeekSeriesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.SupplierEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.SupplierRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
@@ -43,9 +40,12 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -79,11 +79,13 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
         Optional<SupplierEntity> supplierEntityOpt = supplierRepository.findById(1l);
 
         if (supplierEntityOpt.isPresent()) {
-            SupplierEntity supplierEntity = supplierEntityOpt.get();
-            RestTemplate restTemplate = new RestTemplate();
-            String fooResourceUrl = supplierEntity.getEdcUrl();
-            //TODO create the Actual Demand and send to the supplier
-            //  ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
+            /*
+                TODO create the Actual Demand and send to the supplier
+                SupplierEntity supplierEntity = supplierEntityOpt.get();
+                RestTemplate restTemplate = new RestTemplate();
+                String fooResourceUrl = supplierEntity.getEdcUrl();
+                ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
+            */
         }
 
         List<MaterialDemandEntity> demandEntityList = demandService.getAllByStatus(
@@ -157,23 +159,29 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
 
     private void validateFields(WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto) {
         if (!UUIDUtil.checkValidUUID(weekBasedMaterialDemandRequestDto.getMaterialDemandId())) {
-            throw new BadRequestException("not a valid ID");
+            throw new BadRequestException(
+                    400,
+                    "Not a valid materialDemand ID",
+                    new ArrayList<>(List.of(weekBasedMaterialDemandRequestDto.getMaterialDemandId()))
+            );
         }
 
         weekBasedMaterialDemandRequestDto
             .getDemandSeries()
             .forEach(
-                demandWeekSeriesDto -> {
-                    demandWeekSeriesDto
-                        .getDemands()
-                        .forEach(
-                            demandSeriesDto -> {
-                                if (!DataConverterUtil.itsMonday(demandSeriesDto.getCalendarWeek())) {
-                                    throw new BadRequestException("not a valid date");
-                                }
+                demandWeekSeriesDto -> demandWeekSeriesDto
+                    .getDemands()
+                    .forEach(
+                        demandSeriesDto -> {
+                            if (Boolean.FALSE.equals(DataConverterUtil.itsMonday(demandSeriesDto.getCalendarWeek()))) {
+                                throw new BadRequestException(
+                                        400,
+                                        "Not a valid date",
+                                        new ArrayList<>(List.of("Date was now a Monday"))
+                                );
                             }
-                        );
-                }
+                        }
+                    )
             );
     }
 
