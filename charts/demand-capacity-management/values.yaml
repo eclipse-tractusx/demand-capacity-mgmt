@@ -51,7 +51,7 @@ backend:
         - ALL
   service:
     type: ClusterIP
-    port: 8888
+    port: 8080
   autoscaling:
     enabled: false
   ingress:
@@ -84,7 +84,7 @@ backend:
     successThreshold: 1
     timeoutSeconds: 1
     path: /actuator/health
-    port: 8888
+    port: 8080
   readinessProbe:
     failureThreshold: 3
     initialDelaySeconds: 300
@@ -92,7 +92,7 @@ backend:
     successThreshold: 1
     timeoutSeconds: 1
     path: /actuator/health
-    port: 8888
+    port: 8080
   applicationSecret:
     enabled: true
     clientSecret: ""
