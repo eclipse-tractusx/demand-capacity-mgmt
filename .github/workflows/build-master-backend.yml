@@ -27,7 +27,7 @@ on:
       - 'demand-capacity-mgmt-backend/**'
       - 'demand-capacity-mgmt-specification/**'
     branches:
-      - 'feat/DCMFOSS-53'
+      - 'main'
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'
