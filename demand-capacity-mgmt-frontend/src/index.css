@@ -33,3 +33,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.custom-modal {
+  max-width: 1500px; /* Adjust the width as needed */
+}
