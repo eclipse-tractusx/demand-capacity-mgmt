@@ -26,7 +26,7 @@ on:
     paths:
       - 'demand-capacity-mgmt-frontend/**'
     branches:
-      - 'feat/DCMFOSS-53'
+      - 'main'
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'
