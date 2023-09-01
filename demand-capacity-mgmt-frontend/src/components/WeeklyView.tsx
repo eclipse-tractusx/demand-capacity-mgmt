@@ -1,17 +1,39 @@
 import React from 'react';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import './WeeklyView.css';
 import { DemandCategoryContext } from '../contexts/DemandCategoryProvider';
-import { DemandCategory, DemandProp } from '../interfaces/demand_interfaces';
+import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSery } from '../interfaces/demand_interfaces';
 import { Button, ButtonGroup, ToggleButton } from 'react-bootstrap';
+import { DemandContext } from '../contexts/DemandContextProvider';
 
 
 interface WeeklyViewProps {
   demandData: DemandProp;
 }
 
+function getWeekStartDate(year: number, month: string, isoWeek: number): Date {
+  const monthIndex = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].indexOf(month);
+
+  const startDateOfMonth = new Date(year, monthIndex, 1);
+
+  // Calculate the day of the week for the first day of the month (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const firstDayOfWeek = startDateOfMonth.getDay();
+
+  // Calculate the offset needed to reach the first Monday of the month
+  const offsetToMonday = (8 - firstDayOfWeek) % 7;
+
+  // Calculate the start date of the requested ISO week
+  const startDateOfRequestedISOWeek = new Date(year, monthIndex, 1 + offsetToMonday + (isoWeek - 1) * 7);
+
+  // Adjust to the correct month
+  startDateOfRequestedISOWeek.setMonth(monthIndex);
+  return startDateOfRequestedISOWeek;
+}
+
 const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
+
+  const { updateDemand } = useContext(DemandContext)!;
   const { demandcategories } = useContext(DemandCategoryContext) || {};
   const currentYear = new Date().getFullYear();
   const previousYear = currentYear - 1;
@@ -40,7 +62,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
     return {
       name: monthName,
       year: currentYear,
-      weeks: weeks,
+      weeks: weeks as number[],
     };
   });
 
@@ -52,10 +74,10 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
     { name: 'Jan', year: nextYear, weeks: Array.from({ length: getWeeksInMonth(nextYear, 0) }, (_, index) => index + 1) },
   ];
 
-
   const totalWeeksPreviousYear = monthsPreviousYear.reduce((total, month) => total + month.weeks.length, 0);
   const totalWeeksCurrentYear = monthsCurrentYear.reduce((total, month) => total + month.weeks.length, 0);
   const totalWeeksNextYear = monthsNextYear.reduce((total, month) => total + month.weeks.length, 0);
+
   // Function to get the number of weeks in a month for a given year and month index
   function getWeeksInMonth(year: number, monthIndex: number): number {
     const firstDay = new Date(year, monthIndex, 1);
@@ -68,7 +90,10 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
   }
 
   // Object to store the demand values based on year, month, and week
-  const demandValuesMap: Record<string, Record<number, Record<string, number>>> = {};
+  type DemandValuesMap = Record<string, Record<number, Record<string, number>>>;
+  let [demandValuesMap, setDemandValuesMap] = useState<DemandValuesMap>({});
+
+
 
   function getISOWeekNumber(date: Date): number {
     const newDate = new Date(date);
@@ -89,33 +114,88 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
       idToNumericIdMap[category.id] = index;
     });
   }
+  useEffect(() => {
+    const newDemandValuesMap: DemandValuesMap = {};
 
-  // Populate the demandValuesMap using demandSeriesValues
-  demandData.demandSeries?.forEach((series) => {
-    const categoryId = series.demandCategory.id;
+    demandData.demandSeries?.forEach((series) => {
+      const categoryId = series.demandCategory.id;
 
-    series.demandSeriesValues.forEach((value) => {
-      const date = new Date(value.calendarWeek);
-      const year = date.getFullYear();
-      const month = date.getMonth();
-      const week = getISOWeekNumber(date).toString();
+      series.demandSeriesValues.forEach((value) => {
+        const date = new Date(value.calendarWeek);
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const week = getISOWeekNumber(date).toString();
 
-      if (!demandValuesMap[categoryId]) {
-        demandValuesMap[categoryId] = {};
-      }
-      if (!demandValuesMap[categoryId][year]) {
-        demandValuesMap[categoryId][year] = {};
-      }
-      demandValuesMap[categoryId][year][week] = value.demand;
-      console.log(`Category: ${categoryId}, Year: ${year}, Month: ${month}, Week: ${week}, Demand: ${value.demand}`);
+        if (!newDemandValuesMap[categoryId]) {
+          newDemandValuesMap[categoryId] = {};
+        }
+        if (!newDemandValuesMap[categoryId][year]) {
+          newDemandValuesMap[categoryId][year] = {};
+        }
+        newDemandValuesMap[categoryId][year][week] = value.demand;
+        console.log(`Category: ${categoryId}, Year: ${year}, Month: ${month}, Week: ${week}, Demand: ${value.demand}`);
+      });
     });
-  });
 
-  const handleSave = () => {
-    // Perform save operation here
+    setDemandValuesMap(newDemandValuesMap);
+  }, [demandData]);
+
+
+  const handleSave = async () => {
+    if (!demandData.demandSeries) {
+      return;
+    }
+
+    // Create new MaterialDemandSery objects for categories with data
+    const updatedDemandSeries: MaterialDemandSery[] = demandcategories!.map((category) => {
+      const categoryId = category.id;
+      const demandSeriesValues: DemandSeriesValue[] = [];
+
+      //Loop through months and weeks to populate demandSeriesValues
+      monthsCurrentYear.forEach((month) => {
+        month.weeks.forEach((week) => {
+          const demand = demandValuesMap[categoryId]?.[month.year]?.[week];
+          if (demand !== undefined) {
+            demandSeriesValues.push({
+              calendarWeek: format(getWeekStartDate(month.year, month.name, week), 'yyyy-MM-dd'),
+              demand: demand,
+            });
+          }
+        });
+      });
+
+
+      return {
+        customerLocationId: demandData.customer.id,
+        expectedSupplierLocationId: [demandData.supplier.id],
+        demandCategoryId: categoryId,
+        demandSeriesValues: demandSeriesValues,
+      };
+    });
+
+    const updatedDemand: Demand = {
+      id: demandData.id,
+      customerId: demandData.customer.id,
+      supplierId: demandData.supplier.id,
+      materialDemandSeries: updatedDemandSeries,
+      materialDescriptionCustomer: demandData.materialDescriptionCustomer,
+      materialNumberCustomer: demandData.materialNumberCustomer,
+      materialNumberSupplier: demandData.materialNumberSupplier,
+      unitMeasureId: demandData.unitMeasureId.id
+    };
+
+    // Perform save operation with updatedDemandData
+    console.log(updatedDemand);
+    if (updatedDemand) {
+      try {
+        await updateDemand(updatedDemand);
+      } catch (error) {
+        console.error('Error updating demand:', error);
+      }
+    }
+
     setEditMode(false);
     setSavedChanges(true);
-    console.log(savedChanges);// todo clean
   };
 
   const handleRevert = () => {
@@ -142,8 +222,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
               value="0"
               checked={editMode}
               onChange={() => setEditMode(!editMode)}
-            >
-              Edit
+            >Edit
             </ToggleButton>
             <Button variant="secondary" name="save" onClick={handleSave}>
               Save
@@ -216,7 +295,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
               </tr>
               {demandcategories &&
                 demandcategories
-                  .sort((a, b) => a.id.localeCompare(b.id)) // Sort by category ID
+                  .sort((a, b) => a.id.localeCompare(b.id))
                   .map((category: DemandCategory) => (
                     <tr key={category.id}>
                       <th className="sticky-header-cell">
@@ -226,11 +305,55 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
                         <React.Fragment key={`${category.id}-${month.name}-${month.year}`}>
                           {month.weeks.map((week: number) => (
                             <td key={`${category.id}-${month.name}-${week}`} className="data-cell">
-                              <input
-                                className='table-data-input'
-                                type="text"
-                                defaultValue={demandValuesMap[category.id]?.[month.year]?.[week.toString()] || ''}
-                              />
+                              {editMode ? (
+                                <input
+                                  className="table-data-input"
+                                  type="text"
+                                  defaultValue={
+                                    demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
+                                      ? demandValuesMap[category.id]?.[month.year]?.[week].toString()
+                                      : ''
+                                  }
+                                  onChange={(event) => {
+                                    const inputValue = event.target.value;
+                                    const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+
+                                    if (inputValue === '' || numericValue === '0') {
+                                      // Remove the entry from demandValuesMap if value is empty or '0'
+                                      setDemandValuesMap((prevDemandValuesMap) => {
+                                        const updatedMap = { ...demandValuesMap };
+                                        if (updatedMap[category.id]?.[month.year]) {
+                                          delete updatedMap[category.id][month.year][week];
+                                          if (Object.keys(updatedMap[category.id][month.year]).length === 0) {
+                                            delete updatedMap[category.id][month.year];
+                                          }
+                                        }
+                                        return updatedMap;
+                                      });
+                                    } else if (/^[1-9]\d*$/.test(numericValue)) {
+                                      // Update demandValuesMap with the new numeric value if it's a positive integer
+                                      setDemandValuesMap({
+                                        ...demandValuesMap,
+                                        [category.id]: {
+                                          ...demandValuesMap[category.id],
+                                          [month.year]: {
+                                            ...demandValuesMap[category.id]?.[month.year],
+                                            [week]: parseInt(numericValue, 10),
+                                          },
+                                        },
+                                      });
+                                    }
+                                  }}
+                                  />
+                              ) : (
+                                <span>
+                                  {demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
+                                    ? demandValuesMap[category.id]?.[month.year]?.[week] === 0
+                                      ? '0'
+                                      : demandValuesMap[category.id]?.[month.year]?.[week]
+                                    : ''}
+                                </span>
+                              )}
                             </td>
                           ))}
                         </React.Fragment>
