@@ -38,8 +38,8 @@ import lombok.NoArgsConstructor;
 public class DemandEntity {
 
     @Id
-    @Column(name = "ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "ID", nullable = false)
     private Long id;
 
     @ManyToOne

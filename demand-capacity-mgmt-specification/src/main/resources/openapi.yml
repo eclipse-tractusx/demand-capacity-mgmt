@@ -28,6 +28,22 @@ servers:
 
 paths:
 
+  /loggingHistory:
+    get:
+      tags:
+        - loggingHistory
+      summary: loggingHistory
+      operationId: getLoggingHistory
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoggingHistoryResponse'
+
   /demand:
     post:
       tags:
@@ -261,6 +277,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/DemandCategoryResponse'
+
 
 components:
   schemas:
@@ -668,5 +685,28 @@ components:
           type: string
 
 
-
-
+    LoggingHistoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        userAccount:
+          type: string
+        timeCreated:
+          type: string
+        eventStatus:
+          type: string
+        userSpecificEventStatus:
+          type: string
+        objectType:
+          type: string
+        eventType:
+          type: string
+        capacityGroupId:
+          type: string
+        materialDemandId:
+          type: string
+        eventDescription:
+          type: string
+        isFavorited:
+          type: boolean

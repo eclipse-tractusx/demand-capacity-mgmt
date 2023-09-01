@@ -39,7 +39,7 @@ public class UnitMeasureEntity {
 
     @Id
     @GeneratedValue
-    @Column(columnDefinition = "uuid", updatable = false, name = "id")
+    @Column(columnDefinition = "uuid", updatable = false, name = "ID")
     private UUID id;
 
     @Column(name = "code_value")
