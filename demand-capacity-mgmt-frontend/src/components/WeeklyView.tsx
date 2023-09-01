@@ -16,19 +16,21 @@ interface WeeklyViewProps {
 function getISOWeekMonday(year: number, month: string, isoWeek: number): Date {
   const monthIndex = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].indexOf(month);
 
-  const startDateOfMonth = new Date(year, monthIndex, 1);
+  // Calculate the first day of the year
+  const startDateOfYear = new Date(year, 0, 1);
 
-  // Calculate the day of the week for the first day of the month (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-  const firstDayOfWeek = startDateOfMonth.getDay();
+  // Calculate the day of the week for the first day of the year (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const firstDayOfWeek = startDateOfYear.getDay();
 
-  // Calculate the offset needed to reach the first Monday of the month
+  // Calculate the offset needed to reach the first Monday of the year
   const offsetToMonday = (8 - firstDayOfWeek) % 7;
 
   // Calculate the start date of the requested ISO week
-  const startDateOfRequestedISOWeek = new Date(year, monthIndex, 1 + offsetToMonday + (isoWeek - 1) * 7);
+  const startDateOfRequestedISOWeek = new Date(year, 0, 1 + offsetToMonday + (isoWeek - 1) * 7);
 
-  // Adjust to the correct month
+  // Add the month's offset to the start date
   startDateOfRequestedISOWeek.setMonth(monthIndex);
+
   return startDateOfRequestedISOWeek;
 }
 
@@ -164,6 +166,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
             const isoWeekMonday= getISOWeekMonday(month.year, month.name, week); // Get the Monday of the ISO week
             const demand = demandValuesMap[categoryId]?.[month.year]?.[week];
             if (demand !== undefined) {
+              console.log(isoWeekMonday);
               demandSeriesValues.push({
                 calendarWeek: format(new Date(month.year, month.monthIndex, isoWeekMonday.getDate()), 'yyyy-MM-dd'),
                 demand: demand,
