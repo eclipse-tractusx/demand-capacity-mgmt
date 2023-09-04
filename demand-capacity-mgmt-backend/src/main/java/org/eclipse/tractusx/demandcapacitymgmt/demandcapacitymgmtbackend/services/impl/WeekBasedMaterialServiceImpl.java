@@ -64,9 +64,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     }
 
     @Override
-    public void sendWeekBasedMaterial() {
-
-    }
+    public void sendWeekBasedMaterial() {}
 
     @Override
     public void receiveWeekBasedMaterial() {
