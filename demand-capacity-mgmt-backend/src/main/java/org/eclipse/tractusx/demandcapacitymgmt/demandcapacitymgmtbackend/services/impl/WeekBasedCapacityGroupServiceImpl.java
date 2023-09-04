@@ -108,9 +108,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     }
 
     @Override
-    public void sendWeekBasedCapacityGroup() {
-
-    }
+    public void sendWeekBasedCapacityGroup() {}
 
     @Override
     public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity) {
