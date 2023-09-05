@@ -21,13 +21,13 @@
  */
 
 import React, { useContext, useState, useMemo, useCallback } from 'react';
-import { Modal, Button, Form, Col, Row, ButtonGroup, ToggleButton, Breadcrumb } from 'react-bootstrap';
-import { DemandProp } from '../../interfaces/demand_interfaces';
+import { Modal, Button, Form, Col, Row, Breadcrumb } from 'react-bootstrap';
+import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import Pagination from '../Pagination';
 import DemandsTable from './DemandsTable';
 import DemandsSearch from '../Search';
 import EditForm from './DemandEditForm';
-import { FaPlus, FaSearch, FaTrashAlt } from 'react-icons/fa';
+import { FaSearch, FaTrashAlt } from 'react-icons/fa';
 import AddForm from './DemandAddForm';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
@@ -63,7 +63,7 @@ const DemandsPage: React.FC = () => {
       setSortOrder('asc');
     }
   };
-
+  console.log(demandprops);
 
   const handleDeleteDemand = useCallback(
     async (id: string) => {
@@ -142,6 +142,7 @@ const DemandsPage: React.FC = () => {
     demandsPerPage,
   ]);
 
+
   const demandItems = useMemo(
     () =>
       slicedDemands.map((demand) => (
@@ -163,19 +164,44 @@ const DemandsPage: React.FC = () => {
           </td>
           <td>{demand.materialDescriptionCustomer}</td>
           <td>
-            {demand.demandSeries && demand.demandSeries.length > 0 && demand.demandSeries[0].demandSeriesValues && demand.demandSeries[0].demandSeriesValues.length > 0
-              ? demand.demandSeries[0].demandSeriesValues[0]?.calendarWeek?.split('T')[0] ?? 'N/A'
-              : 'N/A'}
+            {demand?.demandSeries?.length ? (
+              demand.demandSeries.reduce((earliest: string | null, series: DemandSeries) => {
+                const values = series.demandSeriesValues || [];
+                const earliestValue = values.reduce((earliestVal: string | null, value: DemandSeriesValue) => {
+                  if (!earliestVal || value.calendarWeek < earliestVal) {
+                    return value.calendarWeek;
+                  }
+                  return earliestVal;
+                }, null);
+                if (!earliest || (earliestValue && earliestValue < earliest)) {
+                  return earliestValue;
+                }
+                return earliest;
+              }, null)?.split('T')[0] ?? 'N/A'
+            ) : 'N/A'}
           </td>
           <td>
-            {demand.demandSeries && demand.demandSeries.length > 0 && demand.demandSeries[0].demandSeriesValues && demand.demandSeries[0].demandSeriesValues.length > 0
-              ? demand.demandSeries[0].demandSeriesValues[demand.demandSeries[0].demandSeriesValues.length - 1]?.calendarWeek?.split('T')[0] ?? 'N/A'
-              : 'N/A'}
+            {demand?.demandSeries?.length ? (
+              demand.demandSeries.reduce((latest: string | null, series: DemandSeries) => {
+                const values = series.demandSeriesValues || [];
+                const latestValue = values.reduce((latestVal: string | null, value: DemandSeriesValue) => {
+                  if (!latestVal || value.calendarWeek > latestVal) {
+                    return value.calendarWeek;
+                  }
+                  return latestVal;
+                }, null);
+                if (!latest || (latestValue && latestValue > latest)) {
+                  return latestValue;
+                }
+                return latest;
+              }, null)?.split('T')[0] ?? 'N/A'
+            ) : 'N/A'}
           </td>
+
           <td>
             <span className="badge rounded-pill text-bg-success" id="tag-ok">OK</span>
-            {/*<span className="badge rounded-pill text-bg-warning" id="tag-warning">Warning</span>
-        <span className="badge rounded-pill text-bg-danger" id="tag-danger">Danger</span>*/}
+            <span className="badge rounded-pill text-bg-warning" id="tag-warning">Warning</span>
+        <span className="badge rounded-pill text-bg-danger" id="tag-danger">Danger</span>
           </td>
           <td>
             <Button onClick={() => handleEdit(demand)} variant="outline-secondary">Edit</Button>
