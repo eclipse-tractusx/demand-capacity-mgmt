@@ -24,7 +24,6 @@ import { Form, Button, Col, Row } from 'react-bootstrap';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import { Demand,DemandSeriesValue, DemandProp, DemandSeries } from '../../interfaces/demand_interfaces';
 import CompanyOptions from '../CompanyOptions';
-import DemandCategoryOptions from './DemandCategoryOptions';
 import UnitsOfMeasureOptions from '../UnitsofMeasureOptions';
 import Spinner from 'react-bootstrap/Spinner';
 import { FiSave } from 'react-icons/fi';
@@ -140,17 +139,7 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand , onCloseModal }) => {
     const selectedSupplierId = e.target.value;
     handleFieldChange('supplier', { id: selectedSupplierId });
   };
-  
-  const handleDemandCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedCategoryId = e.target.value;
-    handleFieldChange('demandSeries', (demand?.demandSeries ?? []).map((series)=> ({
-      ...series,
-      demandCategory: {
-        ...series.demandCategory,
-        id: selectedCategoryId,
-      },
-    })));
-  };
+
   
   
   
@@ -218,21 +207,6 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand , onCloseModal }) => {
         required
       >
           <CompanyOptions selectedCompanyName={demand.supplier.companyName} />
-      </Form.Select>
-    </Form.Group>
-
-    <Form.Group className="mb-3 form-group required">
-      <Form.Label className="control-label required-field-label">Demand Category</Form.Label>
-      <Form.Select
-        aria-label="Default select example"
-        placeholder="Demand Category"
-        name="demandCategoryId"
-        id="demandCategoryId"
-        required
-        value={demand.demandSeries?.[0]?.demandCategory?.id || ''}
-        onChange={handleDemandCategoryChange}
-      >
-          <DemandCategoryOptions selectedDemandCategoryId={demand.demandSeries?.[0]?.demandCategory?.id || ''}/>
       </Form.Select>
     </Form.Group>
 
