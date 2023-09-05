@@ -49,7 +49,8 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     @Override
     public List<FavoriteResponse> getAllFavoritesByType(FavoriteType type) {
-        return null;
+        List<FavoriteEntity> favoriteEntities = favoriteRepository.findByType(type);
+        return favoriteEntities.stream().map(this::convertFavoriteResponse).toList();
     }
 
     @Override
