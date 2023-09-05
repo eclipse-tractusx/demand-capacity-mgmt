@@ -22,7 +22,7 @@
 
  create table favorites
  (
-     userID uuid primary key,
-     favoriteID uuid,
-     type varchar(30)
+     user_id uuid primary key,
+     favorite_id uuid,
+     f_type varchar(30)
  );
