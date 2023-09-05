@@ -299,6 +299,19 @@ paths:
         - favorite
       summary: Update a Favorite
       operationId: updateFavorite
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: ID of the favorite to update
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          description: type of the favorite to update
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -319,15 +332,9 @@ paths:
       operationId: deleteFavoriteById
       parameters:
         - name: id
-          in: path
+          in: query
           required: true
           description: ID of the favorite to delete
-          schema:
-            type: string
-        - name: type
-          in: path
-          required: true
-          description: type of the favorite to delete
           schema:
             type: string
       responses:

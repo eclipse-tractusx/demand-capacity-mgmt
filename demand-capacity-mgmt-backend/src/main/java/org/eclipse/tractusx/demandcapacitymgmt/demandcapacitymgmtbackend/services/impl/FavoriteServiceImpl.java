@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.FavoriteEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.FavoriteRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,8 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
 
+    //TODO IMPLEMENT USER_ID IN OPERATIONS
+
     @Override
     public List<FavoriteResponse> getAllFavorites() {
         List<FavoriteEntity> favoriteEntities = favoriteRepository.findAll();
@@ -49,8 +52,8 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public List<FavoriteResponse> getAllFavoritesByType(FavoriteType type) {
-        List<FavoriteEntity> favoriteEntities = favoriteRepository.findByType(type);
+    public List<FavoriteResponse> getAllFavoritesByType(String type) {
+        List<FavoriteEntity> favoriteEntities = favoriteRepository.findByType(FavoriteType.valueOf(type));
         return favoriteEntities.stream().map(this::convertFavoriteResponse).toList();
     }
 
@@ -61,16 +64,28 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public FavoriteResponse updateFavorite(FavoriteRequest favoriteRequest) {
-        FavoriteEntity entity = favoriteRepository.save(generateFavoriteEntity(favoriteRequest));
-        return convertFavoriteResponse(entity);
-    }
+    public FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest) {
+        FavoriteEntity entity = favoriteRepository.findByFavoriteIdAndTypeAndId(
+                id,
+                type,
+                UUID.fromString("8842f835-38e9-42b1-8c07-fb310b90ef3a")); //TODO FETCH USER ID TO UPDATE OPERATION
 
+        if(entity != null){
+            entity.setFavoriteId(UUID.fromString(favoriteRequest.getFavoriteId()));
+            entity.setType(FavoriteType.valueOf(favoriteRequest.getfType()));
+            favoriteRepository.saveAndFlush(entity);
+            return convertFavoriteResponse(entity);
+        } else throw new NotFoundException(
+                "Entity to update was not found in DB."
+                        + "\n" +
+                "Did you meant to create?");
+    }
     @Override
-    public void deleteFavorite(String id, String type) {
-        favoriteRepository.deleteByTypeAndFavoriteId(
-                FavoriteType.valueOf(type),
-                UUID.fromString(id)
+    public void deleteFavorite(UUID id) {
+        //TODO PLACE USER ID IN HERE
+        favoriteRepository.deleteByFavoriteIdAndId(
+                id,
+                UUID.fromString("8842f835-38e9-42b1-8c07-fb310b90ef3a")
         );
     }
 
