@@ -22,6 +22,7 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
@@ -30,9 +31,9 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import java.util.List;
 
 public interface FavoriteService {
-    MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest);
+    FavoriteRequest createFavorite(FavoriteRequest favoriteRequest);
 
-    List<MaterialDemandResponse> getAllDemandsByProjectId();
+    List<FavoriteRequest> getAllFavorites();
 
     MaterialDemandResponse getDemandById(String demandId);
 
