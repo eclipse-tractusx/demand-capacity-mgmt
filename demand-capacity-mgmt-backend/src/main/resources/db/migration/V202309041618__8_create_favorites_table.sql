@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
- create table favorites
+ create table  if not exists favorites
  (
      user_id uuid primary key,
      favorite_id uuid,

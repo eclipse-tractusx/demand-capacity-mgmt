@@ -40,12 +40,14 @@ public class FavoriteController implements FavoriteApi {
 
     @Override
     public ResponseEntity<FavoriteResponse> createFavorite(FavoriteRequest favoriteRequest) throws Exception {
-        return null;
+        FavoriteResponse response = favoriteService.createFavorite(favoriteRequest);
+        return ResponseEntity.status(200).body(response);
     }
 
     @Override
-    public ResponseEntity<Void> deleteFavoriteById(String id) throws Exception {
-        return null;
+    public ResponseEntity<Void> deleteFavoriteById(String id, String type) throws Exception {
+        favoriteService.deleteFavorite(id,type);
+        return ResponseEntity.status(200).build();
     }
 
     @Override

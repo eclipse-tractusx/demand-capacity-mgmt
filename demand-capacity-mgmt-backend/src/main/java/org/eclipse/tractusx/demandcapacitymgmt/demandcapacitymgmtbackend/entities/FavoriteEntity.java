@@ -45,7 +45,7 @@ public class FavoriteEntity {
     private UUID id;
 
     @Column(columnDefinition = "uuid",name = "favorite_id")
-    private UUID capacityGroupId;
+    private UUID favoriteId;
 
     @Column(name = "f_type")
     private FavoriteType type;
