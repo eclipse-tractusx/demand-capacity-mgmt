@@ -33,6 +33,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -55,17 +56,22 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     @Override
     public FavoriteResponse createFavorite(FavoriteRequest favoriteRequest) {
-        return null;
+        FavoriteEntity entity = favoriteRepository.save(generateFavoriteEntity(favoriteRequest));
+        return convertFavoriteResponse(entity);
     }
 
     @Override
     public FavoriteResponse updateFavorite(FavoriteRequest favoriteRequest) {
-        return null;
+        FavoriteEntity entity = favoriteRepository.save(generateFavoriteEntity(favoriteRequest));
+        return convertFavoriteResponse(entity);
     }
 
     @Override
-    public void deleteFavorite(FavoriteRequest favoriteRequest) {
-
+    public void deleteFavorite(String id, String type) {
+        favoriteRepository.deleteByTypeAndFavoriteId(
+                FavoriteType.valueOf(type),
+                UUID.fromString(id)
+        );
     }
 
     private FavoriteResponse convertFavoriteResponse(FavoriteEntity request){
@@ -73,5 +79,13 @@ public class FavoriteServiceImpl implements FavoriteService {
         response.setFavoriteId(request.getId().toString());
         response.setfType(request.getType().name());
         return response;
+    }
+
+    private FavoriteEntity generateFavoriteEntity(FavoriteRequest request){
+        return FavoriteEntity.builder()
+                .id(UUID.randomUUID())//TODO USER ID HERE
+                .favoriteId(UUID.fromString(request.getFavoriteId()))
+                .type(FavoriteType.valueOf(request.getfType()))
+                .build();
     }
 }
