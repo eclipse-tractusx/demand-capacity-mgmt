@@ -40,7 +40,7 @@ const DemandsPage: React.FC = () => {
   const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  const [demandsPerPage, setDemandsPerPage] = useState(5); //Only show 5 items by default
+  const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
   const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
 
   const handleSort = (column: string | null) => {
