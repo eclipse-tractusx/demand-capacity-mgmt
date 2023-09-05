@@ -29,6 +29,25 @@ servers:
 paths:
 
   /loggingHistory:
+    post:
+      tags:
+        - loggingHistory
+      summary: create a Logging History
+      operationId: postLogs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoggingHistoryRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoggingHistoryResponse'
+
     get:
       tags:
         - loggingHistory
@@ -519,6 +538,7 @@ components:
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesResponse'
 
+
     CompanyDto:
       type: object
       properties:
@@ -683,6 +703,34 @@ components:
           type: string
         name:
           type: string
+
+
+    LoggingHistoryRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        userAccount:
+          type: string
+        timeCreated:
+          type: string
+        eventStatus:
+          type: string
+        userSpecificEventStatus:
+          type: string
+        objectType:
+          type: string
+        eventType:
+          type: string
+        capacityGroupId:
+          type: string
+        materialDemandId:
+          type: string
+        eventDescription:
+          type: string
+        isFavorited:
+          type: boolean
+
 
 
     LoggingHistoryResponse:

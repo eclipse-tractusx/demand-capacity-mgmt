@@ -2,6 +2,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.LoggingHistoryApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CompanyDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
 import java.util.List;
@@ -19,9 +20,14 @@ public class LoggingHistoryController implements LoggingHistoryApi {
     private final LoggingHistoryService loggingHistoryService;
 
     @Override
-    public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistory() throws Exception {
+    public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistory() {
         return ResponseEntity.status(HttpStatus.OK).body(loggingHistoryService.getAllLoggingHistory());
     }
 
-
+    @Override
+    public ResponseEntity<LoggingHistoryResponse> postLogs(LoggingHistoryRequest loggingHistoryRequest)
+         {
+                LoggingHistoryResponse responseDto =  loggingHistoryService.createLog(loggingHistoryRequest);
+                return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
 }

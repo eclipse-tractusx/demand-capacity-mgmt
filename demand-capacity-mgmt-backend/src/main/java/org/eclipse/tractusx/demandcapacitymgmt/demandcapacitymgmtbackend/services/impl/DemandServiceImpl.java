@@ -37,12 +37,7 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandCategoryEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeriesValues;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UnitMeasureEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.NotFoundException;
@@ -68,6 +63,7 @@ public class DemandServiceImpl implements DemandService {
 
     private final DemandCategoryService demandCategoryService;
 
+    //TODO : Here postLogs
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest) {
         validateMaterialDemandRequestFields(materialDemandRequest);
@@ -93,6 +89,12 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
+    public MaterialDemandEntity getDemandEntityById(String demandId) {
+        return getDemandEntity(demandId);
+    }
+
+    //TODO : Here postLogs
+    @Override
     public MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest) {
         MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest);
         demand.setId(UUID.fromString(demandId));
@@ -101,6 +103,7 @@ public class DemandServiceImpl implements DemandService {
         return convertDemandResponseDto(demand);
     }
 
+    //TODO : Here postLogs
     @Override
     public void deleteDemandById(String demandId) {
         MaterialDemandEntity demand = getDemandEntity(demandId);

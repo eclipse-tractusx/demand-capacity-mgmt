@@ -16,8 +16,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 @Table(name = "logging_history")
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class LoggingHistoryEntity {
 
     @Id
@@ -57,4 +55,32 @@ public class LoggingHistoryEntity {
 
     @Column(name = "IS_FAVORITED")
     private Boolean isFavorited;
+
+    public LoggingHistoryEntity(
+        Long id,
+        String userAccount,
+        Timestamp time_created,
+        EventType eventType,
+        EventStatus eventStatus,
+        UserSpecificEventStatus userSpecificEventStatus,
+        CapacityGroupEntity capacityGroupId,
+        MaterialDemandEntity materialDemandId,
+        String description,
+        EventObjectType objectType,
+        Boolean isFavorited
+    ) {
+        this.id = id;
+        this.userAccount = userAccount;
+        this.time_created = time_created;
+        this.eventType = eventType;
+        this.eventStatus = eventStatus;
+        this.userSpecificEventStatus = userSpecificEventStatus;
+        this.capacityGroupId = capacityGroupId;
+        this.materialDemandId = materialDemandId;
+        this.description = description;
+        this.objectType = objectType;
+        this.isFavorited = isFavorited;
+    }
+
+    public LoggingHistoryEntity() {}
 }

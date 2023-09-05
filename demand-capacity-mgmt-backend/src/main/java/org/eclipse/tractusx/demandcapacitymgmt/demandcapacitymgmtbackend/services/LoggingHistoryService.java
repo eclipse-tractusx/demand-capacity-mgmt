@@ -9,19 +9,21 @@ import org.springframework.http.ResponseEntity;
 
 public interface LoggingHistoryService {
     List<LoggingHistoryResponse> getAllLoggingHistory();
-    boolean postLog(LoggingHistoryEntity logEntity);
-    //getLoggingHistoryByCapacity()
-    //getLoggingHistoryByMaterialDemand()
-    //filterByTime
-    //getEventsCount
-    //getAllEventsRelatedToMeOnly
-    //filter events by event type (todo,general,status imp, status des)
-    //filter events by event type (opened,read/unread,status imp, status des)
+    LoggingHistoryResponse createLog(LoggingHistoryRequest logEntity);
 
-    // filters or query by
-    //    managedb or last changed by them self(if it changed by me)
-    //if it was favorited by me
-    //    the time
-    //    description for the event (deleted,validated,created, recieved by edc )
+    // TODO: queries
+    List<LoggingHistoryResponse> getLoggingHistoryByCapacity();
+    List<LoggingHistoryResponse> getLoggingHistoryByMaterialDemand();
+    List<LoggingHistoryResponse> filterByTime();
+
+    // TODO: Work on the event type logic
+    List<LoggingHistoryResponse> filterByEventType();
+    // TODO: Work on the event status api
+    List<LoggingHistoryResponse> filterByEventStatus();
+    /* TODO: needs integration with vinicius branch
+    List<LoggingHistoryResponse> getLogsFavoredByMe();
+    List<LoggingHistoryResponse> getLogsManagedByMe();
+    List<LoggingHistoryResponse> getAllEventsRelatedToMeOnly();
+    */
 
 }

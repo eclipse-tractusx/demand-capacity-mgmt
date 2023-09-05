@@ -34,6 +34,7 @@ public interface CapacityGroupService {
     CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest);
 
     CapacityGroupResponse getCapacityGroupById(String CapacityGroupId);
+    CapacityGroupEntity getCapacityGroupEntityById(String CapacityGroupId);
 
     List<CapacityGroupEntity> getAllByStatus(CapacityGroupStatus status);
 

@@ -59,6 +59,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     private final DemandCategoryService demandCategoryService;
 
+    //TODO : Here postLogs
     @Override
     public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
         validateRequestFields(capacityGroupRequest);
@@ -74,6 +75,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     public CapacityGroupResponse getCapacityGroupById(String capacityGroupId) {
         CapacityGroupEntity capacityGroupEntity = getCapacityGroupEntity(capacityGroupId);
         return convertCapacityGroupDto(capacityGroupEntity);
+    }
+
+    @Override
+    public CapacityGroupEntity getCapacityGroupEntityById(String capacityGroupId) {
+        return getCapacityGroupEntity(capacityGroupId);
     }
 
     @Override
@@ -138,6 +144,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         }
     }
 
+    //TODO : Here postLogs
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
         UUID capacityGroupId = UUID.randomUUID();
         AtomicReference<String> materialNumberCustomer = new AtomicReference<>("");
@@ -223,6 +230,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             .build();
     }
 
+    //TODO : Here postLogs
     private CapacityTimeSeries enrichCapacityTimeSeries(
         LocalDateTime calendarWeek,
         Double actualCapacity,

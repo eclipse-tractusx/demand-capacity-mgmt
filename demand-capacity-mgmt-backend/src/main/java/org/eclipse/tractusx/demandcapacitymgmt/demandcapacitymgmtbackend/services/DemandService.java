@@ -28,6 +28,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandResponseD
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
 import java.util.List;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 
@@ -37,6 +38,8 @@ public interface DemandService {
     List<MaterialDemandResponse> getAllDemandsByProjectId();
 
     MaterialDemandResponse getDemandById(String demandId);
+
+    MaterialDemandEntity getDemandEntityById(String demandId);
 
     MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest);
 

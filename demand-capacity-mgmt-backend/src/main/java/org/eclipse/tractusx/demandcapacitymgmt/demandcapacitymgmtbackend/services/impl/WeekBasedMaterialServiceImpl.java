@@ -60,6 +60,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
 
     private final DemandService demandService;
 
+    //TODO : Here postLogs
     @Override
     public void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDtoList) {
         weekBasedMaterialDemandRequestDtoList.forEach(
@@ -74,6 +75,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
         );
     }
 
+    // TODO: Here postLogs
     @Override
     public void sendWeekBasedMaterial() {
         Optional<SupplierEntity> supplierEntityOpt = supplierRepository.findById(1l);

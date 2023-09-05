@@ -40,6 +40,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepository;
 
+    //TODO : Here postLogs
     @Override
     public CompanyEntity createCompany() {
         return null;

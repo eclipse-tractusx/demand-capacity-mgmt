@@ -4,5 +4,5 @@ public enum UserSpecificEventStatus {
     OPENED,
     READ,
     UNREAD,
-    Done,
+    Done;
 }
