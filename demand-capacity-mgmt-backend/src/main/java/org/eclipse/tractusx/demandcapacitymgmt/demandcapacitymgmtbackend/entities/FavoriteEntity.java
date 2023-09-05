@@ -47,6 +47,7 @@ public class FavoriteEntity {
     @Column(columnDefinition = "uuid",name = "favorite_id")
     private UUID favoriteId;
 
-    @Column(name = "f_type")
+    @Column(name = "f_type", columnDefinition = "varchar")
+    @Enumerated(EnumType.STRING)
     private FavoriteType type;
 }

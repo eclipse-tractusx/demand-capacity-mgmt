@@ -26,11 +26,13 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.api.FavoriteApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
 import lombok.AllArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -45,23 +47,26 @@ public class FavoriteController implements FavoriteApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteFavoriteById(String id, String type) throws Exception {
-        favoriteService.deleteFavorite(id,type);
+    public ResponseEntity<Void> deleteFavoriteById(String id) throws Exception {
+        favoriteService.deleteFavorite(UUID.fromString(id));
         return ResponseEntity.status(200).build();
     }
 
     @Override
     public ResponseEntity<List<FavoriteResponse>> getFavorite() throws Exception {
-        return null;
+        List<FavoriteResponse> responseList = favoriteService.getAllFavorites();
+        return ResponseEntity.status(200).body(responseList);
     }
 
     @Override
     public ResponseEntity<List<FavoriteResponse>> getFavoriteByType(String type) throws Exception {
-        return null;
+        List<FavoriteResponse> responseList = favoriteService.getAllFavoritesByType(type);
+        return ResponseEntity.status(200).body(responseList);
     }
 
     @Override
-    public ResponseEntity<FavoriteResponse> updateFavorite(FavoriteRequest favoriteRequest) throws Exception {
-        return null;
+    public ResponseEntity<FavoriteResponse> updateFavorite(String id,String type, FavoriteRequest favoriteRequest) throws Exception {
+        FavoriteResponse response = favoriteService.updateFavorite(UUID.fromString(id), FavoriteType.valueOf(type),favoriteRequest);
+        return ResponseEntity.status(200).body(response);
     }
 }

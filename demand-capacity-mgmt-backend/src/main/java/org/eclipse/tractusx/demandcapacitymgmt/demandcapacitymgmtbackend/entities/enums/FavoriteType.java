@@ -24,9 +24,15 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 
 public enum FavoriteType {
     CAPACITY_GROUP,
-    DEMAND,
+    CAPACITY_TIME_SERIES,
+    COMPANY_BASE_DATA,
+    DEMAND_CATEGORY,
+    DEMAND_SERIES,
+    DEMAND_SERIES_VALUES,
+    LINK_DEMAND,
+    LINKED_DEMAND_SERIES,
     MATERIAL_DEMAND,
-    PRODUCT,
-    UNIT_MEASURE
-
+    UNITY_OF_MEASURE,
+    WEEK_BASED_MATERIAL_DEMAND,
+    WEEK_BASED,CAPACITY,
 }
