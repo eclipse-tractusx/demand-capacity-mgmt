@@ -23,23 +23,15 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 
 import java.util.List;
 
 public interface FavoriteService {
-    FavoriteRequest createFavorite(FavoriteRequest favoriteRequest);
-
-    List<FavoriteRequest> getAllFavorites();
-
-    MaterialDemandResponse getDemandById(String demandId);
-
-    MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest);
-
-    void deleteDemandById(String demandId);
-
-    List<MaterialDemandEntity> getAllByStatus(MaterialDemandStatus status);
+    List<FavoriteResponse> getAllFavorites();
+    List<FavoriteResponse> getAllFavoritesByType(FavoriteType type);
+    FavoriteResponse createFavorite(FavoriteRequest favoriteRequest);
+    FavoriteResponse updateFavorite(FavoriteRequest favoriteRequest);
+    void deleteFavorite(FavoriteRequest favoriteRequest);
 }
