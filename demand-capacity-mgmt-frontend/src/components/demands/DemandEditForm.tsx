@@ -40,9 +40,14 @@ function convertToDemand(demandProp: DemandProp): Demand {
     demandSeries,
   } = demandProp;
 
-  const demandSeriesValues: DemandSeriesValue[] = demandSeries![0].demandSeriesValues.map((value) => ({
-    calendarWeek: value.calendarWeek.split('T')[0],
-    demand: value.demand,
+  const materialDemandSeries = demandSeries!.map((series: DemandSeries) => ({
+    customerLocationId: customer.id,
+    expectedSupplierLocationId: [supplier.id],
+    demandCategoryId: series.demandCategory.id,
+    demandSeriesValues: series.demandSeriesValues.map((value: DemandSeriesValue) => ({
+      calendarWeek: value.calendarWeek.split('T')[0],
+      demand: value.demand,
+    })),
   }));
 
   const convertedDemand: Demand = {
@@ -53,18 +58,12 @@ function convertToDemand(demandProp: DemandProp): Demand {
     customerId: customer.id,
     supplierId: supplier.id,
     unitMeasureId: unitMeasureId.id,
-    materialDemandSeries: [
-      {
-        customerLocationId: customer.id,
-        expectedSupplierLocationId: [supplier.id],
-        demandCategoryId: demandSeries![0].demandCategory.id,
-        demandSeriesValues,
-      },
-    ],
+    materialDemandSeries,
   };
 
   return convertedDemand;
 }
+
 
 
 interface EditFormProps {
