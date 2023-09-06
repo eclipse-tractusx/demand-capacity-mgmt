@@ -94,14 +94,6 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
-          volumeMounts:
-            - name: persistent-storage
-              mountPath: /path/to/mount  # Replace with the desired mount path
-
-      volumes:
-        - name: persistent-storage
-          persistentVolumeClaim:
-            claimName: pvc-persistent-tmp-demo  # Reference your PVC here
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
