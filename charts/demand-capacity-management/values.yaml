@@ -30,9 +30,9 @@ namespace: ""
 backend:
   name: "dcm-backend"
   image:
-    registry: "ghcr.io"
+    registry: "docker.io"
     pullPolicy: Always
-    repository: ghcr.io/catenax-ng/tx-demand-capacity-mgmt/demand-capacity-mgmt-backend
+    repository: docker.io/tractusx/tx-demand-capacity-mgmt/demand-capacity-mgmt-backend
     tag: ""
   certificate:
     host: "localhost"
@@ -112,9 +112,9 @@ backend:
 frontend:
   name: "dcm-frontend"
   image:
-    registry: "ghcr.io"
+    registry: "docker.io"
     pullPolicy: Always
-    repository: ghcr.io/catenax-ng/tx-demand-capacity-mgmt/demand-capacity-mgmt-frontend
+    repository: docker.io/tractusx/tx-demand-capacity-mgmt/demand-capacity-mgmt-frontend
     tag: ""
   certificate:
     host: "localhost"
