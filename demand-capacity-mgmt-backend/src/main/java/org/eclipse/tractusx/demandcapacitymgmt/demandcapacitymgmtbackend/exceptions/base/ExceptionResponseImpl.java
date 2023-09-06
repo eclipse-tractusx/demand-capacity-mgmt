@@ -23,6 +23,7 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base;
 
 import java.util.List;
+
 public class ExceptionResponseImpl<T extends CustomException<?>> implements ExceptionResponse {
 
     private final int code;

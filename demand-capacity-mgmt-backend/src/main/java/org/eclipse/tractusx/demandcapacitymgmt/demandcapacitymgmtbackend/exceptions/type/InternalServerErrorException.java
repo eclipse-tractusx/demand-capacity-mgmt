@@ -22,11 +22,13 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type;
 
+import java.util.List;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.CustomException;
 
-import java.util.List;
+public class InternalServerErrorException
+    extends RuntimeException
+    implements CustomException<InternalServerErrorException> {
 
-public class InternalServerErrorException extends RuntimeException implements CustomException<InternalServerErrorException> {
     private final int code;
     private final String message;
     private final List<String> details;

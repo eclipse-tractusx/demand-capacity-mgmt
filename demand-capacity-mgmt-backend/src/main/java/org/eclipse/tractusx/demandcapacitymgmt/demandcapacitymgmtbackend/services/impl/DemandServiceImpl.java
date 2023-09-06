@@ -23,6 +23,12 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -37,13 +43,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -110,9 +109,9 @@ public class DemandServiceImpl implements DemandService {
 
         if (demand.isEmpty()) {
             throw new NotFoundException(
-                    404,
-                    "Material demand not found",
-                    new ArrayList<>(List.of("provided UUID for material demand was not found. - " + uuid))
+                404,
+                "Material demand not found",
+                new ArrayList<>(List.of("provided UUID for material demand was not found. - " + uuid))
             );
         }
 
@@ -151,17 +150,17 @@ public class DemandServiceImpl implements DemandService {
     private void validateMaterialDemandRequestFields(MaterialDemandRequest materialDemandRequest) {
         if (!UUIDUtil.checkValidUUID(materialDemandRequest.getCustomerId())) {
             throw new BadRequestException(
-                    400,
-                    "Not a valid customer ID",
-                    new ArrayList<>(List.of(materialDemandRequest.getCustomerId()))
+                400,
+                "Not a valid customer ID",
+                new ArrayList<>(List.of(materialDemandRequest.getCustomerId()))
             );
         }
 
         if (!UUIDUtil.checkValidUUID(materialDemandRequest.getSupplierId())) {
             throw new BadRequestException(
-                    400,
-                    "Not a valid supplier ID",
-                    new ArrayList<>(List.of(materialDemandRequest.getSupplierId()))
+                400,
+                "Not a valid supplier ID",
+                new ArrayList<>(List.of(materialDemandRequest.getSupplierId()))
             );
         }
 
@@ -171,17 +170,17 @@ public class DemandServiceImpl implements DemandService {
                 materialDemandSeries -> {
                     if (!UUIDUtil.checkValidUUID(materialDemandSeries.getCustomerLocationId())) {
                         throw new BadRequestException(
-                                400,
-                                "Not a valid customer location ID",
-                                new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getCustomerLocationId()))
+                            400,
+                            "Not a valid customer location ID",
+                            new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getCustomerLocationId()))
                         );
                     }
 
                     if (!UUIDUtil.checkValidUUID(materialDemandSeries.getDemandCategoryId())) {
                         throw new BadRequestException(
-                                400,
-                                "Not a valid demand category ID",
-                                new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getDemandCategoryId()))
+                            400,
+                            "Not a valid demand category ID",
+                            new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getDemandCategoryId()))
                         );
                     }
 
@@ -194,13 +193,20 @@ public class DemandServiceImpl implements DemandService {
                         )
                         .toList();
 
-                    if (Boolean.TRUE.equals(!DataConverterUtil.checkListAllMonday(dates)) || Boolean.TRUE.equals(!DataConverterUtil.checkDatesSequence(dates))) {
+                    if (
+                        Boolean.TRUE.equals(!DataConverterUtil.checkListAllMonday(dates)) ||
+                        Boolean.TRUE.equals(!DataConverterUtil.checkDatesSequence(dates))
+                    ) {
                         throw new BadRequestException(
-                                400,
-                                "Dates provided failed to verify",
-                                new ArrayList<>(List.of(
-                                        "Dates need to be all Monday",
-                                        "Dates need to be aligned one week apart (Ex: monday to monday)")));
+                            400,
+                            "Dates provided failed to verify",
+                            new ArrayList<>(
+                                List.of(
+                                    "Dates need to be all Monday",
+                                    "Dates need to be aligned one week apart (Ex: monday to monday)"
+                                )
+                            )
+                        );
                     }
 
                     materialDemandSeries.getExpectedSupplierLocationId().forEach(UUIDUtil::checkValidUUID);
@@ -220,9 +226,9 @@ public class DemandServiceImpl implements DemandService {
 
                     if (!hasAllCompanies) {
                         throw new BadRequestException(
-                                400,
-                                "Not a valid company",
-                                new ArrayList<>(List.of("hasCompanies returned false."))
+                            400,
+                            "Not a valid company",
+                            new ArrayList<>(List.of("hasCompanies returned false."))
                         );
                     }
                 }
@@ -297,9 +303,7 @@ public class DemandServiceImpl implements DemandService {
                     DemandSeriesValues
                         .builder()
                         .demand(materialDemandSeriesValue.getDemand().doubleValue())
-                        .calendarWeek(
-                            DataConverterUtil.convertFromString(materialDemandSeriesValue.getCalendarWeek())
-                        )
+                        .calendarWeek(DataConverterUtil.convertFromString(materialDemandSeriesValue.getCalendarWeek()))
                         .build()
             )
             .toList();
