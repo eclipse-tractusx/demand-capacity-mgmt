@@ -9,7 +9,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesDto
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandWeekSeriesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
 import java.util.List;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.SupplierRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl.WeekBasedMaterialServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -26,9 +25,6 @@ public class WeekBasedMaterialServiceTest {
 
     @Mock
     private WeekBasedMaterialDemandRepository weekBasedMaterialDemandRepository;
-
-    @Mock
-    private SupplierRepository supplierRepository;
 
     @Mock
     private LinkDemandService linkDemandService;
