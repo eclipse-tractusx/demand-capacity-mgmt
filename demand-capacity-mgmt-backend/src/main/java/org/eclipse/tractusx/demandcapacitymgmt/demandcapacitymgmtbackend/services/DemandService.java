@@ -24,10 +24,9 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
+import java.util.List;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
-
-import java.util.List;
 
 public interface DemandService {
     MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest);

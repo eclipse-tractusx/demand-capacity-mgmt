@@ -26,13 +26,15 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacitiesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedDemandSeriesRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CustomerRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
@@ -42,18 +44,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroupService {
 
     private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
-
-    private final CustomerRepository customerRepository;
 
     private final CapacityGroupService capacityGroupService;
 
@@ -97,15 +93,16 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
                             );
 
                             matchingDemands.forEach(
-                                materialDemandEntity -> materialDemandEntity
-                                    .getDemandSeries()
-                                    .forEach(
-                                        demandSeries -> {
-                                            demandSeries.setCapacityGroupId(
-                                                weekBasedCapacityGroup.getCapacityGroupId()
-                                            );
-                                        }
-                                    )
+                                materialDemandEntity ->
+                                    materialDemandEntity
+                                        .getDemandSeries()
+                                        .forEach(
+                                            demandSeries -> {
+                                                demandSeries.setCapacityGroupId(
+                                                    weekBasedCapacityGroup.getCapacityGroupId()
+                                                );
+                                            }
+                                        )
                             );
 
                             materialDemandRepository.saveAll(matchingDemands);
@@ -117,27 +114,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     }
 
     @Override
-    public void sendWeekBasedCapacityGroup() {
-        Optional<CustomerEntity> supplierEntityOpt = customerRepository.findById(1L);
-
-        //TODO we still dont have defined the demand or the capacity structure yet, this is just an example of the flux
-        if (supplierEntityOpt.isPresent()) {
-            CustomerEntity supplierEntity = supplierEntityOpt.get();
-
-            //todo put this part of the code in the ConsumerHTTP class
-            RestTemplate restTemplate = new RestTemplate();
-            String fooResourceUrl = supplierEntity.getEdcUrl();
-
-            //TODO create the Actual Demand and send to the supplier
-            ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
-        }
-
-        List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupService.getAllByStatus(
-            CapacityGroupStatus.READY_SYNCHRONIZE
-        );
-
-        capacityGroupEntityList.forEach(this::createWeekBasedCapacityGroupRequestFromEntity);
-    }
+    public void sendWeekBasedCapacityGroup() {}
 
     @Override
     public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity) {
@@ -175,9 +152,9 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
         if (weekBasedCapacityGroupEntityOptional.isEmpty()) {
             throw new NotFoundException(
-                    404,
-                    "Weekly based capacity group not found",
-                    new ArrayList<>(List.of("the capacity group ID provided - " + capacityGroupId))
+                404,
+                "Weekly based capacity group not found",
+                new ArrayList<>(List.of("the capacity group ID provided - " + capacityGroupId))
             );
         }
 
@@ -210,9 +187,9 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     private void validateFields(WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest) {
         if (!UUIDUtil.checkValidUUID(weekBasedCapacityGroupRequest.getCapacityGroupId())) {
             throw new BadRequestException(
-                    400,
-                    "The ID provided is not valid, check UUID",
-                    new ArrayList<>(List.of("the provided ID - " + weekBasedCapacityGroupRequest.getCapacityGroupId()))
+                400,
+                "The ID provided is not valid, check UUID",
+                new ArrayList<>(List.of("the provided ID - " + weekBasedCapacityGroupRequest.getCapacityGroupId()))
             );
         }
     }

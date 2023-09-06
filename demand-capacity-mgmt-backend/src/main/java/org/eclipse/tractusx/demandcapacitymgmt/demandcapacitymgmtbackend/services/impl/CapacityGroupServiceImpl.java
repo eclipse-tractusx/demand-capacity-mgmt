@@ -23,6 +23,13 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -38,14 +45,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 @Service
@@ -96,9 +95,10 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         Optional<CapacityGroupEntity> capacityGroup = capacityGroupRepository.findById(uuid);
 
         if (capacityGroup.isEmpty()) {
-            throw new NotFoundException(404,
-                    "The capacity group provided was not found",
-                    new ArrayList<>(List.of("UUID provided : " + uuid))
+            throw new NotFoundException(
+                404,
+                "The capacity group provided was not found",
+                new ArrayList<>(List.of("UUID provided : " + uuid))
             );
         }
 
@@ -108,17 +108,17 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private void validateRequestFields(CapacityGroupRequest capacityGroupRequest) {
         if (!UUIDUtil.checkValidUUID(capacityGroupRequest.getCustomer())) {
             throw new BadRequestException(
-                    400,
-                    "Not a valid customer ID",
-                    new ArrayList<>(List.of(capacityGroupRequest.getCustomer()))
+                400,
+                "Not a valid customer ID",
+                new ArrayList<>(List.of(capacityGroupRequest.getCustomer()))
             );
         }
 
         if (!UUIDUtil.checkValidUUID(capacityGroupRequest.getSupplier())) {
             throw new BadRequestException(
-                    400,
-                    "Not a valid supplier ID",
-                    new ArrayList<>(List.of(capacityGroupRequest.getSupplier()))
+                400,
+                "Not a valid supplier ID",
+                new ArrayList<>(List.of(capacityGroupRequest.getSupplier()))
             );
         }
 
@@ -139,9 +139,9 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
         if (!hasAllCompanies) {
             throw new BadRequestException(
-                    400,
-                    "Not a valid company",
-                    new ArrayList<>(List.of("hasCompanies returned false."))
+                400,
+                "Not a valid company",
+                new ArrayList<>(List.of("hasCompanies returned false."))
             );
         }
 
@@ -151,13 +151,20 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             .map(capacityResponse -> DataConverterUtil.convertFromString(capacityResponse.getCalendarWeek()))
             .toList();
 
-        if (Boolean.TRUE.equals(!DataConverterUtil.checkListAllMonday(dates)) || Boolean.TRUE.equals(!DataConverterUtil.checkDatesSequence(dates))) {
+        if (
+            Boolean.TRUE.equals(!DataConverterUtil.checkListAllMonday(dates)) ||
+            Boolean.TRUE.equals(!DataConverterUtil.checkDatesSequence(dates))
+        ) {
             throw new BadRequestException(
-                    400,
-                    "Dates provided failed to verify",
-                    new ArrayList<>(List.of(
-                            "Dates need to be all Monday",
-                            "Dates need to be aligned one week apart (Ex: monday to monday)")));
+                400,
+                "Dates provided failed to verify",
+                new ArrayList<>(
+                    List.of(
+                        "Dates need to be all Monday",
+                        "Dates need to be aligned one week apart (Ex: monday to monday)"
+                    )
+                )
+            );
         }
     }
 
