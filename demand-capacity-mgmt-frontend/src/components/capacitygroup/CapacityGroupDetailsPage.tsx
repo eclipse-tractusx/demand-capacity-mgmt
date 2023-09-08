@@ -22,6 +22,7 @@
 
 import { useState } from 'react';
 import { Tab, Tabs, ButtonGroup, Button, ToggleButton } from 'react-bootstrap';
+import CapacityGroupChronogram from "./CapacityGroupChronogram";
 
 function CapacityGroupDetailsPage() {
   const [editMode, setEditMode] = useState(false);
@@ -88,7 +89,7 @@ function CapacityGroupDetailsPage() {
           }}
         >
           <Tab eventKey="overview" title="Overview">
-            Element for Overview and chronogram here
+            <CapacityGroupChronogram />
           </Tab>
           <Tab eventKey="materials" title="Materials">
             Materials Table here
