@@ -20,6 +20,7 @@
  *    ********************************************************************************
  */
 import React from "react";
+
 import {
     ComposedChart,
     Line,
@@ -80,26 +81,48 @@ const rawData = [
         Demand: 680,
         MaximumCapacity: 1700,
         cnt: 380
-    }
+    },
+
+    {
+        name: "Page G",
+        date: "2002-01-10",
+        ActualCapacity: 1450,
+        Demand: 705,
+        MaximumCapacity: 1650,
+        cnt: 390
+    },
+    {
+        name: "Page H",
+        date: "2002-02-15",
+        ActualCapacity: 1500,
+        Demand: 720,
+        MaximumCapacity: 1620,
+        cnt: 395
+    },
+    {
+        name: "Page Z",
+        date: "2003-11-20",
+        ActualCapacity: 1525,
+        Demand: 735,
+        MaximumCapacity: 1725,
+        cnt: 400
+    },
+    {
+        name: "Page AA",
+        date: "2003-10-25",
+        ActualCapacity: 1550,
+        Demand: 745,
+        MaximumCapacity: 1750,
+        cnt: 405
+    },
 ];
 
-interface DataPoint {
-    name: string;
-    date: string;
-    ActualCapacity: number;
-    Demand: number;
-    MaximumCapacity: number;
-    cnt: number;
-}
+// Sorted data by date
+const data = rawData.map(d => ({
+    ...d,
+    dateEpoch: new Date(d.date).getTime()
+})).sort((a, b) => a.dateEpoch - b.dateEpoch);
 
-const sortByDate = (a: DataPoint, b: DataPoint) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-    return dateA.getTime() - dateB.getTime();
-};
-
-// Sorted data
-const data = rawData.sort(sortByDate);
 
 function CapacityGroupChronogram() {
 
@@ -121,6 +144,8 @@ function CapacityGroupChronogram() {
         return `W${weekNumber}`;
     };
 
+    let lastDisplayedMonth = -1;  // Initialized to an invalid month number
+
     const renderMonthTick = (tickProps: any) => {
         const { x, y, payload } = tickProps;
         const { value } = payload;
@@ -130,25 +155,30 @@ function CapacityGroupChronogram() {
             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
         ];
 
-        // Check if the date is at the end of the previous month
-        if (date.getDate() < 4 && date.getDay() !== 1) { // You might adjust the number 4 based on your needs
-            date.setMonth(date.getMonth() - 1);
+        const pathX = Math.floor(x) + 0.5;
+        const month = date.getMonth();
+
+        let monthNameContent = null;
+
+        // If this month hasn't been displayed yet
+        if (month !== lastDisplayedMonth) {
+            monthNameContent = <text x={x + 20} y={y} textAnchor="middle">{monthNames[month]}</text>;
+            lastDisplayedMonth = month;
         }
 
-        const monthName = monthNames[date.getMonth()];
-
         return (
-            <text x={x} y={y - 4} textAnchor="middle">
-                {monthName}
-            </text>
+            <g>
+                <path d={`M${pathX},${y}v${-38}`} stroke="red" />
+                {monthNameContent}
+            </g>
         );
     };
 
 
     return (
         <ComposedChart
-            width={500}
-            height={400}
+            width={1300}
+            height={500}
             data={data}
             margin={{
                 top: 20,
@@ -173,7 +203,8 @@ function CapacityGroupChronogram() {
             <YAxis label={{value: "Amount", angle: -90, position: "insideLeft"}}/>
 
             <Tooltip/>
-            <Legend/>
+            <Legend verticalAlign="bottom" height={36} wrapperStyle={{ bottom: -10 }}/>
+
 
             <Bar dataKey="Demand" barSize={20} fill="#413ea0"/>
             <Line type="monotone" dataKey="ActualCapacity" stroke="#ff7300"/>
@@ -183,3 +214,4 @@ function CapacityGroupChronogram() {
 }
 
 export default CapacityGroupChronogram;
+
