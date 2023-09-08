@@ -23,7 +23,7 @@
 import React from 'react';
 import { useContext, useState, useEffect } from 'react';
 import { format,getISOWeek} from 'date-fns';
-import './WeeklyView.css';
+import '../../src/index.css';
 import { DemandCategoryContext } from '../contexts/DemandCategoryProvider';
 import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSery } from '../interfaces/demand_interfaces';
 import { Button, ButtonGroup, ToggleButton } from 'react-bootstrap';
