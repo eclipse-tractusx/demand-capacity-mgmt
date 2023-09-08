@@ -71,8 +71,3 @@ button {
   text-decoration: underline;
 }
 
-.required-field-label::after {
-  content: "*";
-  color: red;
-  margin-left: 4px; /* Add some spacing between the label text and the asterisk */
-}
