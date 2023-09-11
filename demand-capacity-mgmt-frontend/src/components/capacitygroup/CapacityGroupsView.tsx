@@ -99,7 +99,7 @@ const CapacityGroupsList: React.FC = () => {
     () =>
       slicedcapacitygroups.map((capacitygroup) => (
         <tr key={capacitygroup.internalId}>
-          <td>{capacitygroup.internalId}</td>
+          <td>{capacitygroup.internalId}</td>  {/* TODO Add href to */}
           <td>{capacitygroup.name}</td>
           <td>{capacitygroup.customerBPNL}</td>
           <td>{capacitygroup.customerName}</td>
