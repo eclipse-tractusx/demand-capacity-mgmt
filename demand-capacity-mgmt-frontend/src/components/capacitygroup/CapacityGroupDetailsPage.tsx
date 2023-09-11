@@ -104,31 +104,3 @@ function CapacityGroupDetailsPage() {
 }
 
 export default CapacityGroupDetailsPage;
-
-
-
-const renderMonthTick = (tickProps: any) => {
-  const { x, y, payload } = tickProps;
-  const { value } = payload;
-  const date = new Date(value);
-  const monthNames = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
-
-  const month = date.getMonth();
-
-
-  // For beginning and end of the month
-  if (date.getDate() === 1 || new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() === date.getDate()) {
-    const pathX = Math.floor(x) + 0.5;
-    return (
-        <g>
-          <path d={`M${pathX},${y - 4}v${-35}`} stroke="red" />
-          <text x={x} y={y - 40} textAnchor="middle">{monthNames[month]}</text>
-        </g>
-    );
-  }
-
-  return <g />; // Return empty SVG group element instead of null
-};
