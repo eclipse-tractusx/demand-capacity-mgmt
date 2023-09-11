@@ -35,194 +35,17 @@ import {
 
 const rawData = [
     {
-        name: "Page A",
-        date: "2000-02-06",
+        date: "2023-01-02",
         ActualCapacity: 590,
         Demand: 800,
-        MaximumCapacity: 1400,
-        cnt: 490
+        MaximumCapacity: 1400
     },
     {
-        name: "Page B",
-        date: "2000-05-06",
+        date: "2023-01-09",
         ActualCapacity: 868,
         Demand: 967,
-        MaximumCapacity: 1506,
-        cnt: 590
-    },
-    {
-        name: "Page C",
-        date:"2000-04-06",
-        ActualCapacity: 1397,
-        Demand: 1098,
-        MaximumCapacity: 989,
-        cnt: 350
-    },
-    {
-        name: "Page D",
-        date: "2000-07-22",
-        ActualCapacity: 1480,
-        Demand: 1200,
-        MaximumCapacity: 1228,
-        cnt: 480
-    },
-    {
-        name: "Page E",
-        date: "2000-09-20",
-        ActualCapacity: 1520,
-        Demand: 1108,
-        MaximumCapacity: 1100,
-        cnt: 460
-    },
-    {
-        name: "Page F",
-        date: "2001-12-04",
-        ActualCapacity: 1400,
-        Demand: 680,
-        MaximumCapacity: 1700,
-        cnt: 380
-    },
-
-    {
-        name: "Page G",
-        date: "2002-01-10",
-        ActualCapacity: 1450,
-        Demand: 705,
-        MaximumCapacity: 1650,
-        cnt: 390
-    },
-    {
-        name: "Page H",
-        date: "2002-02-15",
-        ActualCapacity: 1500,
-        Demand: 720,
-        MaximumCapacity: 1620,
-        cnt: 395
-    },
-    {
-        name: "Page Z",
-        date: "2003-11-20",
-        ActualCapacity: 1525,
-        Demand: 735,
-        MaximumCapacity: 1725,
-        cnt: 400
-    },
-    {
-        name: "Page x",
-        date: "2003-10-25",
-        ActualCapacity: 1550,
-        Demand: 745,
-        MaximumCapacity: 1750,
-        cnt: 405
-    },
-
-    {
-        name: "Page A",
-        date: "2004-01-06",
-        ActualCapacity: 590,
-        Demand: 800,
-        MaximumCapacity: 1400,
-        cnt: 490
-    },
-    {
-        name: "Page B",
-        date: "2004-02-06",
-        ActualCapacity: 868,
-        Demand: 967,
-        MaximumCapacity: 1506,
-        cnt: 590
-    },
-    {
-        name: "Page C",
-        date:"2004-03-06",
-        ActualCapacity: 1397,
-        Demand: 1098,
-        MaximumCapacity: 989,
-        cnt: 350
-    },
-    {
-        name: "Page D",
-        date: "2004-04-22",
-        ActualCapacity: 1480,
-        Demand: 1200,
-        MaximumCapacity: 1228,
-        cnt: 480
-    },
-    {
-        name: "Page E",
-        date: "2004-05-20",
-        ActualCapacity: 1520,
-        Demand: 1108,
-        MaximumCapacity: 1100,
-        cnt: 460
-    },
-    {
-        name: "Page F",
-        date: "2004-06-04",
-        ActualCapacity: 1400,
-        Demand: 680,
-        MaximumCapacity: 1700,
-        cnt: 380
-    },
-
-    {
-        name: "Page G",
-        date: "2004-07-10",
-        ActualCapacity: 1450,
-        Demand: 705,
-        MaximumCapacity: 1650,
-        cnt: 390
-    },
-    {
-        name: "Page H",
-        date: "2004-08-15",
-        ActualCapacity: 1500,
-        Demand: 720,
-        MaximumCapacity: 1620,
-        cnt: 395
-    },
-    {
-        name: "Page Z",
-        date: "2004-09-20",
-        ActualCapacity: 1525,
-        Demand: 735,
-        MaximumCapacity: 1725,
-        cnt: 400
-    },
-    {
-        name: "Page AA",
-        date: "2023-10-25",
-        ActualCapacity: 1550,
-        Demand: 745,
-        MaximumCapacity: 1750,
-        cnt: 405
-    },
-
-    {
-        name: "Page AA",
-        date: "2004-11-25",
-        ActualCapacity: 1550,
-        Demand: 745,
-        MaximumCapacity: 1750,
-        cnt: 405
-    },
-    {
-        name: "Page AA",
-        date: "2004-12-1",
-        ActualCapacity: 1550,
-        Demand: 745,
-        MaximumCapacity: 1750,
-        cnt: 405
-    },
-
-    {
-        name: "Page AA",
-        date: "2004-12-9",
-        ActualCapacity: 1550,
-        Demand: 745,
-        MaximumCapacity: 1750,
-        cnt: 405
-    },
+        MaximumCapacity: 1506
+    }
 ];
 
 // Sorted data by date
@@ -249,10 +72,10 @@ function CapacityGroupChronogram() {
         const dateParts = tick.split("-").map((part) => parseInt(part, 10));
         const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
         const weekNumber = getWeekNumber(date);
-        return `W${weekNumber}`;
+        return `${weekNumber}`;
     };
 
-    let lastDisplayedMonth = -1;  // Initialized to an invalid month number
+    let lastDisplayedMonth = -1; // Ensure you have initialized this somewhere outside of the function, ideally in your component's state or similar.
 
     const renderMonthTick = (tickProps: any) => {
         const { x, y, payload } = tickProps;
@@ -266,21 +89,22 @@ function CapacityGroupChronogram() {
         const pathX = Math.floor(x) + 0.5;
         const month = date.getMonth();
 
-        let monthNameContent = null;
+        let content = null;
 
         // If this month hasn't been displayed yet
         if (month !== lastDisplayedMonth) {
-            monthNameContent = <text x={x + 20} y={y} textAnchor="middle">{monthNames[month]}</text>;
+            content = (
+                <>
+                    <path d={`M${pathX},${y}v${-38}`} stroke="grey" />
+                    <text x={x + 20} y={y} textAnchor="middle">{monthNames[month]}</text>
+                </>
+            );
             lastDisplayedMonth = month;
         }
 
-        return (
-            <g>
-                <path d={`M${pathX},${y}v${-38}`} stroke="red" />
-                {monthNameContent}
-            </g>
-        );
+        return <g>{content}</g>;
     };
+
 
 
     return (
@@ -299,7 +123,11 @@ function CapacityGroupChronogram() {
         >
 
             <CartesianGrid stroke="#f5f5f5"/>
-            <XAxis dataKey="date" tickFormatter={weekTickFormatter} />
+            <XAxis
+                dataKey="date"
+                tickFormatter={weekTickFormatter}
+                tick={{ fontSize: '12px' }}  // Adjust font size here
+            />
             <XAxis
                 dataKey="date"
                 axisLine={false}
