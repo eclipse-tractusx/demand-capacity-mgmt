@@ -22,10 +22,8 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacitiesDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedDemandSeriesRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +33,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.excepti
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
@@ -48,18 +47,31 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
     private final MaterialDemandRepository materialDemandRepository;
 
+    private final StatusesService statusesService;
+
+    //TODO: EditStatuses;
     @Override
     public void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequestList) {
+
+
         weekBasedCapacityGroupRequestList.forEach(
             weekBasedCapacityGroupRequest -> {
                 validateFields(weekBasedCapacityGroupRequest);
 
                 WeekBasedCapacityGroupEntity weekBasedCapacityGroup = convertEntity(weekBasedCapacityGroupRequest);
+                saveStatusesData(weekBasedCapacityGroup);
                 weekBasedCapacityGroupRepository.save(weekBasedCapacityGroup);
             }
         );
     }
 
+    public void saveStatusesData(WeekBasedCapacityGroupEntity weekBasedCapacityGroup){
+        List<CapacitiesDto> capacitiesDtos = weekBasedCapacityGroup.getWeekBasedCapacityGroup().getCapacities();
+        statusesService.postStatuses(mapToStatusRequest(weekBasedCapacityGroup));
+    }
+
+
+    //TODO: EditStatuses;
     @Override
     public void receiveWeekBasedCapacityGroup() {
         List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository.getAllByViewed(
@@ -110,6 +122,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     @Override
     public void sendWeekBasedCapacityGroup() {}
 
+    //TODO: EditStatuses;
     @Override
     public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity) {
         WeekBasedCapacityGroupRequest basedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
@@ -187,4 +200,35 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
             .viewed(false)
             .build();
     }
+
+    public StatusRequest mapToStatusRequest(WeekBasedCapacityGroupEntity weekBasedCapacityGroupEntity) {
+        StatusRequest statusRequest = new StatusRequest();
+
+//        weekBasedCapacityGroupEntity.getWeekBasedCapacityGroup().
+//
+//                StatusDto generalStatusDto = mapToStatusDto(capacitiesList, "general");
+//        statusRequest.setGeneral(generalStatusDto);
+//
+//        StatusDto todosStatusDto = mapToStatusDto(capacitiesList, "todos");
+//        statusRequest.setTodos(todosStatusDto);
+//
+//        StatusDto improvementStatusDto = mapToStatusDto(capacitiesList, "statusImprovement");
+//        statusRequest.setStatusImprovement(improvementStatusDto);
+//
+//        StatusDto degradationStatusDto = mapToStatusDto(capacitiesList, "statusDegredation");
+//        statusRequest.setStatusDegredation(degradationStatusDto);
+
+        return statusRequest;
+    }
+
+    private StatusDto mapToStatusDto(List<CapacitiesDto> capacitiesList, String fieldName) {
+//        List<CapacitiesDto> filteredList = capacitiesList.stream()
+//                .filter(capacitiesDto -> fieldName.equals(capacitiesDto.getCalendarWeek()))
+//                .collect(Collectors.toList());
+        StatusDto statusDto = new StatusDto();
+
+        return statusDto;
+    }
+
+
 }

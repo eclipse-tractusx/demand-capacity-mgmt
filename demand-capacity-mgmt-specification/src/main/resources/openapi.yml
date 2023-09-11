@@ -28,6 +28,67 @@ servers:
 
 paths:
 
+  /statuses:
+   post:
+     tags:
+       - statuses
+     summary: create a status
+     operationId: postStatus
+     requestBody:
+       required: true
+       content:
+         application/json:
+           schema:
+             $ref: '#/components/schemas/StatusRequest'
+     responses:
+       200:
+         description: General greeting
+         content:
+           application/json:
+            schema:
+               $ref: '#/components/schemas/StatusesResponse'
+
+   get:
+     tags:
+       - statuses
+     summary: get statuses object
+     operationId: getStatuses
+     responses:
+       200:
+         description: General greeting
+         content:
+           application/json:
+             schema:
+#               type: object
+#               items:
+                 $ref: '#/components/schemas/StatusesResponse'
+
+   put:
+     tags:
+       - statuses
+     summary: update statuses by Id
+     operationId: updateStatusesById
+     requestBody:
+       required: true
+       content:
+           application/json:
+             schema:
+               $ref: '#/components/schemas/StatusRequest'
+     parameters:
+      - in: 'path'
+        name: 'status_id'
+        schema:
+          type: string
+        required: true
+     responses:
+         200:
+           description: Update of statuses
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/StatusesResponse'
+
+
   /demand:
     post:
       tags:
@@ -264,6 +325,47 @@ paths:
 
 components:
   schemas:
+    StatusesResponse:
+      type: object
+      properties:
+        general:
+          $ref: '#/components/schemas/StatusDto'
+        todos:
+          $ref: '#/components/schemas/StatusDto'
+        statusImprovement:
+          $ref: '#/components/schemas/StatusDto'
+        statusDegredation:
+          $ref: '#/components/schemas/StatusDto'
+
+
+    StatusRequest:
+      type: object
+      properties:
+        general:
+          $ref: '#/components/schemas/StatusDto'
+        todos:
+          $ref: '#/components/schemas/StatusDto'
+        statusImprovement:
+          $ref: '#/components/schemas/StatusDto'
+        statusDegredation:
+          $ref: '#/components/schemas/StatusDto'
+
+
+    StatusDto:
+      type: object
+      properties:
+        count:
+          type: integer
+        materialDemandsIds:
+          type: array
+          items:
+            type: string
+        capacityGroups:
+          type: array
+          items:
+            type: string
+
+
     DemandRequestDto:
       type: object
       properties:

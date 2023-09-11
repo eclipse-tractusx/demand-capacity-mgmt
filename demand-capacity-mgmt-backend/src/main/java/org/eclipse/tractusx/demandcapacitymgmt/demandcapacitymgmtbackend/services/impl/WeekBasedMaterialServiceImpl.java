@@ -22,6 +22,7 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
+import com.sun.xml.bind.v2.TODO;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesCategoryDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandWeekSeriesDto;
@@ -49,6 +50,8 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
 
     private final LinkDemandService linkDemandService;
 
+
+    //TODO: EditStatuses;
     @Override
     public void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDtoList) {
         weekBasedMaterialDemandRequestDtoList.forEach(
@@ -66,6 +69,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     @Override
     public void sendWeekBasedMaterial() {}
 
+    //TODO: EditStatuses;
     @Override
     public void receiveWeekBasedMaterial() {
         List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities = weekBasedMaterialDemandRepository.getAllByViewed(
@@ -75,6 +79,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
         linkDemandService.createLinkDemands(weekBasedMaterialDemandEntities);
     }
 
+    //TODO: EditStatuses;
     @Override
     public void createWeekBasedMaterialRequestFromEntity(MaterialDemandEntity materialDemandEntity) {
         WeekBasedMaterialDemandRequestDto basedMaterialDemandRequestDto = new WeekBasedMaterialDemandRequestDto();
