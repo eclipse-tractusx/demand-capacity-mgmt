@@ -25,6 +25,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { FaStar, FaArrowUp,FaArrowDown } from 'react-icons/fa';
 import { FiSettings,FiLogOut } from 'react-icons/fi';
+import Component63 from "./menu/Component63";
 
 function TopMenuLinks() {
   return (
@@ -33,16 +34,8 @@ function TopMenuLinks() {
         <Navbar.Brand href="#home"><img srcSet='/media/logo.png' alt="Logo" width="30" height="24" className='d-inline-block align-text-top'/> - CompanyName</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link href="#favorites"><FaStar/> Favorites <span className="badge rounded-pill text-bg-primary" id="favorites-count">0</span></Nav.Link>
-            <Nav.Link href="#alerts">Alerts <span className="badge rounded-pill text-bg-danger" id="alerts-count">0</span></Nav.Link>
-            <Nav.Link href="#statusup"><FaArrowUp/> Status  <span className="badge rounded-pill text-bg-success" id="status-plus-count">0</span> </Nav.Link>
-            <Nav.Link href="#statusdown"><FaArrowDown/> Status <span className="badge rounded-pill text-bg-danger" id="status-minus-count">0</span> </Nav.Link>
-            <Nav.Link href="#todo">Todo <span className="badge rounded-pill text-bg-warning" id="todo-count">0</span> </Nav.Link>
-            <Nav.Link href="#events">Events <span className="badge rounded-pill text-bg-info" id="events-count">0</span></Nav.Link>
-          </Nav>
+          <Component63/>
         </Navbar.Collapse>
-
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
             Signed in as: <a href="#login">USERID</a>
