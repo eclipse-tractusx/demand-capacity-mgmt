@@ -40,7 +40,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.excepti
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
@@ -75,6 +74,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     @Override
     public CapacityGroupResponse getCapacityGroupById(String capacityGroupId) {
         CapacityGroupEntity capacityGroupEntity = getCapacityGroupEntity(capacityGroupId);
+
         return convertCapacityGroupDto(capacityGroupEntity);
     }
 
@@ -168,10 +168,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                     )
             )
             .toList();
-        System.out.println();
-        System.out.print(capacityTimeSeries.get(0));
-        System.out.println();
-        System.out.println();
+
         List<LinkedDemandSeries> linkDemandEntityList = capacityGroupRequest
             .getLinkedDemandSeries()
             .stream()
