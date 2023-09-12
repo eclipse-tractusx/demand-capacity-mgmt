@@ -22,11 +22,12 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { CapacityGroup } from '../interfaces/capacitygroup_interfaces';
+import {CapacityGroup, SingleCapacityGroup} from '../interfaces/capacitygroup_interfaces';
+
 
 interface CapacityGroupContextData {
   capacitygroups: CapacityGroup[];
-  GetCapacityGroup: (id: string) => Promise<CapacityGroup>;
+  getCapacityGroupById: (id: string) =>Promise<SingleCapacityGroup | undefined>;
 }
 
 export const CapacityGroupContext = createContext<CapacityGroupContextData | undefined>(undefined);
@@ -49,21 +50,29 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     fetchCapacityGroups();
   }, []);
 
-  const GetCapacityGroup = async (id: string): Promise<CapacityGroup> => {
+  const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {
     try {
       const response = await axios.get(`/capacityGroup/${id}`);
-      return response.data;
+      const fetchedCapacityGroup: SingleCapacityGroup = response.data;
+      return fetchedCapacityGroup;
     } catch (error) {
-      console.error(`Error fetching capacity group with id ${id}:`, error);
-      throw error;
+      console.error('Error fetching CapacityGroup by id:', error);
+      return undefined;
     }
   };
-  
-  return ( 
-    <CapacityGroupContext.Provider value={{capacitygroups, GetCapacityGroup}}>
-      {props.children}
-    </CapacityGroupContext.Provider>
+
+  return (
+      <CapacityGroupContext.Provider value={{capacitygroups, getCapacityGroupById}}>
+        {props.children}
+      </CapacityGroupContext.Provider>
   );
 };
 
-export default CapacityGroupsProvider;
+
+
+
+
+
+
+
+    export default CapacityGroupsProvider;
