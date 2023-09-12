@@ -37,6 +37,7 @@ import DemandContextProvider from "../src/contexts/DemandContextProvider";
 // Import your components for different routes
 import Home from "./components/capacitygroup/CapacityGroupPage";
 import CapacityGroupDetailsPage from './components/capacitygroup/CapacityGroupDetailsPage';
+import CapacityGroupsContextProvider from "./contexts/CapacityGroupsContextProvider";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -46,7 +47,7 @@ root.render(
     <Router>
     <Routes>
         <Route  path="/" element={<Home/>} />
-        <Route path="/details/:id" element={<CapacityGroupDetailsPage/>} />
+        <Route path="/details/:id" element={<CapacityGroupsContextProvider><CapacityGroupDetailsPage/> </CapacityGroupsContextProvider>} />
         <Route path="/contact" />
     </Routes>
 </Router>

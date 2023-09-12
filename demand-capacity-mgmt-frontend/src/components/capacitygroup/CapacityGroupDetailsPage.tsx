@@ -34,7 +34,7 @@ function CapacityGroupDetailsPage() {
     throw new Error('CapacityGroupDetailsPage must be used within a CapacityGroupsProvider');
   }
 
-  const { GetCapacityGroup } = context;
+  const { getCapacityGroupById } = context;
 
   const [editMode, setEditMode] = useState(false);
   const [savedChanges, setSavedChanges] = useState(false);
@@ -46,8 +46,8 @@ function CapacityGroupDetailsPage() {
     setSavedChanges(true);
     console.log(id);
     try {
-      const capacityGroup = await GetCapacityGroup(id!);
-      console.log(capacityGroup);
+      const capacityGroup = await getCapacityGroupById(id!);
+      console.log( capacityGroup);
     } catch (error) {
       console.error('Failed to fetch capacity group:', error);
     }
