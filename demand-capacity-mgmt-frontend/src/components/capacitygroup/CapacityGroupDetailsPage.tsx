@@ -20,19 +20,37 @@
  *    ********************************************************************************
  */
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Tab, Tabs, ButtonGroup, Button, ToggleButton } from 'react-bootstrap';
 import CapacityGroupChronogram from "./CapacityGroupChronogram";
+import {useParams} from "react-router-dom";
+import {CapacityGroupContext} from "../../contexts/CapacityGroupsContextProvider";
 
 function CapacityGroupDetailsPage() {
+  const { id } = useParams();
+  const context = useContext(CapacityGroupContext);
+
+  if (!context) {
+    throw new Error('CapacityGroupDetailsPage must be used within a CapacityGroupsProvider');
+  }
+
+  const { GetCapacityGroup } = context;
+
   const [editMode, setEditMode] = useState(false);
   const [savedChanges, setSavedChanges] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Perform save operation here
     setEditMode(false);
     setSavedChanges(true);
+    console.log(id);
+    try {
+      const capacityGroup = await GetCapacityGroup(id!);
+      console.log(capacityGroup);
+    } catch (error) {
+      console.error('Failed to fetch capacity group:', error);
+    }
     console.log(savedChanges);// todo clean
   };
 
