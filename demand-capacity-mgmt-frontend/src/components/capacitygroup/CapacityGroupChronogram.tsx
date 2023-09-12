@@ -19,8 +19,6 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React from "react";
-
 import {
     ComposedChart,
     Line,
@@ -31,7 +29,6 @@ import {
     Tooltip,
     Legend, Brush
 } from "recharts";
-
 
 const rawData = [
     {
@@ -56,6 +53,7 @@ const data = rawData.map(d => ({
 
 
 function CapacityGroupChronogram() {
+
 
     const getWeekNumber = (d: Date) => {
         d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));

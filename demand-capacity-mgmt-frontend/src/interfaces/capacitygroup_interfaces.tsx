@@ -32,3 +32,32 @@ export interface CapacityGroup {
   status: string
   [key: string]: string | number;
   }
+
+interface Address {
+  id: string;
+  bpn: string;
+  companyName: string;
+  street: string;
+  number: string;
+  zipCode: string;
+  country: string;
+  myCompany: string;
+}
+
+interface UnitOfMeasure {
+  id: string;
+  codeValue: string;
+  displayValue: string;
+}
+
+export interface GetCapacityGroup {
+  capacities: string[];
+  supplierLocations: Address[];
+  customer: Address;
+  supplier: Address;
+  capacityGroupId: string;
+  linkedDemandSeries: string[];
+  unitOfMeasure: UnitOfMeasure;
+  changeAt: string;
+  name: string;
+}

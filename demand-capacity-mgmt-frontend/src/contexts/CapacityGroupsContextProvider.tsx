@@ -26,6 +26,7 @@ import { CapacityGroup } from '../interfaces/capacitygroup_interfaces';
 
 interface CapacityGroupContextData {
   capacitygroups: CapacityGroup[];
+  GetCapacityGroup: (id: string) => Promise<CapacityGroup>;
 }
 
 export const CapacityGroupContext = createContext<CapacityGroupContextData | undefined>(undefined);
@@ -47,9 +48,19 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   
     fetchCapacityGroups();
   }, []);
+
+  const GetCapacityGroup = async (id: string): Promise<CapacityGroup> => {
+    try {
+      const response = await axios.get(`/capacityGroup/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching capacity group with id ${id}:`, error);
+      throw error;
+    }
+  };
   
   return ( 
-    <CapacityGroupContext.Provider value={{capacitygroups}}>
+    <CapacityGroupContext.Provider value={{capacitygroups, GetCapacityGroup}}>
       {props.children}
     </CapacityGroupContext.Provider>
   );
