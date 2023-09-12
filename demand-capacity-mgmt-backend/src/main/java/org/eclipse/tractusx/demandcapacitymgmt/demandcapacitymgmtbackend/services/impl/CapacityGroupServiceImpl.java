@@ -24,7 +24,9 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -160,13 +162,16 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             .map(
                 capacityRequest ->
                     enrichCapacityTimeSeries(
-                        DataConverterUtil.convertFromString(capacityRequest.getCalendarWeek()),
+                        LocalDate.parse(capacityRequest.getCalendarWeek()).atStartOfDay(),
                         capacityRequest.getActualCapacity().doubleValue(),
                         capacityRequest.getMaximumCapacity().doubleValue()
                     )
             )
             .toList();
-
+        System.out.println();
+        System.out.print(capacityTimeSeries.get(0));
+        System.out.println();
+        System.out.println();
         List<LinkedDemandSeries> linkDemandEntityList = capacityGroupRequest
             .getLinkedDemandSeries()
             .stream()
@@ -292,7 +297,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
         capacityRequest.setActualCapacity(new BigDecimal(capacityTimeSeries.getActualCapacity()));
         capacityRequest.setMaximumCapacity(new BigDecimal(capacityTimeSeries.getMaximumCapacity()));
-        capacityRequest.setCalendarWeek(capacityRequest.getCalendarWeek());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = capacityTimeSeries.getCalendarWeek().format(formatter);
+
+        capacityRequest.setCalendarWeek(formattedDate);
 
         return capacityRequest;
     }
