@@ -27,7 +27,7 @@ import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSe
 import { Button, ButtonGroup, ToggleButton, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { DemandContext } from '../contexts/DemandContextProvider';
 
-import {getISOWeek, startOfMonth, endOfMonth, addDays, format, addWeeks, addMonths} from 'date-fns';
+import {getISOWeek, startOfMonth, addDays, format, addWeeks, addMonths} from 'date-fns';
 
 interface WeeklyViewProps {
   demandData: DemandProp;
@@ -102,8 +102,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
     };
   });
 
-  const allMonths = [...monthsPreviousYear, ...monthsCurrentYear];
-  console.log(allMonths);
   const totalWeeksPreviousYear = monthsPreviousYear.reduce((total, month) => total + month.weeks.length, 0);
   const totalWeeksCurrentYear = monthsCurrentYear.reduce((total, month) => total + month.weeks.length, 0);
   const totalWeeksNextYear = monthsNextYear.reduce((total, month) => total + month.weeks.length, 0);
@@ -176,7 +174,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
         monthsCurrentYear.forEach((month) => {
           month.weeks.forEach((week) => {
             const isoWeekMonday = getISOWeekMonday(month.year, week);
- // Get the Monday of the ISO week
+            // Get the Monday of the ISO week
             const demand = demandValuesMap[categoryId]?.[month.year]?.[week];
             if (demand !== undefined) {
               demandSeriesValues.push({
