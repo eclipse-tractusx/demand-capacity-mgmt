@@ -50,8 +50,14 @@ interface UnitOfMeasure {
   displayValue: string;
 }
 
-export interface GetCapacityGroup {
-  capacities: string[];
+interface Capacities{
+  actualCapacity: bigint,
+  MaximumCapacity: bigint;
+  calendarWeek: string
+}
+
+export interface SingleCapacityGroup {
+  capacities: Capacities[];
   supplierLocations: Address[];
   customer: Address;
   supplier: Address;
