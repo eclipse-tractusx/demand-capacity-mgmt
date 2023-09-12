@@ -47,7 +47,7 @@ root.render(
     <Router>
     <Routes>
         <Route  path="/" element={<Home/>} />
-        <Route path="/details" element={<CapacityGroupDetailsPage/>} />
+        <Route path="/details/:id" element={<CapacityGroupDetailsPage/>} />
         <Route path="/contact" />
     </Routes>
 </Router>
