@@ -21,9 +21,9 @@
  */
 
 import React, { useContext, useState, useMemo} from 'react';
+import { Link } from 'react-router-dom';
 import { Form,Col,Row } from 'react-bootstrap';
 import { CapacityGroupContext  } from '../../contexts/CapacityGroupsContextProvider';
-//import { CapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import Pagination from '../Pagination';
 import CapacityGroupsTable from './CapacityGroupsTable';
 import Search from '../Search';
@@ -99,8 +99,8 @@ const CapacityGroupsList: React.FC = () => {
     () =>
       slicedcapacitygroups.map((capacitygroup) => (
         <tr key={capacitygroup.internalId}>
-          <td>{capacitygroup.internalId}</td>  {/* TODO Add href to */}
-          <td>{capacitygroup.name}</td>
+          <td><Link to={`/details/${capacitygroup.internalId}`}>{capacitygroup.internalId}</Link></td>
+            <td>{capacitygroup.name}</td>
           <td>{capacitygroup.customerBPNL}</td>
           <td>{capacitygroup.customerName}</td>
           <td>{capacitygroup.supplierBNPL}</td>
