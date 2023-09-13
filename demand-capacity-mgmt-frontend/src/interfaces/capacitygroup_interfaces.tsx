@@ -52,8 +52,21 @@ interface UnitOfMeasure {
 
 interface Capacities{
   actualCapacity: bigint,
-  MaximumCapacity: bigint;
+  maximumCapacity: bigint;
   calendarWeek: string
+}
+
+interface DemandCategory {
+  id: string;
+  demandCategoryCode: string;
+  demandCategoryName: string;
+}
+
+interface LinkedDemand {
+  demandCategory: DemandCategory;
+  customerLocation: Address;
+  materialNumberSupplier: string;
+  materialNumberCustomer: string;
 }
 
 export interface SingleCapacityGroup {
@@ -62,7 +75,7 @@ export interface SingleCapacityGroup {
   customer: Address;
   supplier: Address;
   capacityGroupId: string;
-  linkedDemandSeries: string[];
+  linkedDemandSeries: LinkedDemand[];
   unitOfMeasure: UnitOfMeasure;
   changeAt: string;
   name: string;

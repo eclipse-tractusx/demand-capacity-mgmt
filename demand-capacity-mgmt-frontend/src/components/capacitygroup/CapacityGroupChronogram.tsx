@@ -29,31 +29,33 @@ import {
     Tooltip,
     Legend, Brush
 } from "recharts";
+import {SingleCapacityGroup} from "../../interfaces/capacitygroup_interfaces";
 
-const rawData = [
-    {
-        date: "2023-01-02",
-        ActualCapacity: 590,
-        Demand: 800,
-        MaximumCapacity: 1400
-    },
-    {
-        date: "2023-01-09",
-        ActualCapacity: 868,
-        Demand: 967,
-        MaximumCapacity: 1506
-    }
-];
+type CapacityGroupChronogramProps = {
+    capacityGroup: SingleCapacityGroup | null | undefined;
+};
 
-// Sorted data by date
-const data = rawData.map(d => ({
-    ...d,
-    dateEpoch: new Date(d.date).getTime()
-})).sort((a, b) => a.dateEpoch - b.dateEpoch);
+const computeLinkedDemandSum = (capacityGroup: SingleCapacityGroup | null | undefined) => {
+    if (!capacityGroup || !capacityGroup.linkedDemandSeries) return 0;
+
+    return capacityGroup.linkedDemandSeries.length;
+};
+
+function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
+    const { capacityGroup } = props;
+
+    const rawCapacities = capacityGroup?.capacities || [];
 
 
-function CapacityGroupChronogram() {
+    const linkedDemandSum = computeLinkedDemandSum(capacityGroup);
 
+
+    // Sorted data by date
+    const data = rawCapacities.map(d => ({
+        ...d,
+        Demand: linkedDemandSum,
+        dateEpoch: new Date(d.calendarWeek).getTime()
+    })).sort((a, b) => a.dateEpoch - b.dateEpoch);
 
     const getWeekNumber = (d: Date) => {
         d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -122,12 +124,12 @@ function CapacityGroupChronogram() {
 
             <CartesianGrid stroke="#f5f5f5"/>
             <XAxis
-                dataKey="date"
+                dataKey="calendarWeek"
                 tickFormatter={weekTickFormatter}
                 tick={{ fontSize: '12px' }}  // Adjust font size here
             />
             <XAxis
-                dataKey="date"
+                dataKey="calendarWeek"
                 axisLine={false}
                 tickLine={false}
                 interval={0}
@@ -143,9 +145,9 @@ function CapacityGroupChronogram() {
 
 
             <Bar dataKey="Demand" barSize={20} fill="#413ea0"/>
-            <Line type="monotone" dataKey="ActualCapacity" stroke="#ff7300"/>
+            <Line type="monotone" dataKey="actualCapacity" stroke="#ff7300"/>
             <Line type="monotone" dataKey="MaximumCapacity"  stroke="#8884d8"/>
-            <Brush y={450} dataKey="date" height={20} stroke="#8884d8" />
+            <Brush y={450} dataKey="calendarWeek" height={20} stroke="#8884d8" />
         </ComposedChart>
     );
 }

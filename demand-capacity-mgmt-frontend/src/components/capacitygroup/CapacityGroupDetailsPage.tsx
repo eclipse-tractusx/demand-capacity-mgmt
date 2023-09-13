@@ -25,6 +25,7 @@ import { Tab, Tabs, ButtonGroup, Button, ToggleButton } from 'react-bootstrap';
 import CapacityGroupChronogram from "./CapacityGroupChronogram";
 import {useParams} from "react-router-dom";
 import {CapacityGroupContext} from "../../contexts/CapacityGroupsContextProvider";
+import {SingleCapacityGroup} from "../../interfaces/capacitygroup_interfaces";
 
 function CapacityGroupDetailsPage() {
   const { id } = useParams();
@@ -39,19 +40,20 @@ function CapacityGroupDetailsPage() {
   const [editMode, setEditMode] = useState(false);
   const [savedChanges, setSavedChanges] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
 
   const handleSave = async () => {
     // Perform save operation here
     setEditMode(false);
     setSavedChanges(true);
-    console.log(id);
     try {
-      const capacityGroup = await getCapacityGroupById(id!);
-      console.log( capacityGroup);
+      const fetchedCapacityGroup = await getCapacityGroupById(id!);
+      setCapacityGroup(fetchedCapacityGroup || null);
+
     } catch (error) {
       console.error('Failed to fetch capacity group:', error);
     }
-    console.log(savedChanges);// todo clean
+
   };
 
   const handleRevert = () => {
@@ -68,7 +70,7 @@ function CapacityGroupDetailsPage() {
         <div className="row">
           <div className="col"></div>
           <div className="col-6 border d-flex align-items-center justify-content-center">
-            UUID - CapacityGroupName
+            {capacityGroup?.capacityGroupId} - {capacityGroup?.name}
           </div>
             <div className="col d-flex justify-content-end">
               <br />
@@ -107,7 +109,7 @@ function CapacityGroupDetailsPage() {
           }}
         >
           <Tab eventKey="overview" title="Overview">
-            <CapacityGroupChronogram />
+            <CapacityGroupChronogram capacityGroup={capacityGroup} />
           </Tab>
           <Tab eventKey="materials" title="Materials">
             Materials Table here
