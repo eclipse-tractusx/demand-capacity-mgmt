@@ -24,7 +24,6 @@
 import React, { createContext, useState, useEffect, useCallback, useContext, FunctionComponent } from 'react';
 import axios from 'axios';
 import { InfoMenuData } from '../interfaces/InfoMenu_interfaces';
-import {mockInfoMenuData} from "../mocks/MockData";
 
 interface InfoMenuContextData {
     data: InfoMenuData | null;
