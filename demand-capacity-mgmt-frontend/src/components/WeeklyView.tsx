@@ -61,7 +61,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
   const currentYear = new Date().getFullYear();
 
   const [editMode, setEditMode] = useState(false);
-  const [savedChanges, setSavedChanges] = useState(false);
 
   const monthsCurrentYear = Array.from({ length: 12 }, (_, monthIndex) => {
     const monthStart = new Date(currentYear, monthIndex, 1);
@@ -226,7 +225,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
     }
 
     setEditMode(false);
-    setSavedChanges(true);
   };
 
 
@@ -257,7 +255,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
 
     // Set edit mode to false and clear savedChanges
     setEditMode(false);
-    setSavedChanges(false);
   };
 
   return (

@@ -21,9 +21,8 @@
  */
 
 import { useState } from 'react';
-import { Tab, Tabs, ButtonGroup, Button, ToggleButton } from 'react-bootstrap';
-import WeeklyView from '../WeeklyView';
-import DemandCategoryContextProvider, { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
+import { Tab, Tabs} from 'react-bootstrap';
+
 
 function CapacityGroupDetailsPage() {
   const [activeTab, setActiveTab] = useState('overview');
