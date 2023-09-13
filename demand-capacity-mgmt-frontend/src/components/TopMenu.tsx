@@ -25,7 +25,8 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { FaStar, FaArrowUp,FaArrowDown } from 'react-icons/fa';
 import { FiSettings,FiLogOut } from 'react-icons/fi';
-import Component63 from "./menu/Component63";
+import InfoMenu from "./menu/InfoMenu";
+
 
 function TopMenuLinks() {
   return (
@@ -34,7 +35,7 @@ function TopMenuLinks() {
         <Navbar.Brand href="#home"><img srcSet='/media/logo.png' alt="Logo" width="30" height="24" className='d-inline-block align-text-top'/> - CompanyName</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Component63/>
+          <InfoMenu/>
         </Navbar.Collapse>
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
