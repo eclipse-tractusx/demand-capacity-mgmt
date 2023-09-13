@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import { Tab, Tabs, ButtonGroup, Button, ToggleButton } from 'react-bootstrap';
 import CapacityGroupChronogram from "./CapacityGroupChronogram";
 import {useParams} from "react-router-dom";
@@ -42,18 +42,22 @@ function CapacityGroupDetailsPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const fetchedCapacityGroup = await getCapacityGroupById(id!);
+        setCapacityGroup(fetchedCapacityGroup || null);
+      } catch (error) {
+        console.error('Failed to fetch capacity group:', error);
+      }
+    })();
+  }, [id, getCapacityGroupById]);
+
   const handleSave = async () => {
     // Perform save operation here
     setEditMode(false);
     setSavedChanges(true);
-    try {
-      const fetchedCapacityGroup = await getCapacityGroupById(id!);
-      setCapacityGroup(fetchedCapacityGroup || null);
-
-    } catch (error) {
-      console.error('Failed to fetch capacity group:', error);
-    }
-
+    console.log(savedChanges);
   };
 
   const handleRevert = () => {
@@ -61,7 +65,7 @@ function CapacityGroupDetailsPage() {
     setEditMode(false);
     setSavedChanges(false);
   };
-  
+
 
   return (
     <>
@@ -95,7 +99,7 @@ function CapacityGroupDetailsPage() {
                 </Button>
               </ButtonGroup>
                         )}
-            </div>  
+            </div>
         </div>
         <Tabs
           defaultActiveKey="overview"
