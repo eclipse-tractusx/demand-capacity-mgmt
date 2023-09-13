@@ -75,7 +75,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
         return `${weekNumber}`;
     };
 
-    let lastDisplayedMonth = -1; // Ensure you have initialized this somewhere outside of the function, ideally in your component's state or similar.
+    let lastDisplayedMonth = -1;
 
     const renderMonthTick = (tickProps: any) => {
         const { x, y, payload } = tickProps;
