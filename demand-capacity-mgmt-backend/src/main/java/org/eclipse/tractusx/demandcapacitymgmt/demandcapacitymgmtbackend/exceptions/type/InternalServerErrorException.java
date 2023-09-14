@@ -20,11 +20,37 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type;
 
-public class NotFoundException extends RuntimeException {
+import java.util.List;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.CustomException;
 
-    public NotFoundException(String message) {
-        super(message);
+public class InternalServerErrorException
+    extends RuntimeException
+    implements CustomException<InternalServerErrorException> {
+
+    private final int code;
+    private final String message;
+    private final List<String> details;
+
+    public InternalServerErrorException(int code, String message, List<String> details) {
+        this.code = code;
+        this.message = message;
+        this.details = details;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public int getCode() {
+        return code;
+    }
+
+    @Override
+    public List<String> getDetails() {
+        return details;
     }
 }
