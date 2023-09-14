@@ -27,32 +27,66 @@ import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSe
 import { Button, ButtonGroup, ToggleButton, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { DemandContext } from '../contexts/DemandContextProvider';
 
-import {getISOWeek, startOfMonth, addDays, format, addWeeks, addMonths} from 'date-fns';
+import {getISOWeek, startOfMonth, addDays, format, addWeeks, addMonths, startOfWeek, setISODay} from 'date-fns';
 
 interface WeeklyViewProps {
   demandData: DemandProp;
 }
 
 function getISOWeekMonday(year: number, isoWeek: number): Date {
-  const january4 = new Date(year, 0, 4);
-  const diff = (isoWeek - 1) * 7 + (1 - january4.getDay());
-  return addDays(january4, diff);
+  const january1 = new Date(year, 0, 1);
+  const firstThursday = setISODay(january1, 4); // 4 corresponds to Thursday
+  return startOfWeek(addDays(firstThursday, (isoWeek - 1) * 7), { weekStartsOn: 1 }); // Starts on Monday
 }
 
-function getWeeksInMonth(year: number, monthIndex: number): number[] {
-  const firstDayOfMonth = startOfMonth(new Date(year, monthIndex));
-  const nextMonth = startOfMonth(addMonths(firstDayOfMonth, 1));
+function getDateFromISOWeek(isoWeekString: string): Date {
+  const [yearStr, weekStr] = isoWeekString.split('-W');
+  const year = parseInt(yearStr, 10);
+  const week = parseInt(weekStr, 10);
+  return getISOWeekMonday(year, week);
+}
 
-  let weeks = [];
-  let currentDay = firstDayOfMonth;
+function getYearOfWeek(date: Date): number {
+  const thursday = addDays(date, 3 - (date.getUTCDay() + 6) % 7);
+  return thursday.getUTCFullYear();
+}
 
-  while (currentDay < nextMonth) {
-    weeks.push(getISOWeek(currentDay));
-    currentDay = addWeeks(currentDay, 1);
+function getWeeksInMonth(year: number, monthIndex: number, knownNextMonthWeeks?: Set<number>): number[] {
+  const weeks: Set<number> = new Set();
+
+  const firstDayOfMonth = new Date(year, monthIndex, 1);
+  const lastDayOfMonth = new Date(year, monthIndex + 1, 0);
+  const nextMonth = new Date(year, monthIndex + 1, 1);
+
+  // Fetch weeks of the next month if not provided.
+  if (!knownNextMonthWeeks && monthIndex < 11) {
+    knownNextMonthWeeks = new Set(getWeeksInMonth(year, monthIndex + 1));
   }
 
-  return weeks;
+  let currentDay = firstDayOfMonth;
+  while (currentDay <= lastDayOfMonth) {
+    const weekNum = getISOWeek(currentDay);
+    const isoWeekYear = getYearOfWeek(currentDay);
+
+    // If the month is January and the week year is the previous year, skip it
+    if (monthIndex === 0 && isoWeekYear < year) {
+      currentDay = addDays(currentDay, 1);
+      continue;
+    }
+
+    // If it's the last week of the month and it's also in the next month, skip it.
+    if (currentDay > new Date(year, monthIndex, 24) && knownNextMonthWeeks?.has(weekNum)) {
+      currentDay = addDays(currentDay, 1);
+      continue;
+    }
+
+    weeks.add(weekNum);
+    currentDay = addDays(currentDay, 1);
+  }
+
+  return Array.from(weeks).sort((a, b) => a - b);
 }
+
 
 
 const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
@@ -62,24 +96,10 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
 
   const [editMode, setEditMode] = useState(false);
 
-  const monthsCurrentYear = Array.from({ length: 12 }, (_, monthIndex) => {
-    const monthStart = new Date(currentYear, monthIndex, 1);
-    const monthName = format(monthStart, 'MMM');
-    const weeks = getWeeksInMonth(currentYear, monthIndex);
-
-    return {
-      name: monthName,
-      year: currentYear,
-      weeks: weeks,
-      monthIndex: monthIndex,
-    };
-  });
-
   const monthsPreviousYear = Array.from({ length: 1 }, (_, monthIndex) => {
     const monthStart = new Date(currentYear - 1, monthIndex + 11, 1);
     const monthName = format(monthStart, 'MMM');
-    const weeks = getWeeksInMonth(currentYear - 1, monthIndex + 11);
-
+    let weeks = getWeeksInMonth(currentYear - 1, monthIndex + 11);
     return {
       name: monthName,
       year: currentYear - 1,
@@ -88,11 +108,22 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
     };
   });
 
+  const monthsCurrentYear = Array.from({ length: 12 }, (_, monthIndex) => {
+    const monthStart = new Date(currentYear, monthIndex, 1);
+    const monthName = format(monthStart, 'MMM');
+    let weeks = getWeeksInMonth(currentYear, monthIndex);
+    return {
+      name: monthName,
+      year: currentYear,
+      weeks: weeks,
+      monthIndex: monthIndex,
+    };
+  });
+
   const monthsNextYear = Array.from({ length: 1 }, (_, monthIndex) => {
     const monthStart = new Date(currentYear + 1, monthIndex, 1);
     const monthName = format(monthStart, 'MMM');
     const weeks = getWeeksInMonth(currentYear + 1, monthIndex);
-
     return {
       name: monthName,
       year: currentYear + 1,
@@ -118,7 +149,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
     });
   }
 
-  console.log(demandValuesMap);
   // Function to get the beginning and end dates of the week
   const getWeekDates = (year: number, month: string,week: number) => {
     const startDate = getISOWeekMonday(year, week);
@@ -139,7 +169,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
       const categoryId = series.demandCategory.id;
 
       series.demandSeriesValues.forEach((value) => {
-        const date = new Date(value.calendarWeek);
+        const date = getDateFromISOWeek(value.calendarWeek);
         const year = date.getFullYear();
         const week = getISOWeek(date).toString();
 
@@ -153,7 +183,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
       });
     });
 
-    console.log('New Demand Values Map:', newDemandValuesMap);
     setDemandValuesMap(newDemandValuesMap);
   }, [demandData]);
 
@@ -215,7 +244,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
     };
 
     // Perform save operation with updatedDemandData
-    console.log(updatedDemand);
+
     if (filteredUpdatedDemandSeries.length > 0) {
       try {
         await updateDemand(updatedDemand);
@@ -323,47 +352,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
               </tr>
               <tr>
                 <th className="empty-header-cell"></th>
-                {monthsPreviousYear.map((month) =>
-                    month.weeks.map((week) => (
-                        <th key={month.name + week} className="header-cell week-header-cell">
-                          <OverlayTrigger
-                              placement="top"
-                              overlay={
-                                <Tooltip id={`week-tooltip-${month.year}-${week}`}>
-                                  {`Week ${week} - ${getWeekDates(month.year, month.name, week).startDate} to ${getWeekDates(
-                                      month.year,
-                                      month.name,
-                                      week
-                                  ).endDate}`}
-                                </Tooltip>
-                              }
-                          >
-                            <span>{week}</span>
-                          </OverlayTrigger>
-                        </th>
-                    ))
-                )}
-                {monthsCurrentYear.map((month) =>
-                    month.weeks.map((week) => (
-                        <th key={month.name + week} className="header-cell week-header-cell">
-                          <OverlayTrigger
-                              placement="top"
-                              overlay={
-                                <Tooltip id={`week-tooltip-${month.year}-${week}`}>
-                                  {`Week ${week} - ${getWeekDates(month.year, month.name, week).startDate} to ${getWeekDates(
-                                      month.year,
-                                      month.name,
-                                      week
-                                  ).endDate}`}
-                                </Tooltip>
-                              }
-                          >
-                            <span>{week}</span>
-                          </OverlayTrigger>
-                        </th>
-                    ))
-                )}
-                {monthsNextYear.map((month) =>
+                {[monthsPreviousYear, monthsCurrentYear, monthsNextYear].reduce((acc, curr) => acc.concat(curr), []).map((month) =>
                     month.weeks.map((week) => (
                         <th key={month.name + week} className="header-cell week-header-cell">
                           <OverlayTrigger
@@ -384,6 +373,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
                     ))
                 )}
               </tr>
+
               {demandcategories &&
                   demandcategories
                       .sort((a, b) => a.id.localeCompare(b.id))
