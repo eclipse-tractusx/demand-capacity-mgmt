@@ -23,6 +23,7 @@
 import React, {useState, useContext, useEffect} from 'react';
 import { Tab, Tabs, ButtonGroup, Button, ToggleButton } from 'react-bootstrap';
 import CapacityGroupChronogram from "./CapacityGroupChronogram";
+import CapacityGroupSumView from "./CapacityGroupSumView";
 import {useParams} from "react-router-dom";
 import {CapacityGroupContext} from "../../contexts/CapacityGroupsContextProvider";
 import {SingleCapacityGroup} from "../../interfaces/capacitygroup_interfaces";
@@ -113,6 +114,7 @@ function CapacityGroupDetailsPage() {
           }}
         >
           <Tab eventKey="overview" title="Overview">
+            <CapacityGroupSumView capacityGroup={capacityGroup}/>
             <CapacityGroupChronogram capacityGroup={capacityGroup} />
           </Tab>
           <Tab eventKey="materials" title="Materials">
