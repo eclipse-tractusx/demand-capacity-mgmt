@@ -21,7 +21,7 @@
  */
 
 import React, {useState, useContext, useEffect} from 'react';
-import { Tab, Tabs, ButtonGroup, Button, ToggleButton } from 'react-bootstrap';
+import { Tab, Tabs} from 'react-bootstrap';
 import CapacityGroupChronogram from "./CapacityGroupChronogram";
 import CapacityGroupSumView from "./CapacityGroupSumView";
 import {useParams} from "react-router-dom";
@@ -38,8 +38,6 @@ function CapacityGroupDetailsPage() {
 
   const { getCapacityGroupById } = context;
 
-  const [editMode, setEditMode] = useState(false);
-  const [savedChanges, setSavedChanges] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
 
@@ -54,19 +52,6 @@ function CapacityGroupDetailsPage() {
     })();
   }, [id, getCapacityGroupById]);
 
-  const handleSave = async () => {
-    // Perform save operation here
-    setEditMode(false);
-    setSavedChanges(true);
-    console.log(savedChanges);
-  };
-
-  const handleRevert = () => {
-    // Revert changes here
-    setEditMode(false);
-    setSavedChanges(false);
-  };
-
 
   return (
     <>
@@ -74,32 +59,11 @@ function CapacityGroupDetailsPage() {
         <br />
         <div className="row">
           <div className="col"></div>
-          <div className="col-6 border d-flex align-items-center justify-content-center">
+          <div className="col-6 border d-flex align-items-center justify-content-center" style={{ padding: '10px' }}>
             {capacityGroup?.capacityGroupId} - {capacityGroup?.name}
           </div>
             <div className="col d-flex justify-content-end">
               <br />
-              {activeTab === 'overview' && (
-              <ButtonGroup className="mb-2 align-middle">
-                <ToggleButton
-                  id="toggle-edit"
-                  type="checkbox"
-                  variant="secondary"
-                  name="edit"
-                  value="0"
-                  checked={editMode}
-                  onChange={() => setEditMode(!editMode)}
-                >
-                  Edit
-                </ToggleButton>
-                <Button variant="secondary" name="save" onClick={handleSave}>
-                  Save
-                </Button>
-                <Button variant="secondary" name="revert" onClick={handleRevert}>
-                  Revert Changes
-                </Button>
-              </ButtonGroup>
-                        )}
             </div>
         </div>
         <Tabs

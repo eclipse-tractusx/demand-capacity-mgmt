@@ -49,6 +49,7 @@ code {
   --header-color: #f1f1f1;
   --label-margin: 8px;
   --border-color: #ccc;
+  --danger-red:#dc3545;
 }
 
 .table-container {
@@ -115,4 +116,18 @@ code {
 .data-cell {
   text-align: center;
   border: 1px solid  var(--border-color);
+}
+
+.delete-text{
+  text-emphasis-color: var();
+}
+
+
+.red-delete-item {
+  color: var(--danger-red); 
+}
+
+.red-delete-item:hover {
+  background-color: var(--danger-red);
+  color: white; 
 }

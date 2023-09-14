@@ -21,13 +21,13 @@
  */
 
 import React, { useContext, useState, useMemo, useCallback } from 'react';
-import { Modal, Button, Form, Col, Row, Breadcrumb } from 'react-bootstrap';
+import { Modal, Button, Form, Col, Row, Breadcrumb, Dropdown } from 'react-bootstrap';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import Pagination from '../Pagination';
 import DemandsTable from './DemandsTable';
 import DemandsSearch from '../Search';
 import EditForm from './DemandEditForm';
-import { FaSearch, FaTrashAlt } from 'react-icons/fa';
+import { FaEllipsisV, FaSearch} from 'react-icons/fa';
 import AddForm from './DemandAddForm';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
@@ -207,11 +207,16 @@ const DemandsPage: React.FC = () => {
             <Button onClick={() => handleEdit(demand)} variant="outline-secondary">Edit</Button>
           </td>
           <td>
-            <Button onClick={() => handleDeleteDemand(demand.id)} variant="outline-danger">
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <FaTrashAlt size={23} />
-              </div>
-            </Button>
+            <Dropdown>
+              <Dropdown.Toggle variant="light" id={`dropdown-menu-${demand.id}`}>
+                <span ><FaEllipsisV/></span>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleDetails(demand)}>Details</Dropdown.Item>
+                <Dropdown.Item onClick={() => {navigator.clipboard.writeText(demand.id)}}>Copy ID</Dropdown.Item>
+                <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteDemand(demand.id)}>Delete</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </td>
         </tr>
       )),
