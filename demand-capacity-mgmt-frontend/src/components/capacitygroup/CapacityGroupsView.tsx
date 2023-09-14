@@ -141,7 +141,7 @@ const CapacityGroupsList: React.FC = () => {
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item href={`/details/${capacitygroup.internalId}`} target='new-tab'>Details</Dropdown.Item>
-                <Dropdown.Item className="red-delete-item" >Delete</Dropdown.Item>
+                <Dropdown.Item className="red-delete-item" >Delete (WIP)</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </td>
