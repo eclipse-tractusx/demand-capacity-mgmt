@@ -671,7 +671,7 @@ components:
       properties:
         actualCapacity:
           type: number
-        MaximumCapacity:
+        maximumCapacity:
           type: number
         calendarWeek:
           type: string
