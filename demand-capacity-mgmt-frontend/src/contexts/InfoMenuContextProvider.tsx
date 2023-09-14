@@ -45,7 +45,6 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
             const result: InfoMenuData = response.data;
             setData(result);
             console.log(result)
-            /* setData(mockInfoMenuData);  /*mock data*/
         } catch (error) {
             console.error('Error fetching data:', error);
         }
