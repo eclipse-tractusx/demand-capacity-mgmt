@@ -32,7 +32,7 @@ backend:
   image:
     registry: "docker.io"
     pullPolicy: Always
-    repository: docker.io/tractusx/tx-demand-capacity-mgmt/demand-capacity-mgmt-backend
+    repository: docker.io/tractusx/demand-capacity-mgmt-backend
     tag: ""
   certificate:
     host: "localhost"
@@ -114,7 +114,7 @@ frontend:
   image:
     registry: "docker.io"
     pullPolicy: Always
-    repository: docker.io/tractusx/tx-demand-capacity-mgmt/demand-capacity-mgmt-frontend
+    repository: docker.io/tractusx/demand-capacity-mgmt-frontend
     tag: ""
   certificate:
     host: "localhost"
