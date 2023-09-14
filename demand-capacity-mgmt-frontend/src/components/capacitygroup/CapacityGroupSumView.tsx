@@ -236,6 +236,18 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup }) => {
               </tr>
               <tr>
                 <th className="sticky-header-cell">
+                  <div className="sticky-header-content">Demands</div>
+                </th>
+                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
+                  month.weeks.map((week) => (
+                    <td key={`demands-${week}`} className="data-cell">
+                      {' '}
+                    </td>
+                  ))
+                )}
+              </tr>
+              <tr>
+                <th className="sticky-header-cell">
                   <div className="sticky-header-content">Actual Capacity</div>
                 </th>
                 {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
@@ -272,6 +284,18 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup }) => {
                       </td>
                     );
                   })
+                )}
+              </tr>
+              <tr>
+                <th className="sticky-header-cell">
+                  <div className="sticky-header-content">-</div>
+                </th>
+                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
+                  month.weeks.map((week) => (
+                    <td key={`empty-${week}`} className="data-cell">
+                      {' '}
+                    </td>
+                  ))
                 )}
               </tr>
               <tr>

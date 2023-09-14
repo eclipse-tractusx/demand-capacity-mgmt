@@ -146,7 +146,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
             <Bar dataKey="Demand" barSize={20} fill="#413ea0"/>
             <Line type="monotone" dataKey="actualCapacity" stroke="#ff7300"/>
-            <Line type="monotone" dataKey="MaximumCapacity"  stroke="#8884d8"/>
+            <Line type="monotone" dataKey="maximumCapacity"  stroke="#8884d8"/>
             <Brush y={450} dataKey="calendarWeek" height={20} stroke="#8884d8" />
         </ComposedChart>
     );
