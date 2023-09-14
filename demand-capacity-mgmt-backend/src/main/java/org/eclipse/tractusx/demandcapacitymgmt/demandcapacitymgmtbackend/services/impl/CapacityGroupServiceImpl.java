@@ -279,7 +279,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         responseDto.setUnitOfMeasure(unitMeasure);
         responseDto.setChangeAt(capacityGroupEntity.getChangedAt().toString());
         responseDto.setName(capacityGroupEntity.getName());
-        responseDto.setCapacityGroupId(capacityGroupEntity.getCapacityGroupId().toString());
+        responseDto.setWeekBasedCapacityGroupId(capacityGroupEntity.getCapacityGroupId().toString());
+        responseDto.setCapacityGroupId(capacityGroupEntity.getId().toString());
 
         List<CapacityRequest> capacityRequests = capacityGroupEntity
             .getCapacityTimeSeries()
