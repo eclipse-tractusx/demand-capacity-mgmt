@@ -32,6 +32,7 @@ export interface Supplier {
 
   
   export interface ExpectedSupplierLocation {
+    id: string
     bpn: string
     companyName: string
     street: string

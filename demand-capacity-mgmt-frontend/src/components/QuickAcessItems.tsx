@@ -19,7 +19,8 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import {AiOutlineStock, AiOutlineLink} from 'react-icons/ai';
+import { FaChartLine, FaLink } from 'react-icons/fa';
+import { FcComboChart } from 'react-icons/fc';
 import { Modal, Button } from 'react-bootstrap';
 import { useState } from 'react';
 import DemandsPage from './demands/DemandPage';
@@ -34,37 +35,37 @@ function QuickAcessItems() {
   const handleShow = () => setShow(true);
 
   return (
-  <>
-  <div className="float-left" style={{position: 'absolute', top: '50%',left:5, transform: 'translate(0%, -50%)'}}>
-  <Button variant="primary" className=' m-1 display-4' onClick={handleShow} ><AiOutlineStock/></Button>
-  <br />
-  <Button variant="primary" className=' m-1 display-4'><AiOutlineLink/></Button>
-</div>
-    <DemandContextProvider>
-    <Modal
-            show={show}
-            onHide={handleClose}
-            backdrop="static"
-            keyboard={false}
-            dialogClassName="custom-modal" 
-            fullscreen="xl"
-          >
-            <Modal.Header closeButton>
-              <Modal.Title>Demand Management View</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
+    <>
+      <div className="float-left" style={{ position: 'absolute', top: '50%', left: 5, transform: 'translate(0%, -50%)' }}>
+        <Button variant="primary" className=' m-1 display-4' onClick={handleShow} ><FaChartLine /></Button>
+        <br />
+        <Button variant="primary" className=' m-1 display-4'><FaLink /></Button>
+      </div>
+      <DemandContextProvider>
+        <Modal
+          show={show}
+          onHide={handleClose}
+          backdrop="static"
+          keyboard={false}
+          dialogClassName="custom-modal"
+          fullscreen="xl"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <FcComboChart size={35} /><span > Demand Management View</span>
+              </div>
+              </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
             <DemandContextProvider>
               <DemandsPage></DemandsPage>
             </DemandContextProvider>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose}>
-                Close
-              </Button>
-            </Modal.Footer>
-          </Modal>
+          </Modal.Body>
+
+        </Modal>
       </DemandContextProvider>
-</>
+    </>
   );
 }
 
