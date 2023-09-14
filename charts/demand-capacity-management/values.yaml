@@ -186,6 +186,6 @@ postgres:
   auth:
     database: dcm
     username: dcm
-    password: dcm
-    postgres_password: "postgres-password"
+    password: ""
+    postgres_password: ""
 
