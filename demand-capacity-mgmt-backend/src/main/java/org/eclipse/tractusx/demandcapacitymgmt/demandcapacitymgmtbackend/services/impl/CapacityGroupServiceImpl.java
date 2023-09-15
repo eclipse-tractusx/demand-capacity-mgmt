@@ -323,7 +323,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
         capacityRequest.setActualCapacity(BigDecimal.valueOf(capacityTimeSeries.getActualCapacity()));
         capacityRequest.setMaximumCapacity(BigDecimal.valueOf(capacityTimeSeries.getMaximumCapacity()));
-        capacityRequest.setCalendarWeek(capacityRequest.getCalendarWeek());
+        capacityRequest.setCalendarWeek(capacityTimeSeries.getCalendarWeek().toString());
 
         return capacityRequest;
     }
