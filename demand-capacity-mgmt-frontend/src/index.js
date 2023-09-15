@@ -47,7 +47,6 @@ root.render(
 
     <Router>
     <Routes>
-        
         <Route  path="/" element={<Home/>} />
         <Route path="/details/:id" element={<CapacityGroupsProvider><CapacityGroupDetailsPage/></CapacityGroupsProvider>} />
         <Route path="/contact" />
