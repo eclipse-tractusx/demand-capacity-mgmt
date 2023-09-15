@@ -19,8 +19,6 @@
 #   ********************************************************************************
 
 
-
-
 apiVersion: v2
 name: tx-dcm
 description: A Helm chart for Kubernetes

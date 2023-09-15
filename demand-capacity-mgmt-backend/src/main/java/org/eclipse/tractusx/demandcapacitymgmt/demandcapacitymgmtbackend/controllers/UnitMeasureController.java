@@ -26,7 +26,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.api.UnitMeasureApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UnitMeasure;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UnitMeasureEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UnityOfMeasureService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

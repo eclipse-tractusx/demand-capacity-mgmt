@@ -20,35 +20,35 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.CustomException;
 
-@Entity
-@Table(name = "CUSTOMER")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class CustomerEntity {
+public class BadRequestException extends RuntimeException implements CustomException<BadRequestException> {
 
-    @Id
-    @Column(name = "ID")
-    private Long id;
+    private final int code;
+    private final String message;
+    private final List<String> details;
 
-    @Column(name = "NAME")
-    private String name;
+    public BadRequestException(int code, String message, List<String> details) {
+        this.code = code;
+        this.message = message;
+        this.details = details;
+    }
 
-    @Column(name = "LEGAL_NAME")
-    private String legalName;
+    @Override
+    public String getMessage() {
+        return message;
+    }
 
-    @Column(name = "EDC_URL")
-    private String edcUrl;
+    @Override
+    public int getCode() {
+        return code;
+    }
+
+    @Override
+    public List<String> getDetails() {
+        return details;
+    }
 }
