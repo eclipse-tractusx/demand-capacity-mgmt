@@ -23,11 +23,11 @@
 import React, { useContext, useState, useMemo } from 'react';
 import { Form, Col, Row, Button, OverlayTrigger, Tooltip,Dropdown  } from 'react-bootstrap';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
-import Pagination from '../Pagination';
+import Pagination from '../common/Pagination';
 import CapacityGroupsTable from './CapacityGroupsTable';
-import Search from '../Search';
+import Search from '../common/Search';
 import '../../index.css';
-import { FaCopy, FaEllipsisH, FaEllipsisV, FaSearch } from 'react-icons/fa';
+import { FaCopy, FaEllipsisV, FaSearch } from 'react-icons/fa';
 
 const CapacityGroupsList: React.FC = () => {
   // to do clean /const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);

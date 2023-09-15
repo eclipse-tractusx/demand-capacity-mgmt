@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import '../../../src/index.css';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -105,7 +105,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup }) => {
 
   // Object to store the demand values based on year, month, and week
   type DemandValuesMap = Record<string, Record<number, Record<string, number>>>;
-  let [demandValuesMap, setDemandValuesMap] = useState<DemandValuesMap>({});
+  let [demandValuesMap] = useState<DemandValuesMap>({});
 
   //Mapping of categories
   const idToNumericIdMap: Record<string, number> = {};
