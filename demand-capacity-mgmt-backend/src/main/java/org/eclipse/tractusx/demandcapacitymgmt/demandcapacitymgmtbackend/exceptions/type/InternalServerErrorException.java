@@ -20,20 +20,37 @@
  *    ********************************************************************************
  */
 
-create table supplier
-(
-    id  integer constraint supplier_pk primary key,
-    name varchar(400),
-    legal_name varchar(400),
-    edc_url varchar(400),
-    viewed boolean
-);
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type;
 
-create table customer
-(
-    id  integer constraint customer_pk primary key,
-    name varchar(400),
-    legal_name varchar(400),
-    edc_url varchar(400),
-    viewed boolean
-);
+import java.util.List;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.CustomException;
+
+public class InternalServerErrorException
+    extends RuntimeException
+    implements CustomException<InternalServerErrorException> {
+
+    private final int code;
+    private final String message;
+    private final List<String> details;
+
+    public InternalServerErrorException(int code, String message, List<String> details) {
+        this.code = code;
+        this.message = message;
+        this.details = details;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public int getCode() {
+        return code;
+    }
+
+    @Override
+    public List<String> getDetails() {
+        return details;
+    }
+}
