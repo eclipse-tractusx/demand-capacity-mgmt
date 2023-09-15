@@ -20,52 +20,61 @@
  *    ********************************************************************************
  */
 
-create table project
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+create table demand_category
 (
-    id  float constraint id_pk primary key,
-    name         varchar(400),
-    initial_date timestamp not null,
-    final_date   timestamp,
-    type         varchar(30)
+    id uuid DEFAULT uuid_generate_v4() primary key ,
+    demand_category_code  varchar(400),
+    demand_category_name varchar(400)
 );
 
-create table company
+create table unity_of_measure
 (
-    id   float constraint company_pk primary key,
-    type varchar(10),
-    name varchar(400)
+    id  uuid constraint unity_of_measure_pk primary key,
+    code_value  varchar(400) ,
+    display_value varchar(400)
 );
 
-create table unit_measure
+create table company_base_data
 (
-    id   float constraint unit_measure_id primary key,
-    un varchar(3),
-    name varchar(40)
+    id  uuid constraint company_base_data_pk primary key,
+    bpn varchar(400),
+    company_name varchar(400),
+    street varchar(400),
+    number varchar(400),
+    zip_code varchar(400),
+    country varchar(400),
+    my_company varchar(400),
+    edc_url varchar(400)
 );
 
-create table demand
+create table material_demand
 (
-    id float not null constraint demand_pk primary key,
-    project_id  float constraint project_id references project(id),
-    company_id  float constraint company_id references company(id),
-    required_value numeric,
-    delivered_value     numeric,
-    maximum_value     numeric,
-    demand_category varchar(50),
-    unit_measure_id integer constraint unit_measure_id references unit_measure(id),
-    description varchar(400),
-    start_date timestamp not null,
-    end_date   timestamp,
-    updated_date timestamp
+    id uuid DEFAULT uuid_generate_v4() primary key,
+    material_description_customer varchar(400),
+    material_number_customer varchar(400),
+    material_number_supplier varchar(400),
+    changed_at timestamp,
+    customer_id uuid constraint customer_id references company_base_data(id),
+    supplier_id uuid constraint supplier_id references company_base_data(id),
+    unity_of_measure_id uuid constraint unity_of_measure_id references unity_of_measure(id)
 );
 
+create table demand_series
+(
+    id uuid DEFAULT uuid_generate_v4() primary key,
+    material_demand_id uuid constraint material_demand_id references material_demand(id),
+    customer_location_id uuid constraint customer_location_id references company_base_data(id),
+    expected_supplier_location_id varchar(720),
+    demand_category_code_id uuid constraint demand_category_code_id references demand_category(id)
+);
 
-CREATE SEQUENCE hibernate_sequence START 1;
+create table demand_series_values
+(
+    id uuid DEFAULT uuid_generate_v4() primary key,
+    demand_series_id uuid constraint demand_series_id references demand_series(id),
+    calendar_week timestamp not null,
+    demand numeric
 
-
-
-
-
-
-
-
+)
