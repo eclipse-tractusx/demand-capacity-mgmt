@@ -20,24 +20,15 @@
  *    ********************************************************************************
  */
 
-export interface Customer {
-  id: string
-  bpn: string
-  companyName: string
-  street: string
-  number: string
-  zipCode: string
-  country: string
-  myCompany: string
+export interface Status {
+    count: number;
+    materialDemandsIds: string[];
+    capacityGroups: string[];
 }
 
-  export interface CustomerLocation {
-    id: string
-    bpn: string
-    companyName: string
-    street: string
-    number: string
-    zipCode: string
-    country: string
-    myCompany: string
-  }
+export interface InfoMenuData {
+    todos: Status;
+    general: Status;
+    statusImprovement: Status;
+    statusDegredation: Status;
+}

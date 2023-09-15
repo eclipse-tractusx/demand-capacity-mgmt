@@ -20,24 +20,37 @@
  *    ********************************************************************************
  */
 
-export interface Customer {
-  id: string
-  bpn: string
-  companyName: string
-  street: string
-  number: string
-  zipCode: string
-  country: string
-  myCompany: string
-}
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type;
 
-  export interface CustomerLocation {
-    id: string
-    bpn: string
-    companyName: string
-    street: string
-    number: string
-    zipCode: string
-    country: string
-    myCompany: string
-  }
+import java.util.List;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.CustomException;
+
+public class InternalServerErrorException
+    extends RuntimeException
+    implements CustomException<InternalServerErrorException> {
+
+    private final int code;
+    private final String message;
+    private final List<String> details;
+
+    public InternalServerErrorException(int code, String message, List<String> details) {
+        this.code = code;
+        this.message = message;
+        this.details = details;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public int getCode() {
+        return code;
+    }
+
+    @Override
+    public List<String> getDetails() {
+        return details;
+    }
+}

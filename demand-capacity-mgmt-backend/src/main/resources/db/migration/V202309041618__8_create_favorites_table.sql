@@ -20,11 +20,9 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions;
-
-public class NotFoundException extends RuntimeException {
-
-    public NotFoundException(String message) {
-        super(message);
-    }
-}
+ create table  if not exists favorites
+ (
+     user_id uuid primary key,
+     favorite_id uuid,
+     f_type varchar(30)
+ );
