@@ -37,6 +37,7 @@ type CapacityGroupChronogramProps = {
 
 const computeLinkedDemandSum = (capacityGroup: SingleCapacityGroup | null | undefined) => {
     if (!capacityGroup || !capacityGroup.linkedDemandSeries) return 0;
+    console.log(capacityGroup)
 
     return capacityGroup.linkedDemandSeries.length;
 };
