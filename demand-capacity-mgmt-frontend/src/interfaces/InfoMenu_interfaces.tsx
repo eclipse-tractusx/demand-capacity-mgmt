@@ -20,9 +20,15 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
+export interface Status {
+    count: number;
+    materialDemandsIds: string[];
+    capacityGroups: string[];
+}
 
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CustomerEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> {}
+export interface InfoMenuData {
+    todos: Status;
+    general: Status;
+    statusImprovement: Status;
+    statusDegredation: Status;
+}
