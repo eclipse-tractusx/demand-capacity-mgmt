@@ -20,24 +20,19 @@
  *    ********************************************************************************
  */
 
-export interface Customer {
-  id: string
-  bpn: string
-  companyName: string
-  street: string
-  number: string
-  zipCode: string
-  country: string
-  myCompany: string
-}
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
-  export interface CustomerLocation {
-    id: string
-    bpn: string
-    companyName: string
-    street: string
-    number: string
-    zipCode: string
-    country: string
-    myCompany: string
-  }
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface FavoriteService {
+    List<FavoriteResponse> getAllFavorites();
+    List<FavoriteResponse> getAllFavoritesByType(String type);
+    FavoriteResponse createFavorite(FavoriteRequest favoriteRequest);
+    FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest);
+    void deleteFavorite(UUID id);
+}
