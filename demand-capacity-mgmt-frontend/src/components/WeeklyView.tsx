@@ -40,15 +40,6 @@ function getISOWeekMonday(year: number, isoWeek: number): moment.Moment {
   return moment().year(year).isoWeek(isoWeek).startOf('isoWeek');
 }
 
-
-function getDateFromISOWeek(isoWeekString: string): moment.Moment {
-  const [yearStr, weekStr] = isoWeekString.split('-W');
-  const year = parseInt(yearStr, 10);
-  const week = parseInt(weekStr, 10);
-  return getISOWeekMonday(year, week);
-}
-
-
 function getYearOfWeek(date: moment.Moment): number {
   return date.add(3, 'days').year();
 }
