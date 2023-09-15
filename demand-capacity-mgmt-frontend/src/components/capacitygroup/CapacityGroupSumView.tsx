@@ -23,9 +23,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import '../../../src/index.css';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
-import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSery } from '../../interfaces/demand_interfaces';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { DemandContext } from '../../contexts/DemandContextProvider';
 
 import { getISOWeek, startOfMonth, addDays, format, addWeeks, addMonths } from 'date-fns';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
@@ -61,9 +59,6 @@ function getWeeksInMonth(year: number, monthIndex: number): number[] {
 const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup }) => {
   const { demandcategories } = useContext(DemandCategoryContext) || {};
   const currentYear = new Date().getFullYear();
-
-  const [editMode, setEditMode] = useState(false);
-  const [savedChanges, setSavedChanges] = useState(false);
 
   const monthsCurrentYear = Array.from({ length: 12 }, (_, monthIndex) => {
     const monthStart = new Date(currentYear, monthIndex, 1);
