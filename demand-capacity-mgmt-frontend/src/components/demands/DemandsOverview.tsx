@@ -21,11 +21,11 @@
  */
 
 import React, { useContext, useState, useEffect } from 'react';
-import '../../src/index.css';
-import { DemandCategoryContext } from '../contexts/DemandCategoryProvider';
-import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSery } from '../interfaces/demand_interfaces';
+import '../../index.css';
+import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
+import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSery } from '../../interfaces/demand_interfaces';
 import { Button, ButtonGroup, ToggleButton, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { DemandContext } from '../contexts/DemandContextProvider';
+import { DemandContext } from '../../contexts/DemandContextProvider';
 import moment from 'moment';
 import 'moment-weekday-calc';
 
