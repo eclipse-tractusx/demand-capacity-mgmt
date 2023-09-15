@@ -24,8 +24,11 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -36,6 +39,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -48,30 +52,21 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     private final MaterialDemandRepository materialDemandRepository;
 
     private final StatusesService statusesService;
+    private List<WeekBasedCapacityGroupResponse> oldWeekBasedCapacityGroups;
+    private List<WeekBasedCapacityGroupResponse> newWeekBasedCapacityGroups;
 
-    //TODO: EditStatuses;
     @Override
     public void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequestList) {
-
-
         weekBasedCapacityGroupRequestList.forEach(
             weekBasedCapacityGroupRequest -> {
                 validateFields(weekBasedCapacityGroupRequest);
-
                 WeekBasedCapacityGroupEntity weekBasedCapacityGroup = convertEntity(weekBasedCapacityGroupRequest);
-                saveStatusesData(weekBasedCapacityGroup);
                 weekBasedCapacityGroupRepository.save(weekBasedCapacityGroup);
             }
         );
+        statusesService.updateStatus();
     }
 
-    public void saveStatusesData(WeekBasedCapacityGroupEntity weekBasedCapacityGroup){
-        List<CapacitiesDto> capacitiesDtos = weekBasedCapacityGroup.getWeekBasedCapacityGroup().getCapacities();
-        statusesService.postStatuses(mapToStatusRequest(weekBasedCapacityGroup));
-    }
-
-
-    //TODO: EditStatuses;
     @Override
     public void receiveWeekBasedCapacityGroup() {
         List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository.getAllByViewed(
@@ -117,12 +112,12 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
                 }
             }
         );
+        statusesService.updateStatus();
     }
 
     @Override
     public void sendWeekBasedCapacityGroup() {}
 
-    //TODO: EditStatuses;
     @Override
     public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity) {
         WeekBasedCapacityGroupRequest basedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
@@ -149,6 +144,71 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
             .toList();
 
         basedCapacityGroupRequest.setCapacities(capacitiesDtos);
+        statusesService.updateStatus();
+    }
+
+    @Override
+    public ResponseEntity<WeekBasedCapacityGroupResponse> updateWeekBasedCapacityGroup(
+        String id,
+        WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest
+    ) {
+//        // TODO : update here
+//        // Before update
+//
+        oldWeekBasedCapacityGroups = convertToWeekBasedCapacityGroupDto(weekBasedCapacityGroupRepository.findAll());
+//        // After Update
+        WeekBasedCapacityGroupEntity weekBasedCapacityGroupEntity = convertWeekMaterialDemandToEntity(weekBasedCapacityGroupRequest);
+        weekBasedCapacityGroupEntity.setId(UUID.fromString(id));
+
+        weekBasedCapacityGroupEntity = materialDemandRepository.save(weekBasedCapacityGroupEntity);
+//
+        newWeekBasedCapacityGroups = convertToWeekBasedCapacityGroupDto(weekBasedCapacityGroupRepository.findAll());
+//
+        return convertToWeekBasedCapacityGroupDto(weekBasedCapacityGroupEntity);;
+    }
+
+    @Override
+    public List<WeekBasedCapacityGroupResponse> getOldWeekBasedCapacityGroups() {
+        return oldWeekBasedCapacityGroups;
+    }
+
+    @Override
+    public List<WeekBasedCapacityGroupResponse> getUpdatedWeekBasedCapacityGroups() {
+        return newWeekBasedCapacityGroups;
+    }
+
+//
+//    private List<WeekBasedCapacityGroupEntity> convertWeekMaterialDemandToEntity(List<WeekBasedCapacityGroupResponse> weekBasedCapacityGroupResponses) {
+//        List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = new ArrayList<>();
+//
+//        for (WeekBasedCapacityGroupResponse entity : weekBasedCapacityGroupResponses) {
+//            WeekBasedCapacityGroupEntity weekBasedCapacityGroup = new WeekBasedCapacityGroupEntity();
+//            weekBasedCapacityGroup.setWeekBasedCapacityGroup(entity.getCapacityGroupId());
+//            weekBasedCapacityGroup.setId(entity.getCapacityGroupId());
+//            weekBasedCapacityGroup.setViewed(entity.get);
+//        }
+//
+//    }
+
+        private List<WeekBasedCapacityGroupResponse> convertToWeekBasedCapacityGroupDto(List<WeekBasedCapacityGroupEntity> weekBasedMaterialDemandEntities) {
+        List<WeekBasedCapacityGroupResponse> weekBasedCapacityGroupList = new ArrayList<>();
+
+        for (WeekBasedCapacityGroupEntity entity : weekBasedMaterialDemandEntities) {
+            WeekBasedCapacityGroupResponse responseDto = new WeekBasedCapacityGroupResponse();
+            WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest = entity.getWeekBasedCapacityGroup();
+
+            responseDto.setCustomer(weekBasedCapacityGroupRequest.getCustomer());
+            responseDto.setSupplier(weekBasedCapacityGroupRequest.getSupplier());
+            responseDto.setChangedAt(weekBasedCapacityGroupRequest.getChangedAt());
+            responseDto.setName(weekBasedCapacityGroupRequest.getName());
+            responseDto.setCapacities(weekBasedCapacityGroupRequest.getCapacities());
+            responseDto.setUnityOfMeasure(weekBasedCapacityGroupRequest.getUnityOfMeasure());
+            responseDto.setLinkedDemandSeries(weekBasedCapacityGroupRequest.getLinkedDemandSeries());
+            responseDto.setSupplierLocations(weekBasedCapacityGroupRequest.getSupplierLocations());
+            responseDto.setCapacityGroupId(weekBasedCapacityGroupRequest.getCapacityGroupId());
+            weekBasedCapacityGroupList.add(responseDto);
+        }
+        return weekBasedCapacityGroupList;
     }
 
     @Override
@@ -200,35 +260,4 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
             .viewed(false)
             .build();
     }
-
-    public StatusRequest mapToStatusRequest(WeekBasedCapacityGroupEntity weekBasedCapacityGroupEntity) {
-        StatusRequest statusRequest = new StatusRequest();
-
-//        weekBasedCapacityGroupEntity.getWeekBasedCapacityGroup().
-//
-//                StatusDto generalStatusDto = mapToStatusDto(capacitiesList, "general");
-//        statusRequest.setGeneral(generalStatusDto);
-//
-//        StatusDto todosStatusDto = mapToStatusDto(capacitiesList, "todos");
-//        statusRequest.setTodos(todosStatusDto);
-//
-//        StatusDto improvementStatusDto = mapToStatusDto(capacitiesList, "statusImprovement");
-//        statusRequest.setStatusImprovement(improvementStatusDto);
-//
-//        StatusDto degradationStatusDto = mapToStatusDto(capacitiesList, "statusDegredation");
-//        statusRequest.setStatusDegredation(degradationStatusDto);
-
-        return statusRequest;
-    }
-
-    private StatusDto mapToStatusDto(List<CapacitiesDto> capacitiesList, String fieldName) {
-//        List<CapacitiesDto> filteredList = capacitiesList.stream()
-//                .filter(capacitiesDto -> fieldName.equals(capacitiesDto.getCalendarWeek()))
-//                .collect(Collectors.toList());
-        StatusDto statusDto = new StatusDto();
-
-        return statusDto;
-    }
-
-
 }

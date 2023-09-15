@@ -30,4 +30,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WeekBasedCapacityGroupRepository extends JpaRepository<WeekBasedCapacityGroupEntity, Integer> {
     List<WeekBasedCapacityGroupEntity> getAllByViewed(Boolean viewed);
+
+    List<WeekBasedCapacityGroupEntity> getAllByUpdatedStatus(Boolean updatedStatus);
 }

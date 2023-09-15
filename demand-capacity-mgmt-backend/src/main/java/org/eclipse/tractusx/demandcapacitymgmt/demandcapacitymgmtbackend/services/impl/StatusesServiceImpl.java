@@ -1,16 +1,45 @@
+/*
+ *  *******************************************************************************
+ *  Copyright (c) 2023 BMW AG
+ *  Copyright (c) 2023 Contributors to the Eclipse Foundation
+ *
+ *    See the NOTICE file(s) distributed with this work for additional
+ *    information regarding copyright ownership.
+ *
+ *    This program and the accompanying materials are made available under the
+ *    terms of the Apache License, Version 2.0 which is available at
+ *    https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *    License for the specific language governing permissions and limitations
+ *    under the License.
+ *
+ *    SPDX-License-Identifier: Apache-2.0
+ *    ********************************************************************************
+ */
+
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusesResponse;
-import java.util.List;
-import java.util.UUID;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusObjectEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusesEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.StatusColor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.StatusManager;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -19,6 +48,9 @@ import org.springframework.stereotype.Service;
 public class StatusesServiceImpl implements StatusesService {
 
     private final StatusesRepository statusesRepository;
+    private final WeekBasedCapacityGroupService weekBasedCapacityGroupService;
+    private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
+    private final WeekBasedMaterialDemandRepository weekBasedMaterialDemandRepository;
 
     @Override
     public StatusesResponse postStatuses(StatusRequest statusRequest) {
@@ -33,32 +65,24 @@ public class StatusesServiceImpl implements StatusesService {
             .builder()
             .id(UUID.fromString("21c10efa-9a75-4da9-9ef9-589d3a54b2ab"))
             .count(statusRequest.getTodos().getCount())
-            .capacityGroupIds(statusRequest.getTodos().getCapacityGroups())
-            .materialDemandIds(statusRequest.getTodos().getMaterialDemandsIds())
             .build();
 
         StatusObjectEntity general = StatusObjectEntity
             .builder()
             .id(UUID.fromString("526cf84f-6be3-4b06-9fd5-9da276ab6f32"))
             .count(statusRequest.getGeneral().getCount())
-            .capacityGroupIds(statusRequest.getGeneral().getCapacityGroups())
-            .materialDemandIds(statusRequest.getGeneral().getMaterialDemandsIds())
             .build();
 
         StatusObjectEntity statusImprovement = StatusObjectEntity
             .builder()
             .id(UUID.fromString("a10f808a-52e0-4375-ac1b-19eba4523c72"))
             .count(statusRequest.getStatusImprovement().getCount())
-            .capacityGroupIds(statusRequest.getStatusImprovement().getCapacityGroups())
-            .materialDemandIds(statusRequest.getStatusImprovement().getMaterialDemandsIds())
             .build();
 
         StatusObjectEntity statusDegredation = StatusObjectEntity
             .builder()
             .id(UUID.fromString("aeeab6ed-cdb1-434f-8886-f065ac5dafc0"))
             .count(statusRequest.getStatusDegredation().getCount())
-            .capacityGroupIds(statusRequest.getStatusDegredation().getCapacityGroups())
-            .materialDemandIds(statusRequest.getStatusDegredation().getMaterialDemandsIds())
             .build();
 
         return StatusesEntity
@@ -81,30 +105,316 @@ public class StatusesServiceImpl implements StatusesService {
         StatusesResponse responseDto = new StatusesResponse();
         StatusDto todos = new StatusDto();
         StatusDto general = new StatusDto();
-        StatusDto statusImprovment = new StatusDto();
+        StatusDto statusImprovement = new StatusDto();
         StatusDto statusDegredation = new StatusDto();
 
         todos.setCount(statusesEntity.getTodos().getCount());
-        todos.setCapacityGroups(statusesEntity.getTodos().getCapacityGroupIds());
-        todos.setMaterialDemandsIds(statusesEntity.getTodos().getMaterialDemandIds());
 
         general.setCount(statusesEntity.getGeneral().getCount());
-        general.setCapacityGroups(statusesEntity.getGeneral().getCapacityGroupIds());
-        general.setMaterialDemandsIds(statusesEntity.getGeneral().getMaterialDemandIds());
 
-        statusImprovment.setCount(statusesEntity.getStatusImprovment().getCount());
-        statusImprovment.setCapacityGroups(statusesEntity.getStatusImprovment().getCapacityGroupIds());
-        statusImprovment.setMaterialDemandsIds(statusesEntity.getStatusImprovment().getMaterialDemandIds());
+        statusImprovement.setCount(statusesEntity.getStatusImprovment().getCount());
 
         statusDegredation.setCount(statusesEntity.getStatusDegredation().getCount());
-        statusDegredation.setCapacityGroups(statusesEntity.getStatusDegredation().getCapacityGroupIds());
-        statusDegredation.setMaterialDemandsIds(statusesEntity.getStatusDegredation().getMaterialDemandIds());
 
         responseDto.setTodos(todos);
         responseDto.setGeneral(general);
-        responseDto.setStatusImprovement(statusImprovment);
+        responseDto.setStatusImprovement(statusImprovement);
         responseDto.setStatusDegredation(statusDegredation);
 
         return responseDto;
+    }
+
+    public void updateStatus() {
+        saveStatusesData();
+    }
+
+    public void saveStatusesData() {
+        StatusRequest statusRequest = new StatusRequest();
+
+        List<MaterialCapacityQuantity> oldCapacityQuantities = new ArrayList<>();
+        List<MaterialCapacityQuantity> newCapacityQuantities = new ArrayList<>();
+
+        AtomicInteger todoCount = new AtomicInteger();
+        AtomicInteger generalCount = new AtomicInteger();
+        AtomicInteger statusImprovementCount = new AtomicInteger();
+        AtomicInteger statusReductionCount = new AtomicInteger();
+        AtomicInteger allDemandsCount = new AtomicInteger();
+
+        // Fetch required data from repositories
+        List<WeekBasedCapacityGroupResponse> newWeekBasedCapacityGroupResponse = weekBasedCapacityGroupService.getOldWeekBasedCapacityGroups();
+        List<WeekBasedCapacityGroupResponse> oldWeekBasedCapacityGroupResponse = weekBasedCapacityGroupService.getUpdatedWeekBasedCapacityGroups();
+
+        List<WeekBasedMaterialDemandEntity> newWeekBasedMaterialDemandEntities = weekBasedMaterialDemandRepository.getAllByViewed(
+            false
+        );
+        List<WeekBasedMaterialDemandEntity> oldWeekBasedMaterialDemandEntities = weekBasedMaterialDemandRepository.getAllByViewed(
+            true
+        );
+
+        Map<String, List<DemandSeriesDto>> oldMaterialNumberDemandsMapList = createMaterialNumberDemandsMapList(
+            oldWeekBasedMaterialDemandEntities
+        );
+        Map<String, List<DemandSeriesDto>> newMaterialNumberDemandsMapList = createMaterialNumberDemandsMapList(
+            newWeekBasedMaterialDemandEntities
+        );
+
+        Map<String, List<CapacitiesDto>> oldMaterialNumberCapacitiesMapList = createMaterialNumberCapacitiesMapList(
+                oldWeekBasedCapacityGroupResponse
+        );
+        Map<String, List<CapacitiesDto>> newMaterialNumberCapacitiesMapList = createMaterialNumberCapacitiesMapList(
+                newWeekBasedCapacityGroupResponse
+        );
+
+        processMaterialDemands(
+            todoCount,
+            allDemandsCount,
+            newCapacityQuantities,
+            newMaterialNumberDemandsMapList,
+            newMaterialNumberCapacitiesMapList
+        );
+
+        // set the general count and then reset
+        generalCount.set(
+            allDemandsCount.get() - (todoCount.get() + statusImprovementCount.get() + statusReductionCount.get())
+        );
+        allDemandsCount.set(0);
+
+        processMaterialDemands(
+            todoCount,
+            allDemandsCount,
+            oldCapacityQuantities,
+            oldMaterialNumberDemandsMapList,
+            oldMaterialNumberCapacitiesMapList
+        );
+
+        processCapacityQuantities(
+            oldCapacityQuantities,
+            newCapacityQuantities,
+            statusReductionCount,
+            statusImprovementCount
+        );
+
+        // Set data in DTOs
+        StatusDto todos = new StatusDto();
+        todos.setCount(todoCount.get());
+
+        StatusDto generalStatusDto = new StatusDto();
+        generalStatusDto.setCount(generalCount.get());
+
+        StatusDto improvementStatusDto = new StatusDto();
+        improvementStatusDto.setCount(statusImprovementCount.get());
+
+        StatusDto degradationStatusDto = new StatusDto();
+        degradationStatusDto.setCount(statusReductionCount.get());
+
+        // Set DTOs in StatusRequest
+        statusRequest.setTodos(todos);
+        statusRequest.setGeneral(generalStatusDto);
+        statusRequest.setStatusImprovement(improvementStatusDto);
+        statusRequest.setStatusDegredation(degradationStatusDto);
+
+        // Post the StatusRequest
+        postStatuses(statusRequest);
+    }
+
+    private Map<String, List<DemandSeriesDto>> createMaterialNumberDemandsMapList(
+        List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities
+    ) {
+        Map<String, List<DemandSeriesDto>> materialNumberDemandsMapList = new HashMap<>();
+
+        weekBasedMaterialDemandEntities.forEach(
+            weekBasedMaterialDemand -> {
+                String materialNumberCustomer = weekBasedMaterialDemand
+                    .getWeekBasedMaterialDemand()
+                    .getMaterialNumberCustomer();
+                weekBasedMaterialDemand
+                    .getWeekBasedMaterialDemand()
+                    .getDemandSeries()
+                    .forEach(
+                        demandWeekSeriesDto -> {
+                            materialNumberDemandsMapList.put(materialNumberCustomer, demandWeekSeriesDto.getDemands());
+                        }
+                    );
+            }
+        );
+        return materialNumberDemandsMapList;
+    }
+
+    private Map<String, List<CapacitiesDto>> createMaterialNumberCapacitiesMapList(
+        List<WeekBasedCapacityGroupResponse> weekBasedCapacityGroupEntities
+    ) {
+        Map<String, List<CapacitiesDto>> materialNumberCapacitiesMap = new HashMap<>();
+
+        weekBasedCapacityGroupEntities.forEach(
+            weekBasedCapacityGroup -> {
+                List<CapacitiesDto> capacitiesDtos = weekBasedCapacityGroup.getCapacities();
+                weekBasedCapacityGroup
+                    .getLinkedDemandSeries()
+                    .forEach(
+                        linkedDemandSeriesRequest -> {
+                            materialNumberCapacitiesMap.put(
+                                linkedDemandSeriesRequest.getMaterialNumberCustomer(),
+                                capacitiesDtos
+                            );
+                        }
+                    );
+            }
+        );
+        return materialNumberCapacitiesMap;
+    }
+
+    private void processMaterialDemands(
+        AtomicInteger todoCount,
+        AtomicInteger allDemandsCount,
+        List<MaterialCapacityQuantity> capacityQuantities,
+        Map<String, List<DemandSeriesDto>> materialNumberDemandsMap,
+        Map<String, List<CapacitiesDto>> materialNumberCapacitiesMap
+    ) {
+        for (Map.Entry<String, List<DemandSeriesDto>> materialNumberDemandsMapEntry : materialNumberDemandsMap.entrySet()) {
+            allDemandsCount.set(allDemandsCount.get() + materialNumberDemandsMapEntry.getValue().size());
+
+            materialNumberDemandsMapEntry
+                .getValue()
+                .forEach(
+                    demandSeriesDto -> {
+                        if (!materialNumberCapacitiesMap.containsKey(materialNumberDemandsMapEntry.getKey())) {
+                            todoCount.incrementAndGet();
+                        }
+                        for (Map.Entry<String, List<CapacitiesDto>> materialNumberCapacitiesMapEntry : materialNumberCapacitiesMap.entrySet()) {
+                            if (
+                                materialNumberDemandsMapEntry.getKey().equals(materialNumberCapacitiesMapEntry.getKey())
+                            ) {
+                                materialNumberCapacitiesMapEntry
+                                    .getValue()
+                                    .forEach(
+                                        capacitiesDto -> {
+                                            if (
+                                                capacitiesDto
+                                                    .getCalendarWeek()
+                                                    .equals(demandSeriesDto.getCalendarWeek())
+                                            ) {
+                                                capacityQuantities.add(
+                                                    new MaterialCapacityQuantity(
+                                                        Double.parseDouble(capacitiesDto.getMaximumCapacity()),
+                                                        Double.parseDouble(capacitiesDto.getActualCapacity()),
+                                                        DataConverterUtil.convertFromString(
+                                                            capacitiesDto.getCalendarWeek()
+                                                        ),
+                                                        Double.parseDouble(demandSeriesDto.getDemand())
+                                                    )
+                                                );
+                                            }
+                                        }
+                                    );
+                            }
+                        }
+                    }
+                );
+        }
+    }
+
+    // Helper method to process old and new capacity quantities and update status lists
+    private void processCapacityQuantities(
+        List<MaterialCapacityQuantity> oldMaterialCapacityQuantities,
+        List<MaterialCapacityQuantity> newMaterialCapacityQuantities,
+        AtomicInteger statusReductionCount,
+        AtomicInteger statusImprovementCount
+    ) {
+        oldMaterialCapacityQuantities.forEach(
+            oldCapacityQuantity -> {
+                newMaterialCapacityQuantities.forEach(
+                    newCapacityQuantity -> {
+                        if (oldCapacityQuantity.getCalendarWeek().equals(newCapacityQuantity.calendarWeek)) {
+                            StatusColor oldStatusColor = StatusManager.getStatusColor(
+                                oldCapacityQuantity.getDemand(),
+                                oldCapacityQuantity.getMaximumCapacity(),
+                                oldCapacityQuantity.getActualCapacity()
+                            );
+                            StatusColor newStatusColor = StatusManager.getStatusColor(
+                                newCapacityQuantity.getDemand(),
+                                newCapacityQuantity.getMaximumCapacity(),
+                                newCapacityQuantity.getActualCapacity()
+                            );
+
+                            EventType eventType = StatusManager.getEventType(true, oldStatusColor, newStatusColor);
+
+                            if (eventType == EventType.STATUS_REDUCTION) {
+                                statusReductionCount.set(statusReductionCount.get() + 1);
+                            } else if (eventType == EventType.STATUS_IMPROVEMENT) {
+                                statusImprovementCount.set(statusImprovementCount.get() + 1);
+                            }
+                        }
+                    }
+                );
+            }
+        );
+    }
+
+    public class MaterialCapacityQuantity {
+
+        private double maximumCapacity;
+        private double actualCapacity;
+        private LocalDateTime calendarWeek;
+        private double demand;
+
+        public MaterialCapacityQuantity(
+            double maximumCapacity,
+            double actualCapacity,
+            LocalDateTime calendarWeek,
+            double demand
+        ) {
+            this.maximumCapacity = maximumCapacity;
+            this.actualCapacity = actualCapacity;
+            this.calendarWeek = calendarWeek;
+            this.demand = demand;
+        }
+
+        public double getMaximumCapacity() {
+            return maximumCapacity;
+        }
+
+        public void setMaximumCapacity(double maximumCapacity) {
+            this.maximumCapacity = maximumCapacity;
+        }
+
+        public double getActualCapacity() {
+            return actualCapacity;
+        }
+
+        public void setActualCapacity(double actualCapacity) {
+            this.actualCapacity = actualCapacity;
+        }
+
+        public LocalDateTime getCalendarWeek() {
+            return calendarWeek;
+        }
+
+        public void setCalendarWeek(LocalDateTime calendarWeek) {
+            this.calendarWeek = calendarWeek;
+        }
+
+        public double getDemand() {
+            return demand;
+        }
+
+        public void setDemand(double demand) {
+            this.demand = demand;
+        }
+
+        @Override
+        public String toString() {
+            return (
+                "MaterialCapacityQuantity{" +
+                "maximumCapacity=" +
+                maximumCapacity +
+                ", actualCapacity=" +
+                actualCapacity +
+                ", calendarWeek=" +
+                calendarWeek +
+                ", demand=" +
+                demand +
+                '}'
+            );
+        }
     }
 }

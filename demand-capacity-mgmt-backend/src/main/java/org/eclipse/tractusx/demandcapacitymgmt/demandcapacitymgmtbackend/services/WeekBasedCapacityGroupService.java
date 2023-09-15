@@ -23,9 +23,14 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupResponse;
+
 import java.util.List;
+
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandResponseDto;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
+import org.springframework.http.ResponseEntity;
 
 public interface WeekBasedCapacityGroupService {
     void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequest);
@@ -34,7 +39,16 @@ public interface WeekBasedCapacityGroupService {
 
     void sendWeekBasedCapacityGroup();
 
+    List<WeekBasedCapacityGroupResponse> getOldWeekBasedCapacityGroups();
+
+    List<WeekBasedCapacityGroupResponse> getUpdatedWeekBasedCapacityGroups();
+
     void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity);
+
+    ResponseEntity<WeekBasedCapacityGroupResponse> updateWeekBasedCapacityGroup(
+        String id,
+        WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest
+    );
 
     WeekBasedCapacityGroupEntity findById(String capacityGroupId);
 }

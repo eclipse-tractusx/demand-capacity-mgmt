@@ -7,13 +7,11 @@ public enum CapacityDeviation {
 
     private final StatusColor statusColor;
 
-    CapacityDeviation(StatusColor statusColor){
+    CapacityDeviation(StatusColor statusColor) {
         this.statusColor = statusColor;
     }
 
-    public StatusColor getStatusColor(){
+    public StatusColor getStatusColor() {
         return statusColor;
     }
-
-
 }

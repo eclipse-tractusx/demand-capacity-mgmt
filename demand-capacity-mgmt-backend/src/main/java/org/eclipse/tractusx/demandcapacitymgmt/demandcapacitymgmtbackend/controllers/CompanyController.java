@@ -39,7 +39,7 @@ public class CompanyController implements CompanyApi {
     private final CompanyService companyService;
 
     @Override
-    public ResponseEntity<List<CompanyDto>> getCompany() throws Exception {
+    public ResponseEntity<List<CompanyDto>> getCompany() {
         List<CompanyDto> companyDtoList = companyService.getAllCompany();
         return ResponseEntity.status(HttpStatus.OK).body(companyDtoList);
     }

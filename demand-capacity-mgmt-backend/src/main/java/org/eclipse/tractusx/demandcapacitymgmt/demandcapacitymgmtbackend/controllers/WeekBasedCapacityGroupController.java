@@ -23,7 +23,10 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.WeekBasedCapacityGroupApi;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupDefaultViewResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandResponseDto;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
@@ -38,10 +41,27 @@ public class WeekBasedCapacityGroupController implements WeekBasedCapacityGroupA
     private final WeekBasedCapacityGroupService weekBasedCapacityGroupService;
 
     @Override
+    public ResponseEntity<List<WeekBasedCapacityGroupResponse>> getWeekBasedCapacityGroup()  {
+        List<WeekBasedCapacityGroupResponse> capacityGroupDefaultViewResponseList = weekBasedCapacityGroupService.getWeekBasedCapacityGroups();
+        return ResponseEntity.status(HttpStatus.OK).body(capacityGroupDefaultViewResponseList);
+    }
+
+    @Override
     public ResponseEntity<Void> postWeekBasedCapacityGroup(
         List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequest
     ) {
         weekBasedCapacityGroupService.createWeekBasedCapacityGroup(weekBasedCapacityGroupRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Override
+    public ResponseEntity<WeekBasedCapacityGroupResponse> updateWeekBasedCapacityGroupById(
+        String weekBasedCapacityId,
+        WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest
+    ) {
+        WeekBasedCapacityGroupResponse responseDto = weekBasedCapacityGroupService
+            .updateWeekBasedCapacityGroup(weekBasedCapacityId, weekBasedCapacityGroupRequest)
+            .getBody();
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }
