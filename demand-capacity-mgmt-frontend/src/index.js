@@ -28,14 +28,14 @@ import {BrowserRouter as Router, Route,Routes } from "react-router-dom";
 
 
 //Import Default always visible components.
-import TopMenu from "./components/TopMenu";
+import TopMenu from "./components/common/TopMenu";
 import { InfoMenuProvider } from './contexts/InfoMenuContextProvider';
-import QuickAcessItems from "./components/QuickAcessItems";
+import QuickAcessItems from "./components/common/QuickAcessItems";
 //Import Context Providers
 import DemandContextProvider from "../src/contexts/DemandContextProvider";
 // Import your components for different routes
-import Home from "./components/capacitygroup/CapacityGroupPage";
-import CapacityGroupDetailsPage from "./components/capacitygroup/CapacityGroupDetailsPage";
+import Home from "./components/pages/CapacityGroupPage";
+import CapacityGroupDetailsPage from "./components/pages/CapacityGroupDetailsPage";
 import CapacityGroupsProvider from './contexts/CapacityGroupsContextProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
