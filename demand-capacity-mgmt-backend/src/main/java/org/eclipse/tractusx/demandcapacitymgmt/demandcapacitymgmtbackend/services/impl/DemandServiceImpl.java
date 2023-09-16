@@ -63,7 +63,7 @@ public class DemandServiceImpl implements DemandService {
 
     private final DemandCategoryService demandCategoryService;
 
-    //TODO : Here postLogs
+    //TODO, Saja: Here postLogs
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest) {
         validateMaterialDemandRequestFields(materialDemandRequest);
@@ -93,7 +93,7 @@ public class DemandServiceImpl implements DemandService {
         return getDemandEntity(demandId);
     }
 
-    //TODO : Here postLogs
+    //TODO, Saja: Here postLogs
     @Override
     public MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest) {
         MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest);
@@ -103,7 +103,7 @@ public class DemandServiceImpl implements DemandService {
         return convertDemandResponseDto(demand);
     }
 
-    //TODO : Here postLogs
+    //TODO, Saja: Here postLogs
     @Override
     public void deleteDemandById(String demandId) {
         MaterialDemandEntity demand = getDemandEntity(demandId);

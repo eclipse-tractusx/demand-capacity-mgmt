@@ -39,7 +39,7 @@ public class LinkDemandServiceImpl implements LinkDemandService {
 
     private final LinkDemandRepository linkDemandRepository;
 
-    //TODO : Here postLogs
+    //TODO, Saja: Here postLogs
     @Override
     public void createLinkDemands(List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities) {
         List<LinkDemandEntity> linkDemandEntityList = new LinkedList<>();

@@ -1,10 +1,34 @@
+/*
+ *  *******************************************************************************
+ *  Copyright (c) 2023 BMW AG
+ *  Copyright (c) 2023 Contributors to the Eclipse Foundation
+ *
+ *    See the NOTICE file(s) distributed with this work for additional
+ *    information regarding copyright ownership.
+ *
+ *    This program and the accompanying materials are made available under the
+ *    terms of the Apache License, Version 2.0 which is available at
+ *    https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *    License for the specific language governing permissions and limitations
+ *    under the License.
+ *
+ *    SPDX-License-Identifier: Apache-2.0
+ *    ********************************************************************************
+ */
+
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryResponse;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -38,7 +62,7 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         return convertLoggingHistoryResponseDto(loggingHistoryEntity);
     }
 
-    //TODO : Adjust the posted id
+    //TODO, Saja: Adjust the posted id
     private LoggingHistoryEntity convertDtoToEntity(LoggingHistoryRequest loggingHistoryRequest) {
         CapacityGroupEntity capacityGroupEntity = capacityGroupService.getCapacityGroupEntityById(
             loggingHistoryRequest.getCapacityGroupId()
@@ -67,28 +91,74 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     }
 
     @Override
-    public List<LoggingHistoryResponse> getLoggingHistoryByCapacity() {
+    public List<LoggingHistoryResponse> getLoggingHistoryByCapacityId(String capacityGroupId) {
+        List<LoggingHistoryResponse> loggingHistoryResponses = getAllLoggingHistory();
+        loggingHistoryResponses =
+            loggingHistoryResponses
+                .stream()
+                .filter(log -> Objects.equals(log.getCapacityGroupId(), capacityGroupId))
+                .collect(Collectors.toList());
+        return loggingHistoryResponses;
+    }
+
+    @Override
+    public List<LoggingHistoryResponse> getLoggingHistoryByMaterialDemandId(String materialDemandId) {
+        List<LoggingHistoryResponse> loggingHistoryResponses = getAllLoggingHistory();
+        loggingHistoryResponses =
+            loggingHistoryResponses
+                .stream()
+                .filter(log -> Objects.equals(log.getMaterialDemandId(), materialDemandId))
+                .collect(Collectors.toList());
+        return loggingHistoryResponses;
+    }
+
+    //TODO, Saja: refactor the filters
+    @Override
+    public List<LoggingHistoryResponse> filterByTime(Timestamp startTime, Timestamp endTime) {
+        List<LoggingHistoryResponse> loggingHistoryResponses = getAllLoggingHistory();
+        loggingHistoryResponses =
+            loggingHistoryResponses
+                .stream()
+                .filter(log -> isOnTimeInterval(startTime, endTime, Timestamp.valueOf(log.getTimeCreated())))
+                .collect(Collectors.toList());
+        return loggingHistoryResponses;
+    }
+
+    boolean isOnTimeInterval(Timestamp startTime, Timestamp endTime, Timestamp logCreationTime) {
+        return logCreationTime.after(startTime) && logCreationTime.before(endTime);
+    }
+
+    @Override
+    public List<LoggingHistoryResponse> filterByEventType(EventType eventType) {
+        List<LoggingHistoryResponse> loggingHistoryResponses = getAllLoggingHistory();
+        loggingHistoryResponses =
+            loggingHistoryResponses
+                .stream()
+                .filter(log -> Objects.equals(log.getEventType(), eventType.name()))
+                .collect(Collectors.toList());
+        return loggingHistoryResponses;
+    }
+
+    //TODO, Saja: add these filters
+    @Override
+    public List<LoggingHistoryResponse> filterByFavoriteMaterialDemand(EventType eventType) {
         return null;
     }
 
     @Override
-    public List<LoggingHistoryResponse> getLoggingHistoryByMaterialDemand() {
+    public List<LoggingHistoryResponse> filterByFavoriteCapacityGroup(EventType eventType) {
         return null;
     }
 
     @Override
-    public List<LoggingHistoryResponse> filterByTime() {
-        return null;
-    }
-
-    @Override
-    public List<LoggingHistoryResponse> filterByEventType() {
-        return null;
-    }
-
-    @Override
-    public List<LoggingHistoryResponse> filterByEventStatus() {
-        return null;
+    public List<LoggingHistoryResponse> filterByEventStatus(EventStatus eventStatus) {
+        List<LoggingHistoryResponse> loggingHistoryResponses = getAllLoggingHistory();
+        loggingHistoryResponses =
+            loggingHistoryResponses
+                .stream()
+                .filter(log -> Objects.equals(log.getEventStatus(), eventStatus.name()))
+                .collect(Collectors.toList());
+        return loggingHistoryResponses;
     }
 
     private LoggingHistoryResponse convertLoggingHistoryResponseDto(LoggingHistoryEntity loggingHistoryEntity) {

@@ -57,7 +57,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
     private final MaterialDemandRepository materialDemandRepository;
 
-    //TODO : Here postLogs
+    //TODO, Saja: Here postLogs
     @Override
     public void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequestList) {
         weekBasedCapacityGroupRequestList.forEach(
@@ -70,7 +70,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         );
     }
 
-    //TODO : Here postLogs
+    //TODO, Saja: Here postLogs
     @Override
     public void receiveWeekBasedCapacityGroup() {
         List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository.getAllByViewed(
@@ -118,7 +118,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         );
     }
 
-    // TODO: Here postLogs
+    // TODO, Saja: Here postLogs
     @Override
     public void sendWeekBasedCapacityGroup() {
         Optional<CustomerEntity> supplierEntityOpt = customerRepository.findById(1l);
