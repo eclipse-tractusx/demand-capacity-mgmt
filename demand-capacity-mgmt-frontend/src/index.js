@@ -29,19 +29,20 @@ import {BrowserRouter as Router, Route,Routes } from "react-router-dom";
 
 //Import Default always visible components.
 import TopMenu from "./components/TopMenu";
+import { InfoMenuProvider } from './contexts/InfoMenuContextProvider';
 import QuickAcessItems from "./components/QuickAcessItems";
-
 //Import Context Providers
 import DemandContextProvider from "../src/contexts/DemandContextProvider";
-
 // Import your components for different routes
 import Home from "./components/capacitygroup/CapacityGroupPage";
-import CapacityGroupDetailsPage from './components/capacitygroup/CapacityGroupDetailsPage';
+import CapacityGroupDetailsPage from "./components/capacitygroup/CapacityGroupDetailsPage";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 <>
+    <InfoMenuProvider>
     <TopMenu></TopMenu>
+    </InfoMenuProvider>
 
     <Router>
     <Routes>

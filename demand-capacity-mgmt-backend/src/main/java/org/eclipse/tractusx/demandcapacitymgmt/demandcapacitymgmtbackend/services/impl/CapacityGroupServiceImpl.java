@@ -34,12 +34,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.NotFoundException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandCategoryService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UnityOfMeasureService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
@@ -99,7 +101,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         Optional<CapacityGroupEntity> capacityGroup = capacityGroupRepository.findById(uuid);
 
         if (capacityGroup.isEmpty()) {
-            throw new NotFoundException("");
+            throw new NotFoundException(
+                404,
+                "The capacity group provided was not found",
+                new ArrayList<>(List.of("UUID provided : " + uuid))
+            );
         }
 
         return capacityGroup.get();
@@ -107,11 +113,19 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     private void validateRequestFields(CapacityGroupRequest capacityGroupRequest) {
         if (!UUIDUtil.checkValidUUID(capacityGroupRequest.getCustomer())) {
-            throw new BadRequestException("not a valid ID");
+            throw new BadRequestException(
+                400,
+                "Not a valid customer ID",
+                new ArrayList<>(List.of(capacityGroupRequest.getCustomer()))
+            );
         }
 
         if (!UUIDUtil.checkValidUUID(capacityGroupRequest.getSupplier())) {
-            throw new BadRequestException("not a valid ID");
+            throw new BadRequestException(
+                400,
+                "Not a valid supplier ID",
+                new ArrayList<>(List.of(capacityGroupRequest.getSupplier()))
+            );
         }
 
         capacityGroupRequest.getSupplierLocations().forEach(UUIDUtil::checkValidUUID);
@@ -130,7 +144,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             .allMatch(expectedSuppliersLocation::contains);
 
         if (!hasAllCompanies) {
-            throw new BadRequestException("Some Invalid Company");
+            throw new BadRequestException(
+                400,
+                "Not a valid company",
+                new ArrayList<>(List.of("hasCompanies returned false."))
+            );
         }
 
         List<LocalDateTime> dates = capacityGroupRequest
@@ -139,8 +157,20 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             .map(capacityResponse -> DataConverterUtil.convertFromString(capacityResponse.getCalendarWeek()))
             .toList();
 
-        if (!DataConverterUtil.checkListAllMonday(dates) || !DataConverterUtil.checkDatesSequence(dates)) {
-            throw new BadRequestException("not a valid dates");
+        if (
+            Boolean.TRUE.equals(!DataConverterUtil.checkListAllMonday(dates)) ||
+            Boolean.TRUE.equals(!DataConverterUtil.checkDatesSequence(dates))
+        ) {
+            throw new BadRequestException(
+                400,
+                "Dates provided failed to verify",
+                new ArrayList<>(
+                    List.of(
+                        "Dates need to be all Monday",
+                        "Dates need to be aligned one week apart (Ex: monday to monday)"
+                    )
+                )
+            );
         }
     }
 
@@ -298,8 +328,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private CapacityRequest convertCapacityTimeSeries(CapacityTimeSeries capacityTimeSeries) {
         CapacityRequest capacityRequest = new CapacityRequest();
 
-        capacityRequest.setActualCapacity(new BigDecimal(capacityTimeSeries.getActualCapacity()));
-        capacityRequest.setMaximumCapacity(new BigDecimal(capacityTimeSeries.getMaximumCapacity()));
+        capacityRequest.setActualCapacity(BigDecimal.valueOf(capacityTimeSeries.getActualCapacity()));
+        capacityRequest.setMaximumCapacity(BigDecimal.valueOf(capacityTimeSeries.getMaximumCapacity()));
         capacityRequest.setCalendarWeek(capacityRequest.getCalendarWeek());
 
         return capacityRequest;

@@ -26,7 +26,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.api.CompanyApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CompanyDto;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

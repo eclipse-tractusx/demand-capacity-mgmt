@@ -19,7 +19,7 @@
 #   ********************************************************************************
 
 
-name: Release-Helm Charts
+name: Release - Helm Charts
 
 on:
   push:
@@ -27,18 +27,13 @@ on:
       - 'charts/**'
     branches:
       - main
-
-  workflow_dispatch:
 jobs:
   release:
-    # depending on default permission settings for your org (contents being read-only or read-write for workloads), you will have to add permissions
-    # see: https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token
     permissions:
       contents: write
     runs-on: ubuntu-latest
 
     steps:
-      # fetch-depth: 0 is required to determine differences in chart(s)
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -53,12 +48,6 @@ jobs:
         uses: azure/setup-helm@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Add Helm repos
-        run: |
-          cd charts
-          helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm dependency update
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.1

@@ -56,8 +56,8 @@ const CustomPagination: React.FC<PaginationProps> = ({
   };
 
   return (<>
-          <div className="col-sm">
-             <Pagination>
+    <div className="col-sm">
+      <Pagination>
         <Pagination.Prev disabled={currentButton === 1} onClick={handlePrevious} />
         {numOfPages.map((page, index) => (
           <Pagination.Item
@@ -73,14 +73,14 @@ const CustomPagination: React.FC<PaginationProps> = ({
           onClick={handleNext}
         />
       </Pagination>
-          </div>
-          <div className="col-sm">
-            <div className="hint-text text-center">
-              Showing <b>{currentItems.length}</b> out of <b>{items.length}</b> entries
-            </div>
-          </div>
-          </>
-     
+    </div>
+    <div className="col-sm">
+      <div className="hint-text text-center">
+        Showing <b>{currentItems.length}</b> out of <b>{items.length}</b> entries
+      </div>
+    </div>
+  </>
+
 
   );
 };
