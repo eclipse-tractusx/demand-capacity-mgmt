@@ -30,7 +30,7 @@ public class StatusesController implements StatusesApi {
 
     @Override
     public ResponseEntity<StatusesResponse> updateStatusesById(String statusId, StatusRequest statusRequest)
-        throws Exception {
+    {
         return null;
     }
 }

@@ -38,19 +38,21 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.StatusManager;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Lazy
 public class StatusesServiceImpl implements StatusesService {
 
     private final StatusesRepository statusesRepository;
     private final WeekBasedCapacityGroupService weekBasedCapacityGroupService;
-    private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
-    private final WeekBasedMaterialDemandRepository weekBasedMaterialDemandRepository;
+    private final WeekBasedMaterialService weekBasedMaterialService;
 
     @Override
     public StatusesResponse postStatuses(StatusRequest statusRequest) {
@@ -124,6 +126,7 @@ public class StatusesServiceImpl implements StatusesService {
         return responseDto;
     }
 
+    @Override
     public void updateStatus() {
         saveStatusesData();
     }
@@ -141,28 +144,24 @@ public class StatusesServiceImpl implements StatusesService {
         AtomicInteger allDemandsCount = new AtomicInteger();
 
         // Fetch required data from repositories
-        List<WeekBasedCapacityGroupResponse> newWeekBasedCapacityGroupResponse = weekBasedCapacityGroupService.getOldWeekBasedCapacityGroups();
-        List<WeekBasedCapacityGroupResponse> oldWeekBasedCapacityGroupResponse = weekBasedCapacityGroupService.getUpdatedWeekBasedCapacityGroups();
+        List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroupResponse = weekBasedCapacityGroupService.getUpdatedWeekBasedCapacityGroups();
+        List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroupResponse = weekBasedCapacityGroupService.getOldWeekBasedCapacityGroups();
 
-        List<WeekBasedMaterialDemandEntity> newWeekBasedMaterialDemandEntities = weekBasedMaterialDemandRepository.getAllByViewed(
-            false
-        );
-        List<WeekBasedMaterialDemandEntity> oldWeekBasedMaterialDemandEntities = weekBasedMaterialDemandRepository.getAllByViewed(
-            true
-        );
+        List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemandResponse = weekBasedMaterialService.getUpdatedWeekBasedMaterialDemands();
+        List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse = weekBasedMaterialService.getOldWeekBasedMaterialDemands();
 
         Map<String, List<DemandSeriesDto>> oldMaterialNumberDemandsMapList = createMaterialNumberDemandsMapList(
-            oldWeekBasedMaterialDemandEntities
+            oldWeekBasedMaterialDemandResponse
         );
         Map<String, List<DemandSeriesDto>> newMaterialNumberDemandsMapList = createMaterialNumberDemandsMapList(
-            newWeekBasedMaterialDemandEntities
+            newWeekBasedMaterialDemandResponse
         );
 
         Map<String, List<CapacitiesDto>> oldMaterialNumberCapacitiesMapList = createMaterialNumberCapacitiesMapList(
-                oldWeekBasedCapacityGroupResponse
+            oldWeekBasedCapacityGroupResponse
         );
         Map<String, List<CapacitiesDto>> newMaterialNumberCapacitiesMapList = createMaterialNumberCapacitiesMapList(
-                newWeekBasedCapacityGroupResponse
+            newWeekBasedCapacityGroupResponse
         );
 
         processMaterialDemands(
@@ -218,17 +217,18 @@ public class StatusesServiceImpl implements StatusesService {
     }
 
     private Map<String, List<DemandSeriesDto>> createMaterialNumberDemandsMapList(
-        List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities
+        List<WeekBasedMaterialDemandResponseDto> weekBasedMaterialDemandEntities
     ) {
         Map<String, List<DemandSeriesDto>> materialNumberDemandsMapList = new HashMap<>();
 
         weekBasedMaterialDemandEntities.forEach(
             weekBasedMaterialDemand -> {
                 String materialNumberCustomer = weekBasedMaterialDemand
-                    .getWeekBasedMaterialDemand()
+                    .getWeekBasedMaterialDemandRequest()
                     .getMaterialNumberCustomer();
+
                 weekBasedMaterialDemand
-                    .getWeekBasedMaterialDemand()
+                    .getWeekBasedMaterialDemandRequest()
                     .getDemandSeries()
                     .forEach(
                         demandWeekSeriesDto -> {
@@ -241,14 +241,17 @@ public class StatusesServiceImpl implements StatusesService {
     }
 
     private Map<String, List<CapacitiesDto>> createMaterialNumberCapacitiesMapList(
-        List<WeekBasedCapacityGroupResponse> weekBasedCapacityGroupEntities
+        List<WeekBasedCapacityGroupDtoResponse> weekBasedCapacityGroupEntities
     ) {
         Map<String, List<CapacitiesDto>> materialNumberCapacitiesMap = new HashMap<>();
 
         weekBasedCapacityGroupEntities.forEach(
             weekBasedCapacityGroup -> {
-                List<CapacitiesDto> capacitiesDtos = weekBasedCapacityGroup.getCapacities();
+                List<CapacitiesDto> capacitiesDtos = weekBasedCapacityGroup
+                    .getWeekBasedCapacityGroupRequest()
+                    .getCapacities();
                 weekBasedCapacityGroup
+                    .getWeekBasedCapacityGroupRequest()
                     .getLinkedDemandSeries()
                     .forEach(
                         linkedDemandSeriesRequest -> {

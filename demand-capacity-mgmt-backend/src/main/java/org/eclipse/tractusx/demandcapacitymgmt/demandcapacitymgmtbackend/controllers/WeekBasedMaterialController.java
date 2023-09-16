@@ -24,7 +24,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.WeekBasedMaterialDemandApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
@@ -39,8 +38,8 @@ public class WeekBasedMaterialController implements WeekBasedMaterialDemandApi {
     private final WeekBasedMaterialService weekBasedMaterialService;
 
     @Override
-    public ResponseEntity<List<WeekBasedMaterialDemandResponseDto>> getWeekBasedMaterialDemand(){
-        List<WeekBasedMaterialDemandResponseDto> capacityGroupDefaultViewResponseList = weekBasedMaterialService.getWeekBasedMaterialDemandGroups();
+    public ResponseEntity<List<WeekBasedMaterialDemandResponseDto>> getWeekBasedMaterialDemand() {
+        List<WeekBasedMaterialDemandResponseDto> capacityGroupDefaultViewResponseList = weekBasedMaterialService.getWeekBasedMaterialDemands();
         return ResponseEntity.status(HttpStatus.OK).body(capacityGroupDefaultViewResponseList);
     }
 
@@ -57,9 +56,10 @@ public class WeekBasedMaterialController implements WeekBasedMaterialDemandApi {
         String demandId,
         WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto
     ) {
-        WeekBasedMaterialDemandResponseDto responseDto = weekBasedMaterialService
-            .updateWeekBasedMaterial(demandId, weekBasedMaterialDemandRequestDto)
-            .getBody();
+        WeekBasedMaterialDemandResponseDto responseDto = weekBasedMaterialService.updateWeekBasedMaterial(
+            demandId,
+            weekBasedMaterialDemandRequestDto
+        );
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

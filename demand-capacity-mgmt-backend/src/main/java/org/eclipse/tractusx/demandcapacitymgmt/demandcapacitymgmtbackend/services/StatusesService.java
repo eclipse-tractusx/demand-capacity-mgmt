@@ -33,6 +33,5 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 public interface StatusesService {
     StatusesResponse postStatuses(StatusRequest statusRequest);
     StatusesResponse getAllStatuses();
-
     void updateStatus();
 }

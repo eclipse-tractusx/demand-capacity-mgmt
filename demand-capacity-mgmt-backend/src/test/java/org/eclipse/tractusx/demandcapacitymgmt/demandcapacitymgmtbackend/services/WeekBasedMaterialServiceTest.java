@@ -4,10 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesCategoryDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandWeekSeriesDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.util.List;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl.WeekBasedMaterialServiceImpl;
@@ -68,14 +65,15 @@ public class WeekBasedMaterialServiceTest {
 
     private static WeekBasedMaterialDemandRequestDto createWeekBasedMaterialDemandRequestDto() {
         WeekBasedMaterialDemandRequestDto basedMaterialDemandRequestDto = new WeekBasedMaterialDemandRequestDto();
-        basedMaterialDemandRequestDto.setMaterialNumberCustomer("test");
-        basedMaterialDemandRequestDto.setMaterialDemandId("f50c3e71-a1a7-44c9-9de6-2e7aaaf65ac4");
-        basedMaterialDemandRequestDto.setSupplier("f50c3e71-a1a7-44c9-9de6-2e7aaaf65ac4");
-        basedMaterialDemandRequestDto.setCustomer("f50c3e71-a1a7-44c9-9de6-2e7aaaf65ac4");
-        basedMaterialDemandRequestDto.setMaterialDescriptionCustomer("");
-        basedMaterialDemandRequestDto.setUnityOfMeasure("un");
-
-        basedMaterialDemandRequestDto.setDemandSeries(List.of(demandWeekSeriesDto));
+        WeekBasedMaterialDemandRequest weekBasedMaterialDemandRequest = new WeekBasedMaterialDemandRequest();
+        weekBasedMaterialDemandRequest.setMaterialNumberCustomer("test");
+        weekBasedMaterialDemandRequest.setMaterialDemandId("f50c3e71-a1a7-44c9-9de6-2e7aaaf65ac4");
+        weekBasedMaterialDemandRequest.setSupplier("f50c3e71-a1a7-44c9-9de6-2e7aaaf65ac4");
+        weekBasedMaterialDemandRequest.setCustomer("f50c3e71-a1a7-44c9-9de6-2e7aaaf65ac4");
+        weekBasedMaterialDemandRequest.setMaterialDescriptionCustomer("");
+        weekBasedMaterialDemandRequest.setUnityOfMeasure("un");
+        weekBasedMaterialDemandRequest.setDemandSeries(List.of(demandWeekSeriesDto));
+        basedMaterialDemandRequestDto.setWeekBasedMaterialDemandRequest(weekBasedMaterialDemandRequest);
 
         return basedMaterialDemandRequestDto;
     }

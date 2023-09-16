@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -194,18 +195,22 @@ public class CapacityGroupServiceTest {
 
     private static WeekBasedMaterialDemandEntity createWeekBasedMaterialDemandEntity() {
         WeekBasedMaterialDemandRequestDto dto = new WeekBasedMaterialDemandRequestDto();
-        dto.setUnityOfMeasure("kg");
-        dto.setCustomer("08b95a75-11a7-4bea-a958-821b9cb01643");
-        dto.setMaterialDemandId("ID");
-        dto.setMaterialNumberCustomer("IDD");
-        dto.setMaterialDescriptionCustomer("08b95a75-11a7-4bea-a958-821b9cb01643");
-        dto.setChangedAt("now");
+        WeekBasedMaterialDemandRequest weekBasedMaterialDemandRequest = new WeekBasedMaterialDemandRequest();
+
+        weekBasedMaterialDemandRequest.setUnityOfMeasure("kg");
+        weekBasedMaterialDemandRequest.setCustomer("08b95a75-11a7-4bea-a958-821b9cb01643");
+        weekBasedMaterialDemandRequest.setMaterialDemandId("ID");
+        weekBasedMaterialDemandRequest.setMaterialNumberCustomer("IDD");
+        weekBasedMaterialDemandRequest.setMaterialDescriptionCustomer("08b95a75-11a7-4bea-a958-821b9cb01643");
+        weekBasedMaterialDemandRequest.setChangedAt("now");
+
+        dto.setWeekBasedMaterialDemandRequest(weekBasedMaterialDemandRequest);
 
         WeekBasedMaterialDemandEntity entity = WeekBasedMaterialDemandEntity
             .builder()
-            .id(Long.valueOf("4"))
+            .id(UUID.randomUUID())
             .viewed(false)
-            .weekBasedMaterialDemand(dto)
+            .weekBasedMaterialDemand(weekBasedMaterialDemandRequest)
             .build();
         return entity;
     }

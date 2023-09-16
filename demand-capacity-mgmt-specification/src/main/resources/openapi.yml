@@ -254,7 +254,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/WeekBasedCapacityGroupResponse'
+                  $ref: '#/components/schemas/WeekBasedCapacityGroupDtoResponse'
 
 
     post:
@@ -269,24 +269,25 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/WeekBasedCapacityGroupRequest'
+                $ref: '#/components/schemas/WeekBasedCapacityGroupDtoRequest'
       responses:
         200:
           description: weekBasedCapacityGroup endpoint
 
 
+  /weekbasedcapacitygroup/{weekBasedCapacity_id}:
 
     put:
       tags:
         - weekBasedCapacityGroup
-      summary: update weekBasedCapacityGroup
+      summary: update weekBasedCapacityGroup by id
       operationId: updateWeekBasedCapacityGroupById
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WeekBasedCapacityGroupRequest'
+              $ref: '#/components/schemas/WeekBasedCapacityGroupDtoRequest'
       parameters:
         - in: 'path'
           name: 'weekBasedCapacity_id'
@@ -299,8 +300,36 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WeekBasedCapacityGroupResponse'
+                $ref: '#/components/schemas/WeekBasedCapacityGroupDtoResponse'
 
+
+
+  /weekbasedmaterialdemand/{weekBasedMaterialDemand_id}:
+
+    put:
+      tags:
+        - weekBasedMaterialDemand
+      summary: update weekBasedMaterialDemand
+      operationId: updateWeekBasedMaterialDemandById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WeekBasedMaterialDemandRequestDto'
+      parameters:
+        - in: 'path'
+          name: 'weekBasedMaterialDemand_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Update of weekBasedMaterialDemand
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeekBasedMaterialDemandResponseDto'
 
 
 
@@ -338,33 +367,6 @@ paths:
       responses:
         200:
           description: weekBasedCapacityGroup endpoint
-
-    put:
-      tags:
-        - weekBasedMaterialDemand
-      summary: update weekBasedMaterialDemand
-      operationId: updateWeekBasedMaterialDemandById
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WeekBasedMaterialDemandRequestDto'
-      parameters:
-        - in: 'path'
-          name: 'weekBasedMaterialDemand_id'
-          schema:
-            type: string
-          required: true
-      responses:
-        200:
-          description: Update of weekBasedMaterialDemand
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WeekBasedMaterialDemandResponseDto'
-
-
 
 
   /company:
@@ -540,6 +542,49 @@ components:
         maximumCapacity:
           type: string
 
+    WeekBasedCapacityGroupDtoRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        viewed:
+          type: boolean
+        WeekBasedCapacityGroupRequest:
+          $ref: '#/components/schemas/WeekBasedCapacityGroupRequest'
+
+
+    WeekBasedMaterialDemandResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+        viewed:
+          type: boolean
+        WeekBasedMaterialDemandRequest:
+          $ref: '#/components/schemas/WeekBasedMaterialDemandRequest'
+
+
+    WeekBasedMaterialDemandRequestDto:
+      type: object
+      properties:
+        id:
+          type: string
+        viewed:
+          type: boolean
+        WeekBasedMaterialDemandRequest:
+          $ref: '#/components/schemas/WeekBasedMaterialDemandRequest'
+
+    WeekBasedCapacityGroupDtoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        viewed:
+          type: boolean
+        WeekBasedCapacityGroupRequest:
+          $ref: '#/components/schemas/WeekBasedCapacityGroupRequest'
+
+
     WeekBasedCapacityGroupRequest:
       type: object
       properties:
@@ -624,7 +669,7 @@ components:
         demandCategory:
           $ref: '#/components/schemas/DemandSeriesCategoryDto'
 
-    WeekBasedMaterialDemandRequestDto:
+    WeekBasedMaterialDemandRequest:
       type: object
       properties:
         unityOfMeasure:
@@ -648,7 +693,7 @@ components:
         customer:
           type: string
 
-    WeekBasedMaterialDemandResponseDto:
+    WeekBasedMaterialDemandResponse:
       type: object
       properties:
         unityOfMeasure:

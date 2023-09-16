@@ -23,10 +23,7 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.WeekBasedCapacityGroupApi;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupDefaultViewResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandResponseDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
@@ -41,27 +38,28 @@ public class WeekBasedCapacityGroupController implements WeekBasedCapacityGroupA
     private final WeekBasedCapacityGroupService weekBasedCapacityGroupService;
 
     @Override
-    public ResponseEntity<List<WeekBasedCapacityGroupResponse>> getWeekBasedCapacityGroup()  {
-        List<WeekBasedCapacityGroupResponse> capacityGroupDefaultViewResponseList = weekBasedCapacityGroupService.getWeekBasedCapacityGroups();
+    public ResponseEntity<List<WeekBasedCapacityGroupDtoResponse>> getWeekBasedCapacityGroup() {
+        List<WeekBasedCapacityGroupDtoResponse> capacityGroupDefaultViewResponseList = weekBasedCapacityGroupService.getWeekBasedCapacityGroups();
         return ResponseEntity.status(HttpStatus.OK).body(capacityGroupDefaultViewResponseList);
     }
 
     @Override
     public ResponseEntity<Void> postWeekBasedCapacityGroup(
-        List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequest
+        List<WeekBasedCapacityGroupDtoRequest> weekBasedCapacityGroupRequest
     ) {
         weekBasedCapacityGroupService.createWeekBasedCapacityGroup(weekBasedCapacityGroupRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Override
-    public ResponseEntity<WeekBasedCapacityGroupResponse> updateWeekBasedCapacityGroupById(
+    public ResponseEntity<WeekBasedCapacityGroupDtoResponse> updateWeekBasedCapacityGroupById(
         String weekBasedCapacityId,
-        WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest
+        WeekBasedCapacityGroupDtoRequest weekBasedCapacityGroupRequest
     ) {
-        WeekBasedCapacityGroupResponse responseDto = weekBasedCapacityGroupService
-            .updateWeekBasedCapacityGroup(weekBasedCapacityId, weekBasedCapacityGroupRequest)
-            .getBody();
+        WeekBasedCapacityGroupDtoResponse responseDto = weekBasedCapacityGroupService.updateWeekBasedCapacityGroup(
+            weekBasedCapacityId,
+            weekBasedCapacityGroupRequest
+        );
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }
