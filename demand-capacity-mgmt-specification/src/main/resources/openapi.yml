@@ -378,6 +378,95 @@ paths:
         404:
           description: Favorite not found
 
+  /loggingHistory/{capacity_group_id}:
+    get:
+      tags:
+        - loggingHistory
+      summary: Get a loggingHistory by capacity_group_id
+      operationId: getLoggingHistoryByCapacityGroupId
+      parameters:
+        - name: capacity_group_id
+          in: path
+          required: true
+          description: id of capacity group
+          schema:
+            type: string
+      responses:
+        200:
+          description: loggingHistory found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoggingHistoryResponse'
+        404:
+          description: loggingHistory not found
+
+  /loggingHistory/{material_demand_id}:
+    get:
+      tags:
+        - loggingHistory
+      summary: Get a loggingHistory by MaterialDemandId
+      operationId: getLoggingHistoryByMaterialDemandId
+      parameters:
+        - name: material_demand_id
+          in: path
+          required: true
+          description: id of material demand
+          schema:
+            type: string
+      responses:
+        200:
+          description: loggingHistory found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                 $ref: '#/components/schemas/LoggingHistoryResponse'
+        404:
+          description: loggingHistory not found
+
+
+  /loggingHistory/favoriteMaterialDemands:
+    get:
+      tags:
+        - loggingHistory
+      summary: Get favoriteMaterialDemand
+      operationId: getLoggingHistoryForFavoriteMaterialDemands
+      responses:
+        200:
+          description: loggingHistory found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoggingHistoryResponse'
+        404:
+          description: loggingHistory not found
+
+
+  /loggingHistory/favoriteCapacityGroups:
+    get:
+      tags:
+        - loggingHistory
+      summary: Get favoriteCapacityGroups
+      operationId: getLoggingHistoryForFavoriteCapacityGroups
+      responses:
+        200:
+          description: loggingHistory found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoggingHistoryResponse'
+        404:
+          description: loggingHistory not found
+
+
 
   /favorite/{type}:
     get:
@@ -818,6 +907,8 @@ components:
           type: string
         fType:
           type: string
+        fTypeId:
+          type: string
 
     LoggingHistoryRequest:
       type: object
@@ -881,3 +972,6 @@ components:
           type: string
         fType:
           type: string
+        fTypeId:
+          type: string
+

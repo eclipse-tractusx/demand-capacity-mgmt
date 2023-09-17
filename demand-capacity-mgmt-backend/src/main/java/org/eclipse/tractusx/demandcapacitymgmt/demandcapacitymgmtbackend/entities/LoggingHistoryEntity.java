@@ -19,10 +19,8 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 public class LoggingHistoryEntity {
 
     @Id
-    @SequenceGenerator(name = "log_id_sequence", sequenceName = "log_id_sequence")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "log_id_sequence")
-    @Column(name = "ID", nullable = false)
-    private Long id;
+    @Column(columnDefinition = "uuid", updatable = false, name = "id")
+    private UUID id;
 
     @Column(name = "USER_ACCOUNT")
     private String userAccount;
@@ -57,7 +55,7 @@ public class LoggingHistoryEntity {
     private Boolean isFavorited;
 
     public LoggingHistoryEntity(
-        Long id,
+        UUID id,
         String userAccount,
         Timestamp time_created,
         EventType eventType,

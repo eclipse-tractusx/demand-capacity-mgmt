@@ -22,6 +22,7 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryResponse;
 import java.sql.Timestamp;
@@ -36,6 +37,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LoggingHistoryRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,7 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     private final LoggingHistoryRepository loggingHistoryRepository;
     private final CapacityGroupService capacityGroupService;
     private final DemandService demandService;
+    private final FavoriteService favoriteService;
 
     @Override
     public List<LoggingHistoryResponse> getAllLoggingHistory() {
@@ -62,7 +65,6 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         return convertLoggingHistoryResponseDto(loggingHistoryEntity);
     }
 
-    //TODO, Saja: Adjust the posted id
     private LoggingHistoryEntity convertDtoToEntity(LoggingHistoryRequest loggingHistoryRequest) {
         CapacityGroupEntity capacityGroupEntity = capacityGroupService.getCapacityGroupEntityById(
             loggingHistoryRequest.getCapacityGroupId()
@@ -71,10 +73,11 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         MaterialDemandEntity materialDemandEntity = demandService.getDemandEntityById(
             loggingHistoryRequest.getMaterialDemandId()
         );
+        UUID id = UUID.randomUUID();
 
         return LoggingHistoryEntity
             .builder()
-            //                .id(UUID.randomUUID())
+            .id(id)
             .userSpecificEventStatus(
                 UserSpecificEventStatus.valueOf(loggingHistoryRequest.getUserSpecificEventStatus())
             )
@@ -139,15 +142,47 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         return loggingHistoryResponses;
     }
 
-    //TODO, Saja: add these filters
     @Override
-    public List<LoggingHistoryResponse> filterByFavoriteMaterialDemand(EventType eventType) {
+    public List<LoggingHistoryResponse> getLogsFavoredByMe() {
         return null;
     }
 
     @Override
-    public List<LoggingHistoryResponse> filterByFavoriteCapacityGroup(EventType eventType) {
+    public List<LoggingHistoryResponse> getLogsManagedByMe() {
         return null;
+    }
+
+    @Override
+    public List<LoggingHistoryResponse> getAllEventsRelatedToMeOnly() {
+        return null;
+    }
+
+    @Override
+    public List<LoggingHistoryResponse> filterByFavoriteMaterialDemand() {
+        List<LoggingHistoryResponse> loggingHistoryResponses = new java.util.ArrayList<>(List.of());
+        List<FavoriteResponse> favoriteResponses = favoriteService
+            .getAllFavoritesByType(FavoriteType.MATERIAL_DEMAND.toString());
+
+          favoriteResponses.forEach(favoriteResponse -> {
+              loggingHistoryResponses.addAll(
+                      getLoggingHistoryByMaterialDemandId(favoriteResponse.getfTypeId())
+              );
+          });
+        return loggingHistoryResponses;
+    }
+
+    @Override
+    public List<LoggingHistoryResponse> filterByFavoriteCapacityGroup() {
+        List<LoggingHistoryResponse> loggingHistoryResponses = new java.util.ArrayList<>(List.of());
+        List<FavoriteResponse> favoriteResponses = favoriteService
+                .getAllFavoritesByType(FavoriteType.CAPACITY_GROUP.toString());
+
+        favoriteResponses.forEach(favoriteResponse -> {
+            loggingHistoryResponses.addAll(
+                    getLoggingHistoryByCapacityId(favoriteResponse.getfTypeId())
+            );
+        });
+        return loggingHistoryResponses;
     }
 
     @Override

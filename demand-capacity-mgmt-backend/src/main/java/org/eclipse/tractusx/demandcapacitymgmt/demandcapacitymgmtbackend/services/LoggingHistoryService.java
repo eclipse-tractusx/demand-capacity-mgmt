@@ -35,17 +35,14 @@ public interface LoggingHistoryService {
     // TODO, Saja: write the queries for the filter methods ...
     List<LoggingHistoryResponse> getLoggingHistoryByCapacityId(String capacityGroupId);
     List<LoggingHistoryResponse> getLoggingHistoryByMaterialDemandId(String materialDemandId);
-    List<LoggingHistoryResponse> filterByTime(Timestamp startTime, Timestamp endTime);
-    List<LoggingHistoryResponse> filterByEventType(EventType eventType);
-    List<LoggingHistoryResponse> filterByFavoriteMaterialDemand(EventType eventType);
-    List<LoggingHistoryResponse> filterByFavoriteCapacityGroup(EventType eventType);
+    List<LoggingHistoryResponse> filterByFavoriteMaterialDemand();
+    List<LoggingHistoryResponse> filterByFavoriteCapacityGroup();
 
-    // TODO, Saja: Work on the event status api
+    List<LoggingHistoryResponse> filterByTime(Timestamp startTime, Timestamp endTime);
     List<LoggingHistoryResponse> filterByEventStatus(EventStatus eventStatus);
-    /* TODO, Saja: needs integration with vinicius branch
+
+    List<LoggingHistoryResponse> filterByEventType(EventType eventType);
     List<LoggingHistoryResponse> getLogsFavoredByMe();
     List<LoggingHistoryResponse> getLogsManagedByMe();
     List<LoggingHistoryResponse> getAllEventsRelatedToMeOnly();
-    */
-
 }

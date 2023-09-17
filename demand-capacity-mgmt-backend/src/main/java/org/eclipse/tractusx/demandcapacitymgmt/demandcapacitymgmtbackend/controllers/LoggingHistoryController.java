@@ -47,6 +47,31 @@ public class LoggingHistoryController implements LoggingHistoryApi {
     }
 
     @Override
+    public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistoryByCapacityGroupId(String capacityGroupId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(loggingHistoryService.getLoggingHistoryByCapacityId(capacityGroupId));
+    }
+
+    @Override
+    public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistoryByMaterialDemandId(String materialDemandId)
+        throws Exception {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(loggingHistoryService.getLoggingHistoryByMaterialDemandId(materialDemandId));
+    }
+
+    @Override
+    public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistoryForFavoriteCapacityGroups() {
+        return ResponseEntity.status(HttpStatus.OK).body(loggingHistoryService.filterByFavoriteCapacityGroup());
+    }
+
+    @Override
+    public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistoryForFavoriteMaterialDemands() {
+        return ResponseEntity.status(HttpStatus.OK).body(loggingHistoryService.filterByFavoriteMaterialDemand());
+    }
+
+    @Override
     public ResponseEntity<LoggingHistoryResponse> postLogs(LoggingHistoryRequest loggingHistoryRequest) {
         LoggingHistoryResponse responseDto = loggingHistoryService.createLog(loggingHistoryRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
