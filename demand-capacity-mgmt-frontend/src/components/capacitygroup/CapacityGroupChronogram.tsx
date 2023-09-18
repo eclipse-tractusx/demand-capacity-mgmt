@@ -27,9 +27,11 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend, Brush
+    Legend,
+    Brush, ReferenceArea, BarChart
 } from "recharts";
 import {SingleCapacityGroup} from "../../interfaces/capacitygroup_interfaces";
+import {useEffect, useRef, useState} from "react";
 
 type CapacityGroupChronogramProps = {
     capacityGroup: SingleCapacityGroup | null | undefined;
@@ -37,12 +39,19 @@ type CapacityGroupChronogramProps = {
 
 const computeLinkedDemandSum = (capacityGroup: SingleCapacityGroup | null | undefined) => {
     if (!capacityGroup || !capacityGroup.linkedDemandSeries) return 0;
-    console.log(capacityGroup)
+
 
     return capacityGroup.linkedDemandSeries.length;
 };
 
 function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
+
+    type SelectedRangeType = {
+        start: string | null;
+        end: string | null;
+    };
+
+
     const { capacityGroup } = props;
 
     const rawCapacities = capacityGroup?.capacities || [];
@@ -50,12 +59,119 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
     const linkedDemandSum = computeLinkedDemandSum(capacityGroup);
 
+    const raw = [     {
+        name: "Page A",
+        date: "2004-01-06",
+        ActualCapacity: 590,
+        Demand: 800,
+        MaximumCapacity: 1400,
+        cnt: 490
+    },
+        {
+            name: "Page B",
+            date: "2004-02-06",
+            ActualCapacity: 868,
+            Demand: 967,
+            MaximumCapacity: 1506,
+            cnt: 590
+        },
+        {
+            name: "Page C",
+            date:"2004-03-06",
+            ActualCapacity: 1397,
+            Demand: 1098,
+            MaximumCapacity: 989,
+            cnt: 350
+        },
+        {
+            name: "Page D",
+            date: "2004-04-22",
+            ActualCapacity: 1480,
+            Demand: 1200,
+            MaximumCapacity: 1228,
+            cnt: 480
+        },
+        {
+            name: "Page E",
+            date: "2004-05-20",
+            ActualCapacity: 1520,
+            Demand: 1108,
+            MaximumCapacity: 1100,
+            cnt: 460
+        },
+        {
+            name: "Page F",
+            date: "2004-06-04",
+            ActualCapacity: 1400,
+            Demand: 680,
+            MaximumCapacity: 1700,
+            cnt: 380
+        },
 
+        {
+            name: "Page G",
+            date: "2004-07-10",
+            ActualCapacity: 1450,
+            Demand: 705,
+            MaximumCapacity: 1650,
+            cnt: 390
+        },
+        {
+            name: "Page H",
+            date: "2004-08-15",
+            ActualCapacity: 1500,
+            Demand: 720,
+            MaximumCapacity: 1620,
+            cnt: 395
+        },
+        {
+            name: "Page Z",
+            date: "2004-09-20",
+            ActualCapacity: 1525,
+            Demand: 735,
+            MaximumCapacity: 1725,
+            cnt: 400
+        },
+        {
+            name: "Page AA",
+            date: "2023-10-25",
+            ActualCapacity: 1550,
+            Demand: 745,
+            MaximumCapacity: 1750,
+            cnt: 405
+        },
+
+        {
+            name: "Page AA",
+            date: "2004-11-25",
+            ActualCapacity: 1550,
+            Demand: 745,
+            MaximumCapacity: 1750,
+            cnt: 405
+        },
+        {
+            name: "Page AA",
+            date: "2004-12-1",
+            ActualCapacity: 1550,
+            Demand: 745,
+            MaximumCapacity: 1750,
+            cnt: 405
+        },
+
+        {
+            name: "Page AA",
+            date: "2004-12-9",
+            ActualCapacity: 1550,
+            Demand: 745,
+            MaximumCapacity: 1750,
+            cnt: 405
+        },
+    ];
     // Sorted data by date
-    const data = rawCapacities.map(d => ({
+    const data = raw.map(d => ({
         ...d,
-        Demand: linkedDemandSum,
-        dateEpoch: new Date(d.calendarWeek).getTime()
+       // Demand: linkedDemandSum,
+        dateEpoch: new Date(d.date).getTime()
     })).sort((a, b) => a.dateEpoch - b.dateEpoch);
 
     const getWeekNumber = (d: Date) => {
@@ -107,8 +223,44 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
     };
 
 
+    const [selectedRange, setSelectedRange] = useState<SelectedRangeType>({ start: null, end: null });
+    type BrushStartEndIndex = {
+        startIndex?: number;
+        endIndex?:number;
+    };
+
+    const timer = useRef(500);
+    const tempRange = useRef<SelectedRangeType>({ start: null, end: null });
+    const [brushIndexes, setBrushIndexes] = useState<BrushStartEndIndex | null>(null);
+    const latestBrushIndex = useRef<BrushStartEndIndex | null>(null);
+
+
+    const handleBrushChange = (newIndex: BrushStartEndIndex) => {
+        if (typeof newIndex.startIndex === 'number' && typeof newIndex.endIndex === 'number') {
+            tempRange.current = {
+                start: data[newIndex.startIndex].date,
+                end: data[newIndex.endIndex].date
+            };
+            latestBrushIndex.current = newIndex;
+        }
+    };
+
+
+    useEffect(() => {
+        if (latestBrushIndex.current) {
+            setSelectedRange(tempRange.current);
+            setBrushIndexes(latestBrushIndex.current);
+            latestBrushIndex.current = null;
+            setSelectedRange(tempRange.current);
+        }
+    }, [latestBrushIndex.current, ]);
+
+
+
+
 
     return (
+        <div>
         <ComposedChart
             width={1300}
             height={500}
@@ -125,12 +277,12 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
             <CartesianGrid stroke="#f5f5f5"/>
             <XAxis
-                dataKey="calendarWeek"
+                dataKey="date"
                 tickFormatter={weekTickFormatter}
                 tick={{ fontSize: '12px' }}  // Adjust font size here
             />
             <XAxis
-                dataKey="calendarWeek"
+                dataKey="date"
                 axisLine={false}
                 tickLine={false}
                 interval={0}
@@ -146,10 +298,43 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
 
             <Bar dataKey="Demand" barSize={20} fill="#413ea0"/>
-            <Line type="monotone" dataKey="actualCapacity" stroke="#ff7300"/>
-            <Line type="monotone" dataKey="maximumCapacity"  stroke="#8884d8"/>
-            <Brush y={450} dataKey="calendarWeek" height={20} stroke="#8884d8" />
+            <Line type="monotone" dataKey="ActualCapacity" stroke="#ff7300"/>
+            <Line type="monotone" dataKey="MaximumCapacity"  stroke="#8884d8"/>
+            <Brush
+                y={450}
+                dataKey="date"
+                height={20}
+                stroke="#8884d8"
+                onChange={handleBrushChange}
+                startIndex={brushIndexes?.startIndex}
+                endIndex={brushIndexes?.endIndex}
+            />
+
+
         </ComposedChart>
+
+            {/* Mini preview AreaChart */}
+            <BarChart
+                width={1300}
+                height={100}  // Adjust height as needed
+                data={data}
+                margin={{
+                    top: 5,
+                    right: 80,
+                    bottom: 20,
+                    left: 20
+                }}
+            >
+                <CartesianGrid />
+                <XAxis dataKey="date" hide={true} />
+                <Bar type="monotone" dataKey="Demand" fill="#8884d8" stroke="#8884d8" />
+
+                {/* Highlighted area based on the brush selection from the main graph */}
+                {selectedRange.start && selectedRange.end && (
+                    <ReferenceArea x1={selectedRange.start} x2={selectedRange.end} fill="rgba(255,0,0,0.2)" />
+                )}
+            </BarChart>
+        </div>
     );
 }
 
