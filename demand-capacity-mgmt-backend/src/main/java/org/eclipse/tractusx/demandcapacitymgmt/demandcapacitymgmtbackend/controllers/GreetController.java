@@ -6,8 +6,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GreetController {
 
-    @GetMapping("/greet/public")
+    @GetMapping("/public/")
     private String test(){
-        return "testing";
+        return "Public Endpoint";
+    }
+
+    @GetMapping("/greet/secure/")
+    private String secureTest() {
+        return "Secure Endpoint";
     }
 }

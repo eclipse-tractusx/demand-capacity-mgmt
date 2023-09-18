@@ -18,43 +18,12 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
-scheme: http
-origins: http://localhost:8080,https://localhost:8080
-server:
-  ssl:
-    enabled: false
-permit-all: /public/**
-keycloak-port: 8888
-keycloak-issuer: ${scheme}://localhost:${keycloak-port}/realms/dcm
-
-com:
-  c4-soft:
-    springaddons:
-      security:
-        cors:
-          - path: /**
-            allowed-origins: ${origins}
-        issuers:
-          - location: ${keycloak-issuer}
-            username-claim: preferred_username
-            authorities:
-              - path: $.realm_access.roles
-              - path: $.resource_access.*.roles
-        permit-all:
-          - "/greet/public"
-          - "/actuator/health/readiness"
-          - "/actuator/health/liveness"
-          - "/v3/api-docs/**"
-
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
-
 spring:
-  lifecycle:
-    timeout-per-shutdown-phase: 30s
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8888/auth/realms/dcm
   jpa:
     database: POSTGRESQL
     show-sql: true
