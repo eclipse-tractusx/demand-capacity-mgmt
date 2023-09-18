@@ -18,18 +18,43 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
-#keycloak:
-  #realm: dcm
-  #auth-server-url: http://localhost:8888
-  #resource: dcmauth
-  #credentials:
-    #secret: GpV3A0FrWB7GFUHWruPXehIWTgbCii7h
-  #use-resource-role-mappings: true
+scheme: http
+origins: http://localhost:8080,https://localhost:8080
+server:
+  ssl:
+    enabled: false
+permit-all: /public/**
+keycloak-port: 8888
+keycloak-issuer: ${scheme}://localhost:${keycloak-port}/realms/dcm
 
-#server:
-  #port: 8888
+com:
+  c4-soft:
+    springaddons:
+      security:
+        cors:
+          - path: /**
+            allowed-origins: ${origins}
+        issuers:
+          - location: ${keycloak-issuer}
+            username-claim: preferred_username
+            authorities:
+              - path: $.realm_access.roles
+              - path: $.resource_access.*.roles
+        permit-all:
+          - "/greet/public"
+          - "/actuator/health/readiness"
+          - "/actuator/health/liveness"
+          - "/v3/api-docs/**"
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
 
 spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
   jpa:
     database: POSTGRESQL
     show-sql: true
@@ -51,8 +76,19 @@ flyway:
   locations: classpath:db/migration/postgresql
 
 management:
-  security:
-    enable:false
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
 
 
 #url: jdbc:oracle:thin:@//${ORACLEDB_HOST}:${ORACLEDB_PORT}/${ORACLEDB_SERVICENAME}
