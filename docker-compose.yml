@@ -20,7 +20,7 @@
 
 version: '3.8'
 services:
-  db:
+  postgres:
     image: postgres:14.1-alpine
     restart: always
     environment:
@@ -30,6 +30,21 @@ services:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+  keycloak:
+    image: jboss/keycloak:latest
+    command: ["-Djboss.http.port=8888"]
+    environment:
+      - DB_VENDOR=postgres
+      - DB_ADDR=postgres
+      - DB_DATABASE=dcm
+      - DB_USER=dcm
+      - DB_PASSWORD=dcm
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=dcmf0ss
+    ports:
+      - "8888:8888"
+    depends_on:
+      - postgres
 volumes:
   db:
     driver: local
