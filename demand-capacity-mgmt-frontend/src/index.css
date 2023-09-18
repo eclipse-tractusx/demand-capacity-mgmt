@@ -109,17 +109,21 @@ code {
   border-left: 1px solid var(--border-color);
   border-right: 1px solid  var(--border-color);
   border-bottom: 1px solid  var(--border-color);
- /* border-top: 1px solid  var(--border-color);*/
   padding: var(--label-margin);
+}
+
+.table-header-nested-text {
+  text-indent: 20px;
+
+}
+
+.table-header-nested-text-child{
+  justify-content: flex-end;
 }
 
 .data-cell {
   text-align: center;
   border: 1px solid  var(--border-color);
-}
-
-.delete-text{
-  text-emphasis-color: var();
 }
 
 
@@ -131,4 +135,3 @@ code {
   background-color: var(--danger-red);
   color: white; 
 }
-
