@@ -229,35 +229,28 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
         endIndex?:number;
     };
 
-    const timer = useRef(500);
-    const tempRange = useRef<SelectedRangeType>({ start: null, end: null });
-    const [brushIndexes, setBrushIndexes] = useState<BrushStartEndIndex | null>(null);
-    const latestBrushIndex = useRef<BrushStartEndIndex | null>(null);
-
+    const timer = useRef(2000);
+    const brushIndexesRef = useRef<BrushStartEndIndex | null>(null);
 
     const handleBrushChange = (newIndex: BrushStartEndIndex) => {
         if (typeof newIndex.startIndex === 'number' && typeof newIndex.endIndex === 'number') {
-            tempRange.current = {
-                start: data[newIndex.startIndex].date,
-                end: data[newIndex.endIndex].date
-            };
-            latestBrushIndex.current = newIndex;
+            brushIndexesRef.current = newIndex;
         }
     };
 
 
+
     useEffect(() => {
-        if (latestBrushIndex.current) {
-            setSelectedRange(tempRange.current);
-            setBrushIndexes(latestBrushIndex.current);
-            latestBrushIndex.current = null;
-            setSelectedRange(tempRange.current);
-        }
-    }, [latestBrushIndex.current, ]);
+        const interval = setInterval(() => {
+            if (brushIndexesRef.current?.startIndex !== undefined && brushIndexesRef.current?.endIndex !== undefined) {
+                const start = data[brushIndexesRef.current.startIndex].date;
+                const end = data[brushIndexesRef.current.endIndex].date;
+                setSelectedRange({ start, end });
+            }
+        }, timer.current);
 
-
-
-
+        return () => clearInterval(interval);
+    }, [data]);
 
     return (
         <div>
@@ -306,8 +299,8 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
                 height={20}
                 stroke="#8884d8"
                 onChange={handleBrushChange}
-                startIndex={brushIndexes?.startIndex}
-                endIndex={brushIndexes?.endIndex}
+                startIndex={brushIndexesRef.current?.startIndex}
+                endIndex={brushIndexesRef.current?.endIndex}
             />
 
 
