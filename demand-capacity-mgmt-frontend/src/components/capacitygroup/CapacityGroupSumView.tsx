@@ -271,7 +271,6 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
     });
   }
 
-  console.log(demandValuesMap);
 
   // Track which Demand.description rows are expanded
   const [expandedDemandRows, setExpandedDemandRows] = useState<Record<string, boolean>>({});
