@@ -27,7 +27,7 @@ import Pagination from '../Pagination';
 import CapacityGroupsTable from './CapacityGroupsTable';
 import Search from '../Search';
 import '../../index.css';
-import { FaCopy, FaEllipsisH, FaEllipsisV, FaSearch } from 'react-icons/fa';
+import { FaCopy, FaEllipsisV, FaSearch } from 'react-icons/fa';
 
 const CapacityGroupsList: React.FC = () => {
   // to do clean /const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);
@@ -112,7 +112,7 @@ const CapacityGroupsList: React.FC = () => {
               overlay={<Tooltip id={`tooltip-copy-${capacitygroup.internalId}`}>{capacitygroup.internalId}</Tooltip>}
             >
               <Button
-                variant="light"
+                variant="outline-secondary"
                 onClick={() => {
                   // Function to copy the internalId to the clipboard
                   navigator.clipboard.writeText(capacitygroup.internalId);

@@ -20,36 +20,15 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
+export interface Status {
+    count: number;
+    materialDemandsIds: string[];
+    capacityGroups: string[];
+}
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.UUID;
-
-@Entity
-@Table(name = "demand_series_values")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class DemandSeriesValues {
-
-    @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid", updatable = false, name = "id")
-    private UUID id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private DemandSeries demandSeries;
-
-    @Column(name = "calendar_week", nullable = false)
-    private LocalDate calendarWeek;
-
-    @Column(name = "demand", nullable = false)
-    private Double demand;
+export interface InfoMenuData {
+    todos: Status;
+    general: Status;
+    statusImprovement: Status;
+    statusDegredation: Status;
 }

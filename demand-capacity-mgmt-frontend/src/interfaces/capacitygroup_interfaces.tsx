@@ -20,6 +20,8 @@
  *    ********************************************************************************
  */
 
+import { DemandProp } from "./demand_interfaces"
+
 export interface CapacityGroup {
   internalId: string
   catXUuid: string
@@ -75,7 +77,7 @@ export interface SingleCapacityGroup {
   customer: Address;
   supplier: Address;
   capacityGroupId: string;
-  linkedDemandSeries: LinkedDemand[];
+  linkedDemandSeries: DemandProp[];
   unitOfMeasure: UnitOfMeasure;
   changeAt: string;
   name: string;

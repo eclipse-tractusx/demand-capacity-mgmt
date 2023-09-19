@@ -20,36 +20,19 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 
-import javax.persistence.*;
-import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table(name = "demand_series_values")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class DemandSeriesValues {
-
-    @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid", updatable = false, name = "id")
-    private UUID id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private DemandSeries demandSeries;
-
-    @Column(name = "calendar_week", nullable = false)
-    private LocalDate calendarWeek;
-
-    @Column(name = "demand", nullable = false)
-    private Double demand;
+public interface FavoriteService {
+    List<FavoriteResponse> getAllFavorites();
+    List<FavoriteResponse> getAllFavoritesByType(String type);
+    FavoriteResponse createFavorite(FavoriteRequest favoriteRequest);
+    FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest);
+    void deleteFavorite(UUID id);
 }
