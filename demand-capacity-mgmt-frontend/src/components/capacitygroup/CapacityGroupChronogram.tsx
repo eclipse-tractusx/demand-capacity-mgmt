@@ -59,120 +59,20 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
     const linkedDemandSum = computeLinkedDemandSum(capacityGroup);
 
-    const raw = [     {
-        name: "Page A",
-        date: "2004-01-06",
-        ActualCapacity: 590,
-        Demand: 800,
-        MaximumCapacity: 1400,
-        cnt: 490
-    },
-        {
-            name: "Page B",
-            date: "2004-02-06",
-            ActualCapacity: 868,
-            Demand: 967,
-            MaximumCapacity: 1506,
-            cnt: 590
-        },
-        {
-            name: "Page C",
-            date:"2004-03-06",
-            ActualCapacity: 1397,
-            Demand: 1098,
-            MaximumCapacity: 989,
-            cnt: 350
-        },
-        {
-            name: "Page D",
-            date: "2004-04-22",
-            ActualCapacity: 1480,
-            Demand: 1200,
-            MaximumCapacity: 1228,
-            cnt: 480
-        },
-        {
-            name: "Page E",
-            date: "2004-05-20",
-            ActualCapacity: 1520,
-            Demand: 1108,
-            MaximumCapacity: 1100,
-            cnt: 460
-        },
-        {
-            name: "Page F",
-            date: "2004-06-04",
-            ActualCapacity: 1400,
-            Demand: 680,
-            MaximumCapacity: 1700,
-            cnt: 380
-        },
 
-        {
-            name: "Page G",
-            date: "2004-07-10",
-            ActualCapacity: 1450,
-            Demand: 705,
-            MaximumCapacity: 1650,
-            cnt: 390
-        },
-        {
-            name: "Page H",
-            date: "2004-08-15",
-            ActualCapacity: 1500,
-            Demand: 720,
-            MaximumCapacity: 1620,
-            cnt: 395
-        },
-        {
-            name: "Page Z",
-            date: "2004-09-20",
-            ActualCapacity: 1525,
-            Demand: 735,
-            MaximumCapacity: 1725,
-            cnt: 400
-        },
-        {
-            name: "Page AA",
-            date: "2023-10-25",
-            ActualCapacity: 1550,
-            Demand: 745,
-            MaximumCapacity: 1750,
-            cnt: 405
-        },
-
-        {
-            name: "Page AA",
-            date: "2004-11-25",
-            ActualCapacity: 1550,
-            Demand: 745,
-            MaximumCapacity: 1750,
-            cnt: 405
-        },
-        {
-            name: "Page AA",
-            date: "2004-12-1",
-            ActualCapacity: 1550,
-            Demand: 745,
-            MaximumCapacity: 1750,
-            cnt: 405
-        },
-
-        {
-            name: "Page AA",
-            date: "2004-12-9",
-            ActualCapacity: 1550,
-            Demand: 745,
-            MaximumCapacity: 1750,
-            cnt: 405
-        },
-    ];
     // Sorted data by date
-    const data = raw.map(d => ({
-        ...d,
-       // Demand: linkedDemandSum,
-        dateEpoch: new Date(d.date).getTime()
-    })).sort((a, b) => a.dateEpoch - b.dateEpoch);
+// Sorted data by date
+    const data = rawCapacities.map(d => {
+        // Convert to Date and back to simplified string format
+        const simplifiedDate = new Date(d.calendarWeek).toISOString().split('T')[0];
+
+        return {
+            ...d,
+            Demand: linkedDemandSum,
+            dateEpoch: new Date(simplifiedDate).getTime(),
+            calendarWeek: simplifiedDate
+        };
+    }).sort((a, b) => a.dateEpoch - b.dateEpoch);
 
     const getWeekNumber = (d: Date) => {
         d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -243,8 +143,8 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
     useEffect(() => {
         const interval = setInterval(() => {
             if (brushIndexesRef.current?.startIndex !== undefined && brushIndexesRef.current?.endIndex !== undefined) {
-                const start = data[brushIndexesRef.current.startIndex].date;
-                const end = data[brushIndexesRef.current.endIndex].date;
+                const start = data[brushIndexesRef.current.startIndex].calendarWeek;
+                const end = data[brushIndexesRef.current.endIndex].calendarWeek;
                 setSelectedRange({ start, end });
             }
         }, timer.current);
@@ -270,12 +170,12 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
             <CartesianGrid stroke="#f5f5f5"/>
             <XAxis
-                dataKey="date"
+                dataKey="calendarWeek"
                 tickFormatter={weekTickFormatter}
                 tick={{ fontSize: '12px' }}  // Adjust font size here
             />
             <XAxis
-                dataKey="date"
+                dataKey="calendarWeek"
                 axisLine={false}
                 tickLine={false}
                 interval={0}
@@ -295,7 +195,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
             <Line type="monotone" dataKey="MaximumCapacity"  stroke="#8884d8"/>
             <Brush
                 y={450}
-                dataKey="date"
+                dataKey="calendarWeek"
                 height={20}
                 stroke="#8884d8"
                 onChange={handleBrushChange}
@@ -319,7 +219,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
                 }}
             >
                 <CartesianGrid />
-                <XAxis dataKey="date" hide={true} />
+                <XAxis dataKey="calendarWeek" hide={true} />
                 <Bar type="monotone" dataKey="Demand" fill="#8884d8" stroke="#8884d8" />
 
                 {/* Highlighted area based on the brush selection from the main graph */}
