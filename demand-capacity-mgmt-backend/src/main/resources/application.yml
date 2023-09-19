@@ -18,17 +18,6 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
-#keycloak:
-  #realm: dcm
-  #auth-server-url: http://localhost:8888
-  #resource: dcmauth
-  #credentials:
-    #secret: GpV3A0FrWB7GFUHWruPXehIWTgbCii7h
-  #use-resource-role-mappings: true
-
-#server:
-  #port: 8888
-
 keycloak: ##TODO USE VAULT THIS IS JUST DEVELOPMENT TEST FOR NOW
   baseUrl: http://localhost:8888
   realm: dcm
