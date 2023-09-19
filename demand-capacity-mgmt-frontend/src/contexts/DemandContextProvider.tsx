@@ -53,9 +53,8 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       setDemandProps(result);
     } catch (error) {
       console.error('Error fetching demands:', error);
-      console.log(demands)
     }
-  }, []);
+  }, [demands]);
 
   useEffect(() => {
     fetchDemandProps();
