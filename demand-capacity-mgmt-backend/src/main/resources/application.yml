@@ -18,6 +18,15 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
+
+keycloak:
+  baseUrl: http://localhost:8888
+  realm: dcm
+  clientId: dcmauth
+  clientSecret: w9JhLWivSG9P7N5mPTkr1AWhmfvuedFE
+  grant_type_token: password
+  grant_type_refresh_token : refresh_token
+
 spring:
   security:
     oauth2:
@@ -35,6 +44,12 @@ spring:
   sql:
     init:
       platform: postgres
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: dcmauth
+      client-secret: w9JhLWivSG9P7N5mPTkr1AWhmfvuedFE
 
 flyway:
   enabled: true

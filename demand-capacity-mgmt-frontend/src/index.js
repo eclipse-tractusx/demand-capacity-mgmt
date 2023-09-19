@@ -23,13 +23,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
-import {BrowserRouter as Router, Route,Routes } from "react-router-dom";
-
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 
 
 //Import Default always visible components.
 import TopMenu from "./components/TopMenu";
-import { InfoMenuProvider } from './contexts/InfoMenuContextProvider';
+import {InfoMenuProvider} from './contexts/InfoMenuContextProvider';
 import QuickAcessItems from "./components/QuickAcessItems";
 //Import Context Providers
 import DemandContextProvider from "../src/contexts/DemandContextProvider";
@@ -39,23 +38,23 @@ import CapacityGroupDetailsPage from "./components/capacitygroup/CapacityGroupDe
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-<>
-    <InfoMenuProvider>
-    <TopMenu></TopMenu>
-    </InfoMenuProvider>
+    <>
+            <InfoMenuProvider>
+                <TopMenu></TopMenu>
+            </InfoMenuProvider>
 
-    <Router>
-    <Routes>
-        <Route  path="/" element={<Home/>} />
-        <Route path="/details" element={<CapacityGroupDetailsPage/>} />
-        <Route path="/contact" />
-    </Routes>
-</Router>
-<DemandContextProvider>
+            <Router>
+                <Routes>
+                    <Route path="/" element={<Home/>}/>
+                    <Route path="/details" element={<CapacityGroupDetailsPage/>}/>
+                    <Route path="/contact"/>
+                </Routes>
+            </Router>
+
+        <DemandContextProvider>
             <QuickAcessItems></QuickAcessItems>
-</DemandContextProvider>
-</>
-
+        </DemandContextProvider>
+        </>
 );
 
 // If you want to start measuring performance in your app, pass a function

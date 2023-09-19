@@ -24,6 +24,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.UnitMeasureApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UnitMeasure;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UnityOfMeasureService;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
+@SecurityRequirement(name = "Keycloak")
 public class UnitMeasureController implements UnitMeasureApi {
 
     private final UnityOfMeasureService unityOfMeasureService;
