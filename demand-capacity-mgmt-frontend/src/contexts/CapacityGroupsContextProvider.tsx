@@ -28,27 +28,52 @@ import {CapacityGroup, SingleCapacityGroup} from '../interfaces/capacitygroup_in
 interface CapacityGroupContextData {
   capacitygroups: CapacityGroup[];
   getCapacityGroupById: (id: string) =>Promise<SingleCapacityGroup | undefined>;
+  isLoading: boolean;
 }
 
 export const CapacityGroupContext = createContext<CapacityGroupContextData | undefined>(undefined);
 
+
 const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
+  
 
   const [capacitygroups, setCapacityGroups] = useState<CapacityGroup[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
-  useEffect(() => {
-    const fetchCapacityGroups = async () => {
+useEffect(() => {
+  const maxRetries = 3;
+
+  const fetchCapacityGroupsWithRetry = async () => {
+    setIsLoading(true);
+
+    for (let retries = 0; retries < maxRetries; retries++) {
       try {
         const response = await axios.get('/capacityGroup', {});
         const result: CapacityGroup[] = response.data;
         setCapacityGroups(result);
+        setIsLoading(false); // Set isLoading to false on success
+        setRetryCount(0); // Reset the retry count on success
+        return; // Exit the loop on success
       } catch (error) {
-        console.error('Error fetching capacitygroups:', error);
+        console.error(`Error fetching capacitygroups (Retry ${retries + 1}):`, error);
+
+        if (retries < maxRetries - 1) {
+          // If not the last retry, delay for 30 seconds before the next retry
+          await new Promise((resolve) => setTimeout(resolve, 30000));
+          setRetryCount(retries + 1); // Increment the retry count
+        } else {
+          // If the last retry failed, set isLoading to false and do not retry further
+          setIsLoading(false);
+          setRetryCount(0); // Reset the retry count
+        }
       }
-    };
+    }
+  };
+
+  fetchCapacityGroupsWithRetry();
+}, []);
   
-    fetchCapacityGroups();
-  }, []);
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {
     try {
@@ -62,7 +87,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   };
 
   return (
-      <CapacityGroupContext.Provider value={{capacitygroups, getCapacityGroupById}}>
+      <CapacityGroupContext.Provider value={{capacitygroups, getCapacityGroupById, isLoading}}>
         {props.children}
       </CapacityGroupContext.Provider>
   );

@@ -19,31 +19,30 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
 
-type DemandsSearchProps = {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-};
+import { FcBullish} from "react-icons/fc";
+import DemandList from "../demands/DemandList";
 
-const DemandsSearch: React.FC<DemandsSearchProps> = ({ searchQuery, setSearchQuery }) => {
-  return (
 
-<Form className="d-flex align-items-center">
-  <Form.Control
-    type="search"
-    placeholder="Search"
-    className="me-1"
-    aria-label="Search"
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-  />
-  <Button variant="outline-secondary">Search</Button>
-</Form>
-    
-  );
-};
 
-export default DemandsSearch;
+function UpStatusPage() {
+
+    return (
+        <>
+        <br />
+            <div className="container-xl">
+            <div style={{ display: "flex",  }}>
+                <FcBullish size={35} /><h3 className="icon-text-padding">Positive</h3>
+            </div>
+                <div className="table">
+                    <div className="table-wrapper">
+                    <DemandList />
+                    </div>
+                </div>
+            </div>
+        </>
+
+    );
+}
+
+export default UpStatusPage;

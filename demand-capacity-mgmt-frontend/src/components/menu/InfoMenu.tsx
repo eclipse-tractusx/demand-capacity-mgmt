@@ -39,19 +39,19 @@ function InfoMenu() {
                     </span>
                 </Nav.Link>
                 {/* TODO: Add functionality for Alerts link */}
-                <Nav.Link href="#statusup">
+                <Nav.Link href="up">
                     <FaArrowUp /> Status
                     <span className="badge rounded-pill text-bg-success" id="status-plus-count">
                         {data?.statusImprovement.count || '-'}
                     </span>
                 </Nav.Link>
-                <Nav.Link href="#statusdown">
+                <Nav.Link href="down">
                     <FaArrowDown /> Status
                     <span className="badge rounded-pill text-bg-danger" id="status-minus-count">
                         {data?.statusDegredation.count || '-'}
                     </span>
                 </Nav.Link>
-                <Nav.Link href="#todo">
+                <Nav.Link href="todo">
                     Todo
                     <span className="badge rounded-pill text-bg-warning" id="todo-count">
                         {data?.todos.count || '-'}

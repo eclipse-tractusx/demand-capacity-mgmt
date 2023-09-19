@@ -126,6 +126,12 @@ code {
   border: 1px solid  var(--border-color);
 }
 
+.table-checkbox{
+  -ms-transform: scale(1.5); /* IE */
+  -moz-transform: scale(1.5); /* FF */
+  -webkit-transform: scale(1.5); /* Safari and Chrome */
+  -o-transform: scale(1.5); /* Opera */
+}
 
 .red-delete-item {
   color: var(--danger-red); 
@@ -135,3 +141,12 @@ code {
   background-color: var(--danger-red);
   color: white; 
 }
+
+.icon-text-padding{
+  padding-left: 0.5rem;
+}
+
+
+
+
+

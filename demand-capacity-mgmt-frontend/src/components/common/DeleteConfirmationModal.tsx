@@ -19,31 +19,35 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
+
 import React from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
+import { Modal, Button } from 'react-bootstrap';
 
-type DemandsSearchProps = {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-};
+interface DeleteConfirmationModalProps {
+  show: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}
 
-const DemandsSearch: React.FC<DemandsSearchProps> = ({ searchQuery, setSearchQuery }) => {
+const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({ show, onCancel, onConfirm }) => {
   return (
-
-<Form className="d-flex align-items-center">
-  <Form.Control
-    type="search"
-    placeholder="Search"
-    className="me-1"
-    aria-label="Search"
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-  />
-  <Button variant="outline-secondary">Search</Button>
-</Form>
-    
+    <Modal show={show} onHide={onCancel} backdrop="static" keyboard={false}>
+      <Modal.Header closeButton>
+        <Modal.Title>Confirm Deletion</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        Are you sure you want to delete this item?
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button variant="danger" onClick={onConfirm}>
+          Confirm Delete
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 
-export default DemandsSearch;
+export default DeleteConfirmationModal;
