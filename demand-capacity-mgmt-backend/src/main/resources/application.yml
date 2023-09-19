@@ -19,7 +19,7 @@
 #   ********************************************************************************
 
 
-keycloak:
+keycloak: ##TODO USE VAULT THIS IS JUST DEVELOPMENT TEST FOR NOW
   baseUrl: http://localhost:8888
   realm: dcm
   clientId: dcmauth
