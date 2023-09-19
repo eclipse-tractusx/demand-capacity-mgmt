@@ -20,36 +20,37 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.CustomException;
 
-import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.UUID;
+public class InternalServerErrorException
+    extends RuntimeException
+    implements CustomException<InternalServerErrorException> {
 
-@Entity
-@Table(name = "demand_series_values")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class DemandSeriesValues {
+    private final int code;
+    private final String message;
+    private final List<String> details;
 
-    @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid", updatable = false, name = "id")
-    private UUID id;
+    public InternalServerErrorException(int code, String message, List<String> details) {
+        this.code = code;
+        this.message = message;
+        this.details = details;
+    }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private DemandSeries demandSeries;
+    @Override
+    public String getMessage() {
+        return message;
+    }
 
-    @Column(name = "calendar_week", nullable = false)
-    private LocalDate calendarWeek;
+    @Override
+    public int getCode() {
+        return code;
+    }
 
-    @Column(name = "demand", nullable = false)
-    private Double demand;
+    @Override
+    public List<String> getDetails() {
+        return details;
+    }
 }

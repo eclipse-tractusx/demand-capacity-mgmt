@@ -20,12 +20,10 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import '../../../src/index.css';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
-import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSery } from '../../interfaces/demand_interfaces';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { DemandContext } from '../../contexts/DemandContextProvider';
 
 import { getISOWeek, startOfMonth, addDays, format, addWeeks, addMonths } from 'date-fns';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
@@ -55,15 +53,167 @@ function getWeeksInMonth(year: number, monthIndex: number): number[] {
   return weeks;
 }
 
+const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ }) => {
 
+  const capacityGroup = {
+    "capacityGroupId": "50bce75c-6ca9-4c98-ba20-c23ce5d3d632",
+    "capacities": [
+      {
+        "actualCapacity": 10,
+        "maximumCapacity": 11,
+        "calendarWeek": "2023-06-19"
+      }
+    ],
+    "supplierLocations": [
+      {
+        "id": "5fe734b9-e7e0-4a84-a9f9-5c08dc5ad29d",
+        "bpn": "BPN09",
+        "companyName": "GM",
+        "street": "Test",
+        "number": "Test",
+        "zipCode": "Test",
+        "country": "Test",
+        "myCompany": "Test"
+      }
+    ],
+    "customer": {
+      "id": "5fe734b9-e7e0-4a84-a9f9-5c08dc5ad29d",
+      "bpn": "BPN09",
+      "companyName": "GM",
+      "street": "Test",
+      "number": "Test",
+      "zipCode": "Test",
+      "country": "Test",
+      "myCompany": "Test"
+    },
+    "supplier": {
+      "id": "5fe734b9-e7e0-4a84-a9f9-5c08dc5ad29d",
+      "bpn": "BPN09",
+      "companyName": "GM",
+      "street": "Test",
+      "number": "Test",
+      "zipCode": "Test",
+      "country": "Test",
+      "myCompany": "Test"
+    },
+    "weekBasedCapacityGroupId": "98458dc9-6dc8-4457-92e7-80e68605dd25",
+    "linkedDemandSeries": [
+      {
+        "id": "5c1d0f5f-e21c-4915-9b0c-c7d8f0adc19c",
+        "materialDescriptionCustomer": " Demand001",
+        "materialNumberCustomer": "CapacityGroup",
+        "materialNumberSupplier": "Test",
+        "customer": {
+          "id": "5d210fb8-260d-4190-9578-f62f9c459703",
+          "bpn": "BPN01",
+          "companyName": "CGI",
+          "street": "Test",
+          "number": "Test",
+          "zipCode": "Test",
+          "country": "Test",
+          "myCompany": "Test"
+        },
+        "supplier": {
+          "id": "5d210fb8-260d-4190-9578-f62f9c459703",
+          "bpn": "BPN01",
+          "companyName": "CGI",
+          "street": "Test",
+          "number": "Test",
+          "zipCode": "Test",
+          "country": "Test",
+          "myCompany": "Test"
+        },
+        "unitMeasureId": {
+          "id": "a8ebe2f8-2af8-4573-9dd4-d7f33e682792",
+          "codeValue": "un",
+          "displayValue": "Unit"
+        },
+        "changedAt": "2023-09-18T08:55:57.700319",
+        "demandSeries": [
+          {
+            "customerLocation": {
+              "id": "5d210fb8-260d-4190-9578-f62f9c459703",
+              "bpn": "BPN01",
+              "companyName": "CGI",
+              "street": "Test",
+              "number": "Test",
+              "zipCode": "Test",
+              "country": "Test",
+              "myCompany": "Test"
+            },
+            "expectedSupplierLocation": [
+              {
+                "id": "5d210fb8-260d-4190-9578-f62f9c459703",
+                "bpn": "BPN01",
+                "companyName": "CGI",
+                "street": "Test",
+                "number": "Test",
+                "zipCode": "Test",
+                "country": "Test",
+                "myCompany": "Test"
+              }
+            ],
+            "demandCategory": {
+              "id": "1d185139-0d50-4bb6-9780-b1587da8e7f5",
+              "demandCategoryCode": "DC002",
+              "demandCategoryName": "Series"
+            },
+            "demandSeriesValues": [
+              {
+                "calendarWeek": "2023-06-19T08:55:57.699320",
+                "demand": 10.0
+              }
+            ]
+          },
+          {
+            "customerLocation": {
+              "id": "5d210fb8-260d-4190-9578-f62f9c459703",
+              "bpn": "BPN01",
+              "companyName": "CGI",
+              "street": "Test",
+              "number": "Test",
+              "zipCode": "Test",
+              "country": "Test",
+              "myCompany": "Test"
+            },
+            "expectedSupplierLocation": [
+              {
+                "id": "5d210fb8-260d-4190-9578-f62f9c459703",
+                "bpn": "BPN01",
+                "companyName": "CGI",
+                "street": "Test",
+                "number": "Test",
+                "zipCode": "Test",
+                "country": "Test",
+                "myCompany": "Test"
+              }
+            ],
+            "demandCategory": {
+              "id": "1622ea81-f454-4800-a15f-16253ae1c93d",
+              "demandCategoryCode": "DC006",
+              "demandCategoryName": "Default"
+            },
+            "demandSeriesValues": [
+              {
+                "calendarWeek": "2023-06-19T08:55:57.699320",
+                "demand": 80.0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "unitOfMeasure": {
+      "id": "a8ebe2f8-2af8-4573-9dd4-d7f33e682792",
+      "codeValue": "un",
+      "displayValue": "Unit"
+    },
+    "changeAt": "2023-09-12T11:07:30.232298",
+    "name": "TEST CAPACITY GROUP"
+  };
 
-
-const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup }) => {
   const { demandcategories } = useContext(DemandCategoryContext) || {};
   const currentYear = new Date().getFullYear();
-
-  const [editMode, setEditMode] = useState(false);
-  const [savedChanges, setSavedChanges] = useState(false);
 
   const monthsCurrentYear = Array.from({ length: 12 }, (_, monthIndex) => {
     const monthStart = new Date(currentYear, monthIndex, 1);
@@ -110,7 +260,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup }) => {
 
   // Object to store the demand values based on year, month, and week
   type DemandValuesMap = Record<string, Record<number, Record<string, number>>>;
-  let [demandValuesMap, setDemandValuesMap] = useState<DemandValuesMap>({});
+  let [demandValuesMap] = useState<DemandValuesMap>({});
 
   //Mapping of categories
   const idToNumericIdMap: Record<string, number> = {};
@@ -122,6 +272,70 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup }) => {
   }
 
   console.log(demandValuesMap);
+
+  // Track which Demand.description rows are expanded
+  const [expandedDemandRows, setExpandedDemandRows] = useState<Record<string, boolean>>({});
+
+  // Function to toggle the expansion of a Demand.description row
+  const toggleDemandRowExpansion = (demandId: string) => {
+    setExpandedDemandRows((prevExpandedRows) => ({
+      ...prevExpandedRows,
+      [demandId]: !prevExpandedRows[demandId],
+    }));
+  };
+
+  // Calculate the sum of demand values for each week
+  const demandSums: Record<number, number> = {};
+  // Calculate the sum of demandSeriesValues.demand for each week
+  const demandSumsByWeek: Record<number, number> = {};
+
+
+  // Track the sum of the Demands.demand for each Demand.description row
+  if (capacityGroup && capacityGroup.linkedDemandSeries) {
+    capacityGroup.linkedDemandSeries.forEach((demand) => {
+      demand.demandSeries.forEach((demandSeries) => {
+        demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+          const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
+          demandSums[week] = (demandSums[week] || 0) + demandSeriesValue.demand;
+        });
+      });
+    });
+  }
+
+  if (capacityGroup && capacityGroup.linkedDemandSeries) {
+    capacityGroup.linkedDemandSeries.forEach((demand) => {
+      demand.demandSeries.forEach((demandSeries) => {
+        demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+          const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
+          demandSumsByWeek[week] = (demandSumsByWeek[week] || 0) + demandSeriesValue.demand;
+        });
+      });
+    });
+  }
+
+  const calculateDelta = (week: number, demandSumsByWeek: Record<number, number>, actualCapacityMap: Record<number, number>) => {
+    const demandSum = demandSumsByWeek[week] || 0;
+    const actualCapacity = actualCapacityMap[week] || 0;
+    return actualCapacity - demandSum ;
+  };
+
+  const actualCapacityMap: Record<number, number> = {};
+
+  if (capacityGroup && capacityGroup.capacities) {
+    capacityGroup.capacities.forEach((capacity) => {
+      const week = getISOWeek(new Date(capacity.calendarWeek));
+      actualCapacityMap[week] = capacity.actualCapacity;
+    });
+  }
+
+  const deltaMap: Record<number, number> = {};
+
+  monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).forEach((month) => {
+    month.weeks.forEach((week) => {
+      deltaMap[week] = calculateDelta(week, demandSumsByWeek, actualCapacityMap);
+    });
+  });
+
   // Function to get the beginning and end dates of the week
   const getWeekDates = (year: number, month: string, week: number) => {
     const startDate = getISOWeekMonday(year, week);
@@ -234,13 +448,80 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup }) => {
                   ))
                 )}
               </tr>
+
               <tr>
                 <th className="sticky-header-cell">
-                  <div className="sticky-header-content">Demands</div>
+                  <div className="sticky-header-content" onClick={() => toggleDemandRowExpansion('total')}>
+                    {expandedDemandRows['total'] ? '▼' : '▶'} Demands (Sum)
+                  </div>
                 </th>
                 {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
                   month.weeks.map((week) => (
-                    <td key={`demands-${week}`} className="data-cell">
+                    <td key={`demandTotal-${week}`} className="data-cell ">
+                     <strong> {demandSums[week] || '-'}</strong>
+                    </td>
+                  ))
+                )}
+              </tr>
+              {expandedDemandRows['total'] && (
+                <>
+                  {capacityGroup &&
+                    capacityGroup.linkedDemandSeries &&
+                    capacityGroup.linkedDemandSeries.map((demand) => (
+                      <React.Fragment key={`demand-row-${demand.id}`}>
+                        <tr>
+                          <th className="sticky-header-cell">
+                            <div
+                              className="sticky-header-content table-header-nested-text "
+                              onClick={() => toggleDemandRowExpansion(demand.id)}
+                            >
+                              {expandedDemandRows[demand.id] ? '▼' : '▶'} {demand.materialDescriptionCustomer}
+                            </div>
+                          </th>
+                          {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
+                            month.weeks.map((week) => (
+                              <td key={`demandSeries-${week}-${demand.id}`} className="data-cell">
+                                <strong>{demandSumsByWeek[week] || ' '}</strong>
+                              </td>
+                            ))
+                          )}
+                        </tr>
+                        {expandedDemandRows[demand.id] && (
+                          <>
+                            {demand.demandSeries.map((demandSeries) => (
+                              <React.Fragment key={`demandSeries-row-${demandSeries.demandCategory.id}`}>
+                                <tr>
+                                  <th className="sticky-header-cell">
+                                    <div className="sticky-header-content table-header-nested-text-child">
+                                      {demandSeries.demandCategory.demandCategoryName}
+                                    </div>
+                                  </th>
+                                  {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
+                                    month.weeks.map((week) => (
+                                      <td key={`demandSeries-${week}-${demandSeries.demandCategory.id}`} className="data-cell">
+                                        {demandSeries.demandSeriesValues.find(
+                                          (demandValue) => getISOWeek(new Date(demandValue.calendarWeek)) === week
+                                        )?.demand || ' '}
+                                      </td>
+                                    ))
+                                  )}
+                                </tr>
+                              </React.Fragment>
+                            ))}
+                          </>
+                        )}
+                      </React.Fragment>
+                    ))}
+                </>
+              )}
+
+              <tr>
+                <th className="sticky-header-cell">
+                  <div className="sticky-header-content">-</div>
+                </th>
+                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
+                  month.weeks.map((week) => (
+                    <td key={`empty-${week}`} className="data-cell">
                       {' '}
                     </td>
                   ))
@@ -304,8 +585,11 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup }) => {
                 </th>
                 {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
                   month.weeks.map((week) => (
-                    <td key={`delta-${week}`} className="data-cell">
-
+                    <td
+                      key={`delta-${week}`}
+                      className={`data-cell ${deltaMap[week] < 0 ? 'bg-danger text-white' : ''}`}
+                    >
+                      {deltaMap[week]}
                     </td>
                   ))
                 )}

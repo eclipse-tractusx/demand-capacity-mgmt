@@ -20,18 +20,35 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type;
 
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.CustomException;
 
-@Getter
-@Setter
-public class ExceptionResponse {
+public class NotFoundException extends RuntimeException implements CustomException<NotFoundException> {
 
-    private static final long serialVersionUID = 1L;
-    private String code;
-    private String message;
-    private List<String> details;
+    private final int code;
+    private final String message;
+    private final List<String> details;
+
+    public NotFoundException(int code, String message, List<String> details) {
+        this.code = code;
+        this.message = message;
+        this.details = details;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public int getCode() {
+        return code;
+    }
+
+    @Override
+    public List<String> getDetails() {
+        return details;
+    }
 }
