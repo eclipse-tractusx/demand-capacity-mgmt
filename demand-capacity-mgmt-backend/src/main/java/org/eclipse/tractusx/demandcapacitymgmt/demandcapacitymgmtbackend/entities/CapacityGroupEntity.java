@@ -23,15 +23,13 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters.ListToStringConverter;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters.ListToStringConverter;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
 
 @Entity
 @Table(name = "capacity_group")
@@ -74,9 +72,11 @@ public class CapacityGroupEntity {
     private UnitMeasureEntity unitMeasure;
 
     @OneToMany(mappedBy = "capacityGroupEntity", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<CapacityTimeSeries> capacityTimeSeries;
 
     @OneToMany(mappedBy = "capacityGroupEntity", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<LinkedDemandSeries> linkedDemandSeries;
 
     @Column(name = "supplier_locations")

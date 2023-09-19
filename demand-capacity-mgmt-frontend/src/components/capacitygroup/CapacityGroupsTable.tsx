@@ -35,14 +35,14 @@ const CapacityGroupsTable: React.FC<CapacityGroupsTableProps> = ({ sortColumn, s
     <table className="table table-striped table-hover">
       <thead>
         <tr>
-          
+          <th></th>
           <th onClick={() => handleSort('internalId')}>
-            Internal ID 
+            Internal ID
             {sortColumn === 'internalId' && sortOrder === 'asc' && <BiCaretUp />}
             {sortColumn === 'internalId' && sortOrder === 'desc' && <BiCaretDown />}
           </th>
           <th onClick={() => handleSort('name')}>
-            Name 
+            Name
             {sortColumn === 'name' && sortOrder === 'asc' && <BiCaretUp />}
             {sortColumn === 'name' && sortOrder === 'desc' && <BiCaretDown />}
           </th>
@@ -57,7 +57,7 @@ const CapacityGroupsTable: React.FC<CapacityGroupsTableProps> = ({ sortColumn, s
             {sortColumn === 'customerName' && sortOrder === 'desc' && <BiCaretDown />}
           </th>
           <th onClick={() => handleSort('supplierBNPL')}>
-            Supplier BPNL 
+            Supplier BPNL
             {sortColumn === 'supplierBNPL' && sortOrder === 'asc' && <BiCaretUp />}
             {sortColumn === 'supplierBNPL' && sortOrder === 'desc' && <BiCaretDown />}
           </th>

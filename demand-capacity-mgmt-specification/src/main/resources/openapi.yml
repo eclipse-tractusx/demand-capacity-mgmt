@@ -779,7 +779,7 @@ components:
       properties:
         actualCapacity:
           type: number
-        MaximumCapacity:
+        maximumCapacity:
           type: number
         calendarWeek:
           type: string
@@ -809,6 +809,8 @@ components:
     CapacityGroupResponse:
       type: object
       properties:
+        capacityGroupId:
+          type: string
         capacities:
           type: array
           items:
@@ -821,7 +823,7 @@ components:
           $ref: '#/components/schemas/CompanyDto'
         supplier:
           $ref: '#/components/schemas/CompanyDto'
-        capacityGroupId:
+        weekBasedCapacityGroupId:
           type: string
         linkedDemandSeries:
           type: array
