@@ -107,21 +107,21 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         formData.add(PASSWORD, password);
 
         return keycloakWebClient
-                .post()
-                .uri(tokenUrl)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .bodyValue(formData)
-                .retrieve()
-                .onStatus(
-                        HttpStatusCode::is4xxClientError,
-                        response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
-                )
-                .onStatus(
-                        HttpStatusCode::is5xxServerError,
-                        response -> Mono.error(new RuntimeException("5xx error calling Keycloak"))
-                )
-                .bodyToMono(TokenResponse.class)
-                .block();
+            .post()
+            .uri(tokenUrl)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .bodyValue(formData)
+            .retrieve()
+            .onStatus(
+                HttpStatusCode::is4xxClientError,
+                response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
+            )
+            .onStatus(
+                HttpStatusCode::is5xxServerError,
+                response -> Mono.error(new RuntimeException("5xx error calling Keycloak"))
+            )
+            .bodyToMono(TokenResponse.class)
+            .block();
     }
 
     @Override
@@ -135,21 +135,21 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         formData.add(REFRESH_TOKEN, refreshToken_);
 
         return keycloakWebClient
-                .post()
-                .uri(tokenUrl)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .bodyValue(formData)
-                .retrieve()
-                .onStatus(
-                        HttpStatusCode::is4xxClientError,
-                        response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
-                )
-                .onStatus(
-                        HttpStatusCode::is5xxServerError,
-                        response -> Mono.error(new RuntimeException("5xx error calling Keycloak"))
-                )
-                .bodyToMono(TokenResponse.class)
-                .block();
+            .post()
+            .uri(tokenUrl)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .bodyValue(formData)
+            .retrieve()
+            .onStatus(
+                HttpStatusCode::is4xxClientError,
+                response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
+            )
+            .onStatus(
+                HttpStatusCode::is5xxServerError,
+                response -> Mono.error(new RuntimeException("5xx error calling Keycloak"))
+            )
+            .bodyToMono(TokenResponse.class)
+            .block();
     }
 
     @Override

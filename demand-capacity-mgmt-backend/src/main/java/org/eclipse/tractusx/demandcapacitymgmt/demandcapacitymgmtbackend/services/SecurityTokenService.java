@@ -31,4 +31,3 @@ public interface SecurityTokenService {
     IntrospectTokenResponse introspectToken(String token);
     void logoutToken(String refreshToken);
 }
-

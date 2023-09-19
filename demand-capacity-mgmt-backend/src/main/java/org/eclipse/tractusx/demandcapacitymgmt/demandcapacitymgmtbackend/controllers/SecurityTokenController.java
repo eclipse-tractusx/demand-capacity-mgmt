@@ -45,7 +45,7 @@ public class SecurityTokenController implements KeycloakApi {
 
     @Override
     public ResponseEntity<TokenResponse> loginToken(String username, String password) throws Exception {
-        return ResponseEntity.ok(securityTokenService.loginToken(username,password));
+        return ResponseEntity.ok(securityTokenService.loginToken(username, password));
     }
 
     @Override
