@@ -258,9 +258,6 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
   const totalWeeksCurrentYear = monthsCurrentYear.reduce((total, month) => total + month.weeks.length, 0);
   const totalWeeksNextYear = monthsNextYear.reduce((total, month) => total + month.weeks.length, 0);
 
-  // Object to store the demand values based on year, month, and week
-  type DemandValuesMap = Record<string, Record<number, Record<string, number>>>;
-
 
   //Mapping of categories
   const idToNumericIdMap: Record<string, number> = {};
