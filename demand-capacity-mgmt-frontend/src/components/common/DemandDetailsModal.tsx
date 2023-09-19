@@ -25,6 +25,7 @@ import WeeklyView from '../demands/DemandsOverview';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import { DemandProp } from '../../interfaces/demand_interfaces';
 import { GridLoader } from 'react-spinners';
+import GatheringDataMessage from './GatheringDataMessage';
 
 interface DemandDetailsModalProps {
   show: boolean;
@@ -85,12 +86,7 @@ function DemandDetailsModal({
           </Breadcrumb>
         </Modal.Header>
         <Modal.Body>
-          <div className="text-center">
-            <center>
-              <GridLoader color="#0d6efd" />
-            </center>
-            <p>Gathering data...</p>
-          </div>
+          <GatheringDataMessage/>
         </Modal.Body>
       </Modal>
     );
