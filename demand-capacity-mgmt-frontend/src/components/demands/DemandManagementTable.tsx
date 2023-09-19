@@ -29,7 +29,7 @@ type DemandsTableProps = {
   demandItems: React.ReactNode;
 };
 
-const DemandsTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, handleSort, demandItems }) => {
+const DemandManagementTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, handleSort, demandItems }) => {
 
   return (
 <table className="table table-striped table-hover">
@@ -81,4 +81,4 @@ const DemandsTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, hand
   );
 };
 
-export default DemandsTable;
+export default DemandManagementTable;

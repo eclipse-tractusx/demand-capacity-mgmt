@@ -20,29 +20,35 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useMemo, useCallback } from 'react';
-import { Modal, Button, Form, Col, Row, Breadcrumb, Dropdown } from 'react-bootstrap';
+import React, { useContext, useState, useMemo, useCallback, useEffect } from 'react';
+import { Modal, Button, Form, Col, Row, Dropdown } from 'react-bootstrap';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import Pagination from '../common/Pagination';
-import DemandsTable from './DemandsTable';
+
 import DemandsSearch from '../common/Search';
 import EditForm from './DemandEditForm';
-import { FaEllipsisV, FaSearch} from 'react-icons/fa';
+import { FaEllipsisV, FaSearch } from 'react-icons/fa';
 import AddForm from './DemandAddForm';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
-import WeeklyView from './DemandsOverview';
 
-const DemandsPage: React.FC = () => {
+import DemandDetailsModal from '../common/DemandDetailsModal';
+import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
+import DemandManagementTable from './DemandManagementTable';
+import LoadingMessage from '../common/LoadingMessage';
+
+const DemandManagement: React.FC = () => {
   const [showEditModal, setIsEditModalOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
 
   const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
   const { deleteDemand } = useContext(DemandContext)!;
-  const { demandprops, fetchDemandProps } = useContext(DemandContext)!; // Make sure to get the fetchDemands function from the context.
+  const { demandprops, fetchDemandProps, isLoading } = useContext(DemandContext)!; // Make sure to get the fetchDemands function from the context.
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,6 +58,10 @@ const DemandsPage: React.FC = () => {
 
   const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
   const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
+
+  useEffect(() => {
+    fetchDemandProps();
+  }, [fetchDemandProps]);
 
   const handleSort = (column: string | null) => {
     if (sortColumn === column) {
@@ -89,6 +99,31 @@ const DemandsPage: React.FC = () => {
 
   const handleCloseAdd = () => setShowAddModal(false);
   const handleCloseDetails = () => setShowDetailsModal(false);
+
+  const handleDeleteButtonClick = (id: string) => {
+    setDeleteItemId(id); // Set the ID of the item to be deleted
+    setShowDeleteConfirmation(true); // Show the delete confirmation modal
+  };
+
+  const handleDeleteDemandWrapper = () => {
+    if (deleteItemId) {
+      handleDeleteDemand(deleteItemId)
+        .then(() => {
+          // After successful deletion, you can perform any additional actions if needed
+          // For example, you can fetch updated data
+          fetchDemandProps();
+        })
+        .catch((error) => {
+          console.error('Error deleting demand:', error);
+        })
+        .finally(() => {
+          // Close the delete confirmation modal
+          setShowDeleteConfirmation(false);
+          setDeleteItemId(null);
+        });
+    }
+  };
+
 
   useMemo(() => {
     let sortedDemands = [...demandprops];
@@ -199,9 +234,9 @@ const DemandsPage: React.FC = () => {
           </td>
 
           <td>
-            <span className="badge rounded-pill text-bg-success" id="tag-ok">OK</span>
-            <span className="badge rounded-pill text-bg-warning" id="tag-warning">Warning</span>
-        <span className="badge rounded-pill text-bg-danger" id="tag-danger">Danger</span>
+            <span className="badge rounded-pill text-bg-success" id="tag-ok">Up</span>
+            <span className="badge rounded-pill text-bg-warning" id="tag-warning">TODO</span>
+            <span className="badge rounded-pill text-bg-danger" id="tag-danger">Down</span>
           </td>
           <td>
             <Button onClick={() => handleEdit(demand)} variant="outline-secondary">Edit</Button>
@@ -209,12 +244,12 @@ const DemandsPage: React.FC = () => {
           <td>
             <Dropdown>
               <Dropdown.Toggle variant="light" id={`dropdown-menu-${demand.id}`}>
-                <span ><FaEllipsisV/></span>
+                <span ><FaEllipsisV /></span>
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item onClick={() => handleDetails(demand)}>Details</Dropdown.Item>
-                <Dropdown.Item onClick={() => {navigator.clipboard.writeText(demand.id)}}>Copy ID</Dropdown.Item>
-                <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteDemand(demand.id)}>Delete</Dropdown.Item>
+                <Dropdown.Item onClick={() => { navigator.clipboard.writeText(demand.id) }}>Copy ID</Dropdown.Item>
+                <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteButtonClick(demand.id)}>Delete</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </td>
@@ -240,109 +275,107 @@ const DemandsPage: React.FC = () => {
           </div>
         </div>
       </div>
-
-      <DemandsTable
-        sortColumn={sortColumn}
-        sortOrder={sortOrder}
-        handleSort={(column: string | null) => handleSort(column)} // Pass the correct parameter type
-        demandItems={demandItems}
-      />
-
-      <div className="container">
-        <div className="row">
-          <Pagination
-            pages={totalPagesNum}
-            setCurrentPage={setCurrentPage}
-            currentItems={slicedDemands}
-            items={filteredDemands}
+      {isLoading ? ( // Conditional rendering based on loading state
+      <LoadingMessage />
+      ) : (
+        <>
+          <DemandManagementTable
+            sortColumn={sortColumn}
+            sortOrder={sortOrder}
+            handleSort={(column: string | null) => handleSort(column)} // Pass the correct parameter type
+            demandItems={demandItems}
           />
-          <div className="col-sm">
-            <div className="float-end">
-              <Form>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm="6">
-                    Per Page:
-                  </Form.Label>
-                  <Col sm="6">
-                    <Form.Control
-                      type="number"
-                      aria-describedby="demandsPerPageInput"
-                      min={1}
-                      htmlSize={10}
-                      max={100}
-                      value={demandsPerPage}
-                      onChange={(e) => setDemandsPerPage(Number(e.target.value))}
-                    />
-                  </Col>
-                </Form.Group>
-              </Form>
+
+          <div className="container">
+            <div className="row">
+              <Pagination
+                pages={totalPagesNum}
+                setCurrentPage={setCurrentPage}
+                currentItems={slicedDemands}
+                items={filteredDemands}
+              />
+              <div className="col-sm">
+                <div className="float-end">
+                  <Form>
+                    <Form.Group as={Row} className="mb-3">
+                      <Form.Label column sm="6">
+                        Per Page:
+                      </Form.Label>
+                      <Col sm="6">
+                        <Form.Control
+                          type="number"
+                          aria-describedby="demandsPerPageInput"
+                          min={1}
+                          htmlSize={10}
+                          max={100}
+                          value={demandsPerPage}
+                          onChange={(e) => setDemandsPerPage(Number(e.target.value))}
+                        />
+                      </Col>
+                    </Form.Group>
+                  </Form>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <Modal
-        show={showEditModal}
-        onHide={() => setIsEditModalOpen(false)}
-        backdrop="static"
-        keyboard={false}
-        size="lg"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Edit</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <UnitsofMeasureContextContextProvider>
-            <DemandCategoryContextProvider>
-              <CompanyContextProvider>
-                {selectedDemand && <EditForm theDemand={selectedDemand} onCloseModal={() => setIsEditModalOpen(false)} />}
-              </CompanyContextProvider>
-            </DemandCategoryContextProvider>
-          </UnitsofMeasureContextContextProvider>
-        </Modal.Body>
-      </Modal>
+          <Modal
+            show={showEditModal}
+            onHide={() => setIsEditModalOpen(false)}
+            backdrop="static"
+            keyboard={false}
+            size="lg"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Edit</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <UnitsofMeasureContextContextProvider>
+                <DemandCategoryContextProvider>
+                  <CompanyContextProvider>
+                    {selectedDemand && <EditForm theDemand={selectedDemand} onCloseModal={() => setIsEditModalOpen(false)} />}
+                  </CompanyContextProvider>
+                </DemandCategoryContextProvider>
+              </UnitsofMeasureContextContextProvider>
+            </Modal.Body>
+          </Modal>
 
-      <Modal
-        show={showAddModal}
-        onHide={handleCloseAdd}
-        backdrop="static"
-        keyboard={false}
-        size="lg"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>New Material Demand</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <AddForm fetchDemandProps={fetchDemandProps} />
-        </Modal.Body>
-      </Modal>
+          <Modal
+            show={showAddModal}
+            onHide={handleCloseAdd}
+            backdrop="static"
+            keyboard={false}
+            size="lg"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>New Material Demand</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <AddForm fetchDemandProps={fetchDemandProps} />
+            </Modal.Body>
+          </Modal>
+
+          <DeleteConfirmationModal
+            show={showDeleteConfirmation}
+            onCancel={() => {
+              setShowDeleteConfirmation(false);
+              setDeleteItemId(null);
+            }}
+            onConfirm={handleDeleteDemandWrapper}
+          />
 
 
-      <Modal
-        show={showDetailsModal}
-        onHide={handleCloseDetails}
-        backdrop="static"
-        keyboard={false}
-        dialogClassName="custom-modal"
-        fullscreen="xl"
-      >
-        <Modal.Header closeButton>
-          <Breadcrumb>
-            <Breadcrumb.Item href="#" onClick={handleCloseDetails}>Demand Management</Breadcrumb.Item>
-            <Breadcrumb.Item href="#">{selectedDemand?.id}</Breadcrumb.Item>
-            <Breadcrumb.Item active>Overview</Breadcrumb.Item>
-          </Breadcrumb>
-        </Modal.Header>
-        <Modal.Body>
-          <DemandCategoryContextProvider>
-            <WeeklyView
-              demandData={selectedDemand!} />
-          </DemandCategoryContextProvider>
-        </Modal.Body>
-      </Modal>
+          <DemandDetailsModal
+            show={showDetailsModal}
+            onHide={handleCloseDetails}
+            dialogClassName="custom-modal"
+            fullscreen="xl"
+            selectedDemand={selectedDemand} />
 
+        </>
+      )}
     </>
   );
 };
 
-export default DemandsPage;
+export default DemandManagement;

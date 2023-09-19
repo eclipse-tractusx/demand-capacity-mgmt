@@ -31,7 +31,7 @@ interface DemandContextData {
   deleteDemand: (id: string) => Promise<void>;
   updateDemand: (updatedDemand: Demand) => Promise<void>;
   fetchDemandProps: () => void;
-
+  isLoading: boolean;
 }
 
 export const DemandContext = createContext<DemandContextData | undefined>(undefined);
@@ -40,22 +40,40 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const [demands, setDemands] = useState<Demand[]>([]);
   const [demandprops, setDemandProps] = useState<DemandProp[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fetchDemandProps = useCallback(async () => {
-    try {
-      const response = await axios.get('/demand', {
-        params: {
-          project_id: 1, // Adjust the project ID parameter as needed
-        },
-      });
-      const result: DemandProp[] = response.data;
-      setDemandProps(result);
-      console.log(demands)// TODO clean
-    } catch (error) {
-      console.error('Error fetching demands:', error);
+  const fetchDemandPropsWithRetry = async (maxRetries = 3) => {
+    let retries = 0;
+  
+    while (retries < maxRetries) {
+      try {
+        setIsLoading(true);
+        const response = await axios.get('/demand', {
+          params: {
+            project_id: 1, // Adjust the project ID parameter as needed
+          },
+        });
+        const result: DemandProp[] = response.data;
+        setDemandProps(result);
+        setIsLoading(false); // Set isLoading to false on success
+        return; // Exit the loop on success
+      } catch (error) {
+        console.error(`Error fetching demands (Retry ${retries + 1}):`, error);
+        retries++;
+        if (retries < maxRetries) {
+          // Delay for 30 seconds before the next retry
+          await new Promise((resolve) => setTimeout(resolve, 30000));
+        } else {
+          setIsLoading(false); // Set isLoading to false on max retries
+        }
+      }
     }
-  }, [demands]);
+  };
+  
+  const fetchDemandProps = useCallback(() => {
+    fetchDemandPropsWithRetry();
+  }, []);
 
   useEffect(() => {
     fetchDemandProps();
@@ -108,7 +126,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   };
 
   return (
-    <DemandContext.Provider value={{ demandprops, deleteDemand, createDemand, updateDemand, getDemandbyId,fetchDemandProps }}>
+    <DemandContext.Provider value={{ demandprops, deleteDemand, createDemand, updateDemand, getDemandbyId,fetchDemandProps,isLoading }}>
       {props.children}
     </DemandContext.Provider>
   );
