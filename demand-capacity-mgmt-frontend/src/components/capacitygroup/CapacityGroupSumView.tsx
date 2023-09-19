@@ -260,7 +260,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
 
   // Object to store the demand values based on year, month, and week
   type DemandValuesMap = Record<string, Record<number, Record<string, number>>>;
-  let [demandValuesMap] = useState<DemandValuesMap>({});
+
 
   //Mapping of categories
   const idToNumericIdMap: Record<string, number> = {};
