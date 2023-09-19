@@ -30,6 +30,6 @@ public class SecurityConfig {
         http.oauth2ResourceServer(t -> t.jwt(Customizer.withDefaults()));
         http.sessionManagement(t -> t.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
-
     }
 }
+

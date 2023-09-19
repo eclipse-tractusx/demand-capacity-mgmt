@@ -17,7 +17,6 @@
 #
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
-
 keycloak: ##TODO USE VAULT THIS IS JUST DEVELOPMENT TEST FOR NOW
   baseUrl: http://localhost:8888
   realm: dcm
@@ -25,7 +24,6 @@ keycloak: ##TODO USE VAULT THIS IS JUST DEVELOPMENT TEST FOR NOW
   clientSecret: w9JhLWivSG9P7N5mPTkr1AWhmfvuedFE
   grant_type_token: password
   grant_type_refresh_token : refresh_token
-
 spring:
   security:
     oauth2:
@@ -72,6 +70,5 @@ management:
       enabled: true
     readinessstate:
       enabled: true
-
 
 #url: jdbc:oracle:thin:@//${ORACLEDB_HOST}:${ORACLEDB_PORT}/${ORACLEDB_SERVICENAME}
