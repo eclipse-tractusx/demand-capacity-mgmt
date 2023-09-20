@@ -20,35 +20,37 @@
  *    ********************************************************************************
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter as Router } from "react-router-dom";
-import { AuthorizationCodeCallback } from "react-oauth2-auth-code-flow";
+import qs from 'qs';
+import Api from '../util/Api';
+const TOKEN_KEY = 'auth_token';
 
-// All your imports...
-//import LoginComponent from './components/LoginComponent';
-//import AppComponent from './components/App';
-
-function App() {
-    const { authenticated } = useOAuth2();
-
-    return (
-        <Router>
-            {authenticated ? <AppComponent /> : <LoginComponent />}
-        </Router>
-    );
+export const isAuthenticated = (): boolean => {
+    return !!localStorage.getItem(TOKEN_KEY);
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-    <OAuth2Provider
-        clientId={YOUR_CLIENT_ID}
-        redirectUri={YOUR_REDIRECT_URI}
-        authorizeUrl={YOUR_AUTHORIZATION_URL}
-        tokenUrl={YOUR_TOKEN_URL}
-    >
-        <App />
-    </OAuth2Provider>
-);
+export const login = async (username: string, password: string): Promise<void> => {
+    try {
+        const requestData = qs.stringify({ username, password });
+        const response = await Api.post('/token/login', requestData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        });
 
-reportWebVitals();
+        const { access_token } = response.data;
+        localStorage.setItem(TOKEN_KEY, access_token);
+    } catch (error) {
+        console.error('Error during login', error);
+        throw error;
+    }
+}
+
+export const logout = async (): Promise<void> => {
+    try {
+        await Api.post('/token/logout');
+        localStorage.removeItem(TOKEN_KEY);
+    } catch (error) {
+        console.error('Error during logout', error);
+        throw error;
+    }
+}

@@ -17,6 +17,11 @@
 #
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
 keycloak: ##TODO USE VAULT THIS IS JUST DEVELOPMENT TEST FOR NOW
   baseUrl: http://localhost:8888
   realm: dcm
