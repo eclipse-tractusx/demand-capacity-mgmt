@@ -21,7 +21,7 @@ keycloak: ##TODO USE VAULT THIS IS JUST DEVELOPMENT TEST FOR NOW
   baseUrl: http://localhost:8888
   realm: dcm
   clientId: dcmauth
-  clientSecret: w9JhLWivSG9P7N5mPTkr1AWhmfvuedFE
+  clientSecret: GpV3A0FrWB7GFUHWruPXehIWTgbCii7h
   grant_type_token: password
   grant_type_refresh_token : refresh_token
 spring:
@@ -46,7 +46,7 @@ springdoc:
   swagger-ui:
     oauth:
       client-id: dcmauth
-      client-secret: w9JhLWivSG9P7N5mPTkr1AWhmfvuedFE
+      client-secret: GpV3A0FrWB7GFUHWruPXehIWTgbCii7h
 
 flyway:
   enabled: true
