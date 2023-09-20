@@ -1,0 +1,57 @@
+// Import Bootstrap's functions file
+@import '~bootstrap/scss/bootstrap';
+
+// Define custom primary and secondary colors
+$custom-primary: #94cb2d;
+$custom-secondary: #ffa600;
+$custom-info:#6c757d;
+
+// Override Bootstrap variables with custom colors
+$theme-colors: (
+  primary: $custom-primary,
+  secondary: $custom-secondary,
+  info: $custom-info
+);
+
+// Import the rest of Bootstrap's SCSS components individually
+@import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/root';
+@import '~bootstrap/scss/reboot';
+@import '~bootstrap/scss/forms';
+
+// Define custom button styles
+@import '~bootstrap/scss/buttons';
+@import 'index.css';
+// Override button text color
+.btn {
+  color: #ffffff; // White text color
+}
+.btn-light{
+  color: black;
+}
+// Override outline button text color
+.btn-outline-primary {
+  color: $custom-primary; // Custom primary color
+}
+
+.btn-outline-secondary {
+  color: $custom-secondary; // Custom primary color
+}
+.btn-outline-info {
+  color: $custom-info; // Custom primary color
+}
+// Override Bootstrap pagination button text color
+.pagination .page-link {
+  color: #ffffff; // White text color
+}
+
+// Override Bootstrap pagination active button background color
+.pagination .page-item.active .page-link {
+  background-color: $custom-primary; // Custom primary color
+  border-color: $custom-primary; // Custom primary color
+}
+.pagination .page-link {
+   color: #303030; 
+}
+
+@import '~bootstrap/scss/pagination';

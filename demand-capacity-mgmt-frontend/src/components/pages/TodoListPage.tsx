@@ -25,46 +25,59 @@ import DemandList from "../demands/DemandList";
 import DemandsSearch from "../common/Search";
 import { Button } from "react-bootstrap";
 import { useState } from "react";
+import { FaMagic } from "react-icons/fa";
 
 
 function TodoListPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showWizard, setShowWizard] = useState(false);
-
+    const toggleWizardModal = () => {
+      setShowWizard(!showWizard); // Toggle the state (true to false or false to true)
+    };
+    
     return (
         <>
-            <br />
-            <div className="container-xl">
-                <div style={{ display: "flex", }}>
-                    <FcTodoList size={35} /><h3 className="icon-text-padding">Todo Items</h3>
-                </div>
-                <div className="table">
-                    <div className="table-wrapper">
-                        <div className="table-title">
-                            <div className="row">
-                                <div className="col-sm-6">
-                                    <DemandsSearch
-                                        searchQuery={searchQuery}
-                                        setSearchQuery={setSearchQuery}
-                                    />
-                                </div>
-                                <div className="col-sm-6">
-                                    <Button className="btn btn-success float-end ms-2" data-toggle="modal">
-                                        <span>Add to existing</span>
-                                    </Button>
-                                    <Button className="btn btn-success float-end" data-toggle="modal" onClick={() => setShowWizard(true)}>
-                                        <span>Capacity Group Wizard</span>
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                        <DemandList searchQuery={searchQuery} />
-                    </div>
-                </div>
+          <br />
+          <div className="container-xl">
+            <div style={{ display: 'flex' }}>
+              <FcTodoList size={35} />
+              <h3 className="icon-text-padding">Todo Items</h3>
             </div>
-        </>
+            <div className="table">
+              <div className="table-wrapper">
+                <div className="table-title">
+                  <div className="row">
+                    <div className="col-sm-6">
+                      <DemandsSearch
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                      />
+                    </div>
+                    <div className="col-sm-6">
+                      <Button
+                        className="btn btn-success float-end ms-2"
+                        data-toggle="modal"
+                      >
+                        <span>Add to existing</span>
+                      </Button>
+                      {/* Use the setShowWizard function to show the modal */}
+                      <Button
+                        className="btn btn-success float-end"
+                        onClick={() => setShowWizard(true)}
+                      >
+                        <span><FaMagic/> Capacity Group Wizard</span>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                <DemandList searchQuery={searchQuery} showWizard={showWizard} toggleWizardModal={toggleWizardModal} />
+              </div>
+            </div>
+          </div>
+    
 
-    );
-}
+        </>
+      );
+    }
 
 export default TodoListPage;

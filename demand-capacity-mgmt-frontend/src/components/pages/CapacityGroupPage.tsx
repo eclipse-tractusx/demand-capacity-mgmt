@@ -21,7 +21,7 @@
  */
 
 import CapacityGroupsProvider from "../../contexts/CapacityGroupsContextProvider";
-import CapacityGroupsList from "../../components/capacitygroup/CapacityGroupsView";
+import CapacityGroupsList from "../capacitygroup/CapacityGroupsList";
 
 
 function CapacityGroupPage() {
