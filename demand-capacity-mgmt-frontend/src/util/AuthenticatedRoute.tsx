@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import { ReactNode } from 'react';
+import {ReactNode, useEffect, useState} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { isAuthenticated } from './Auth';
 
@@ -29,17 +29,30 @@ interface AuthenticatedRouteProps {
 }
 
 const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ children }) => {
-    const isAuthed = isAuthenticated();
+    const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
     const navigate = useNavigate();
     const location = useLocation();
 
-    if (!isAuthed) {
-        navigate('/login', { replace: true, state: { from: location } });
-        return null;
-    }
+    useEffect(() => {
+        const checkAuthentication = async () => {
+            const authenticated = await isAuthenticated();
+            setIsAuthed(authenticated);
+        };
+
+        checkAuthentication();
+    }, []);
+
+    useEffect(() => {
+        if (isAuthed === false) {
+            navigate('/login', { replace: true, state: { from: location } });
+        }
+    }, [isAuthed, navigate, location]);
+
+    if (isAuthed === null) return null;  // Still determining authentication status
 
     return <>{children}</>;
-}
+};
+
 
 export default AuthenticatedRoute;
 

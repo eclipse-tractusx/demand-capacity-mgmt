@@ -24,8 +24,6 @@ import React from 'react';
 import {Route, Routes} from "react-router-dom";
 import TopMenu from "../common/TopMenu";
 import {InfoMenuProvider} from '../../contexts/InfoMenuContextProvider';
-import QuickAcessItems from "../common/QuickAcessItems";
-import DemandContextProvider from "../../contexts/DemandContextProvider";
 import Home from "../pages/CapacityGroupPage";
 import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";

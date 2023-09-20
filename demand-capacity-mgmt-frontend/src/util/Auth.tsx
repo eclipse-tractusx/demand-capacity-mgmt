@@ -20,25 +20,36 @@
  *    ********************************************************************************
  */
 
-import qs from 'qs';
 import Api from '../util/Api';
-const TOKEN_KEY = 'auth_token';
 
-export const isAuthenticated = (): boolean => {
-    return !!localStorage.getItem(TOKEN_KEY);
+export const isAuthenticated = async (): Promise<boolean> => {
+    try {
+        // No need for data or headers, since the cookie will be sent automatically
+        const response = await Api.post('http://localhost:8080/token/introspect', null, {
+            headers: {
+                'Content-Type': 'application/json', // Changed this line
+            }
+        });
+        return response.data.active;
+    } catch (error) {
+        console.error('Error checking authentication status', error);
+        return false;
+    }
 }
+
+
 
 export const login = async (username: string, password: string): Promise<void> => {
     try {
-        const requestData = qs.stringify({ username, password });
-        const response = await Api.post('/token/login', requestData, {
+        const requestData = new URLSearchParams();
+        requestData.append('username', username);
+        requestData.append('password', password);
+
+        await Api.post('/token/login', requestData, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
         });
-
-        const { access_token } = response.data;
-        localStorage.setItem(TOKEN_KEY, access_token);
     } catch (error) {
         console.error('Error during login', error);
         throw error;
@@ -48,9 +59,9 @@ export const login = async (username: string, password: string): Promise<void> =
 export const logout = async (): Promise<void> => {
     try {
         await Api.post('/token/logout');
-        localStorage.removeItem(TOKEN_KEY);
     } catch (error) {
         console.error('Error during logout', error);
         throw error;
     }
 }
+

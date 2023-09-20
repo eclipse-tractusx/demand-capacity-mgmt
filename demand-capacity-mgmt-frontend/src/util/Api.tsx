@@ -23,7 +23,9 @@
 import axios from 'axios';
 
 const Api = axios.create({
-    baseURL: 'http://localhost:8080'
+    baseURL: 'http://localhost:8080',
+    withCredentials: true  // Ensure cookies are sent with requests
 })
+
 
 export default Api

@@ -24,10 +24,11 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectTokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.TokenResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface SecurityTokenService {
     TokenResponse loginToken(String username, String password);
     TokenResponse refreshToken(String refreshToken);
-    IntrospectTokenResponse introspectToken(String token);
+    IntrospectTokenResponse introspectToken(HttpServletRequest request);
     void logoutToken(String refreshToken);
 }

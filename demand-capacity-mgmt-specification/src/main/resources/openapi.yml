@@ -105,15 +105,13 @@ paths:
         - Keycloak
       summary: Introspect token
       operationId: introspectToken
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
+      parameters:
+        - in: cookie
+          name: auth_token
+          schema:
+            type: string
+          required: true
+          description: Authentication token
       responses:
         200:
           description: Token introspection result
@@ -467,14 +465,24 @@ components:
     TokenResponse:
       type: object
       properties:
-        access_token:
+        userID:
           type: string
-        token_type:
+        name:
           type: string
-        expires_in:
+        lastName:
+          type: string
+        email:
           type: integer
-        refresh_token:
+        username:
           type: string
+        role:
+          $ref: '#/components/schemas/Role'
+    Role:
+      type: string
+      enum:
+        - CUSTOMER
+        - SUPPLIER
+
     IntrospectTokenResponse:
       type: object
       properties:

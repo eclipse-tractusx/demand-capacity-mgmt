@@ -24,6 +24,8 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectTokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.TokenResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.SecurityTokenService;
@@ -153,13 +155,13 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     }
 
     @Override
-    public IntrospectTokenResponse introspectToken(String token) {
+    public IntrospectTokenResponse introspectToken(HttpServletRequest request) {
         String introspectUrl = String.format(
             "%s/auth/realms/%s/protocol/openid-connect/token/introspect",
             keycloakBaseUrl,
             realm
         );
-
+        String token = getTokenFromCookie(request);
         return keycloakWebClient
             .post()
             .uri(introspectUrl)
@@ -176,5 +178,17 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
             )
             .bodyToMono(IntrospectTokenResponse.class)
             .block();
+    }
+
+    private String getTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("auth_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }
