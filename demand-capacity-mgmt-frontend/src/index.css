@@ -34,9 +34,8 @@ code {
     monospace;
 }
 
-
 .custom-modal {
-  max-width: 1500px; /* Adjust the width as needed */
+  max-width: 1500px !important; /* Adjust the width as needed */
 }
 
 .required-field-label::after {

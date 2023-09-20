@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsList from "../capacitygroup/CapacityGroupsView";
+import CapacityGroupsList from "./CapacityGroupsList";
 import CapacityGroupContext from "../../contexts/CapacityGroupsContextProvider";
 
 function CapacityGroupDetails() {

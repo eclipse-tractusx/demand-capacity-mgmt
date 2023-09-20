@@ -47,7 +47,6 @@ useEffect(() => {
   const fetchCapacityGroupsWithRetry = async () => {
     setIsLoading(true);
 
-    for (let retries = 0; retries < maxRetries; retries++) {
       try {
         const response = await axios.get('/capacityGroup', {});
         const result: CapacityGroup[] = response.data;
@@ -56,19 +55,19 @@ useEffect(() => {
         setRetryCount(0); // Reset the retry count on success
         return; // Exit the loop on success
       } catch (error) {
-        console.error(`Error fetching capacitygroups (Retry ${retries + 1}):`, error);
+        console.error(`Error fetching capacitygroups (Retry ${retryCount + 1}):`, error);
 
-        if (retries < maxRetries - 1) {
+        if (retryCount < maxRetries - 1) {
           // If not the last retry, delay for 30 seconds before the next retry
           await new Promise((resolve) => setTimeout(resolve, 30000));
-          setRetryCount(retries + 1); // Increment the retry count
+          setRetryCount(retryCount + 1); // Increment the retry count
         } else {
           // If the last retry failed, set isLoading to false and do not retry further
           setIsLoading(false);
           setRetryCount(0); // Reset the retry count
         }
       }
-    }
+
   };
 
   fetchCapacityGroupsWithRetry();

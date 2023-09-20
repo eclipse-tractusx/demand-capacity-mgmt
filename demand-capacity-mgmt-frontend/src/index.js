@@ -41,6 +41,8 @@ import TodoListPage from "./components/pages/TodoListPage";
 import DownStatusPage from "./components/pages/DownStatusPage";
 import UpStatusPage from "./components/pages/UpStatusPage";
 
+import './custom-bootstrap.scss';
+import'./index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -48,7 +50,6 @@ root.render(
     <InfoMenuProvider>
     <TopMenu></TopMenu>
     </InfoMenuProvider>
-
     <Router>
     <Routes>
         <Route  path="/" element={<Home/>} />

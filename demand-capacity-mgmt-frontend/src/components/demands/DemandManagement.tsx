@@ -255,7 +255,7 @@ const DemandManagement: React.FC = () => {
           </td>
         </tr>
       )),
-    [slicedDemands, handleDeleteDemand]
+    [slicedDemands]
   );
 
   return (

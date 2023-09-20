@@ -113,7 +113,7 @@ const CapacityGroupsList: React.FC = () => {
               overlay={<Tooltip id={`tooltip-copy-${capacitygroup.internalId}`}>{capacitygroup.internalId}</Tooltip>}
             >
               <Button
-                variant="outline-secondary"
+                variant="outline-info"
                 onClick={() => {
                   // Function to copy the internalId to the clipboard
                   navigator.clipboard.writeText(capacitygroup.internalId);

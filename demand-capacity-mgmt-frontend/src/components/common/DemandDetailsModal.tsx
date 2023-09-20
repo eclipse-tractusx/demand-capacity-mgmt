@@ -24,7 +24,6 @@ import { Modal, Breadcrumb } from 'react-bootstrap';
 import WeeklyView from '../demands/DemandsOverview';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import { DemandProp } from '../../interfaces/demand_interfaces';
-import { GridLoader } from 'react-spinners';
 import GatheringDataMessage from './GatheringDataMessage';
 
 interface DemandDetailsModalProps {

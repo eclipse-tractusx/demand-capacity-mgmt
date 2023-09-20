@@ -53,7 +53,7 @@ function getWeeksInMonth(year: number, monthIndex: number): number[] {
   return weeks;
 }
 
-const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ }) => {
+const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
 
   const capacityGroup = {
     "capacityGroupId": "50bce75c-6ca9-4c98-ba20-c23ce5d3d632",

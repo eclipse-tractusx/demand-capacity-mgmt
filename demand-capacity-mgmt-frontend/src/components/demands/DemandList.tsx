@@ -29,10 +29,14 @@ import { DemandContext } from '../../contexts/DemandContextProvider';
 import DemandDetailsModal from '../common/DemandDetailsModal';
 import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 import DemandListTable from './DemandListTable';
-import { BounceLoader} from 'react-spinners';
 import LoadingMessage from '../common/LoadingMessage';
+import CapacityGroupWizardModal from '../common/CapacityGroupWizardModal';
 
-const DemandList: React.FC<{ searchQuery?: string }> = ({ searchQuery = '' }) => {
+const DemandList: React.FC<{ searchQuery?: string; showWizard?: boolean; toggleWizardModal?: () => void }> = ({
+  searchQuery = '',
+  showWizard = false,
+  toggleWizardModal,
+}) => {
 
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -41,10 +45,11 @@ const DemandList: React.FC<{ searchQuery?: string }> = ({ searchQuery = '' }) =>
   const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
   const { deleteDemand } = useContext(DemandContext)!;
   const { demandprops, fetchDemandProps, isLoading } = useContext(DemandContext)!;  // Make sure to get the fetchDemands function from the context.
-  const [selectedDemandIds, setSelectedDemandIds] = useState<string[]>([]);
+
+  const [showWizardModal, setShowWizardModal] = useState(false);
+  const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-
   const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
@@ -52,8 +57,11 @@ const DemandList: React.FC<{ searchQuery?: string }> = ({ searchQuery = '' }) =>
   const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
 
   useEffect(() => {
+    // Update showWizardModal based on the showWizard prop, providing a default value of false if it's undefined
+    setShowWizardModal(showWizard || false);
     fetchDemandProps();
-  }, [fetchDemandProps]);
+  }, [showWizard, fetchDemandProps]);
+  
 
   const handleSort = (column: string | null) => {
     if (sortColumn === column) {
@@ -63,6 +71,12 @@ const DemandList: React.FC<{ searchQuery?: string }> = ({ searchQuery = '' }) =>
       // If a different column is clicked, set it as the new sort column and default to ascending order
       setSortColumn(column as keyof DemandProp | null);
       setSortOrder('asc');
+    }
+  };
+
+  const handleCloseWizardModal = () => {
+    if (toggleWizardModal) {
+      toggleWizardModal(); // Close the modal and set showWizard to false if the prop is provided
     }
   };
 
@@ -164,12 +178,15 @@ const DemandList: React.FC<{ searchQuery?: string }> = ({ searchQuery = '' }) =>
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, demandId: string) => {
     if (event.target.checked) {
-      // If the checkbox is checked, add the demand ID to the selectedDemandIds array
-      setSelectedDemandIds((prevSelectedIds) => [...prevSelectedIds, demandId]);
+      // If the checkbox is checked, find the corresponding demand and add it to the selectedDemands array
+      const selectedDemandToAdd = filteredDemands.find((demand) => demand.id === demandId);
+      if (selectedDemandToAdd) {
+        setSelectedDemands((prevSelectedDemands) => [...prevSelectedDemands, selectedDemandToAdd]);
+      }
     } else {
-      // If the checkbox is unchecked, remove the demand ID from the selectedDemandIds array
-      setSelectedDemandIds((prevSelectedIds) =>
-        prevSelectedIds.filter((id) => id !== demandId)
+      // If the checkbox is unchecked, remove the demand from the selectedDemands array
+      setSelectedDemands((prevSelectedDemands) =>
+        prevSelectedDemands.filter((demand) => demand.id !== demandId)
       );
     }
   };
@@ -183,7 +200,7 @@ const DemandList: React.FC<{ searchQuery?: string }> = ({ searchQuery = '' }) =>
               type="checkbox"
               className="table-checkbox"
               onChange={(e) => handleCheckboxChange(e, demand.id)}
-              checked={selectedDemandIds.includes(demand.id)}
+              checked={selectedDemands.includes(demand)} // Check if the demand is in the selectedDemands array
             />
           </td>
           <td>
@@ -256,13 +273,13 @@ const DemandList: React.FC<{ searchQuery?: string }> = ({ searchQuery = '' }) =>
           </td>
         </tr>
       )),
-    [slicedDemands, handleDeleteDemand, selectedDemandIds]
+    [slicedDemands, selectedDemands]
   );
 
   return (
     <>
       {isLoading ? ( // Conditional rendering based on loading state
-      <LoadingMessage />
+        <LoadingMessage />
       ) : (
         <>
           <DemandListTable
@@ -320,6 +337,13 @@ const DemandList: React.FC<{ searchQuery?: string }> = ({ searchQuery = '' }) =>
             dialogClassName="custom-modal"
             fullscreen="xl"
             selectedDemand={selectedDemand} />
+
+            <CapacityGroupWizardModal
+                  show={showWizard}
+                  onHide={handleCloseWizardModal} // Call this function when the modal is closed
+                  selectedDemands={selectedDemands}
+                  demands={filteredDemands}
+                />
 
         </>
       )}
