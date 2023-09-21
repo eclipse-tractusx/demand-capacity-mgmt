@@ -133,19 +133,34 @@ code {
 }
 
 .red-delete-item {
-  color: var(--danger-red); 
+  color: var(--danger-red) !important; 
 }
 
 .red-delete-item:hover {
-  background-color: var(--danger-red);
-  color: white; 
+  background-color: var(--danger-red)!important;
+  color: white !important; 
 }
 
 .icon-text-padding{
   padding-left: 0.5rem;
 }
 
+.active-step {
+  text-decoration: underline;
+  text-decoration-color: #94cb2d;
+  text-decoration-thickness: 4px;
+}
 
 
+.shake-input {
+  animation: shake 0.5s;
+  box-shadow: 1px solid red;
+}
 
-
+@keyframes shake {
+  0% { transform: translateX(0); }
+  10%, 20% { transform: translateX(-5px); }
+  30%, 40% { transform: translateX(5px); }
+  50%, 60%, 70%, 80% { transform: translateX(-5px); }
+  90%, 100% { transform: translateX(0); }
+}

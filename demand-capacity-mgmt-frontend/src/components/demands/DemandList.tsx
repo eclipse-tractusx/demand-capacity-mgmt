@@ -341,7 +341,7 @@ const DemandList: React.FC<{ searchQuery?: string; showWizard?: boolean; toggleW
             <CapacityGroupWizardModal
                   show={showWizard}
                   onHide={handleCloseWizardModal} // Call this function when the modal is closed
-                  selectedDemands={selectedDemands}
+                  checkedDemands={selectedDemands}
                   demands={filteredDemands}
                 />
 
