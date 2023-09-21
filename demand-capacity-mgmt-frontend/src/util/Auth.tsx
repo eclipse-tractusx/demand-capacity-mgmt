@@ -26,10 +26,7 @@ import {User} from "../interfaces/UserInterface";
 export const isAuthenticated = async (): Promise<boolean> => {
     try {
         // No need for data or headers, since the cookie will be sent automatically
-        const response = await Api.post('http://localhost:8080/token/introspect', null, {
-            headers: {
-                'Content-Type': 'application/json', // Changed this line
-            }
+        const response = await Api.post('http://localhost:8080/token/introspect', {
         });
         return response.data.active;
     } catch (error) {
@@ -37,8 +34,6 @@ export const isAuthenticated = async (): Promise<boolean> => {
         return false;
     }
 }
-
-
 
 export const login = async (username: string, password: string): Promise<User> => {
     try {

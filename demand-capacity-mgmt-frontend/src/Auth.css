@@ -1,0 +1,63 @@
+:root {
+    --first-color: #e7eaf6;
+    --second-color: #a2a8d3;
+    --third-color: #38598b;
+    --fourth-color: #113f67;
+    --input-bgcolor: #f2f2f2;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    color: white;
+    overflow: hidden;
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+}
+.login-page .form {
+    background: #FFFFFF;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1), 0 5px 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+.form input {
+    outline: 0;
+    background: var(--input-bgcolor);
+    width: 100%;
+    border: 0;
+    margin: 0 0 15px;
+    padding: 1rem;
+    font-size: 0.9rem;
+}
+
+.form button {
+    text-transform: uppercase;
+    outline: 0;
+    background: var(--fourth-color);
+    width: 100%;
+    border: 0;
+    padding: 15px;
+    color: #FFFFFF;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.form button:hover, .form button:active, .form button:focus {
+    background: var(--third-color);
+}
+
+.form .message {
+    margin: 15px 0 0;
+    color: var(--second-color);
+    font-size: 0.8rem;
+}
+
+.form .message a {
+    color: var(--third-color);
+    text-decoration: none;
+}
+
+.register-form, .login-form {
+    transition: all 0.5s ease-in-out;
+}

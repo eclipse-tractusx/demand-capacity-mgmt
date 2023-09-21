@@ -27,7 +27,7 @@ import {InfoMenuProvider} from '../../contexts/InfoMenuContextProvider';
 import Home from "../pages/CapacityGroupPage";
 import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
-import LoginComponent from "./LoginComponent";
+import AuthenticationComponent from "../auth/AuthenticationComponent";
 import { UserProvider } from '../../contexts/UserContext';
 
 
@@ -51,7 +51,7 @@ const AppComponent: React.FC = () => {
                     </AuthenticatedRoute>
                 } />
 
-                <Route path="/login" element={<LoginComponent />} />
+                <Route path="/login" element={<AuthenticationComponent />} />
             </Routes>
         </div>
         </UserProvider>

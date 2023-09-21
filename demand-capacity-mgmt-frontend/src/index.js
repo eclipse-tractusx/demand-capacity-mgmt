@@ -24,7 +24,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { isAuthenticated } from './util/Auth';
-import LoginComponent from './components/dcm/LoginComponent';
+import AuthenticationComponent from './components/auth/AuthenticationComponent';
 import AppComponent from './components/dcm/AppComponent';
 
 function App() {
@@ -32,7 +32,7 @@ function App() {
     console.log("am I authed? : " + authenticated)
     return (
         <Router>
-            {authenticated ? <AppComponent /> : <LoginComponent />}
+            {authenticated ? <AppComponent /> : <AuthenticationComponent />}
         </Router>
     );
 }

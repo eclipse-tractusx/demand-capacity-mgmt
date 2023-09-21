@@ -26,7 +26,6 @@ import Navbar from 'react-bootstrap/Navbar';
 import { FiSettings,FiLogOut } from 'react-icons/fi';
 import InfoMenu from "../menu/InfoMenu";
 import {useUser} from "../../contexts/UserContext";
-import Api from "../../util/Api";
 import {useNavigate} from "react-router-dom";
 import { logout } from "../../util/Auth";
 
@@ -38,7 +37,7 @@ function TopMenuLinks() {
 
   const handleLogout = async () =>{
     try {
-        const response = logout();
+        await logout();
         setUser(null); // Clear user data stored in context
         navigate('/login'); // Redirect the user to the login page
     } catch (error) {
