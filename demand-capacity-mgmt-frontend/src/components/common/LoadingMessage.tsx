@@ -25,19 +25,33 @@ import { BounceLoader } from 'react-spinners';
 const LoadingMessage = () => {
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
   const [loaderColor, setLoaderColor] = useState('#ffa600'); // Initial color
+  const [loadingDots, setLoadingDots] = useState('');
 
   const loadingPhrases = [
-    'Loading...',
-    'Please wait...',
-    'Fetching data...',
-    'Almost there...',
-    'Hold on a moment...',
+    'Loading',
+    'Please wait',
+    'Fetching items',
+    'Syncing objects',
+    'Almost there',
+    'Hold on a moment',
   ];
 
   useEffect(() => {
     const phraseInterval = setInterval(() => {
       setCurrentPhraseIndex((prevIndex) => (prevIndex + 1) % loadingPhrases.length);
-    }, 2000); // Change the phrase every 2 seconds (adjust as needed)
+    }, 3000); // Change the phrase every 3 seconds
+
+    const loadingDotsInterval = setInterval(() => {
+      setLoadingDots((prevDots) => {
+        if (prevDots.length === 3) {
+          // Reset the dots to a single dot after three dots
+          return '.';
+        } else {
+          // Add a dot to the existing dots
+          return prevDots + '.';
+        }
+      });
+    }, 500); // Change dots every 0.5 seconds (adjust as needed)
 
     const colorInterval = setInterval(() => {
       // Define your two colors here
@@ -48,18 +62,22 @@ const LoadingMessage = () => {
     }, 1125);
 
     return () => {
-      clearInterval(phraseInterval); // Cleanup the interval for phrase changes on component unmount
-      clearInterval(colorInterval); // Cleanup the interval for color changes on component unmount
+      clearInterval(phraseInterval);
+      clearInterval(colorInterval); 
+      clearInterval(loadingDotsInterval);
     };
   });
 
   return (
+    <>
+    <br />
     <div className="text-center">
       <center>
         <BounceLoader color={loaderColor} />
       </center>
-      <p className="loading-text">{loadingPhrases[currentPhraseIndex]}</p>
+      <p className="loading-text">{loadingPhrases[currentPhraseIndex]}{loadingDots}</p>
     </div>
+    </>
   );
 };
 
