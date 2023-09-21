@@ -23,17 +23,22 @@
 import React, { useState } from 'react';
 import { login } from '../../util/Auth';
 import { useNavigate } from 'react-router-dom';
+import {useUser} from "../../contexts/UserContext";
+import {User} from "../../interfaces/UserInterface";
 
 const LoginComponent: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+
+    const { setUser } = useUser();
     const [errorMessage, setErrorMessage] = useState('');
 
     const navigate = useNavigate();
 
     const handleLogin = async () => {
         try {
-            await login(username, password);
+            const user: User = await login(username, password);
+            setUser(user)
             navigate('/'); // Redirect to home page after login
         } catch (error) {
             setErrorMessage('Login failed. Please check your credentials and try again.');

@@ -20,16 +20,19 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.json.entities;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectTokenResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.ResponseEntity;
+import lombok.Builder;
+import lombok.Data;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 
-public interface SecurityTokenService {
-    IntrospectTokenResponse introspectToken(HttpServletRequest request);
-    ResponseEntity<User> generateUserResponseEntity(String username, String password, HttpServletRequest request);
-    ResponseEntity<User> generateUserRefreshedResponseEntity(String token, HttpServletRequest request);
-    ResponseEntity<Void> generateLogoutResponseEntity(HttpServletRequest request);
+@Data
+@Builder
+public class User {
+    private String userID;
+    private String username;
+    private String name;
+    private String lastName;
+    private String email;
+    private Role role;
 }

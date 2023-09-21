@@ -20,16 +20,17 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.json.entities;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectTokenResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.ResponseEntity;
+import java.time.LocalDateTime;
+import lombok.Builder;
+import lombok.Data;
 
-public interface SecurityTokenService {
-    IntrospectTokenResponse introspectToken(HttpServletRequest request);
-    ResponseEntity<User> generateUserResponseEntity(String username, String password, HttpServletRequest request);
-    ResponseEntity<User> generateUserRefreshedResponseEntity(String token, HttpServletRequest request);
-    ResponseEntity<Void> generateLogoutResponseEntity(HttpServletRequest request);
+@Data
+@Builder
+public class WeekDemandSeriesValues {
+
+    private LocalDateTime calendarWeek;
+
+    private Double demand;
 }

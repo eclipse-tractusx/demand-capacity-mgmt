@@ -20,16 +20,43 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectTokenResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.ResponseEntity;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 
-public interface SecurityTokenService {
-    IntrospectTokenResponse introspectToken(HttpServletRequest request);
-    ResponseEntity<User> generateUserResponseEntity(String username, String password, HttpServletRequest request);
-    ResponseEntity<User> generateUserRefreshedResponseEntity(String token, HttpServletRequest request);
-    ResponseEntity<Void> generateLogoutResponseEntity(HttpServletRequest request);
+import java.util.UUID;
+
+@Entity
+@Table(name = "dcm_users")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserEntity {
+
+    @Id
+    @GeneratedValue
+    @Column(columnDefinition = "uuid", updatable = false, name = "id")
+    private UUID id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "username")
+    private String username;
+
+    @Column(name = "role", columnDefinition = "varchar")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

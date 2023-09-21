@@ -28,10 +28,12 @@ import Home from "../pages/CapacityGroupPage";
 import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
 import LoginComponent from "./LoginComponent";
+import { UserProvider } from '../../contexts/UserContext';
 
 
 const AppComponent: React.FC = () => {
     return (
+        <UserProvider>
         <div>
             <Routes>
                 <Route path="/" element={
@@ -51,8 +53,8 @@ const AppComponent: React.FC = () => {
 
                 <Route path="/login" element={<LoginComponent />} />
             </Routes>
-
         </div>
+        </UserProvider>
     );
 }
 

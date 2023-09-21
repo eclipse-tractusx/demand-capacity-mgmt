@@ -21,6 +21,7 @@
  */
 
 import Api from '../util/Api';
+import {User} from "../interfaces/UserInterface";
 
 export const isAuthenticated = async (): Promise<boolean> => {
     try {
@@ -39,22 +40,25 @@ export const isAuthenticated = async (): Promise<boolean> => {
 
 
 
-export const login = async (username: string, password: string): Promise<void> => {
+export const login = async (username: string, password: string): Promise<User> => {
     try {
         const requestData = new URLSearchParams();
         requestData.append('username', username);
         requestData.append('password', password);
 
-        await Api.post('/token/login', requestData, {
+        const response = await Api.post('/token/login', requestData, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
         });
+
+        return response.data; // returning user object
     } catch (error) {
         console.error('Error during login', error);
         throw error;
     }
 }
+
 
 export const logout = async (): Promise<void> => {
     try {

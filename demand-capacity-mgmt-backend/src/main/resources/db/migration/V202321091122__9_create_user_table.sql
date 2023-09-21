@@ -20,16 +20,13 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectTokenResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.ResponseEntity;
-
-public interface SecurityTokenService {
-    IntrospectTokenResponse introspectToken(HttpServletRequest request);
-    ResponseEntity<User> generateUserResponseEntity(String username, String password, HttpServletRequest request);
-    ResponseEntity<User> generateUserRefreshedResponseEntity(String token, HttpServletRequest request);
-    ResponseEntity<Void> generateLogoutResponseEntity(HttpServletRequest request);
-}
+create table if not exists dcm_users
+(
+    id uuid DEFAULT uuid_generate_v4() primary key,
+    name varchar(150),
+    last_name varchar(150),
+    email varchar(150),
+    username varchar(50),
+    role varchar(50)
+)
