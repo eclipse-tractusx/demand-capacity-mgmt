@@ -10,31 +10,42 @@ RESPONSE=$(curl -s --header "X-Vault-Token: $VAULT_TOKEN" "$REQUEST_URL")
 
 SECRET=$(echo "$RESPONSE" | jq -r '.data.data.dcmsecr')
 ADMIN_PASSWORD=$(echo "$RESPONSE" | jq -r '.data.data.adminsecpw')
+CUSTOMER_PASSWORD=$(echo "$RESPONSE" | jq -r '.data.data.customerpw')
+SUPPLIER_PASSWORD=$(echo "$RESPONSE" | jq -r '.data.data.supplierpw')
 
-# Exit if the secret or the password could not be fetched
-if [ -z "$SECRET" ] || [ "$SECRET" == "null" ] || [ -z "$ADMIN_PASSWORD" ] || [ "$ADMIN_PASSWORD" == "null" ]; then
-    echo "Failed to fetch the secret or the password from Vault"
+# Exit if any of the secrets or passwords could not be fetched
+if [ -z "$SECRET" ] || [ "$SECRET" == "null" ] ||
+   [ -z "$ADMIN_PASSWORD" ] || [ "$ADMIN_PASSWORD" == "null" ] ||
+   [ -z "$CUSTOMER_PASSWORD" ] || [ "$CUSTOMER_PASSWORD" == "null" ] ||
+   [ -z "$SUPPLIER_PASSWORD" ] || [ "$SUPPLIER_PASSWORD" == "null" ]; then
+    echo "Failed to fetch the secrets or the passwords from Vault"
     exit 1
 fi
 
-# Replace the secret in the realm-export.json and copy it to the correct location
-jq --arg clientName "$CLIENT_NAME" --arg secret "$SECRET" '
+# Modify realm-export.json
+jq --arg clientName "$CLIENT_NAME" --arg secret "$SECRET" \
+   --arg adminPassword "$ADMIN_PASSWORD" --arg customerPassword "$CUSTOMER_PASSWORD" \
+   --arg supplierPassword "$SUPPLIER_PASSWORD" '
+  # Update client secret
   .clients |= map(
     if .clientId == $clientName then
       .secret = $secret
     else
       .
     end
-  )
-' $REALM_EXPORT_PATH > /tmp/temp-realm-export.json
-
-# Replace the admin password in the realm-export.json
-jq --arg password "$ADMIN_PASSWORD" '
+  ) |
+  # Update the passwords of existing users
   .users |= map(
     if .username == "DCM_ADMIN" then
-      .credentials[0].value = $password
+      .credentials[0].value = $adminPassword
+    elif .username == "CUSTOMER" then
+      .credentials[0].value = $customerPassword
+    elif .username == "SUPPLIER" then
+      .credentials[0].value = $supplierPassword
     else
       .
     end
   )
-' /tmp/temp-realm-export.json > $REALM_EXPORT_PATH
+' $REALM_EXPORT_PATH > /tmp/temp-realm-export.json
+
+cat /tmp/temp-realm-export.json > $REALM_EXPORT_PATH

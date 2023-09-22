@@ -44,7 +44,6 @@
         <spring-cloud.version>2020.0.3-SNAPSHOT</spring-cloud.version>
 
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.auth0</groupId>

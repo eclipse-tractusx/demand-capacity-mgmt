@@ -1,6 +1,5 @@
 FROM jboss/keycloak:latest
 ENV DOCKERIZE_VERSION v0.6.1
-
 USER root
 RUN microdnf install -y jq wget
 
