@@ -40,3 +40,4 @@ target/
 
 demand-capacity-mgmt-backend/.mvn/wrapper/maven-wrapper.jar
 .env
+keycloak/realm-export.json
