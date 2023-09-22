@@ -18,17 +18,6 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
-logging:
-  level:
-    org.springframework.security: DEBUG
-
-keycloak: ##TODO USE VAULT THIS IS JUST DEVELOPMENT TEST FOR NOW
-  baseUrl: http://localhost:8888
-  realm: dcm
-  clientId: dcmauth
-  clientSecret: w9JhLWivSG9P7N5mPTkr1AWhmfvuedFE
-  grant_type_token: password
-  grant_type_refresh_token : refresh_token
 spring:
   security:
     oauth2:
@@ -47,11 +36,19 @@ spring:
     init:
       platform: postgres
 
+keycloak:
+  baseUrl: http://localhost:8888
+  realm: dcm
+  clientId: dcmauth
+  clientSecret: ${DCMSECR}
+  grant_type_token: password
+  grant_type_refresh_token : refresh_token
+
 springdoc:
   swagger-ui:
     oauth:
       client-id: dcmauth
-      client-secret: w9JhLWivSG9P7N5mPTkr1AWhmfvuedFE
+      client-secret: ${DCMSECR}
 
 flyway:
   enabled: true
@@ -60,20 +57,3 @@ flyway:
   password: ${DCM_DATASOURCE_PASS:dcm}
   schemas: migrations
   locations: classpath:db/migration/postgresql
-
-management:
-  endpoint:
-    health:
-      probes:
-        enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-  health:
-    livenessstate:
-      enabled: true
-    readinessstate:
-      enabled: true
-
-#url: jdbc:oracle:thin:@//${ORACLEDB_HOST}:${ORACLEDB_PORT}/${ORACLEDB_SERVICENAME}
