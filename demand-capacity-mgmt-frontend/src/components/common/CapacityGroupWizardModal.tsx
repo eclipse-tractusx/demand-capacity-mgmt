@@ -39,6 +39,12 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   const [capacity, setCapacity] = useState('');
   const [isInputShaking, setIsInputShaking] = useState(false);
 
+  useEffect(() => {
+    if (checkedDemands) {
+      setSelectedDemands([...checkedDemands]);
+    }
+  }, [checkedDemands]);
+
   const nextStep = () => {
     if (step === 1 && !groupName) {
       // Trigger the animation by setting isInputShaking to true
@@ -125,7 +131,8 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
             <div>
               <StepBreadcrumbs currentStep={step} />
               <br />
-              <p>Welcome to the Capacity Group Wizard. In this wizard, you will create a capacity group and link demands.</p>
+              <p>Welcome to the Capacity Group Wizard, this intuitive interface will simplify this task.
+                Here, you'll effortlessly create capacity groups and seamlessly link them with demands.</p>
             </div>
           )}
           {step === 1 && (
