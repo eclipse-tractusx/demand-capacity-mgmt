@@ -20,26 +20,37 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.api.CompanyApi;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CompanyDto;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.CustomException;
 
-@RestController
-@AllArgsConstructor
-public class CompanyController implements CompanyApi {
+public class InternalServerErrorException
+    extends RuntimeException
+    implements CustomException<InternalServerErrorException> {
 
-    private final CompanyService companyService;
+    private final int code;
+    private final String message;
+    private final List<String> details;
+
+    public InternalServerErrorException(int code, String message, List<String> details) {
+        this.code = code;
+        this.message = message;
+        this.details = details;
+    }
 
     @Override
-    public ResponseEntity<List<CompanyDto>> getCompany() {
-        List<CompanyDto> companyDtoList = companyService.getAllCompany();
-        return ResponseEntity.status(HttpStatus.OK).body(companyDtoList);
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public int getCode() {
+        return code;
+    }
+
+    @Override
+    public List<String> getDetails() {
+        return details;
     }
 }

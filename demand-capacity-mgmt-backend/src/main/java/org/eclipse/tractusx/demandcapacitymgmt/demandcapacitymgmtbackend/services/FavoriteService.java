@@ -20,26 +20,19 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.api.CompanyApi;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CompanyDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
+
 import java.util.List;
-import lombok.AllArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.UUID;
 
-@RestController
-@AllArgsConstructor
-public class CompanyController implements CompanyApi {
-
-    private final CompanyService companyService;
-
-    @Override
-    public ResponseEntity<List<CompanyDto>> getCompany() {
-        List<CompanyDto> companyDtoList = companyService.getAllCompany();
-        return ResponseEntity.status(HttpStatus.OK).body(companyDtoList);
-    }
+public interface FavoriteService {
+    List<FavoriteResponse> getAllFavorites();
+    List<FavoriteResponse> getAllFavoritesByType(String type);
+    FavoriteResponse createFavorite(FavoriteRequest favoriteRequest);
+    FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest);
+    void deleteFavorite(UUID id);
 }

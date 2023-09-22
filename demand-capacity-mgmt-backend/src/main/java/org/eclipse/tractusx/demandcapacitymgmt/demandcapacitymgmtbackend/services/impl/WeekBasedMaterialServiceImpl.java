@@ -23,6 +23,10 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesCategoryDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandWeekSeriesDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,10 +35,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LinkDemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
@@ -54,8 +59,8 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     private final StatusesRepository statusesRepository;
     private List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemands;
     private List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemands;
-
     private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
+    private final DemandService demandService;
 
     @Override
     public void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDtoList) {
@@ -207,13 +212,12 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     }
 
     private void validateFields(WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto) {
-        //        if(weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest() != null){
-        if (
-            !UUIDUtil.checkValidUUID(
-                weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest().getMaterialDemandId()
-            )
-        ) {
-            throw new BadRequestException("not a valid ID");
+        if (!UUIDUtil.checkValidUUID(weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest().getMaterialDemandId())) {
+            throw new BadRequestException(
+                400,
+                "Not a valid materialDemand ID",
+                new ArrayList<>(List.of(weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest().getMaterialDemandId()))
+            );
         }
 
         weekBasedMaterialDemandRequestDto
@@ -225,8 +229,14 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                         .getDemands()
                         .forEach(
                             demandSeriesDto -> {
-                                if (!DataConverterUtil.itsMonday(demandSeriesDto.getCalendarWeek())) {
-                                    throw new BadRequestException("not a valid date");
+                                if (
+                                    Boolean.FALSE.equals(DataConverterUtil.itsMonday(demandSeriesDto.getCalendarWeek()))
+                                ) {
+                                    throw new BadRequestException(
+                                        400,
+                                        "Not a valid date",
+                                        new ArrayList<>(List.of("Date was now a Monday"))
+                                    );
                                 }
                             }
                         )

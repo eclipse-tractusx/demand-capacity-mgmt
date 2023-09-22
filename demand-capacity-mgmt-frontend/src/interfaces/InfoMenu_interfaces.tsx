@@ -20,26 +20,15 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
+export interface Status {
+    count: number;
+    materialDemandsIds: string[];
+    capacityGroups: string[];
+}
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.api.CompanyApi;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CompanyDto;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-@AllArgsConstructor
-public class CompanyController implements CompanyApi {
-
-    private final CompanyService companyService;
-
-    @Override
-    public ResponseEntity<List<CompanyDto>> getCompany() {
-        List<CompanyDto> companyDtoList = companyService.getAllCompany();
-        return ResponseEntity.status(HttpStatus.OK).body(companyDtoList);
-    }
+export interface InfoMenuData {
+    todos: Status;
+    general: Status;
+    statusImprovement: Status;
+    statusDegredation: Status;
 }

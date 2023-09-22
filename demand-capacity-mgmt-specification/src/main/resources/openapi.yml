@@ -416,6 +416,113 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/DemandCategoryResponse'
+  /favorite:
+    get:
+      tags:
+        - favorite
+      summary: get all favorites
+      operationId: getFavorite
+      responses:
+        200:
+          description: favorite response array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FavoriteResponse'
+    post:
+      tags:
+        - favorite
+      summary: Create a New Favorite
+      operationId: createFavorite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteRequest'
+      responses:
+        200:
+          description: Favorite created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteResponse'
+    put:
+      tags:
+        - favorite
+      summary: Update a Favorite
+      operationId: updateFavorite
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: ID of the favorite to update
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          description: type of the favorite to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteRequest'
+      responses:
+        200:
+          description: Favorite updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteResponse'
+    delete:
+      tags:
+        - favorite
+      summary: Delete a Favorite by ID
+      operationId: deleteFavoriteById
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: ID of the favorite to delete
+          schema:
+            type: string
+      responses:
+        200:
+          description: Favorite deleted successfully
+        404:
+          description: Favorite not found
+
+
+  /favorite/{type}:
+    get:
+      tags:
+        - favorite
+      summary: Get a Favorite by type
+      operationId: getFavoriteByType
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: type of the favorite
+          schema:
+            type: string
+      responses:
+        200:
+          description: Favorite found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FavoriteResponse'
+        404:
+          description: Favorite not found
 
 components:
   schemas:
@@ -950,6 +1057,18 @@ components:
         name:
           type: string
 
+    FavoriteRequest:
+      type: object
+      properties:
+        favoriteId:
+          type: string
+        fType:
+          type: string
 
-
-
+    FavoriteResponse:
+      type: object
+      properties:
+        favoriteId:
+          type: string
+        fType:
+          type: string
