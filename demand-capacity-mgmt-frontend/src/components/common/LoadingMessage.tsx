@@ -34,12 +34,18 @@ const LoadingMessage = () => {
     'Syncing objects',
     'Almost there',
     'Hold on a moment',
+    'Preparing data',
+    'Calculating results',
+    'Validating outputs',
+    'Loading assets',
+    'Optimizing performance',
   ];
+  
 
   useEffect(() => {
     const phraseInterval = setInterval(() => {
       setCurrentPhraseIndex((prevIndex) => (prevIndex + 1) % loadingPhrases.length);
-    }, 3000); // Change the phrase every 3 seconds
+    }, 4000); // Change the phrase every 3 seconds
 
     const loadingDotsInterval = setInterval(() => {
       setLoadingDots((prevDots) => {
@@ -63,20 +69,20 @@ const LoadingMessage = () => {
 
     return () => {
       clearInterval(phraseInterval);
-      clearInterval(colorInterval); 
+      clearInterval(colorInterval);
       clearInterval(loadingDotsInterval);
     };
-  });
+  }, []); // Specify an empty dependency array here
 
   return (
     <>
-    <br />
-    <div className="text-center">
-      <center>
-        <BounceLoader color={loaderColor} />
-      </center>
-      <p className="loading-text">{loadingPhrases[currentPhraseIndex]}{loadingDots}</p>
-    </div>
+      <br />
+      <div className="text-center">
+        <center>
+          <BounceLoader color={loaderColor} />
+        </center>
+        <p className="loading-text">{loadingPhrases[currentPhraseIndex]}{loadingDots}</p>
+      </div>
     </>
   );
 };
