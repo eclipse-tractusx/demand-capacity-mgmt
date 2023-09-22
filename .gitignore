@@ -43,3 +43,4 @@ demand-capacity-mgmt-backend/.mvn/wrapper/maven-wrapper.jar
 /keycloak/realm-export.json
 keycloak/realm-export.json
 keycloak/realm-export.json
+keycloak/realm-export.json
