@@ -1,1 +1,2 @@
 CREATE DATABASE keycloak;
+CREATE DATABASE dcm;
