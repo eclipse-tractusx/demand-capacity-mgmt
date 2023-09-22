@@ -1,21 +1,23 @@
 #!/bin/sh
 
-# Define the client name
+# Define the client name and the path to realm-export.json
 CLIENT_NAME="dcmauth"
-
-# Generate a new secret
-SECRET=$(openssl rand -hex 32)
-
-# Path to the realm-export.json
 REALM_EXPORT_PATH="/etc/keycloak/realm-export.json"
 
-# Check if the realm-export.json file exists at the specified path
-if [ ! -f "$REALM_EXPORT_PATH" ]; then
-    echo "realm-export.json does not exist at $REALM_EXPORT_PATH"
+# Fetch the secret and password from Vault
+REQUEST_URL="$VAULT_ADDR/v1/$SECRET_PATH"
+RESPONSE=$(curl -s --header "X-Vault-Token: $VAULT_TOKEN" "$REQUEST_URL")
+
+SECRET=$(echo "$RESPONSE" | jq -r '.data.data.dcmsecr')
+ADMIN_PASSWORD=$(echo "$RESPONSE" | jq -r '.data.data.adminsecpw')
+
+# Exit if the secret or the password could not be fetched
+if [ -z "$SECRET" ] || [ "$SECRET" == "null" ] || [ -z "$ADMIN_PASSWORD" ] || [ "$ADMIN_PASSWORD" == "null" ]; then
+    echo "Failed to fetch the secret or the password from Vault"
     exit 1
 fi
 
-# Find the client and replace the secret in the realm-export.json
+# Replace the secret in the realm-export.json and copy it to the correct location
 jq --arg clientName "$CLIENT_NAME" --arg secret "$SECRET" '
   .clients |= map(
     if .clientId == $clientName then
@@ -24,5 +26,15 @@ jq --arg clientName "$CLIENT_NAME" --arg secret "$SECRET" '
       .
     end
   )
-' $REALM_EXPORT_PATH > /tmp/temp-realm-export.json && cp /tmp/temp-realm-export.json $REALM_EXPORT_PATH
+' $REALM_EXPORT_PATH > /tmp/temp-realm-export.json
 
+# Replace the admin password in the realm-export.json
+jq --arg password "$ADMIN_PASSWORD" '
+  .users |= map(
+    if .username == "DCM_ADMIN" then
+      .credentials[0].value = $password
+    else
+      .
+    end
+  )
+' /tmp/temp-realm-export.json > $REALM_EXPORT_PATH

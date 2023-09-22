@@ -411,6 +411,47 @@
       ]
     }
   },
+  "users": [
+    {
+      "id": "51d8bd26-e699-4bdc-b453-0422a671631c",
+      "username": "DCM_ADMIN",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "TOBEREPLACED",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "offline_access",
+        "uma_authorization",
+        "realm-admin"
+      ],
+      "clientRoles": {
+        "realm-management": [
+          "view-realm",
+          "manage-realm",
+          "view-users",
+          "manage-users",
+          "view-clients",
+          "manage-clients",
+          "create-client",
+          "manage-events",
+          "view-events",
+          "manage-identity-providers",
+          "view-identity-providers",
+          "impersonation"
+        ],
+        "account": [
+          "manage-account",
+          "manage-account-links",
+          "view-profile"
+        ]
+      }
+    }
+  ],
   "groups": [],
   "defaultRole": {
     "id": "486489ac-e3ca-4985-830e-02f7bf85d31e",
@@ -651,7 +692,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "99efa50e0cde9e3b1f693e75d5623059e911ab6b26050192543cbf4cd19bc2d8",
       "redirectUris": [
         "http://localhost:3000/*"
       ],

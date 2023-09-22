@@ -19,44 +19,44 @@
 #   ********************************************************************************
 
 version: '3.8'
-services:
 
+services:
   postgres:
     image: postgres:14.1-alpine
     restart: always
     environment:
-      - POSTGRES_USER=dcm
-      - POSTGRES_PASSWORD=dcm
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - '5432:5432'
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
     volumes:
       - db:/var/lib/postgresql/data
       - ./keycloak/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
 
   keycloak:
-    image: jboss/keycloak:latest
     build:
       context: .
       dockerfile: Dockerfile
-    entrypoint: [ "/bin/sh", "-c", "/config/generate-secret.sh && /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0" ]
+    image: jboss/keycloak:latest
+    entrypoint: [ "/bin/sh", "-c" ]
     command:
-      - "-Djboss.http.port=8888"
-      - "-Dkeycloak.migration.action=import"
-      - "-Dkeycloak.migration.provider=singleFile"
-      - "-Dkeycloak.migration.file=/etc/keycloak/realm-export.json"
-      - "-Dkeycloak.migration.strategy=IGNORE_EXISTING"
-      - -v start --import-realm
+      - |
+        /config/generate-secret.sh &&
+        /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0
     environment:
-      - DB_VENDOR=postgres
-      - DB_ADDR=postgres
-      - DB_DATABASE=keycloak  # Here specify the name of the database you've created for Keycloak
-      - DB_USER=dcm
-      - DB_PASSWORD=dcm
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=dcmf0ss
-      - KEYCLOAK_IMPORT=/etc/keycloak/realm-export.json -Dkeycloak.profile.feature.upload_scripts=enabled
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      VAULT_ADDR: ${VAULT_ADDR}
+      SECRET_PATH: ${SECRET_PATH}
+      DB_VENDOR: ${DB_VENDOR}
+      DB_ADDR: ${DB_ADDR}
+      DB_DATABASE: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_USER: ${KEYCLOAK_USER}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+      KEYCLOAK_IMPORT: /etc/keycloak/realm-export.json -Dkeycloak.profile.feature.upload_scripts=enabled
     ports:
-      - "8888:8080"
+      - "${KEYCLOAK_PORT}:8080"
     depends_on:
       - postgres
     volumes:
