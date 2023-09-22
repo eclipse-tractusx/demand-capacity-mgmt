@@ -26,6 +26,9 @@ spring:
     database: POSTGRESQL
     show-sql: true
 
+  main:
+    allow-circular-references: true
+
   datasource:
     url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
     username: ${DCM_DATASOURCE_USER:dcm}

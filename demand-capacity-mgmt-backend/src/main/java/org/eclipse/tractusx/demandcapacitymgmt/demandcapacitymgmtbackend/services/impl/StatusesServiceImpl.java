@@ -26,33 +26,45 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusObjectEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusesEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.StatusColor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.StatusManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
 @Slf4j
 @Lazy
 public class StatusesServiceImpl implements StatusesService {
 
+    @Autowired
     private final StatusesRepository statusesRepository;
-    private final WeekBasedCapacityGroupService weekBasedCapacityGroupService;
-    private final WeekBasedMaterialService weekBasedMaterialService;
+
+    List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroupResponse;
+    List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroupResponse;
+    List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemandResponse;
+    List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse;
+
+    public StatusesServiceImpl(
+        StatusesRepository statusesRepository,
+        List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse,
+        List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemandResponse,
+        List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroupResponse,
+        List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroupResponse
+    ) {
+        this.statusesRepository = statusesRepository;
+        this.oldWeekBasedMaterialDemandResponse = oldWeekBasedMaterialDemandResponse;
+        this.newWeekBasedMaterialDemandResponse = newWeekBasedMaterialDemandResponse;
+        this.oldWeekBasedCapacityGroupResponse = oldWeekBasedCapacityGroupResponse;
+        this.newWeekBasedCapacityGroupResponse = newWeekBasedCapacityGroupResponse;
+    }
 
     @Override
     public StatusesResponse postStatuses(StatusRequest statusRequest) {
@@ -143,12 +155,12 @@ public class StatusesServiceImpl implements StatusesService {
         AtomicInteger statusReductionCount = new AtomicInteger();
         AtomicInteger allDemandsCount = new AtomicInteger();
 
-        // Fetch required data from repositories
-        List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroupResponse = weekBasedCapacityGroupService.getUpdatedWeekBasedCapacityGroups();
-        List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroupResponse = weekBasedCapacityGroupService.getOldWeekBasedCapacityGroups();
-
-        List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemandResponse = weekBasedMaterialService.getUpdatedWeekBasedMaterialDemands();
-        List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse = weekBasedMaterialService.getOldWeekBasedMaterialDemands();
+        Map<String, List<CapacitiesDto>> oldMaterialNumberCapacitiesMapList = createMaterialNumberCapacitiesMapList(
+            oldWeekBasedCapacityGroupResponse
+        );
+        Map<String, List<CapacitiesDto>> newMaterialNumberCapacitiesMapList = createMaterialNumberCapacitiesMapList(
+            newWeekBasedCapacityGroupResponse
+        );
 
         Map<String, List<DemandSeriesDto>> oldMaterialNumberDemandsMapList = createMaterialNumberDemandsMapList(
             oldWeekBasedMaterialDemandResponse
@@ -157,30 +169,17 @@ public class StatusesServiceImpl implements StatusesService {
             newWeekBasedMaterialDemandResponse
         );
 
-        Map<String, List<CapacitiesDto>> oldMaterialNumberCapacitiesMapList = createMaterialNumberCapacitiesMapList(
-            oldWeekBasedCapacityGroupResponse
-        );
-        Map<String, List<CapacitiesDto>> newMaterialNumberCapacitiesMapList = createMaterialNumberCapacitiesMapList(
-            newWeekBasedCapacityGroupResponse
-        );
-
         processMaterialDemands(
             todoCount,
-            allDemandsCount,
+            true,
             newCapacityQuantities,
             newMaterialNumberDemandsMapList,
             newMaterialNumberCapacitiesMapList
         );
 
-        // set the general count and then reset
-        generalCount.set(
-            allDemandsCount.get() - (todoCount.get() + statusImprovementCount.get() + statusReductionCount.get())
-        );
-        allDemandsCount.set(0);
-
         processMaterialDemands(
             todoCount,
-            allDemandsCount,
+            false,
             oldCapacityQuantities,
             oldMaterialNumberDemandsMapList,
             oldMaterialNumberCapacitiesMapList
@@ -193,7 +192,13 @@ public class StatusesServiceImpl implements StatusesService {
             statusImprovementCount
         );
 
-        // Set data in DTOs
+        setAllDemandsCountCount(allDemandsCount, newMaterialNumberDemandsMapList);
+
+        // set the general count
+        generalCount.set(
+            allDemandsCount.get() - (todoCount.get() + statusImprovementCount.get() + statusReductionCount.get())
+        );
+
         StatusDto todos = new StatusDto();
         todos.setCount(todoCount.get());
 
@@ -266,21 +271,31 @@ public class StatusesServiceImpl implements StatusesService {
         return materialNumberCapacitiesMap;
     }
 
+    private void setAllDemandsCountCount(
+        AtomicInteger allDemandsCount,
+        Map<String, List<DemandSeriesDto>> materialNumberDemandsMap
+    ) {
+        for (Map.Entry<String, List<DemandSeriesDto>> materialNumberDemandsMapEntry : materialNumberDemandsMap.entrySet()) {
+            allDemandsCount.set(allDemandsCount.get() + materialNumberDemandsMapEntry.getValue().size());
+        }
+    }
+
     private void processMaterialDemands(
         AtomicInteger todoCount,
-        AtomicInteger allDemandsCount,
+        boolean isNewMaterialDemands,
         List<MaterialCapacityQuantity> capacityQuantities,
         Map<String, List<DemandSeriesDto>> materialNumberDemandsMap,
         Map<String, List<CapacitiesDto>> materialNumberCapacitiesMap
     ) {
         for (Map.Entry<String, List<DemandSeriesDto>> materialNumberDemandsMapEntry : materialNumberDemandsMap.entrySet()) {
-            allDemandsCount.set(allDemandsCount.get() + materialNumberDemandsMapEntry.getValue().size());
-
             materialNumberDemandsMapEntry
                 .getValue()
                 .forEach(
                     demandSeriesDto -> {
-                        if (!materialNumberCapacitiesMap.containsKey(materialNumberDemandsMapEntry.getKey())) {
+                        if (
+                            !materialNumberCapacitiesMap.containsKey(materialNumberDemandsMapEntry.getKey()) &&
+                            isNewMaterialDemands
+                        ) {
                             todoCount.incrementAndGet();
                         }
                         for (Map.Entry<String, List<CapacitiesDto>> materialNumberCapacitiesMapEntry : materialNumberCapacitiesMap.entrySet()) {
@@ -327,19 +342,11 @@ public class StatusesServiceImpl implements StatusesService {
             oldCapacityQuantity -> {
                 newMaterialCapacityQuantities.forEach(
                     newCapacityQuantity -> {
-                        if (oldCapacityQuantity.getCalendarWeek().equals(newCapacityQuantity.calendarWeek)) {
-                            StatusColor oldStatusColor = StatusManager.getStatusColor(
-                                oldCapacityQuantity.getDemand(),
-                                oldCapacityQuantity.getMaximumCapacity(),
-                                oldCapacityQuantity.getActualCapacity()
-                            );
-                            StatusColor newStatusColor = StatusManager.getStatusColor(
-                                newCapacityQuantity.getDemand(),
-                                newCapacityQuantity.getMaximumCapacity(),
-                                newCapacityQuantity.getActualCapacity()
-                            );
-
-                            EventType eventType = StatusManager.getEventType(true, oldStatusColor, newStatusColor);
+                        if (
+                            oldCapacityQuantity.getCalendarWeek().getDayOfYear() ==
+                            newCapacityQuantity.calendarWeek.getDayOfYear()
+                        ) {
+                            EventType eventType = getEventType(oldCapacityQuantity, newCapacityQuantity);
 
                             if (eventType == EventType.STATUS_REDUCTION) {
                                 statusReductionCount.set(statusReductionCount.get() + 1);
@@ -351,6 +358,24 @@ public class StatusesServiceImpl implements StatusesService {
                 );
             }
         );
+    }
+
+    private static EventType getEventType(
+        MaterialCapacityQuantity oldCapacityQuantity,
+        MaterialCapacityQuantity newCapacityQuantity
+    ) {
+        StatusColor oldStatusColor = StatusManager.getStatusColor(
+            oldCapacityQuantity.getDemand(),
+            oldCapacityQuantity.getMaximumCapacity(),
+            oldCapacityQuantity.getActualCapacity()
+        );
+        StatusColor newStatusColor = StatusManager.getStatusColor(
+            newCapacityQuantity.getDemand(),
+            newCapacityQuantity.getMaximumCapacity(),
+            newCapacityQuantity.getActualCapacity()
+        );
+
+        return StatusManager.getEventType(true, oldStatusColor, newStatusColor);
     }
 
     public class MaterialCapacityQuantity {

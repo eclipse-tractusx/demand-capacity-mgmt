@@ -29,8 +29,7 @@ public class StatusesController implements StatusesApi {
     }
 
     @Override
-    public ResponseEntity<StatusesResponse> updateStatusesById(String statusId, StatusRequest statusRequest)
-    {
+    public ResponseEntity<StatusesResponse> updateStatusesById(String statusId, StatusRequest statusRequest) {
         return null;
     }
 }

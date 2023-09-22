@@ -46,6 +46,9 @@ public class StatusManager {
         StatusColor newStatusColor
     ) {
         if (!isMaterialDemandLinkedToCG) return EventType.TODO;
+        if (newStatusColor == oldStatusColor) {
+            return EventType.GENERAL_EVENT;
+        }
         if (
             newStatusColor == StatusColor.GREEN ||
             (oldStatusColor == StatusColor.RED && newStatusColor == StatusColor.YELLOW)

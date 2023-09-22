@@ -30,9 +30,10 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.BadRequestException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LinkDemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
@@ -50,13 +51,16 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
 
     private final LinkDemandService linkDemandService;
 
-    private final StatusesService statusesService;
-
+    private final StatusesRepository statusesRepository;
     private List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemands;
     private List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemands;
 
+    private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
+
     @Override
     public void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDtoList) {
+        oldWeekBasedMaterialDemands =
+            DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
         weekBasedMaterialDemandRequestDtoList.forEach(
             weekBasedMaterialDemandRequestDto -> {
                 validateFields(weekBasedMaterialDemandRequestDto);
@@ -67,7 +71,10 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                 weekBasedMaterialDemandRepository.save(weekBasedMaterialDemand);
             }
         );
-        statusesService.updateStatus();
+
+        newWeekBasedMaterialDemands =
+            DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
+        updateStatus();
     }
 
     @Override
@@ -78,13 +85,31 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
         List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities = weekBasedMaterialDemandRepository.getAllByViewed(
             false
         );
-        statusesService.updateStatus();
+        //  updateStatus(); TODO: remove the comment when the EDC is ready
         linkDemandService.createLinkDemands(weekBasedMaterialDemandEntities);
     }
 
     @Override
     public List<WeekBasedMaterialDemandResponseDto> getWeekBasedMaterialDemands() {
-        return convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
+        return DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
+    }
+
+    public void updateStatus() {
+        List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroups = DataConverterUtil.convertToWeekBasedCapacityGroupDtoList(
+            weekBasedCapacityGroupRepository.findAll()
+        );
+
+        if (newWeekBasedMaterialDemands == null) {
+            newWeekBasedMaterialDemands = List.of();
+        }
+        final StatusesService statusesService = new StatusesServiceImpl(
+            statusesRepository,
+            oldWeekBasedMaterialDemands,
+            newWeekBasedMaterialDemands,
+            oldWeekBasedCapacityGroups,
+            oldWeekBasedCapacityGroups
+        );
+        statusesService.updateStatus();
     }
 
     @Override
@@ -93,14 +118,15 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
         WeekBasedMaterialDemandRequestDto weekBasedCapacityGroupRequest
     ) {
         oldWeekBasedMaterialDemands =
-            convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
+            DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
         WeekBasedMaterialDemandEntity weekBasedCapacityGroupEntity = convertWeekMaterialDemandToEntity(
             weekBasedCapacityGroupRequest
         );
-        weekBasedCapacityGroupEntity.setId(UUID.fromString(weekBasedCapacityGroupRequest.getId()));
+        weekBasedCapacityGroupEntity.setId(UUID.fromString(id));
         weekBasedCapacityGroupEntity = weekBasedMaterialDemandRepository.save(weekBasedCapacityGroupEntity);
         newWeekBasedMaterialDemands =
-            convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
+            DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
+        updateStatus();
         return convertToWeekBasedCapacityGroupDto(weekBasedCapacityGroupEntity);
     }
 
@@ -111,7 +137,6 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
         weekBasedMaterialDemand.setWeekBasedMaterialDemand(
             weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest()
         );
-        weekBasedMaterialDemand.setId(UUID.fromString(weekBasedMaterialDemandRequestDto.getId()));
         weekBasedMaterialDemand.setViewed(weekBasedMaterialDemandRequestDto.getViewed());
 
         return weekBasedMaterialDemand;
@@ -136,37 +161,6 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
         responseDto.setWeekBasedMaterialDemandRequest(weekBasedMaterialDemandEntity.getWeekBasedMaterialDemand());
 
         return responseDto;
-    }
-
-    private List<WeekBasedMaterialDemandResponseDto> convertToWeekBasedMaterialDemandDtoList(
-        List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities
-    ) {
-        List<WeekBasedMaterialDemandResponseDto> weekBasedMaterialDemandResponseList = new ArrayList<>();
-
-        for (WeekBasedMaterialDemandEntity entity : weekBasedMaterialDemandEntities) {
-            WeekBasedMaterialDemandResponseDto responseDto = new WeekBasedMaterialDemandResponseDto();
-            responseDto = convertToWeekBasedCapacityGroupDto(entity);
-            weekBasedMaterialDemandResponseList.add(responseDto);
-        }
-        return weekBasedMaterialDemandResponseList;
-    }
-
-    private List<WeekBasedMaterialDemandResponseDto> convertToWeekCapacityGroupDto(
-        List<WeekBasedMaterialDemandEntity> weekBasedCapacityGroupEntities
-    ) {
-        List<WeekBasedMaterialDemandResponseDto> weekBasedCapacityGroupList = new ArrayList<>();
-
-        for (WeekBasedMaterialDemandEntity entity : weekBasedCapacityGroupEntities) {
-            WeekBasedMaterialDemandResponseDto responseDto = new WeekBasedMaterialDemandResponseDto();
-            WeekBasedMaterialDemandRequest weekBasedMaterialDemandRequestDto = entity.getWeekBasedMaterialDemand();
-
-            responseDto.setWeekBasedMaterialDemandRequest(entity.getWeekBasedMaterialDemand());
-            responseDto.setId(entity.getId().toString());
-            responseDto.setViewed(entity.getViewed());
-
-            weekBasedCapacityGroupList.add(responseDto);
-        }
-        return weekBasedCapacityGroupList;
     }
 
     @Override
@@ -209,7 +203,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                     demandWeekSeriesDtoList.add(demandWeekSeriesDto);
                 }
             );
-        statusesService.updateStatus();
+        updateStatus();
     }
 
     private void validateFields(WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto) {
@@ -237,7 +231,6 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                             }
                         )
             );
-        //}
     }
 
     private WeekBasedMaterialDemandEntity convertEntity(WeekBasedMaterialDemandRequest weekBasedMaterialDemandRequest) {
