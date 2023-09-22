@@ -29,6 +29,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 @Data
 @Builder
 public class User {
+
     private String userID;
     private String username;
     private String name;

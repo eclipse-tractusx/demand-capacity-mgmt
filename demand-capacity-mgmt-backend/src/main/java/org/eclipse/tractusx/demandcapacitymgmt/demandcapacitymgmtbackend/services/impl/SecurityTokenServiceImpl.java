@@ -31,6 +31,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
@@ -43,8 +44,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -87,7 +86,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add(CLIENT_ID, clientId);
         formData.add(CLIENT_SECRET, clientSecret);
-        formData.add(REFRESH_TOKEN, getTokenFromCookie(request,true));
+        formData.add(REFRESH_TOKEN, getTokenFromCookie(request, true));
 
         keycloakWebClient
             .post()
@@ -106,6 +105,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
             .bodyToMono(Void.class)
             .block();
     }
+
     private TokenResponse loginToken(String username, String password) {
         String tokenUrl = String.format("%s/auth/realms/%s/protocol/openid-connect/token", keycloakBaseUrl, realm);
 
@@ -168,7 +168,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
             keycloakBaseUrl,
             realm
         );
-        String token = getTokenFromCookie(request,false);
+        String token = getTokenFromCookie(request, false);
         return keycloakWebClient
             .post()
             .uri(introspectUrl)
@@ -191,12 +191,12 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if(!logout){
-                    if(cookie.getName().equalsIgnoreCase(TOKEN)){
+                if (!logout) {
+                    if (cookie.getName().equalsIgnoreCase(TOKEN)) {
                         return cookie.getValue();
                     }
                 } else {
-                    if(cookie.getName().equalsIgnoreCase(REFRESH_TOKEN)){
+                    if (cookie.getName().equalsIgnoreCase(REFRESH_TOKEN)) {
                         return cookie.getValue();
                     }
                 }
@@ -239,10 +239,13 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         return cookieValue.toString();
     }
 
-
     @Override
-    public ResponseEntity<User> generateUserResponseEntity(String username, String password, HttpServletRequest request) {
-        TokenResponse token = loginToken(username,password);
+    public ResponseEntity<User> generateUserResponseEntity(
+        String username,
+        String password,
+        HttpServletRequest request
+    ) {
+        TokenResponse token = loginToken(username, password);
         return new ResponseEntity<>(generateUser(token), setHeaders(token), HttpStatus.OK);
     }
 
@@ -253,7 +256,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     }
 
     @Override
-    public ResponseEntity<Void> generateLogoutResponseEntity(HttpServletRequest request){
+    public ResponseEntity<Void> generateLogoutResponseEntity(HttpServletRequest request) {
         logoutToken(request);
         // Expire auth_token cookie
         Cookie authCookie = new Cookie(TOKEN, null);
@@ -276,16 +279,16 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         return new ResponseEntity<>(responseHeaders, HttpStatus.NO_CONTENT);
     }
 
-    private User generateUser(TokenResponse token){
+    private User generateUser(TokenResponse token) {
         DecodedJWT decodedJWT = JWT.decode(token.getAccessToken());
         String userID = decodedJWT.getSubject();
-        UserEntity entity = userRepository.findById(
-                        UUID.fromString(userID))
-                .orElseThrow(() -> new EntityNotFoundException("UserEntity not found"));
+        UserEntity entity = userRepository
+            .findById(UUID.fromString(userID))
+            .orElseThrow(() -> new EntityNotFoundException("UserEntity not found"));
         return convertUserEntity(entity);
     }
 
-    private User convertUserEntity(UserEntity userEntity){
+    private User convertUserEntity(UserEntity userEntity) {
         User user = new User();
         user.setUserID(userEntity.getId().toString());
         user.setEmail(userEntity.getEmail());

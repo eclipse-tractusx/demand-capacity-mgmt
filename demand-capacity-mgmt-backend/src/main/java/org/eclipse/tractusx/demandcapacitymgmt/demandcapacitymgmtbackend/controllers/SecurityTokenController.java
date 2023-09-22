@@ -40,7 +40,6 @@ public class SecurityTokenController implements KeycloakApi {
     private final SecurityTokenService securityTokenService;
     private HttpServletRequest request;
 
-
     @Override
     public ResponseEntity<IntrospectTokenResponse> introspectToken(String authToken) {
         return ResponseEntity.ok(securityTokenService.introspectToken(request));
@@ -60,5 +59,4 @@ public class SecurityTokenController implements KeycloakApi {
     public ResponseEntity<User> refreshToken(String refreshToken) {
         return securityTokenService.generateUserRefreshedResponseEntity(refreshToken, request);
     }
-
 }

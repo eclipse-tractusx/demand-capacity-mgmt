@@ -20,6 +20,7 @@
 
 version: '3.8'
 services:
+
   postgres:
     image: postgres:14.1-alpine
     restart: always
@@ -30,13 +31,24 @@ services:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+      - ./keycloak/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql  # Mount init script to the container startup scripts directory
+
   keycloak:
     image: jboss/keycloak:latest
-    command: ["-Djboss.http.port=8888"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: ["/bin/bash", "-c", "/config/generate-secret.sh && /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0"]
+    command:
+      - "-Djboss.http.port=8888"
+      - "-Dkeycloak.migration.action=import"
+      - "-Dkeycloak.migration.provider=singleFile"
+      - "-Dkeycloak.migration.file=/etc/keycloak/realm-export.json"
+      - "-Dkeycloak.migration.strategy=IGNORE_EXISTING"
     environment:
       - DB_VENDOR=postgres
       - DB_ADDR=postgres
-      - DB_DATABASE=dcm
+      - DB_DATABASE=keycloak  # Here specify the name of the database you've created for Keycloak
       - DB_USER=dcm
       - DB_PASSWORD=dcm
       - KEYCLOAK_USER=admin
@@ -45,6 +57,10 @@ services:
       - "8888:8888"
     depends_on:
       - postgres
+    volumes:
+      - ./keycloak/realm-export.json:/config/realm-export.json
+      - ./keycloak/generate-secret.sh:/config/generate-secret.sh
+
 volumes:
   db:
     driver: local

@@ -23,5 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
 
 public enum Role {
-    CUSTOMER,SUPPLIER
+    CUSTOMER,
+    SUPPLIER,
 }
