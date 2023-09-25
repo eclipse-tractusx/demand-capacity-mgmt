@@ -24,6 +24,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -76,9 +77,9 @@ public class FavoriteServiceImpl implements FavoriteService {
             favoriteRepository.saveAndFlush(entity);
             return convertFavoriteResponse(entity);
         } else throw new NotFoundException(
-            401,
-            "Entity to update was not found in DB." + "\n" + "Did you meant to create?",
-            List.of()
+            404,
+            "The capacity group provided was not found",
+            new ArrayList<>(List.of("UUID provided : " + UUID.fromString(favoriteRequest.getFavoriteId())))
         );
     }
 
