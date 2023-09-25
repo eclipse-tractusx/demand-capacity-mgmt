@@ -44,12 +44,6 @@ keycloak:
   grant_type_token: password
   grant_type_refresh_token : refresh_token
 
-springdoc:
-  swagger-ui:
-    oauth:
-      client-id: dcmauth
-      client-secret: ${DCMSECR}
-
 flyway:
   enabled: true
   url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}

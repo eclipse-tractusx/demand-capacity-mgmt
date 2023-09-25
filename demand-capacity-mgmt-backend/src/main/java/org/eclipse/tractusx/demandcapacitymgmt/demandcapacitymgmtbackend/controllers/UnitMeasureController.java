@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@SecurityRequirement(name = "Keycloak")
 public class UnitMeasureController implements UnitMeasureApi {
 
     private final UnityOfMeasureService unityOfMeasureService;

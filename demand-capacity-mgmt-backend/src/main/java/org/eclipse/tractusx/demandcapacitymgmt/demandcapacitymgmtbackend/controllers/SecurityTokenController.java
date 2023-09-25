@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@SecurityRequirement(name = "Keycloak")
 public class SecurityTokenController implements KeycloakApi {
 
     private final SecurityTokenService securityTokenService;

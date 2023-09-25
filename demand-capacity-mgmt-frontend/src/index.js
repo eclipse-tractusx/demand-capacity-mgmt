@@ -29,7 +29,6 @@ import AppComponent from './components/dcm/AppComponent';
 
 function App() {
     const authenticated = isAuthenticated();
-    console.log("am I authed? : " + authenticated)
     return (
         <Router>
             {authenticated ? <AppComponent /> : <AuthenticationComponent />}

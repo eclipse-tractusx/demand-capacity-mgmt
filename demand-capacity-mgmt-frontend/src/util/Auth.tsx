@@ -30,7 +30,6 @@ export const isAuthenticated = async (): Promise<boolean> => {
         });
         return response.data.active;
     } catch (error) {
-        console.error('Error checking authentication status', error);
         return false;
     }
 }
@@ -49,7 +48,6 @@ export const login = async (username: string, password: string): Promise<User> =
 
         return response.data; // returning user object
     } catch (error) {
-        console.error('Error during login', error);
         throw error;
     }
 }
@@ -59,7 +57,6 @@ export const logout = async (): Promise<void> => {
     try {
         await Api.post('/token/logout');
     } catch (error) {
-        console.error('Error during logout', error);
         throw error;
     }
 }

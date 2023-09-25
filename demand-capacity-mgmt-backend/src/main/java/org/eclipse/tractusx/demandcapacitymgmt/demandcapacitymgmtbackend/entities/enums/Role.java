@@ -25,4 +25,5 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 public enum Role {
     CUSTOMER,
     SUPPLIER,
+    ADMIN,
 }

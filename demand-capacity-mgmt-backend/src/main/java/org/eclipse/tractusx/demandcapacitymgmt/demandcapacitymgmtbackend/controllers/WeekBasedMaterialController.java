@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@SecurityRequirement(name = "Keycloak")
 public class WeekBasedMaterialController implements WeekBasedMaterialDemandApi {
 
     private final WeekBasedMaterialService weekBasedMaterialService;

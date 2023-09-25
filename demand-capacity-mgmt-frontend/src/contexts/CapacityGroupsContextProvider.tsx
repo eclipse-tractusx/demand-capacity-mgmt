@@ -23,6 +23,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import {CapacityGroup, SingleCapacityGroup} from '../interfaces/capacitygroup_interfaces';
+import api from '../util/Api';
 
 
 interface CapacityGroupContextData {
@@ -39,7 +40,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   useEffect(() => {
     const fetchCapacityGroups = async () => {
       try {
-        const response = await axios.get('/capacityGroup', {});
+        const response = await api.get('/capacityGroup', {});
         const result: CapacityGroup[] = response.data;
         setCapacityGroups(result);
       } catch (error) {
@@ -52,7 +53,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {
     try {
-      const response = await axios.get(`/capacityGroup/${id}`);
+      const response = await api.get(`/capacityGroup/${id}`);
       const fetchedCapacityGroup: SingleCapacityGroup = response.data;
       return fetchedCapacityGroup;
     } catch (error) {

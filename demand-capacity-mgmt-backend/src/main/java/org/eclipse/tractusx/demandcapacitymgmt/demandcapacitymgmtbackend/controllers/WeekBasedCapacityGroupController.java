@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@SecurityRequirement(name = "Keycloak")
 public class WeekBasedCapacityGroupController implements WeekBasedCapacityGroupApi {
 
     private final WeekBasedCapacityGroupService weekBasedCapacityGroupService;

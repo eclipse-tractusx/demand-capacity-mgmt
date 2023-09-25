@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@SecurityRequirement(name = "Keycloak")
 public class DemandController implements DemandApi {
 
     private final DemandService demandService;

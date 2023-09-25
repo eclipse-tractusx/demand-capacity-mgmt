@@ -12,7 +12,6 @@ body, html {
     height: 100%;
     color: white;
     overflow: hidden;
-    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
 }
 .login-page .form {
     background: #FFFFFF;

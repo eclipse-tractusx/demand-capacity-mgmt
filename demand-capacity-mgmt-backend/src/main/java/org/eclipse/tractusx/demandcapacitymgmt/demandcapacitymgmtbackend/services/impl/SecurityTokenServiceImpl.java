@@ -23,15 +23,15 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectTokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.Role;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.TokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.UUID;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
@@ -81,8 +81,6 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     private String grantType_refresh_token;
 
     private void logoutToken(HttpServletRequest request) {
-        String logoutUrl = String.format("%s/auth/realms/%s/protocol/openid-connect/logout", keycloakBaseUrl, realm);
-
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add(CLIENT_ID, clientId);
         formData.add(CLIENT_SECRET, clientSecret);
@@ -90,7 +88,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
 
         keycloakWebClient
             .post()
-            .uri(logoutUrl)
+            .uri(logoutTokenUrl())
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue(formData)
             .retrieve()
@@ -107,8 +105,6 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     }
 
     private TokenResponse loginToken(String username, String password) {
-        String tokenUrl = String.format("%s/auth/realms/%s/protocol/openid-connect/token", keycloakBaseUrl, realm);
-
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add(CLIENT_ID, clientId);
         formData.add(CLIENT_SECRET, clientSecret);
@@ -118,7 +114,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
 
         return keycloakWebClient
             .post()
-            .uri(tokenUrl)
+            .uri(tokenUrl())
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue(formData)
             .retrieve()
@@ -135,8 +131,6 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     }
 
     private TokenResponse refreshToken(String refreshToken) {
-        String tokenUrl = String.format("%s/auth/realms/%s/protocol/openid-connect/token", keycloakBaseUrl, realm);
-
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add(CLIENT_ID, clientId);
         formData.add(CLIENT_SECRET, clientSecret);
@@ -145,7 +139,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
 
         return keycloakWebClient
             .post()
-            .uri(tokenUrl)
+            .uri(tokenUrl())
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue(formData)
             .retrieve()
@@ -163,15 +157,10 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
 
     @Override
     public IntrospectTokenResponse introspectToken(HttpServletRequest request) {
-        String introspectUrl = String.format(
-            "%s/auth/realms/%s/protocol/openid-connect/token/introspect",
-            keycloakBaseUrl,
-            realm
-        );
         String token = getTokenFromCookie(request, false);
         return keycloakWebClient
             .post()
-            .uri(introspectUrl)
+            .uri(introspectTokenUrl())
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue("client_id=" + clientId + "&client_secret=" + clientSecret + "&token=" + token)
             .retrieve()
@@ -246,13 +235,13 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         HttpServletRequest request
     ) {
         TokenResponse token = loginToken(username, password);
-        return new ResponseEntity<>(generateUser(token), setHeaders(token), HttpStatus.OK);
+        return new ResponseEntity<>(fetchUser(token), setHeaders(token), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<User> generateUserRefreshedResponseEntity(String token, HttpServletRequest request) {
         TokenResponse refreshToken = refreshToken(token);
-        return new ResponseEntity<>(generateUser(refreshToken), setHeaders(refreshToken), HttpStatus.OK);
+        return new ResponseEntity<>(fetchUser(refreshToken), setHeaders(refreshToken), HttpStatus.OK);
     }
 
     @Override
@@ -279,13 +268,60 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         return new ResponseEntity<>(responseHeaders, HttpStatus.NO_CONTENT);
     }
 
-    private User generateUser(TokenResponse token) {
+    private User fetchUser(TokenResponse token) {
         DecodedJWT decodedJWT = JWT.decode(token.getAccessToken());
         String userID = decodedJWT.getSubject();
+
         UserEntity entity = userRepository
             .findById(UUID.fromString(userID))
-            .orElseThrow(() -> new EntityNotFoundException("UserEntity not found"));
+            .orElseGet(
+                () -> {
+                    UserEntity newUserEntity = generateUser(userID, decodedJWT);
+                    userRepository.save(newUserEntity);
+                    return newUserEntity;
+                }
+            );
         return convertUserEntity(entity);
+    }
+
+    private UserEntity generateUser(String userID, DecodedJWT decodedJWT) {
+        UserEntity newUserEntity = new UserEntity();
+        newUserEntity.setId(UUID.fromString(userID));
+        newUserEntity.setEmail(Optional.ofNullable(decodedJWT.getClaim("email")).map(Claim::asString).orElse(""));
+        newUserEntity.setName(Optional.ofNullable(decodedJWT.getClaim("given_name")).map(Claim::asString).orElse(""));
+        newUserEntity.setLastName(
+            Optional.ofNullable(decodedJWT.getClaim("family_name")).map(Claim::asString).orElse("")
+        );
+        newUserEntity.setUsername(
+            Optional.ofNullable(decodedJWT.getClaim("preferred_username")).map(Claim::asString).orElse("")
+        );
+
+        Claim rolesClaim = decodedJWT.getClaim("realm_access");
+        Map<String, Object> realmAccessMap = Optional
+            .ofNullable(rolesClaim)
+            .map(Claim::asMap)
+            .orElse(Collections.emptyMap());
+
+        Object rolesObject = realmAccessMap.get("roles");
+
+        if (rolesObject instanceof List<?>) {
+            List<?> list = (List<?>) rolesObject;
+            for (Object roleObj : list) {
+                if (roleObj instanceof String) {
+                    String roleStr = (String) roleObj;
+                    try {
+                        org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role role = org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role.valueOf(
+                            roleStr
+                        );
+                        newUserEntity.setRole(role);
+                        break;
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Illegal Role detected! User must have one of the role types");
+                    }
+                }
+            }
+        }
+        return newUserEntity;
     }
 
     private User convertUserEntity(UserEntity userEntity) {
@@ -297,5 +333,17 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         user.setUsername(userEntity.getUsername());
         user.setRole(Role.valueOf(userEntity.getRole().name()));
         return user;
+    }
+
+    private String tokenUrl() {
+        return String.format("%s/auth/realms/%s/protocol/openid-connect/token", keycloakBaseUrl, realm);
+    }
+
+    private String introspectTokenUrl() {
+        return String.format("%s/auth/realms/%s/protocol/openid-connect/token/introspect", keycloakBaseUrl, realm);
+    }
+
+    private String logoutTokenUrl() {
+        return String.format("%s/auth/realms/%s/protocol/openid-connect/logout", keycloakBaseUrl, realm);
     }
 }
