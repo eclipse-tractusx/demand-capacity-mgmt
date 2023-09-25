@@ -1,0 +1,108 @@
+# *******************************************************************************
+# Copyright (c) 2023 BMW AG
+# Copyright (c) 2023 Contributors to the Eclipse Foundation
+#
+#   See the NOTICE file(s) distributed with this work for additional
+#   information regarding copyright ownership.
+#
+#   This program and the accompanying materials are made available under the
+#   terms of the Apache License, Version 2.0 which is available at
+#   https://www.apache.org/licenses/LICENSE-2.0.
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#   License for the specific language governing permissions and limitations
+#   under the License.
+#
+#   SPDX-License-Identifier: Apache-2.0
+#   ********************************************************************************
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.backend.name }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "chart.selectorLabels" . | nindent 6 }}
+      component: backend
+  template:
+    metadata:
+      labels:
+        {{- include "chart.selectorLabels" . | nindent 8 }}
+        component: backend
+    spec:
+      {{- with .Values.backend.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsUser: 10000
+        fsGroup: 3000
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.backend.securityContext | nindent 12 }}
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          env:
+            - name: DCM_DATASOURCE_HOST
+              value: {{  include "dcm-backend.postgres.name" . }}
+            - name: DCM_DATASOURCE_NAME
+              value: {{ .Values.postgres.auth.database }}
+            - name: DCM_DATASOURCE_USER
+              value: {{ .Values.postgres.auth.username }}
+            - name: DCM_DATASOURCE_PASS
+              value: {{ .Values.postgres.auth.password }}
+              #valueFrom:
+              #  secretKeyRef:
+              #    name: {{ include "dcm-backend.postgres.name" . }}
+              #    key: {{ .Values.postgres.auth.postgres_password }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.backend.livenessProbe.path }}
+              port: {{ .Values.backend.livenessProbe.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.backend.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.backend.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.backend.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.backend.livenessProbe.failureThreshold }}
+
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.backend.readinessProbe.path }}
+              port: {{ .Values.backend.readinessProbe.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.backend.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.backend.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.backend.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.backend.readinessProbe.failureThreshold }}
+
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+
+
+      {{- with .Values.backend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
