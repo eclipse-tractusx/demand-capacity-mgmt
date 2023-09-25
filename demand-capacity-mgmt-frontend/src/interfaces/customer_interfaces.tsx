@@ -32,6 +32,7 @@ export interface Customer {
 }
 
   export interface CustomerLocation {
+    id: string
     bpn: string
     companyName: string
     street: string

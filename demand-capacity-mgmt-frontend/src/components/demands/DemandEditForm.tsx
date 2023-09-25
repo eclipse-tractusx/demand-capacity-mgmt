@@ -22,9 +22,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Form, Button, Col, Row } from 'react-bootstrap';
 import { DemandContext } from '../../contexts/DemandContextProvider';
-import { Demand,DemandSeriesValue, DemandProp, DemandSeries } from '../../interfaces/demand_interfaces';
+import { Demand, DemandSeriesValue, DemandProp, DemandSeries } from '../../interfaces/demand_interfaces';
 import CompanyOptions from '../CompanyOptions';
-import DemandCategoryOptions from './DemandCategoryOptions';
 import UnitsOfMeasureOptions from '../UnitsofMeasureOptions';
 import Spinner from 'react-bootstrap/Spinner';
 import { FiSave } from 'react-icons/fi';
@@ -41,9 +40,14 @@ function convertToDemand(demandProp: DemandProp): Demand {
     demandSeries,
   } = demandProp;
 
-  const demandSeriesValues: DemandSeriesValue[] = demandSeries![0].demandSeriesValues.map((value) => ({
-    calendarWeek: value.calendarWeek.split('T')[0],
-    demand: value.demand,
+  const materialDemandSeries = demandSeries!.map((series: DemandSeries) => ({
+    customerLocationId: customer.id,
+    expectedSupplierLocationId: [supplier.id],
+    demandCategoryId: series.demandCategory.id,
+    demandSeriesValues: series.demandSeriesValues.map((value: DemandSeriesValue) => ({
+      calendarWeek: value.calendarWeek.split('T')[0],
+      demand: value.demand,
+    })),
   }));
 
   const convertedDemand: Demand = {
@@ -54,18 +58,12 @@ function convertToDemand(demandProp: DemandProp): Demand {
     customerId: customer.id,
     supplierId: supplier.id,
     unitMeasureId: unitMeasureId.id,
-    materialDemandSeries: [
-      {
-        customerLocationId: customer.id,
-        expectedSupplierLocationId: [supplier.id],
-        demandCategoryId: demandSeries![0].demandCategory.id,
-        demandSeriesValues,
-      },
-    ],
+    materialDemandSeries,
   };
 
   return convertedDemand;
 }
+
 
 
 interface EditFormProps {
@@ -73,7 +71,7 @@ interface EditFormProps {
   onCloseModal: () => void;
 }
 
-const EditForm: React.FC<EditFormProps> = ({ theDemand , onCloseModal }) => {
+const EditForm: React.FC<EditFormProps> = ({ theDemand, onCloseModal }) => {
   const { updateDemand, getDemandbyId } = useContext(DemandContext)!;
   const [demand, setDemand] = useState<DemandProp | undefined>(undefined);
 
@@ -92,69 +90,59 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand , onCloseModal }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
+
     if (demand) {
       const convertedDemand = convertToDemand(demand);
       try {
         await updateDemand(convertedDemand);
-        onCloseModal(); 
+        onCloseModal();
       } catch (error) {
         console.error('Error updating demand:', error);
       }
     }
   };
-  
+
   const handleFieldChange = (fieldName: string, newValue: any) => {
     setDemand((prevDemand) =>
       prevDemand
         ? {
-            ...prevDemand,
-            [fieldName]:
-              fieldName === 'demandSeries'
-                ? newValue.map((series: DemandSeries) => ({
-                    ...series,
-                    demandSeriesValues: series.demandSeriesValues.map((value: DemandSeriesValue) => ({
-                      ...value,
-                      calendarWeek: value.calendarWeek.split('T')[0], // Extract date portion from datetime string
-                    })),
-                  }))
-                : fieldName === 'unitMeasureId'
+          ...prevDemand,
+          [fieldName]:
+            fieldName === 'demandSeries'
+              ? newValue.map((series: DemandSeries) => ({
+                ...series,
+                demandSeriesValues: series.demandSeriesValues.map((value: DemandSeriesValue) => ({
+                  ...value,
+                  calendarWeek: value.calendarWeek.split('T')[0], // Extract date portion from datetime string
+                })),
+              }))
+              : fieldName === 'unitMeasureId'
                 ? { id: newValue } // Wrap unitMeasureId in an object with id property
                 : fieldName === 'supplier'
-                ? { id: newValue } // Wrap supplier in an object with id property
-                : fieldName === 'startDate' || fieldName === 'endDate'
-                ? newValue.split('T')[0] // Extract date portion from datetime string
-                : newValue,
-          }
+                  ? { id: newValue } // Wrap supplier in an object with id property
+                  : fieldName === 'startDate' || fieldName === 'endDate'
+                    ? newValue.split('T')[0] // Extract date portion from datetime string
+                    : newValue,
+        }
         : undefined
     );
   };
-  
+
 
   const handleUnitMeasureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedUnitMeasureId = e.target.value;
     handleFieldChange('unitMeasureId', { id: selectedUnitMeasureId });
   };
-  
+
   const handleSupplierChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedSupplierId = e.target.value;
     handleFieldChange('supplier', { id: selectedSupplierId });
   };
-  
-  const handleDemandCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedCategoryId = e.target.value;
-    handleFieldChange('demandSeries', (demand?.demandSeries ?? []).map((series)=> ({
-      ...series,
-      demandCategory: {
-        ...series.demandCategory,
-        id: selectedCategoryId,
-      },
-    })));
-  };
-  
-  
-  
-  
+
+
+
+
+
   if (!demand) {
     return (
       <Spinner animation="border" role="status">
@@ -166,144 +154,131 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand , onCloseModal }) => {
   return (
 
     <Form onSubmit={handleSubmit}>
-    <Row className="mb-3">
-      <Form.Group className="form-group required" as={Col}>
-        <Form.Label className="control-label required-field-label">Start Date</Form.Label>
-        <Form.Control
-          type="date"
-          placeholder="Start Date"
-          name="startDate"
-          id="startDate"
-          defaultValue={demand.demandSeries?.[0]?.demandSeriesValues?.[0]?.calendarWeek?.split('T')[0] || ''}
-          readOnly
-        />
-        <Form.Control.Feedback type="invalid">Please select a Monday for the Start Date.</Form.Control.Feedback>
-      </Form.Group>
-      <Form.Group className="form-group required" as={Col}>
-        <Form.Label className="control-label required-field-label">End Date</Form.Label>
-        <Form.Control
-          type="date"
-          placeholder="End Date"
-          name="endDate"
-          id="endDate"
-          defaultValue={demand.demandSeries?.[0].demandSeriesValues[demand.demandSeries[0].demandSeriesValues.length - 1]?.calendarWeek?.split('T')[0]}
-          readOnly
-        />
-        <Form.Control.Feedback type="invalid">End Date has to be a Monday after Start Date.</Form.Control.Feedback>
-      </Form.Group>
-    </Row>
-      
-    <Row className="mb-3">
-          <Form.Group className="form-group required" as={Col}>
-            <Form.Label className="control-label required-field-label">Unit of Measure</Form.Label>
-              <Form.Select
-                name="unitMeasureId"
-                id="unitMeasureId"
-                value={demand.unitMeasureId.id || ''}
-                onChange={handleUnitMeasureChange}
-                required
-              >
-                 <UnitsOfMeasureOptions selectedUnitMeasureId={demand.unitMeasureId.id} />
-              </Form.Select>
-          </Form.Group>
+      <Row className="mb-3">
+        <Form.Group className="form-group required" as={Col}>
+          <Form.Label className="control-label required-field-label">Start Date</Form.Label>
+          <Form.Control
+            type="date"
+            placeholder="Start Date"
+            name="startDate"
+            id="startDate"
+            defaultValue={demand.demandSeries?.[0]?.demandSeriesValues?.[0]?.calendarWeek?.split('T')[0] || ''}
+            readOnly
+          />
+          <Form.Control.Feedback type="invalid">Please select a Monday for the Start Date.</Form.Control.Feedback>
+        </Form.Group>
+        <Form.Group className="form-group required" as={Col}>
+          <Form.Label className="control-label required-field-label">End Date</Form.Label>
+          <Form.Control
+            type="date"
+            placeholder="End Date"
+            name="endDate"
+            id="endDate"
+            defaultValue={demand.demandSeries?.[0].demandSeriesValues[demand.demandSeries[0].demandSeriesValues.length - 1]?.calendarWeek?.split('T')[0]}
+            readOnly
+          />
+          <Form.Control.Feedback type="invalid">End Date has to be a Monday after Start Date.</Form.Control.Feedback>
+        </Form.Group>
       </Row>
-    <Form.Group className="mb-3 form-group required">
-      <Form.Label className="control-label required-field-label">Supplier</Form.Label>
-      <Form.Select
-        aria-label="Default select example"
-        name="supplierId"
-        id="supplierId"
-        value={demand.supplier.id || ''}
-        onChange={handleSupplierChange}
-        required
-      >
+
+      <Row className="mb-3">
+        <Form.Group className="form-group required" as={Col}>
+          <Form.Label className="control-label required-field-label">Unit of Measure</Form.Label>
+          <Form.Select
+            name="unitMeasureId"
+            id="unitMeasureId"
+            value={demand.unitMeasureId.id || ''}
+            onChange={handleUnitMeasureChange}
+            required
+          >
+            <UnitsOfMeasureOptions selectedUnitMeasureId={demand.unitMeasureId.id} />
+          </Form.Select>
+        </Form.Group>
+      </Row>
+      <Form.Group className="mb-3 form-group required">
+        <Form.Label className="control-label required-field-label">Supplier</Form.Label>
+        <Form.Select
+          aria-label="Default select example"
+          name="supplierId"
+          id="supplierId"
+          value={demand.supplier.id || ''}
+          onChange={handleSupplierChange}
+          required
+        >
           <CompanyOptions selectedCompanyName={demand.supplier.companyName} />
-      </Form.Select>
-    </Form.Group>
+        </Form.Select>
+      </Form.Group>
 
-    <Form.Group className="mb-3 form-group required">
-      <Form.Label className="control-label required-field-label">Demand Category</Form.Label>
-      <Form.Select
-        aria-label="Default select example"
-        placeholder="Demand Category"
-        name="demandCategoryId"
-        id="demandCategoryId"
-        required
-        value={demand.demandSeries?.[0]?.demandCategory?.id || ''}
-        onChange={handleDemandCategoryChange}
-      >
-          <DemandCategoryOptions selectedDemandCategoryId={demand.demandSeries?.[0]?.demandCategory?.id || ''}/>
-      </Form.Select>
-    </Form.Group>
-
-    <Form.Group className="mb-3 form-group required">
-      <Form.Label className="control-label required-field-label">Material Number Customer</Form.Label>
-      <Form.Control
-        type="text"
-        placeholder="Material Number"
-        id="materialNumberCustomer"
-        name="materialNumberCustomer"
-        defaultValue ={demand.materialNumberCustomer}
-        onChange={(e) =>
-          setDemand((prevDemand) =>
-            prevDemand
-              ? {
+      <Form.Group className="mb-3 form-group required">
+        <Form.Label className="control-label required-field-label">Material Number Customer</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Material Number"
+          id="materialNumberCustomer"
+          name="materialNumberCustomer"
+          defaultValue={demand.materialNumberCustomer}
+          onChange={(e) =>
+            setDemand((prevDemand) =>
+              prevDemand
+                ? {
                   ...prevDemand,
                   materialNumberCustomer: e.target.value,
                 }
-              : undefined
-          )
-        }
-      />
-    </Form.Group>
+                : undefined
+            )
+          }
+        />
+      </Form.Group>
 
-    <Form.Group className="mb-3 required">
-      <Form.Label>Material Number Supplier</Form.Label>
-      <Form.Control
-        type="text"
-        placeholder="Material Number"
-        id="materialNumberSupplier"
-        name="materialNumberSupplier"
-        defaultValue ={demand.materialNumberSupplier}
-        onChange={(e) =>
-          setDemand((prevDemand) =>
-            prevDemand
-              ? {
+      <Form.Group className="mb-3 required">
+        <Form.Label>Material Number Supplier</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Material Number"
+          id="materialNumberSupplier"
+          name="materialNumberSupplier"
+          defaultValue={demand.materialNumberSupplier}
+          onChange={(e) =>
+            setDemand((prevDemand) =>
+              prevDemand
+                ? {
                   ...prevDemand,
                   materialNumberSupplier: e.target.value,
                 }
-              : undefined
-          )
-        }
-      />
-    </Form.Group>
+                : undefined
+            )
+          }
+        />
+      </Form.Group>
 
-    <Form.Group className="mb-3 form-group required">
-      <Form.Label className="control-label required-field-label">Description</Form.Label>
-      <Form.Control
-        type="text"
-        placeholder="Description"
-        id="materialDescriptionCustomer"
-        name="materialDescriptionCustomer"
-        defaultValue ={demand.materialDescriptionCustomer}
-        onChange={(e) =>
-          setDemand((prevDemand) =>
-            prevDemand
-              ? {
+      <Form.Group className="mb-3 form-group required">
+        <Form.Label className="control-label required-field-label">Description</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Description"
+          id="materialDescriptionCustomer"
+          name="materialDescriptionCustomer"
+          defaultValue={demand.materialDescriptionCustomer}
+          onChange={(e) =>
+            setDemand((prevDemand) =>
+              prevDemand
+                ? {
                   ...prevDemand,
                   materialDescriptionCustomer: e.target.value,
                 }
-              : undefined
-          )
-        }
-        required
-      />
-    </Form.Group>
+                : undefined
+            )
+          }
+          required
+        />
+      </Form.Group>
 
-    <Button variant="primary" type="submit">
-              <FiSave/>  Save Changes
+      <Button variant="primary" type="submit">
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <FiSave size={23} /> Save Changes
+        </div>
       </Button>
-  </Form>
+    </Form>
 
 
 
