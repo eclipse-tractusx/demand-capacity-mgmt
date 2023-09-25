@@ -207,9 +207,9 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                         .orElseThrow();
 
                     WeekBasedMaterialDemandEntity weekBasedMaterialDemandEntity = linkDemandEntity.getWeekBasedMaterialDemand();
-                    WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto = weekBasedMaterialDemandEntity.getWeekBasedMaterialDemand();
+                    WeekBasedMaterialDemandRequest weekBasedMaterialDemandRequest = weekBasedMaterialDemandEntity.getWeekBasedMaterialDemand();
                     CompanyEntity customerId = companyService.getCompanyById(
-                        UUID.fromString(weekBasedMaterialDemandRequestDto.getCustomer())
+                        UUID.fromString(weekBasedMaterialDemandRequest.getCustomer())
                     );
 
                     materialNumberCustomer.set(linkDemandEntity.getMaterialNumberCustomer());
