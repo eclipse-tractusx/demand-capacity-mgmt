@@ -80,6 +80,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             404,
             "Demand category not found",
             new ArrayList<>(List.of("provided UUID did not match any records. - " + id))
+
         );
     }
 
