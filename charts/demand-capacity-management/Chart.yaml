@@ -20,11 +20,13 @@
 
 
 apiVersion: v2
-name: tx-dcm
-description: A Helm chart for Kubernetes
+name: demand-capacity-management
+description: A Helm chart for the demand capacity management application
+
 
 # A chart can be either an 'application' or a 'library' chart.
 #
+# Application charts are a collection of templates that can be packaged into versioned archives
 # Application charts are a collection of templates that can be packaged into versioned archives
 # to be deployed.
 #
@@ -50,9 +52,5 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     alias: postgres
     condition: postgres.enabled
-  - name: demand-capacity-management-backend
-    alias: dcm-backend
-    version: 0.1.0
-  - name: demand-capacity-management-frontend
-    alias: dcm-frontend
-    version: 0.1.0
+
+
