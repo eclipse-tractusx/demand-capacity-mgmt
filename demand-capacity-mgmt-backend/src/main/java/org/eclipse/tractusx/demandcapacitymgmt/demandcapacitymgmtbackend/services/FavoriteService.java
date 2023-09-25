@@ -20,18 +20,19 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.UUID;
 
-@Getter
-@Setter
-public class ExceptionResponse {
-
-    private static final long serialVersionUID = 1L;
-    private String code;
-    private String message;
-    private List<String> details;
+public interface FavoriteService {
+    List<FavoriteResponse> getAllFavorites();
+    List<FavoriteResponse> getAllFavoritesByType(String type);
+    FavoriteResponse createFavorite(FavoriteRequest favoriteRequest);
+    FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest);
+    void deleteFavorite(UUID id);
 }
