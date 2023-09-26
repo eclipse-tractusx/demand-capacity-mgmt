@@ -31,13 +31,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@SecurityScheme(
-    name = "Keycloak",
-    openIdConnectUrl = "http://localhost:8888/auth/realms/dcm/.well-known/openid-configuration",
-    scheme = "bearer",
-    type = SecuritySchemeType.OPENIDCONNECT,
-    in = SecuritySchemeIn.HEADER
-)
 public class DemandCapacityMgmtBackendApplication {
 
     public static void main(String[] args) {
