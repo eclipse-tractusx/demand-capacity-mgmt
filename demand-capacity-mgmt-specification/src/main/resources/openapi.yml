@@ -25,9 +25,91 @@ info:
   version: '1.0'
 servers:
   - url: https://localhost:8080/
+  - url: http://localhost:8888/auth/realms/dcm/protocol/openid-connect
+
 
 paths:
+  /token/login:
+    post:
+      tags:
+        - Keycloak
+      summary: Login to retrieve a token
+      operationId: loginToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        200:
+          description: Token successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /token/refresh:
+    post:
+      tags:
+        - Keycloak
+      summary: Refresh token
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+              required:
+                - refresh_token
+      responses:
+        200:
+          description: Token successfully refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /token/logout:
+    post:
+      tags:
+        - Keycloak
+      summary: Logout (Token)
+      operationId: logoutToken
+      responses:
+        200:
+          description: Successfully logged out
 
+  /token/introspect:
+    post:
+      tags:
+        - Keycloak
+      summary: Introspect token
+      operationId: introspectToken
+      parameters:
+        - in: cookie
+          name: auth_token
+          schema:
+            type: string
+          required: true
+          description: Authentication token
+      responses:
+        200:
+          description: Token introspection result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntrospectTokenResponse'
   /demand:
     post:
       tags:
@@ -371,6 +453,42 @@ paths:
 
 components:
   schemas:
+    User:
+      type: object
+      properties:
+        userID:
+          type: string
+        name:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+    Role:
+      type: string
+      enum:
+        - CUSTOMER
+        - SUPPLIER
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+        expires_in:
+          type: integer
+        refresh_token:
+          type: string
+    IntrospectTokenResponse:
+      type: object
+      properties:
+        active:
+          type: boolean
     DemandRequestDto:
       type: object
       properties:
@@ -394,7 +512,6 @@ components:
           type: string
         description:
           type: string
-
     DemandResponseDto:
       type: object
       properties:
@@ -671,7 +788,7 @@ components:
       properties:
         actualCapacity:
           type: number
-        MaximumCapacity:
+        maximumCapacity:
           type: number
         calendarWeek:
           type: string
@@ -701,6 +818,8 @@ components:
     CapacityGroupResponse:
       type: object
       properties:
+        capacityGroupId:
+          type: string
         capacities:
           type: array
           items:
@@ -713,7 +832,7 @@ components:
           $ref: '#/components/schemas/CompanyDto'
         supplier:
           $ref: '#/components/schemas/CompanyDto'
-        capacityGroupId:
+        weekBasedCapacityGroupId:
           type: string
         linkedDemandSeries:
           type: array

@@ -22,10 +22,9 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters;
 
+import jakarta.persistence.*;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 
 @Converter
 public class ListToStringConverter implements AttributeConverter<List<String>, String> {

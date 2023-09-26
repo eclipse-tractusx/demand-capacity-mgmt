@@ -20,27 +20,11 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsProvider from "../../contexts/CapacityGroupsContextProvider";
-import CapacityGroupsList from "./CapacityGroupsView";
-
-
-function CapacityGroupPage() {
-
-    return (
-        <>
-        <div className="container-xl">
-            <br />
-            <div className="table">
-                <div className="table-wrapper">
-                    <CapacityGroupsProvider>
-                        <CapacityGroupsList />
-                    </CapacityGroupsProvider>
-                </div>
-            </div>
-        </div>
-        </>
-
-    );
+export interface User {
+    userID: string;
+    name: string;
+    lastName: string;
+    email: string;
+    username: string;
+    role: string;
 }
-
-export default CapacityGroupPage;

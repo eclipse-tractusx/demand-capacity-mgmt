@@ -20,18 +20,12 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities;
+import axios from 'axios';
 
-import java.util.List;
-import lombok.Builder;
-import lombok.Data;
+const Api = axios.create({
+    baseURL: 'http://localhost:8080',
+    withCredentials: true  // Ensure cookies are sent with requests
+})
 
-@Data
-@Builder
-public class WeekDemandSeries {
 
-    private List<String> expectedSupplierLocation;
-
-    private String customerLocation;
-    private String demandCategory;
-}
+export default Api
