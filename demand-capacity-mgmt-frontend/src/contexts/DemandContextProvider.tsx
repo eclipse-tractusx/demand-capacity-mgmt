@@ -20,7 +20,6 @@
  *    ********************************************************************************
  */
 import React, { createContext, useState, useEffect,useCallback} from 'react';
-import axios from 'axios';
 import { Demand, DemandProp } from '../interfaces/demand_interfaces';
 import api from "../util/Api";
 
@@ -76,7 +75,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const deleteDemand = async (id: string) => {
     try {
-      await axios.delete(`/demand/${id}`);
+      await api.delete(`/demand/${id}`);
       setDemandProps((prevDemands) => prevDemands.filter((demand) => demand.id !== id));
     } catch (error) {
       console.error('Error deleting demand:', error);
