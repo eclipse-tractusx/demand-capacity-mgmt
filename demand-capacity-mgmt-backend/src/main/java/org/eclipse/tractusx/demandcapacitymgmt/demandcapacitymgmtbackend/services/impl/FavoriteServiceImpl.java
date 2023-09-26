@@ -76,11 +76,13 @@ public class FavoriteServiceImpl implements FavoriteService {
             entity.setType(FavoriteType.valueOf(favoriteRequest.getfType()));
             favoriteRepository.saveAndFlush(entity);
             return convertFavoriteResponse(entity);
-        } else throw new NotFoundException(
-            404,
-            "Demand category not found",
-            new ArrayList<>(List.of("provided UUID did not match any records. - " + id))
-        );
+        } else {
+            throw new NotFoundException(
+                404,
+                "Entity to update was not found in DB." + "\n" + "Did you meant to create?",
+                new ArrayList<>(List.of("provided UUID did not match any records. - " + id))
+            );
+        }
     }
 
     @Override
