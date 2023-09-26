@@ -31,7 +31,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 public interface FavoriteService {
     List<FavoriteResponse> getAllFavorites();
     List<FavoriteResponse> getAllFavoritesByType(String type);
-    FavoriteResponse createFavorite(FavoriteRequest favoriteRequest);
-    FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest);
-    void deleteFavorite(UUID id);
+    FavoriteResponse createFavorite(FavoriteRequest favoriteRequest, String cookieUserID);
+    FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest, String cookieUserID);
+    void deleteFavorite(UUID id, String cookieUserID);
 }
