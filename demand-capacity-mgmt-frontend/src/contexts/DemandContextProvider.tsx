@@ -22,6 +22,7 @@
 import React, { createContext, useState, useEffect,useCallback} from 'react';
 import axios from 'axios';
 import { Demand, DemandProp } from '../interfaces/demand_interfaces';
+import api from "../util/Api";
 
 
 interface DemandContextData {
@@ -44,14 +45,14 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchDemandProps = useCallback(async () => {
     try {
-      const response = await axios.get('/demand', {
+      const response = await api.get('/demand', {
         params: {
           project_id: 1, // Adjust the project ID parameter as needed
         },
       });
       const result: DemandProp[] = response.data;
       setDemandProps(result);
-      console.log(demands)// TODO clean
+      console.log(demands);
     } catch (error) {
       console.error('Error fetching demands:', error);
     }
@@ -64,7 +65,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const getDemandbyId = async (id: string): Promise<DemandProp | undefined> => {
     try {
-      const response = await axios.get(`/demand/${id}`);
+      const response = await api.get(`/demand/${id}`);
       const fetchedDemand: DemandProp = response.data;
       return fetchedDemand;
     } catch (error) {
@@ -85,7 +86,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const createDemand = async (newDemand: Demand) => {
     try {
       console.log(newDemand);
-      const response = await axios.post('/demand', newDemand);
+      const response = await api.post('/demand', newDemand);
       console.log(response) //TODO clean
       fetchDemandProps();
     } catch (error) {
@@ -96,7 +97,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const updateDemand = async (updatedDemand: Demand) => {
     try {
       console.log(updatedDemand);
-      const response = await axios.put(`/demand/${updatedDemand.id}`, updatedDemand);
+      const response = await api.put(`/demand/${updatedDemand.id}`, updatedDemand);
       const modifiedDemand: Demand = response.data;
       setDemands((prevDemands) =>
         prevDemands.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))

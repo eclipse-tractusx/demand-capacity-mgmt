@@ -26,6 +26,8 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.api.CapacityGroupApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupDefaultViewResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
@@ -38,6 +40,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class CapacityGroupController implements CapacityGroupApi {
 
     private final CapacityGroupService capacityGroupService;
+
+    private HttpServletRequest request;
 
     @Override
     public ResponseEntity<List<CapacityGroupDefaultViewResponse>> getCapacityGroup() {

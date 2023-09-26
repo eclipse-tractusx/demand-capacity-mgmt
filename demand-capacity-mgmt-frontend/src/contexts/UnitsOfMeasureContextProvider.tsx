@@ -22,6 +22,8 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import api from "../util/Api";
+
 
 export interface UnitMeasure {
   id: string
@@ -42,7 +44,7 @@ const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>
   useEffect(() => {
     const fetchUnitsofMeasure = async () => {
       try {
-        const response = await axios.get('/unitmeasure');
+        const response = await api.get('/unitmeasure');
         const result: UnitMeasure[] = response.data;
         setUnitsofMeasure(result);
       } catch (error) {
