@@ -21,7 +21,6 @@
  */
 
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
 import Api from "../util/Api";
 
 export interface Company {

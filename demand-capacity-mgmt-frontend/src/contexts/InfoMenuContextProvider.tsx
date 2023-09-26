@@ -22,7 +22,6 @@
 
 
 import React, { createContext, useState, useEffect, useCallback, useContext, FunctionComponent } from 'react';
-import axios from 'axios';
 import { InfoMenuData } from '../interfaces/InfoMenu_interfaces';
 import api from "../util/Api";
 

@@ -45,14 +45,6 @@ const AuthenticationComponent: React.FC = () => {
         }
     }
 
-    const handleRegister =  async () => {
-        try {
-
-        } catch (error){
-
-        }
-        // Handle register logic here
-    };
     return (
         <Container className="login-page" >
             <Row className="justify-content-center align-items-center min-vh-100">
@@ -66,7 +58,7 @@ const AuthenticationComponent: React.FC = () => {
                                     <Form.Control type="email" placeholder="Email" />
                                     <Button variant="primary">Create</Button>
                                 </Form>
-                                <p className="message">Already registered? <a href="#" onClick={() => setShowRegister(false)}>Sign In</a></p>
+                                <p className="message">Already registered? <a href="/login" onClick={() => setShowRegister(false)}>Sign In</a></p>
                             </div>
                         ) : (
                             <div className="login-form">
@@ -75,7 +67,7 @@ const AuthenticationComponent: React.FC = () => {
                                     <Form.Control value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" type="password" />
                                     <Button onClick={handleLogin}>Login</Button>
                                 </Form>
-                                <p className="message">Not registered? <a href="#" onClick={(e) => {e.preventDefault(); setShowRegister(true);}}>Create an Account</a></p>
+                                <p className="message">Not registered? <a href="/login" onClick={(e) => {e.preventDefault(); setShowRegister(true);}}>Create an Account</a></p>
                             </div>
                         )}
                     </div>
