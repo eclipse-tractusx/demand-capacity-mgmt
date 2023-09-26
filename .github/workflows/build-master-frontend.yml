@@ -32,7 +32,7 @@ on:
       - 'v*.*.*-*'
 env:
   IMAGE_NAME: 'demand-capacity-mgmt-frontend'
-  REGISTRY: 'ghcr.io'
+  REGISTRY: 'docker.io'
   IMAGE_NAMESPACE: 'tractusx'
 
 jobs:

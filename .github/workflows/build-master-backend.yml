@@ -34,7 +34,7 @@ on:
 
 env:
   IMAGE_NAME: 'demand-capacity-mgmt-backend'
-  REGISTRY: 'ghcr.io'
+  REGISTRY: 'docker.io'
   IMAGE_NAMESPACE: 'tractusx'
 
 
