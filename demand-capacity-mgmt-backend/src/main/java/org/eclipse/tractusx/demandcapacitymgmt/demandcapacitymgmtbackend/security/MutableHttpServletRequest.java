@@ -2,13 +2,13 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.securi
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
-
 import java.util.*;
 
 public class MutableHttpServletRequest extends HttpServletRequestWrapper {
+
     private final Map<String, String> customHeaders;
 
-    public MutableHttpServletRequest(HttpServletRequest request){
+    public MutableHttpServletRequest(HttpServletRequest request) {
         super(request);
         this.customHeaders = new HashMap<>();
     }
