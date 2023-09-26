@@ -31,7 +31,6 @@ import '../../Auth.css';
 const AuthenticationComponent: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
     const { setUser } = useUser();
     const navigate = useNavigate();
     const [showRegister, setShowRegister] = useState(false);
