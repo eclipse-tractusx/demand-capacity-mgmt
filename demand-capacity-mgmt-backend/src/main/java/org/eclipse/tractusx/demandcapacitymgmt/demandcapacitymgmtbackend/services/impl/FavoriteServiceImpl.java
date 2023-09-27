@@ -88,6 +88,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         FavoriteResponse response = new FavoriteResponse();
         response.setFavoriteId(request.getId().toString());
         response.setfType(request.getType().name());
+        response.setfTypeId(request.getFavoriteTypeId().toString());
         return response;
     }
 
@@ -96,7 +97,8 @@ public class FavoriteServiceImpl implements FavoriteService {
             .builder()
             .id(UUID.randomUUID()) //TODO USER ID HERE
             .favoriteId(UUID.fromString(request.getFavoriteId()))
-            .type(FavoriteType.valueOf(request.getfType()))
+             .favoriteTypeId(UUID.fromString(request.getfTypeId()))
+             .type(FavoriteType.valueOf(request.getfType()))
             .build();
     }
 }
