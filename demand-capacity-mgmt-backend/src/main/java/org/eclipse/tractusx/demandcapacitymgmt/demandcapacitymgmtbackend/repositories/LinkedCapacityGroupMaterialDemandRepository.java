@@ -20,21 +20,15 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupDefaultViewResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedCapacityGroupMaterialDemandRequest;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LinkedCapacityGroupMaterialDemandEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.UUID;
 
-public interface CapacityGroupService {
-    CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest);
-
-    void linkCapacityGroupToMaterialDemand(LinkedCapacityGroupMaterialDemandRequest linkedMaterialDemandRequest);
-
-    CapacityGroupResponse getCapacityGroupById(String CapacityGroupId);
-
-    List<CapacityGroupDefaultViewResponse> getAll();
-}
+@Repository
+public interface LinkedCapacityGroupMaterialDemandRepository extends JpaRepository<LinkedCapacityGroupMaterialDemandEntity, UUID> {
+    void deleteByCapacityGroupID(@NonNull UUID capacityGroupID);}

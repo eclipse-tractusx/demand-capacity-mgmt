@@ -63,7 +63,7 @@ create table material_demand
     changed_at timestamp,
     customer_id uuid constraint customer_id references company_base_data(id),
     supplier_id uuid constraint supplier_id references company_base_data(id),
-    unity_of_measure_id uuid constraint unity_of_measure_id references unit_of_measure(id)
+    unit_of_measure_id uuid constraint unit_of_measure_id references unit_of_measure(id)
 );
 
 create table demand_series
