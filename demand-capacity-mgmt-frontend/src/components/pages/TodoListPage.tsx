@@ -31,8 +31,12 @@ import { FaMagic } from "react-icons/fa";
 function TodoListPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showWizard, setShowWizard] = useState(false);
+    const [showAddToExisting, setShowAddToExisting] = useState(false);
     const toggleWizardModal = () => {
       setShowWizard(!showWizard); // Toggle the state (true to false or false to true)
+    };
+    const toggleAddToExisting = () => {
+      setShowAddToExisting(!showAddToExisting); // Toggle the state (true to false or false to true)
     };
     
     return (
@@ -54,12 +58,12 @@ function TodoListPage() {
                       />
                     </div>
                     <div className="col-sm-6">
-                      <Button
-                        className="btn btn-success float-end ms-2"
-                        data-toggle="modal"
-                      >
-                        <span>Add to existing</span>
-                      </Button>
+                    <Button
+                      className="btn btn-success float-end ms-2"
+                      onClick={() => setShowAddToExisting(true)}
+                    >
+                      <span>Add to existing</span>
+                    </Button>
                       {/* Use the setShowWizard function to show the modal */}
                       <Button
                         className="btn btn-success float-end"
@@ -70,7 +74,13 @@ function TodoListPage() {
                     </div>
                   </div>
                 </div>
-                <DemandList searchQuery={searchQuery} showWizard={showWizard} toggleWizardModal={toggleWizardModal} />
+                <DemandList 
+                searchQuery={searchQuery}
+                showWizard={showWizard}
+                toggleWizardModal={toggleWizardModal}
+                showAddToExisting={showAddToExisting}
+                toggleAddToExisting={toggleAddToExisting}
+                 />
               </div>
             </div>
           </div>

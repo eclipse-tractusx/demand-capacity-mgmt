@@ -31,11 +31,23 @@ import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 import DemandListTable from './DemandListTable';
 import LoadingMessage from '../common/LoadingMessage';
 import CapacityGroupWizardModal from '../common/CapacityGroupWizardModal';
+import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
+import CapacityGroupAddToExisting from '../common/CapacityGroupAddToExisting';
 
-const DemandList: React.FC<{ searchQuery?: string; showWizard?: boolean; toggleWizardModal?: () => void }> = ({
+const DemandList: React.FC<{
+  searchQuery?: string;
+  showWizard?: boolean;
+  toggleWizardModal?: () => void;
+  showAddToExisting?: boolean;
+  toggleAddToExisting?: () => void;
+  capacityGroups?: SingleCapacityGroup[] | null;
+}> = ({
   searchQuery = '',
   showWizard = false,
   toggleWizardModal,
+  showAddToExisting = false,
+  toggleAddToExisting,
+  capacityGroups = null,
 }) => {
 
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -77,6 +89,11 @@ const DemandList: React.FC<{ searchQuery?: string; showWizard?: boolean; toggleW
   const handleCloseWizardModal = () => {
     if (toggleWizardModal) {
       toggleWizardModal(); // Close the modal and set showWizard to false if the prop is provided
+    }
+  };
+  const handleCloseAddToExistingModal = () => {
+    if (toggleAddToExisting) {
+      toggleAddToExisting(); // Close the modal and set showWizard to false if the prop is provided
     }
   };
 
@@ -338,12 +355,18 @@ const DemandList: React.FC<{ searchQuery?: string; showWizard?: boolean; toggleW
             fullscreen="xl"
             selectedDemand={selectedDemand} />
 
-            <CapacityGroupWizardModal
-                  show={showWizard}
-                  onHide={handleCloseWizardModal} // Call this function when the modal is closed
-                  checkedDemands={selectedDemands}
-                  demands={filteredDemands}
-                />
+          <CapacityGroupWizardModal
+            show={showWizard}
+            onHide={handleCloseWizardModal}
+            checkedDemands={selectedDemands}
+            demands={filteredDemands}
+              />
+          <CapacityGroupAddToExisting
+            show={showAddToExisting}
+            onHide={handleCloseAddToExistingModal} 
+            checkedDemands={selectedDemands}
+            capacityGroups={capacityGroups} 
+        />
 
         </>
       )}
