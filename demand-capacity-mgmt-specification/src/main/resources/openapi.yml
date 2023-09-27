@@ -28,6 +28,222 @@ servers:
 
 paths:
 
+  /loggingHistory:
+    post:
+      tags:
+        - loggingHistory
+      summary: create a Logging History
+      operationId: postLogs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoggingHistoryRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoggingHistoryResponse'
+
+    delete:
+      tags:
+        - loggingHistory
+      summary: Delete All Logs
+      operationId: deleteAllLogs
+      responses:
+        200:
+          description: All logs deleted successfully.
+        500:
+          description: Error occurred while deleting logs.
+
+    get:
+      tags:
+        - loggingHistory
+      summary: loggingHistory
+      operationId: getLoggingHistory
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoggingHistoryResponse'
+
+
+  /loggingHistory/{log_id}:
+    delete:
+      tags:
+        - loggingHistory
+      summary: delete Log by Id
+      operationId: deleteLogById
+      parameters:
+        - in: 'path'
+          name: 'log_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete log with id
+
+
+
+  /loggingHistory/archivedLog:
+    post:
+      tags:
+        - loggingHistory
+      summary: create archivedLog
+      operationId: createArchivedLog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoggingHistoryRequest'
+      responses:
+        200:
+          description: Created Archived Log
+
+
+    get:
+      tags:
+        - loggingHistory
+      summary: loggingHistory
+      operationId: getArchivedLogs
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArchivedLoggingHistoryResponse'
+
+
+    delete:
+      tags:
+        - loggingHistory
+      summary: Delete All Archived Logs
+      operationId: deleteAllArchivedLogs
+      responses:
+        200:
+          description: All Archived logs deleted successfully.
+        500:
+          description: Error occurred while deleting logs.
+
+
+  /loggingHistory/archivedLog/{log_id}:
+    delete:
+      tags:
+        - loggingHistory
+      summary: delete archived Log by Id
+      operationId: deleteArchivedLogById
+      parameters:
+        - in: 'path'
+          name: 'log_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete log with id
+
+
+  /loggingHistory/{capacity_group_id}:
+    get:
+      tags:
+        - loggingHistory
+      summary: Get a loggingHistory by capacity_group_id
+      operationId: getLoggingHistoryByCapacityGroupId
+      parameters:
+        - name: capacity_group_id
+          in: path
+          required: true
+          description: id of capacity group
+          schema:
+            type: string
+      responses:
+        200:
+          description: loggingHistory found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoggingHistoryResponse'
+        404:
+          description: loggingHistory not found
+
+  /loggingHistory/{material_demand_id}:
+    get:
+      tags:
+        - loggingHistory
+      summary: Get a loggingHistory by MaterialDemandId
+      operationId: getLoggingHistoryByMaterialDemandId
+      parameters:
+        - name: material_demand_id
+          in: path
+          required: true
+          description: id of material demand
+          schema:
+            type: string
+      responses:
+        200:
+          description: loggingHistory found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoggingHistoryResponse'
+        404:
+          description: loggingHistory not found
+
+
+  /loggingHistory/favoriteMaterialDemands:
+    get:
+      tags:
+        - loggingHistory
+      summary: Get favoriteMaterialDemand
+      operationId: getLoggingHistoryForFavoriteMaterialDemands
+      responses:
+        200:
+          description: loggingHistory found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoggingHistoryResponse'
+        404:
+          description: loggingHistory not found
+
+
+  /loggingHistory/favoriteCapacityGroups:
+    get:
+      tags:
+        - loggingHistory
+      summary: Get favoriteCapacityGroups
+      operationId: getLoggingHistoryForFavoriteCapacityGroups
+      responses:
+        200:
+          description: loggingHistory found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoggingHistoryResponse'
+        404:
+          description: loggingHistory not found
+
+
   /demand:
     post:
       tags:
@@ -425,6 +641,98 @@ components:
         actualDemand:
           type: number
 
+
+    LoggingHistoryRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        userAccount:
+          type: string
+        timeCreated:
+          type: string
+        objectType:
+          type: string
+        eventType:
+          type: string
+        capacityGroupId:
+          type: string
+        materialDemandId:
+          type: string
+        eventDescription:
+          type: string
+        isFavorited:
+          type: boolean
+
+
+    ArchivedLoggingHistoryRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        userAccount:
+          type: string
+        timeCreated:
+          type: string
+        objectType:
+          type: string
+        eventType:
+          type: string
+        capacityGroupId:
+          type: string
+        materialDemandId:
+          type: string
+        eventDescription:
+          type: string
+        isFavorited:
+          type: boolean
+
+    ArchivedLoggingHistoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        userAccount:
+          type: string
+        timeCreated:
+          type: string
+        objectType:
+          type: string
+        eventType:
+          type: string
+        capacityGroupId:
+          type: string
+        materialDemandId:
+          type: string
+        eventDescription:
+          type: string
+        isFavorited:
+          type: boolean
+
+    LoggingHistoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        userAccount:
+          type: string
+        timeCreated:
+          type: string
+        objectType:
+          type: string
+        eventType:
+          type: string
+        capacityGroupId:
+          type: string
+        materialDemandId:
+          type: string
+        eventDescription:
+          type: string
+        isFavorited:
+          type: boolean
+
+
+
     ProductDto:
       type: object
       properties:
@@ -781,6 +1089,8 @@ components:
           type: string
         fType:
           type: string
+        fTypeId:
+          type: string
 
     FavoriteResponse:
       type: object
@@ -788,4 +1098,6 @@ components:
         favoriteId:
           type: string
         fType:
+          type: string
+        fTypeId:
           type: string

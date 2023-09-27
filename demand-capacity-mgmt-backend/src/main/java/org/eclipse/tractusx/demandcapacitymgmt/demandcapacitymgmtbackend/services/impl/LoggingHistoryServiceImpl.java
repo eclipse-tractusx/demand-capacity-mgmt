@@ -65,7 +65,7 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
 
     @Override
     public LoggingHistoryResponse createLog(LoggingHistoryRequest loggingHistoryRequest) {
-        loggingHistoryRequest.setUserAccount("User@gmail.com");// TODO : Add the user account when the login is ready
+        loggingHistoryRequest.setUserAccount("User@gmail.com"); // TODO : Add the user account when the login is ready
         LocalDateTime currentLocalDateTime = LocalDateTime.now();
         loggingHistoryRequest.setTimeCreated(Timestamp.valueOf(currentLocalDateTime).toString());
         LoggingHistoryEntity loggingHistoryEntity = convertDtoToEntity(loggingHistoryRequest);
@@ -92,7 +92,8 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     @Override
     public List<ArchivedLoggingHistoryResponse> getAllArchivedLogs() {
         List<ArchivedLogEntity> loggingHistoryEntityList = archivedLogsRepository.findAll();
-        return loggingHistoryEntityList.stream().map(this::convertArchivedLoggingHistoryResponseDto).toList();    }
+        return loggingHistoryEntityList.stream().map(this::convertArchivedLoggingHistoryResponseDto).toList();
+    }
 
     @Override
     public void deleteAllArchivedLogs() {
@@ -100,54 +101,53 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     }
 
     @Override
-    public void deleteArchivedLogById(String logId) {
-
-    }
+    public void deleteArchivedLogById(String logId) {}
 
     private LoggingHistoryEntity convertDtoToEntity(LoggingHistoryRequest loggingHistoryRequest) {
-
-        UUID materialDemandId = loggingHistoryRequest.getMaterialDemandId() == null ? null : UUID.fromString(loggingHistoryRequest.getMaterialDemandId());
-        UUID capacityGroupId = loggingHistoryRequest.getCapacityGroupId() == null ? null : UUID.fromString(loggingHistoryRequest.getCapacityGroupId());
+        UUID materialDemandId = loggingHistoryRequest.getMaterialDemandId() == null
+            ? null
+            : UUID.fromString(loggingHistoryRequest.getMaterialDemandId());
+        UUID capacityGroupId = loggingHistoryRequest.getCapacityGroupId() == null
+            ? null
+            : UUID.fromString(loggingHistoryRequest.getCapacityGroupId());
 
         return LoggingHistoryEntity
-                .builder()
-                .id(UUID.randomUUID())
-                .eventType(EventType.valueOf(loggingHistoryRequest.getEventType()))
-                .objectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()))
-                .materialDemandId(materialDemandId)
-                .capacityGroupId(capacityGroupId)
-                .userAccount(loggingHistoryRequest.getUserAccount())
-                .time_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()))
-                .description(loggingHistoryRequest.getEventDescription())
-                .isFavorited(loggingHistoryRequest.getIsFavorited())
-                .build();
+            .builder()
+            .id(UUID.randomUUID())
+            .eventType(EventType.valueOf(loggingHistoryRequest.getEventType()))
+            .objectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()))
+            .materialDemandId(materialDemandId)
+            .capacityGroupId(capacityGroupId)
+            .userAccount(loggingHistoryRequest.getUserAccount())
+            .time_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()))
+            .description(loggingHistoryRequest.getEventDescription())
+            .isFavorited(loggingHistoryRequest.getIsFavorited())
+            .build();
     }
 
-
     private ArchivedLogEntity convertDtoToArchivedEntity(LoggingHistoryRequest loggingHistoryRequest) {
-
         return ArchivedLogEntity
-                .builder()
-                .id(UUID.randomUUID())
-                .eventType(EventType.valueOf(loggingHistoryRequest.getEventType()))
-                .objectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()))
-                .materialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()))
-                .capacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()))
-                .userAccount(loggingHistoryRequest.getUserAccount())
-                .time_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()))
-                .description(loggingHistoryRequest.getEventDescription())
-                .isFavorited(loggingHistoryRequest.getIsFavorited())
-                .build();
+            .builder()
+            .id(UUID.randomUUID())
+            .eventType(EventType.valueOf(loggingHistoryRequest.getEventType()))
+            .objectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()))
+            .materialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()))
+            .capacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()))
+            .userAccount(loggingHistoryRequest.getUserAccount())
+            .time_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()))
+            .description(loggingHistoryRequest.getEventDescription())
+            .isFavorited(loggingHistoryRequest.getIsFavorited())
+            .build();
     }
 
     @Override
     public List<LoggingHistoryResponse> getLoggingHistoryByCapacityId(String capacityGroupId) {
         List<LoggingHistoryResponse> loggingHistoryResponses = getAllLoggingHistory();
         loggingHistoryResponses =
-                loggingHistoryResponses
-                        .stream()
-                        .filter(log -> Objects.equals(log.getCapacityGroupId(), capacityGroupId))
-                        .collect(Collectors.toList());
+            loggingHistoryResponses
+                .stream()
+                .filter(log -> Objects.equals(log.getCapacityGroupId(), capacityGroupId))
+                .collect(Collectors.toList());
         return loggingHistoryResponses;
     }
 
@@ -155,10 +155,10 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     public List<LoggingHistoryResponse> getLoggingHistoryByMaterialDemandId(String materialDemandId) {
         List<LoggingHistoryResponse> loggingHistoryResponses = getAllLoggingHistory();
         loggingHistoryResponses =
-                loggingHistoryResponses
-                        .stream()
-                        .filter(log -> Objects.equals(log.getMaterialDemandId(), materialDemandId))
-                        .collect(Collectors.toList());
+            loggingHistoryResponses
+                .stream()
+                .filter(log -> Objects.equals(log.getMaterialDemandId(), materialDemandId))
+                .collect(Collectors.toList());
         return loggingHistoryResponses;
     }
 
@@ -166,10 +166,10 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     public List<LoggingHistoryResponse> filterByTime(Timestamp startTime, Timestamp endTime) {
         List<LoggingHistoryResponse> loggingHistoryResponses = getAllLoggingHistory();
         loggingHistoryResponses =
-                loggingHistoryResponses
-                        .stream()
-                        .filter(log -> isOnTimeInterval(startTime, endTime, Timestamp.valueOf(log.getTimeCreated())))
-                        .collect(Collectors.toList());
+            loggingHistoryResponses
+                .stream()
+                .filter(log -> isOnTimeInterval(startTime, endTime, Timestamp.valueOf(log.getTimeCreated())))
+                .collect(Collectors.toList());
         return loggingHistoryResponses;
     }
 
@@ -181,10 +181,10 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     public List<LoggingHistoryResponse> filterByEventType(EventType eventType) {
         List<LoggingHistoryResponse> loggingHistoryResponses = getAllLoggingHistory();
         loggingHistoryResponses =
-                loggingHistoryResponses
-                        .stream()
-                        .filter(log -> Objects.equals(log.getEventType(), eventType.name()))
-                        .collect(Collectors.toList());
+            loggingHistoryResponses
+                .stream()
+                .filter(log -> Objects.equals(log.getEventType(), eventType.name()))
+                .collect(Collectors.toList());
         return loggingHistoryResponses;
     }
 
@@ -207,13 +207,13 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     public List<LoggingHistoryResponse> filterByFavoriteMaterialDemand() {
         List<LoggingHistoryResponse> loggingHistoryResponses = new java.util.ArrayList<>(List.of());
         List<FavoriteResponse> favoriteResponses = favoriteService.getAllFavoritesByType(
-                FavoriteType.MATERIAL_DEMAND.toString()
+            FavoriteType.MATERIAL_DEMAND.toString()
         );
 
         favoriteResponses.forEach(
-                favoriteResponse -> {
-                    loggingHistoryResponses.addAll(getLoggingHistoryByMaterialDemandId(favoriteResponse.getfTypeId()));
-                }
+            favoriteResponse -> {
+                loggingHistoryResponses.addAll(getLoggingHistoryByMaterialDemandId(favoriteResponse.getfTypeId()));
+            }
         );
         return loggingHistoryResponses;
     }
@@ -222,13 +222,13 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     public List<LoggingHistoryResponse> filterByFavoriteCapacityGroup() {
         List<LoggingHistoryResponse> loggingHistoryResponses = new java.util.ArrayList<>(List.of());
         List<FavoriteResponse> favoriteResponses = favoriteService.getAllFavoritesByType(
-                FavoriteType.CAPACITY_GROUP.toString()
+            FavoriteType.CAPACITY_GROUP.toString()
         );
 
         favoriteResponses.forEach(
-                favoriteResponse -> {
-                    loggingHistoryResponses.addAll(getLoggingHistoryByCapacityId(favoriteResponse.getfTypeId()));
-                }
+            favoriteResponse -> {
+                loggingHistoryResponses.addAll(getLoggingHistoryByCapacityId(favoriteResponse.getfTypeId()));
+            }
         );
         return loggingHistoryResponses;
     }
@@ -261,7 +261,9 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         return responseDto;
     }
 
-    private ArchivedLoggingHistoryResponse convertArchivedLoggingHistoryResponseDto(ArchivedLogEntity archivedLogEntity) {
+    private ArchivedLoggingHistoryResponse convertArchivedLoggingHistoryResponseDto(
+        ArchivedLogEntity archivedLogEntity
+    ) {
         ArchivedLoggingHistoryResponse responseDto = new ArchivedLoggingHistoryResponse();
 
         responseDto.setId(archivedLogEntity.getId().toString());
@@ -276,6 +278,4 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
 
         return responseDto;
     }
-
-
 }
