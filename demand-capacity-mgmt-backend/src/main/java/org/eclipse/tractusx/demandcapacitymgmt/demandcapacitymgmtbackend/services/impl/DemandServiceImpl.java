@@ -91,6 +91,11 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
+    public MaterialDemandEntity getDemandEntityById(String demandId) {
+        return getDemandEntity(demandId);
+    }
+
+    @Override
     public void deleteDemandById(String demandId) {
         MaterialDemandEntity demand = getDemandEntity(demandId);
 

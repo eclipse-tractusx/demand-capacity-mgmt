@@ -33,6 +33,8 @@ public interface DemandService {
 
     List<MaterialDemandResponse> getAllDemandsByProjectId();
 
+    MaterialDemandEntity getDemandEntityById(String demandId);
+
     MaterialDemandResponse getDemandById(String demandId);
 
     MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest);

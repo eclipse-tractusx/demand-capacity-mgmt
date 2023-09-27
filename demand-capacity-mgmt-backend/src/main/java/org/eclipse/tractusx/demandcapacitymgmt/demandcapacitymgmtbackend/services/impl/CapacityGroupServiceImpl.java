@@ -105,6 +105,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         return capacityGroup.get();
     }
 
+    @Override
+    public CapacityGroupEntity getCapacityGroupEntityById(String capacityGroupId) {
+        return getCapacityGroupEntity(capacityGroupId);
+    }
+
     private void validateRequestFields(CapacityGroupRequest capacityGroupRequest) {
         if (!UUIDUtil.checkValidUUID(capacityGroupRequest.getCustomer())) {
             throw new BadRequestException(
