@@ -38,6 +38,8 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.WeekBasedMaterialDemand;
 import org.hibernate.annotations.ColumnTransformer;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "week_based_material_demand")
 @Data
@@ -49,7 +51,7 @@ public class WeekBasedMaterialDemandEntity {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    private UUID id;
 
     @Convert(converter = WeekBasedMaterialConverter.class)
     @Column(name = "data", columnDefinition = "jsonb")

@@ -29,19 +29,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandCategoryService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UnityOfMeasureService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
@@ -61,7 +62,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     private final DemandCategoryService demandCategoryService;
 
-    //TODO, Saja :  Here postLogs
+    private final LoggingHistoryService loggingHistoryService;
+
+    private final FavoriteService favoriteService;
+
+
     @Override
     public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
         validateRequestFields(capacityGroupRequest);
@@ -70,8 +75,32 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
         capacityGroupEntity = capacityGroupRepository.save(capacityGroupEntity);
 
+        postLogs(capacityGroupEntity.getCapacityGroupId().toString());
+
         return convertCapacityGroupDto(capacityGroupEntity);
     }
+
+    private void postLogs(String capacityGroupId){
+
+        AtomicBoolean isFavorited = new AtomicBoolean(false);
+        favoriteService.getAllFavoritesByType(FavoriteType.CAPACITY_GROUP.toString()).forEach(favoriteResponse -> {
+            if(favoriteResponse.getfTypeId().equals(capacityGroupId)){
+                isFavorited.set(true);
+            }
+        });
+        LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
+        loggingHistoryRequest.setObjectType(EventObjectType.CAPACITY_GROUP.name());
+        loggingHistoryRequest.setMaterialDemandId("");
+        loggingHistoryRequest.setCapacityGroupId(capacityGroupId);
+        loggingHistoryRequest.setEventDescription("Capacity Group Created");
+        loggingHistoryRequest.setIsFavorited(isFavorited.get());
+
+
+        // TODO : Add EventType
+        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
+        loggingHistoryService.createLog(loggingHistoryRequest);
+    }
+
 
     @Override
     public CapacityGroupResponse getCapacityGroupById(String capacityGroupId) {
@@ -173,8 +202,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             );
         }
     }
-
-    //TODO, Saja: Here postLogs
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
         UUID capacityGroupId = UUID.randomUUID();
         AtomicReference<String> materialNumberCustomer = new AtomicReference<>("");
@@ -260,7 +287,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             .build();
     }
 
-    //TODO, Saja : Here postLogs
     private CapacityTimeSeries enrichCapacityTimeSeries(
         LocalDateTime calendarWeek,
         Double actualCapacity,

@@ -22,26 +22,32 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesCategoryDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandWeekSeriesDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
+
+import io.micrometer.core.lang.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LinkDemandService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
+
+import javax.validation.constraints.Null;
 
 @RequiredArgsConstructor
 @Service
@@ -54,7 +60,8 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
 
     private final DemandService demandService;
 
-    //TODO, Saja: Here postLogs
+    private final LoggingHistoryService loggingHistoryService;
+
     @Override
     public void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDtoList) {
         weekBasedMaterialDemandRequestDtoList.forEach(
@@ -64,12 +71,26 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                 WeekBasedMaterialDemandEntity weekBasedMaterialDemand = convertEntity(
                     weekBasedMaterialDemandRequestDto
                 );
+                weekBasedMaterialDemand.setId(UUID.fromString(weekBasedMaterialDemandRequestDto.getMaterialDemandId()));
+                postLogs(weekBasedMaterialDemand.getId().toString());
                 weekBasedMaterialDemandRepository.save(weekBasedMaterialDemand);
             }
         );
     }
 
-    // TODO, Saja: Here postLogs
+    private void postLogs(String weekBasedMaterialDemandId){
+        LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
+        loggingHistoryRequest.setObjectType(EventObjectType.WEEKLY_MATERIAL_DEMAND.name());
+        loggingHistoryRequest.setMaterialDemandId(weekBasedMaterialDemandId);
+        loggingHistoryRequest.setIsFavorited(false);
+        loggingHistoryRequest.setEventDescription("WEEKLY_MATERIAL_DEMAND Created");
+        //TODO: Add Event
+        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
+
+        loggingHistoryService.createLog(loggingHistoryRequest);
+    }
+
+
     @Override
     public void sendWeekBasedMaterial() {}
 

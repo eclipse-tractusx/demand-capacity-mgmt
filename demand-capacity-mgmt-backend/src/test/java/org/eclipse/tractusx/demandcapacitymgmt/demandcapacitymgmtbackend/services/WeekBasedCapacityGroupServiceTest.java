@@ -33,6 +33,8 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryD
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedDemandSeriesRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
 import java.util.List;
+import java.util.UUID;
+
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
@@ -137,7 +139,7 @@ public class WeekBasedCapacityGroupServiceTest {
         return WeekBasedCapacityGroupEntity
             .builder()
             .viewed(false)
-            .id(1l)
+            .id(UUID.randomUUID())
             .weekBasedCapacityGroup(weekBasedCapacityGroupRequest)
             .build();
     }

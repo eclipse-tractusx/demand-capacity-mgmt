@@ -48,6 +48,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/LoggingHistoryResponse'
 
+    delete:
+      tags:
+        - loggingHistory
+      summary: Delete All Logs
+      operationId: deleteAllLogs
+      responses:
+        200:
+          description: All logs deleted successfully.
+        500:
+          description: Error occurred while deleting logs.
+
     get:
       tags:
         - loggingHistory
@@ -62,6 +73,87 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LoggingHistoryResponse'
+
+
+  /loggingHistory/{log_id}:
+    delete:
+      tags:
+        - loggingHistory
+      summary: delete Log by Id
+      operationId: deleteLogById
+      parameters:
+        - in: 'path'
+          name: 'log_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete log with id
+
+
+
+  /loggingHistory/archivedLog:
+    post:
+      tags:
+        - loggingHistory
+      summary: create archivedLog
+      operationId: createArchivedLog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoggingHistoryRequest'
+      responses:
+        200:
+          description: Created Archived Log
+
+
+    get:
+      tags:
+        - loggingHistory
+      summary: loggingHistory
+      operationId: getArchivedLogs
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArchivedLoggingHistoryResponse'
+
+
+    delete:
+      tags:
+        - loggingHistory
+      summary: Delete All Archived Logs
+      operationId: deleteAllArchivedLogs
+      responses:
+        200:
+          description: All Archived logs deleted successfully.
+        500:
+          description: Error occurred while deleting logs.
+
+
+  /loggingHistory/archivedLog/{log_id}:
+    delete:
+      tags:
+        - loggingHistory
+      summary: delete archived Log by Id
+      operationId: deleteArchivedLogById
+      parameters:
+        - in: 'path'
+          name: 'log_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete log with id
+
 
   /demand:
     post:
@@ -919,10 +1011,6 @@ components:
           type: string
         timeCreated:
           type: string
-        eventStatus:
-          type: string
-        userSpecificEventStatus:
-          type: string
         objectType:
           type: string
         eventType:
@@ -937,6 +1025,49 @@ components:
           type: boolean
 
 
+    ArchivedLoggingHistoryRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        userAccount:
+          type: string
+        timeCreated:
+          type: string
+        objectType:
+          type: string
+        eventType:
+          type: string
+        capacityGroupId:
+          type: string
+        materialDemandId:
+          type: string
+        eventDescription:
+          type: string
+        isFavorited:
+          type: boolean
+
+    ArchivedLoggingHistoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        userAccount:
+          type: string
+        timeCreated:
+          type: string
+        objectType:
+          type: string
+        eventType:
+          type: string
+        capacityGroupId:
+          type: string
+        materialDemandId:
+          type: string
+        eventDescription:
+          type: string
+        isFavorited:
+          type: boolean
 
     LoggingHistoryResponse:
       type: object
@@ -946,10 +1077,6 @@ components:
         userAccount:
           type: string
         timeCreated:
-          type: string
-        eventStatus:
-          type: string
-        userSpecificEventStatus:
           type: string
         objectType:
           type: string

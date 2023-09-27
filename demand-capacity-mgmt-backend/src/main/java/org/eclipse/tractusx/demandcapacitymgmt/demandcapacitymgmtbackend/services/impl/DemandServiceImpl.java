@@ -29,20 +29,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandCategoryService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UnityOfMeasureService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 
 @RequiredArgsConstructor
 @Service
@@ -57,7 +59,10 @@ public class DemandServiceImpl implements DemandService {
 
     private final DemandCategoryService demandCategoryService;
 
-    //TODO, Saja: Here postLogs
+    private final LoggingHistoryService loggingHistoryService;
+
+    private final FavoriteService favoriteService;
+
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest) {
         validateMaterialDemandRequestFields(materialDemandRequest);
@@ -66,8 +71,32 @@ public class DemandServiceImpl implements DemandService {
 
         materialDemandEntity = materialDemandRepository.save(materialDemandEntity);
 
+        postLogs(materialDemandEntity.getId().toString(), "MATERIAL DEMAND Created");
         return convertDemandResponseDto(materialDemandEntity);
     }
+
+
+
+    private void postLogs(String materialDemandId, String eventDescription ){
+        AtomicBoolean isFavorited = new AtomicBoolean(false);
+        favoriteService.getAllFavoritesByType(FavoriteType.MATERIAL_DEMAND.toString()).forEach(favoriteResponse -> {
+            if(favoriteResponse.getfTypeId().equals(materialDemandId)){
+                isFavorited.set(true);
+            }
+        });
+        LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
+        loggingHistoryRequest.setObjectType(EventObjectType.MATERIAL_DEMAND.name());
+        loggingHistoryRequest.setMaterialDemandId(materialDemandId);
+        loggingHistoryRequest.setIsFavorited(isFavorited.get());
+        loggingHistoryRequest.setEventDescription(eventDescription);
+
+        // TODO : Add EventType
+        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
+
+        loggingHistoryService.createLog(loggingHistoryRequest);
+    }
+
+
 
     @Override
     public List<MaterialDemandResponse> getAllDemandsByProjectId() {
@@ -87,21 +116,20 @@ public class DemandServiceImpl implements DemandService {
         return getDemandEntity(demandId);
     }
 
-    //TODO, Saja: Here postLogs
     @Override
     public MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest) {
         MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest);
         demand.setId(UUID.fromString(demandId));
 
         demand = materialDemandRepository.save(demand);
+        postLogs(demandId,"MATERIAL DEMAND Updated");
         return convertDemandResponseDto(demand);
     }
 
-    //TODO, Saja: Here postLogs
     @Override
     public void deleteDemandById(String demandId) {
         MaterialDemandEntity demand = getDemandEntity(demandId);
-
+        postLogs(demandId,"MATERIAL DEMAND Deleted");
         materialDemandRepository.delete(demand);
     }
 

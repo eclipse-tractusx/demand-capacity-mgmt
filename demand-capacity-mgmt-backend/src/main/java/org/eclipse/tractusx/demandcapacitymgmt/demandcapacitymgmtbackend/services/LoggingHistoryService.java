@@ -31,16 +31,18 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 public interface LoggingHistoryService {
     List<LoggingHistoryResponse> getAllLoggingHistory();
     LoggingHistoryResponse createLog(LoggingHistoryRequest logEntity);
-
-    // TODO, Saja: write the queries for the filter methods ...
+    void deleteLogById(String logId);
+    void deleteAllLogs();
+    void archiveLog(LoggingHistoryRequest loggingHistoryRequest);
+    List<ArchivedLoggingHistoryResponse> getAllArchivedLogs();
+    void deleteAllArchivedLogs();
+    void deleteArchivedLogById(String logId);
     List<LoggingHistoryResponse> getLoggingHistoryByCapacityId(String capacityGroupId);
     List<LoggingHistoryResponse> getLoggingHistoryByMaterialDemandId(String materialDemandId);
     List<LoggingHistoryResponse> filterByFavoriteMaterialDemand();
     List<LoggingHistoryResponse> filterByFavoriteCapacityGroup();
-
     List<LoggingHistoryResponse> filterByTime(Timestamp startTime, Timestamp endTime);
     List<LoggingHistoryResponse> filterByEventStatus(EventStatus eventStatus);
-
     List<LoggingHistoryResponse> filterByEventType(EventType eventType);
     List<LoggingHistoryResponse> getLogsFavoredByMe();
     List<LoggingHistoryResponse> getLogsManagedByMe();

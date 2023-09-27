@@ -37,6 +37,8 @@ import lombok.NoArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters.WeekBasedCapacityGroupConverter;
 import org.hibernate.annotations.ColumnTransformer;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "week_based_capacity")
 @Data
@@ -48,7 +50,7 @@ public class WeekBasedCapacityGroupEntity {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    private UUID id;
 
     @Convert(converter = WeekBasedCapacityGroupConverter.class)
     @Column(name = "data", columnDefinition = "jsonb")

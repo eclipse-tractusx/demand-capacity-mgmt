@@ -24,12 +24,17 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import java.util.LinkedList;
 import java.util.List;
+
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LinkDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LinkDemandService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -38,8 +43,8 @@ import org.springframework.stereotype.Service;
 public class LinkDemandServiceImpl implements LinkDemandService {
 
     private final LinkDemandRepository linkDemandRepository;
+    private final LoggingHistoryService loggingHistoryService;
 
-    //TODO, Saja: Here postLogs (post real data then get these real data )
     @Override
     public void createLinkDemands(List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities) {
         List<LinkDemandEntity> linkDemandEntityList = new LinkedList<>();
@@ -51,8 +56,16 @@ public class LinkDemandServiceImpl implements LinkDemandService {
                 linkDemandEntityList.addAll(linkDemandEntity);
             }
         );
-
+        postLogs();
         linkDemandRepository.saveAll(linkDemandEntityList);
+    }
+
+    private void postLogs(){
+        LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
+        loggingHistoryRequest.setObjectType(EventObjectType.LINK_DEMAND_SERVICE.name());
+        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
+        loggingHistoryRequest.setEventDescription("LinkDemands Created");
+        loggingHistoryService.createLog(loggingHistoryRequest);
     }
 
     private List<LinkDemandEntity> convertFromWeekBasedMaterial(WeekBasedMaterialDemandEntity weekBasedMaterialDemand) {

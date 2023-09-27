@@ -23,10 +23,8 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.LoggingHistoryApi;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CompanyDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
@@ -40,6 +38,45 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoggingHistoryController implements LoggingHistoryApi {
 
     private final LoggingHistoryService loggingHistoryService;
+
+    @Override
+    public ResponseEntity<Void> createArchivedLog(LoggingHistoryRequest loggingHistoryRequest) {
+        loggingHistoryService.archiveLog(loggingHistoryRequest);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteAllArchivedLogs(){
+        loggingHistoryService.deleteAllArchivedLogs();
+        return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteAllLogs() {
+        loggingHistoryService.deleteAllLogs();
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteArchivedLogById(String logId) throws Exception {
+        loggingHistoryService.deleteArchivedLogById(logId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteLogById(String logId) throws Exception {
+        loggingHistoryService.deleteLogById(logId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
+
+    @Override
+    public ResponseEntity<List<ArchivedLoggingHistoryResponse>> getArchivedLogs() throws Exception {
+        return ResponseEntity.status(HttpStatus.OK).body(loggingHistoryService.getAllArchivedLogs());
+
+    }
 
     @Override
     public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistory() {
