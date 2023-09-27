@@ -38,6 +38,7 @@ import lombok.NoArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters.WeekBasedMaterialConverter;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.WeekBasedMaterialDemand;
 import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "week_based_material_demand")
@@ -49,7 +50,9 @@ public class WeekBasedMaterialDemandEntity {
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
     @Convert(converter = WeekBasedMaterialConverter.class)

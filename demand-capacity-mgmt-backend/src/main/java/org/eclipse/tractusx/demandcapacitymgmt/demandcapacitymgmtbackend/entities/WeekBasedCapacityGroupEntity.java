@@ -40,6 +40,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.WeekBasedCapacityGroup;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.WeekBasedMaterialDemand;
 import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "week_based_capacity")
@@ -51,7 +52,9 @@ public class WeekBasedCapacityGroupEntity {
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
     @Convert(converter = WeekBasedCapacityGroupConverter.class)
