@@ -21,7 +21,7 @@
  */
 
 import Nav from "react-bootstrap/Nav";
-import { FaArrowDown, FaArrowUp, FaStar } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaHome, FaHouseUser, FaStar } from "react-icons/fa";
 import { useInfoMenu } from "../../contexts/InfoMenuContextProvider";
 
 function InfoMenu() {
@@ -31,6 +31,7 @@ function InfoMenu() {
     return (
         <>
             <Nav className="me-auto">
+                <Nav.Link href="/"><FaHome/> Home</Nav.Link>
                 <Nav.Link href="#favorites"><FaStar /> Favorites <span className="badge rounded-pill text-bg-primary" id="favorites-count">-</span></Nav.Link>
                 {/* TODO: Add functionality for Favorites link */}
                 <Nav.Link href="#alerts">Alerts
