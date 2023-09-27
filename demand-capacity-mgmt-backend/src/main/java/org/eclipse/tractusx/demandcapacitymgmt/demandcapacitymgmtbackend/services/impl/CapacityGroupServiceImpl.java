@@ -23,13 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -42,9 +35,16 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandCategoryService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UnityOfMeasureService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 @Service
@@ -122,59 +122,12 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             );
         }
 
-        capacityGroupRequest.getSupplierLocations().forEach(UUIDUtil::checkValidUUID);
-
-        List<UUID> expectedSuppliersLocation = capacityGroupRequest
-            .getSupplierLocations()
-            .stream()
-            .map(UUIDUtil::generateUUIDFromString)
-            .toList();
-
-        List<CompanyEntity> companyEntities = companyService.getCompanyIn(expectedSuppliersLocation);
-
-        boolean hasAllCompanies = companyEntities
-            .stream()
-            .map(CompanyEntity::getId)
-            .allMatch(expectedSuppliersLocation::contains);
-
-        if (!hasAllCompanies) {
-            throw new BadRequestException(
-                400,
-                "Not a valid company",
-                new ArrayList<>(List.of("hasCompanies returned false."))
-            );
-        }
-
-        List<LocalDateTime> dates = capacityGroupRequest
-            .getCapacities()
-            .stream()
-            .map(capacityResponse -> DataConverterUtil.convertFromString(capacityResponse.getCalendarWeek()))
-            .toList();
-
-        if (
-            Boolean.TRUE.equals(!DataConverterUtil.checkListAllMonday(dates)) ||
-            Boolean.TRUE.equals(!DataConverterUtil.checkDatesSequence(dates))
-        ) {
-            throw new BadRequestException(
-                400,
-                "Dates provided failed to verify",
-                new ArrayList<>(
-                    List.of(
-                        "Dates need to be all Monday",
-                        "Dates need to be aligned one week apart (Ex: monday to monday)"
-                    )
-                )
-            );
-        }
     }
 
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
         UUID capacityGroupId = UUID.randomUUID();
         AtomicReference<String> materialNumberCustomer = new AtomicReference<>("");
         AtomicReference<String> materialDescriptionCustomer = new AtomicReference<>("");
-        UnitMeasureEntity unitMeasure = unityOfMeasureService.findById(
-            UUIDUtil.generateUUIDFromString(capacityGroupRequest.getUnitOfMeasure())
-        );
 
         CompanyEntity supplier = companyService.getCompanyById(
             UUIDUtil.generateUUIDFromString(capacityGroupRequest.getSupplier())
@@ -183,74 +136,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         CompanyEntity customer = companyService.getCompanyById(
             UUIDUtil.generateUUIDFromString(capacityGroupRequest.getSupplier())
         );
-
-        List<CapacityTimeSeries> capacityTimeSeries = capacityGroupRequest
-            .getCapacities()
-            .stream()
-            .map(
-                capacityRequest ->
-                    enrichCapacityTimeSeries(
-                        DataConverterUtil.convertFromString(capacityRequest.getCalendarWeek()),
-                        capacityRequest.getActualCapacity().doubleValue(),
-                        capacityRequest.getMaximumCapacity().doubleValue()
-                    )
-            )
-            .toList();
-
-        List<LinkedDemandSeries> linkDemandEntityList = capacityGroupRequest
-            .getLinkedDemandSeries()
-            .stream()
-            .map(
-                s -> {
-                    LinkDemandEntity linkDemandEntity = linkDemandRepository
-                        .findById(UUIDUtil.generateUUIDFromString(s))
-                        .orElseThrow();
-
-                    WeekBasedMaterialDemandEntity weekBasedMaterialDemandEntity = linkDemandEntity.getWeekBasedMaterialDemand();
-                    WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto = weekBasedMaterialDemandEntity.getWeekBasedMaterialDemand();
-                    CompanyEntity customerId = companyService.getCompanyById(
-                        UUID.fromString(weekBasedMaterialDemandRequestDto.getCustomer())
-                    );
-
-                    materialNumberCustomer.set(linkDemandEntity.getMaterialNumberCustomer());
-
-                    materialDescriptionCustomer.set(linkDemandEntity.getMaterialNumberCustomer());
-
-                    String demandCategoryId = linkDemandEntity.getDemandCategoryId();
-                    DemandCategoryEntity demandCategoryEntity = demandCategoryService.findById(
-                        UUID.fromString(demandCategoryId)
-                    );
-
-                    linkDemandEntity.setLinked(true);
-                    linkDemandRepository.save(linkDemandEntity);
-
-                    return LinkedDemandSeries
-                        .builder()
-                        .materialNumberSupplier(linkDemandEntity.getMaterialNumberSupplier())
-                        .materialNumberCustomer(linkDemandEntity.getMaterialNumberCustomer())
-                        .customerId(customerId)
-                        .demandCategory(demandCategoryEntity)
-                        .build();
-                }
-            )
-            .toList();
-
-        return CapacityGroupEntity
-            .builder()
-            .id(UUID.randomUUID())
-            .capacityGroupId(capacityGroupId)
-            .supplierId(supplier)
-            .supplierLocation(capacityGroupRequest.getSupplierLocations())
-            .customerId(customer)
-            .unitMeasure(unitMeasure)
-            .changedAt(LocalDateTime.now())
-            .capacityTimeSeries(capacityTimeSeries)
-            .linkedDemandSeries(linkDemandEntityList)
-            .name(capacityGroupRequest.getName())
-            .materialNumberCustomer(materialNumberCustomer.get())
-            .materialDescriptionCustomer(materialDescriptionCustomer.get())
-            .status(CapacityGroupStatus.DRAFT)
-            .build();
+        return null;
     }
 
     private CapacityTimeSeries enrichCapacityTimeSeries(
@@ -311,9 +197,13 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private UnitMeasure enrichUnitMeasure(UnitMeasureEntity unitMeasureEntity) {
         UnitMeasure unitMeasure = new UnitMeasure();
 
-        unitMeasure.setId(unitMeasureEntity.getId().toString());
-        unitMeasure.setCodeValue(unitMeasureEntity.getCodeValue());
-        unitMeasure.setDisplayValue(unitMeasureEntity.getDisplayValue());
+        unitMeasure.setId(String.valueOf(unitMeasureEntity.getId()));
+        unitMeasure.setDimension(unitMeasureEntity.getDimension());
+        unitMeasure.setUnCode(unitMeasureEntity.getUnCode());
+        unitMeasure.setDescription(unitMeasureEntity.getDescription());
+        unitMeasure.setDescriptionGerman(unitMeasureEntity.getDescriptionGerman());
+        unitMeasure.setUnSymbol(unitMeasureEntity.getUnSymbol());
+        unitMeasure.setCxSymbol(unitMeasureEntity.getCxSymbol());
 
         return unitMeasure;
     }

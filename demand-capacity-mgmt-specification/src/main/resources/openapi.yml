@@ -136,7 +136,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CapacityGroupDefaultViewResponse'
-
     post:
       tags:
         - capacityGroup
@@ -170,12 +169,11 @@ paths:
           required: true
       responses:
         200:
-          description: General greeting
+          description: Get capacity group representation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CapacityGroupResponse'
-
 
 
   /weekbasedcapacitygroup:
@@ -634,9 +632,17 @@ components:
       properties:
         id:
           type: string
-        codeValue:
+        dimension:
           type: string
-        displayValue:
+        unCode:
+          type: string
+        description:
+          type: string
+        descriptionGerman:
+          type: string
+        unSymbol:
+          type: string
+        cxSymbol:
           type: string
 
     MaterialDemandSeriesResponse:
@@ -753,28 +759,31 @@ components:
     CapacityGroupRequest:
       type: object
       properties:
-        capacities:
-          type: array
-          items:
-            $ref: '#/components/schemas/CapacityRequest'
-        linkedDemandSeries:
-          type: array
-          items:
-            type: string
-        supplierLocations:
-          type: array
-          items:
-            type: string
+        capacitygroupname:
+          type: string
+        defaultActualCapacity:
+          type: number
+          format: float
+        defaultMaximumCapacity:
+          type: number
+          format: float
+        startDate:
+          type: string
+        endDate:
+          type: string
         customer:
           type: string
         supplier:
           type: string
-        unitOfMeasure:
-          type: string
-        changeAt:
-          type: string
-        name:
-          type: string
+        linkMaterialDemandIds:
+          type: object
+          properties:
+            linkedMaterialDemandId:
+              type: array
+              items:
+                type: string
+                format: uuid
+              description: 'Array of UUIDs representing linked material demand IDs.'
 
     FavoriteRequest:
       type: object
