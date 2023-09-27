@@ -24,13 +24,14 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.FavoriteEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.NotFoundException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.FavoriteRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.springframework.stereotype.Service;
@@ -75,7 +76,13 @@ public class FavoriteServiceImpl implements FavoriteService {
             entity.setType(FavoriteType.valueOf(favoriteRequest.getfType()));
             favoriteRepository.saveAndFlush(entity);
             return convertFavoriteResponse(entity);
-        } else throw new NotFoundException("Entity to update was not found in DB." + "\n" + "Did you meant to create?");
+        } else {
+            throw new NotFoundException(
+                404,
+                "Entity to update was not found in DB." + "\n" + "Did you meant to create?",
+                new ArrayList<>(List.of("provided UUID did not match any records. - " + id))
+            );
+        }
     }
 
     @Override

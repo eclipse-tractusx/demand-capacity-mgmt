@@ -24,6 +24,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -336,7 +337,7 @@ public class DemandServiceImpl implements DemandService {
                     DemandSeriesValues
                         .builder()
                         .demand(materialDemandSeriesValue.getDemand().doubleValue())
-                        .calendarWeek(DataConverterUtil.convertFromString(materialDemandSeriesValue.getCalendarWeek()))
+                        .calendarWeek(LocalDate.parse(materialDemandSeriesValue.getCalendarWeek()))
                         .build()
             )
             .toList();
