@@ -22,13 +22,14 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
-import java.util.UUID;
-import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
+
+import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "favorites")
@@ -39,7 +40,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 public class FavoriteEntity {
 
     @Id
-    @GeneratedValue
     @Column(columnDefinition = "uuid", updatable = false, name = "user_id")
     private UUID id;
 

@@ -25,8 +25,12 @@ import axios from 'axios';
 
 export interface UnitMeasure {
   id: string
-  codeValue: string
-  displayValue: string
+  dimension: string
+  unCode: string
+  description: string
+  descriptionGerman: string
+  unSymbol: string
+  cxSymbol: string
 }
 
 interface UnitsOfMeasureContextData {

@@ -25,16 +25,13 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 create table capacity_group
 (
     id uuid DEFAULT uuid_generate_v4() primary key,
-    material_description_customer varchar(400),
-    material_number_customer varchar(400),
-    material_number_supplier varchar(400),
-    changed_at timestamp,
-    customer_id uuid constraint capacity_group_customer_id references company_base_data(id),
-    supplier_id uuid constraint capacity_group_supplier_id references company_base_data(id),
-    capacity_group_id uuid,
-    unity_of_measure_id uuid constraint unity_of_measure_id references unity_of_measure(id),
-    supplier_locations varchar(720),
-    name varchar(400)
+    capacity_group_name varchar(400),
+    defaultActualCapacity float,
+    defaultMaximumCapacity float,
+    start_date timestamp,
+    end_date timestamp,
+    customer uuid constraint capacity_group_customer_id references company_base_data(id),
+    supplier uuid constraint capacity_group_supplier_id references company_base_data(id)
 );
 
 create table capacity_time_series
@@ -57,6 +54,7 @@ create table linked_demand_series
     capacity_group_id uuid constraint capacity_group_id references capacity_group(id)
 );
 
+/*DEPRECATED TABLE TODO REMOVE*/
 create table link_demand
 (
     id uuid DEFAULT uuid_generate_v4() primary key,
@@ -66,3 +64,9 @@ create table link_demand
     linked boolean,
     week_based_material_demand_id integer constraint week_based_material_demand_id references week_based_material_demand(id)
 );
+
+create table link_capacitygroup_materialdemand
+(
+    capacity_group_id uuid primary key,
+    linked_material_demand_id uuid
+)
