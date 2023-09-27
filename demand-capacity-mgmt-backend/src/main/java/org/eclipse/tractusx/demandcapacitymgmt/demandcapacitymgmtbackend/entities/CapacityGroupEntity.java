@@ -28,6 +28,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,20 +57,17 @@ public class CapacityGroupEntity {
     private float defaultMaximumCapacity;
 
     @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @OneToOne
     @JoinColumn(name = "customer", referencedColumnName = "ID")
-    private CompanyEntity customerId;
+    private CompanyEntity customer;
 
     @OneToOne
     @JoinColumn(name = "supplier", referencedColumnName = "ID")
-    private CompanyEntity supplierId;
-
-    @OneToMany(mappedBy = "capacityGroup", cascade = CascadeType.ALL)
-    private List<LinkedCapacityGroupMaterialDemandEntity> linkedMaterialDemands = new ArrayList<>();
+    private CompanyEntity supplier;
 
 }

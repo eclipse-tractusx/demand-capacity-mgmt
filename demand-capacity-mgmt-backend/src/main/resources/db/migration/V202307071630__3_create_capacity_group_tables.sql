@@ -28,8 +28,8 @@ create table capacity_group
     capacity_group_name varchar(400),
     defaultActualCapacity float,
     defaultMaximumCapacity float,
-    start_date timestamp,
-    end_date timestamp,
+    start_date varchar(50),
+    end_date varchar(50),
     customer uuid constraint capacity_group_customer_id references company_base_data(id),
     supplier uuid constraint capacity_group_supplier_id references company_base_data(id)
 );

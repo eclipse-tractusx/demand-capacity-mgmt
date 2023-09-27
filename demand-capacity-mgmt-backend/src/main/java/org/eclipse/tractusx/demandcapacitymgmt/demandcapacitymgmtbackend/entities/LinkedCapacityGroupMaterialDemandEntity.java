@@ -37,19 +37,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LinkedCapacityGroupMaterialDemandEntity {
-
     @Id
     @GeneratedValue
     @Column(columnDefinition = "uuid", updatable = false, name = "id")
     private UUID id;
 
-    @Column(columnDefinition = "uuid", updatable = false, name = "capacity_group_id")
-    private UUID capacityGroupID;
-
     @Column(columnDefinition = "uuid", updatable = false, name = "linked_material_demand_id")
     private UUID linkedMaterialDemandID;
-    @ManyToOne
-    @JoinColumn(name = "capacity_group_id", nullable = false)
-    private CapacityGroupEntity capacityGroup;
 
+    @Column(columnDefinition = "uuid", updatable = false, name = "capacity_group_id", nullable = false)
+    private UUID capacityGroup;
 }

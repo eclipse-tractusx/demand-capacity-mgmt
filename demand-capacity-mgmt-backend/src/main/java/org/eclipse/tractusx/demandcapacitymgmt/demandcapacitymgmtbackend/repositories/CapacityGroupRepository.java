@@ -31,7 +31,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CapacityGroupRepository extends JpaRepository<CapacityGroupEntity, UUID> {
-    List<CapacityGroupEntity> findAllByStatus(CapacityGroupStatus status);
-
     List<CapacityGroupEntity> findAll();
 }

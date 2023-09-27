@@ -430,14 +430,12 @@ components:
         supplier:
           $ref: '#/components/schemas/CompanyDto'
         linkMaterialDemandIds:
-          type: object
-          properties:
-            linkedMaterialDemandId:
-              type: array
-              items:
-                type: string
-                format: uuid
-              description: 'Array of UUIDs representing linked material demand IDs.'
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: 'Array of UUIDs representing linked material demand IDs.'
+
 
     DemandResponseDto:
       type: object
@@ -833,14 +831,10 @@ components:
         supplier:
           type: string
         linkMaterialDemandIds:
-          type: object
-          properties:
-            linkedMaterialDemandId:
-              type: array
-              items:
-                type: string
-                format: uuid
-              description: 'Array of UUIDs representing linked material demand IDs.'
+          type: array
+          items:
+            type: string
+            format: uuid
 
     FavoriteRequest:
       type: object

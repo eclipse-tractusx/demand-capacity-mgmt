@@ -120,8 +120,8 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
         basedCapacityGroupRequest.setCapacityGroupId(capacityGroupEntity.getId().toString());
         //basedCapacityGroupRequest.setUnityOfMeasure(capacityGroupEntity.getUnitMeasure().getCxSymbol());
-        basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomerId().getBpn());
-        basedCapacityGroupRequest.setSupplier(capacityGroupEntity.getSupplierId().getBpn());
+        basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomer().getBpn());
+        basedCapacityGroupRequest.setSupplier(capacityGroupEntity.getSupplier().getBpn());
         basedCapacityGroupRequest.setName(capacityGroupEntity.getCapacityGroupName());
         //basedCapacityGroupRequest.setChangedAt(capacityGroupEntity.getChangedAt().toString());
         //basedCapacityGroupRequest.setSupplierLocations(capacityGroupEntity.getSupplierLocation());
