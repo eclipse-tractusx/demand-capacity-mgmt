@@ -118,14 +118,15 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity) {
         WeekBasedCapacityGroupRequest basedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
 
-        basedCapacityGroupRequest.setCapacityGroupId(capacityGroupEntity.getCapacityGroupId().toString());
-        basedCapacityGroupRequest.setUnityOfMeasure(capacityGroupEntity.getUnitMeasure().getCxSymbol());
+        basedCapacityGroupRequest.setCapacityGroupId(capacityGroupEntity.getId().toString());
+        //basedCapacityGroupRequest.setUnityOfMeasure(capacityGroupEntity.getUnitMeasure().getCxSymbol());
         basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomerId().getBpn());
         basedCapacityGroupRequest.setSupplier(capacityGroupEntity.getSupplierId().getBpn());
-        basedCapacityGroupRequest.setName(capacityGroupEntity.getName());
-        basedCapacityGroupRequest.setChangedAt(capacityGroupEntity.getChangedAt().toString());
-        basedCapacityGroupRequest.setSupplierLocations(capacityGroupEntity.getSupplierLocation());
+        basedCapacityGroupRequest.setName(capacityGroupEntity.getCapacityGroupName());
+        //basedCapacityGroupRequest.setChangedAt(capacityGroupEntity.getChangedAt().toString());
+        //basedCapacityGroupRequest.setSupplierLocations(capacityGroupEntity.getSupplierLocation());
 
+        /*
         List<LinkedDemandSeriesRequest> linkedDemandSeries = capacityGroupEntity
             .getLinkedDemandSeries()
             .stream()
@@ -138,8 +139,8 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
             .stream()
             .map(WeekBasedCapacityGroupServiceImpl::getCapacitiesDto)
             .toList();
-
-        basedCapacityGroupRequest.setCapacities(capacitiesDtos);
+        */
+        //basedCapacityGroupRequest.setCapacities(capacitiesDtos);
     }
 
     @Override

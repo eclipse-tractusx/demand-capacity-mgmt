@@ -26,6 +26,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.api.CapacityGroupApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupDefaultViewResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedCapacityGroupMaterialDemandRequest;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,7 @@ public class CapacityGroupsController implements CapacityGroupApi {
     private CapacityGroupService service;
 
     @Override
-    public ResponseEntity<List<CapacityGroupDefaultViewResponse>> getCapacityGroup() throws Exception {
+    public ResponseEntity<List<CapacityGroupDefaultViewResponse>> getCapacityGroups() throws Exception {
         return null;
     }
 
@@ -54,5 +55,11 @@ public class CapacityGroupsController implements CapacityGroupApi {
     public ResponseEntity<CapacityGroupResponse> postCapacityGroup(CapacityGroupRequest capacityGroupRequest) throws Exception {
         CapacityGroupResponse capacityGroupResponse = service.createCapacityGroup(capacityGroupRequest);
         return ResponseEntity.status(HttpStatus.OK).body(capacityGroupResponse);
+    }
+
+    @Override
+    public ResponseEntity<Void> postLinkedCapacityGroupDemand(LinkedCapacityGroupMaterialDemandRequest linkedCapacityGroupMaterialDemandRequest) throws Exception {
+        service.linkCapacityGroupToMaterialDemand(linkedCapacityGroupMaterialDemandRequest);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

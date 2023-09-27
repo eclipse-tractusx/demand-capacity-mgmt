@@ -121,12 +121,27 @@ paths:
         200:
           description: Delete demand with id
 
+  /capacityGroup/link:
+    post:
+      tags:
+        - capacityGroup
+      summary: create a link to capacityGroup and linkedDemand
+      operationId: postLinkedCapacityGroupDemand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkedCapacityGroupMaterialDemandRequest'
+      responses:
+        204:
+          description: no content
   /capacityGroup:
     get:
       tags:
         - capacityGroup
       summary: capacityGroup
-      operationId: getCapacityGroup
+      operationId: getCapacityGroups
       responses:
         200:
           description: CapacityGroupResponse
@@ -392,6 +407,37 @@ components:
           type: string
         description:
           type: string
+
+    CapacityGroupResponse:
+      type: object
+      properties:
+        capacityGroupId:
+          type: string
+        capacitygroupname:
+          type: string
+        defaultActualCapacity:
+          type: number
+          format: float
+        defaultMaximumCapacity:
+          type: number
+          format: float
+        startDate:
+          type: string
+        endDate:
+          type: string
+        customer:
+          $ref: '#/components/schemas/CompanyDto'
+        supplier:
+          $ref: '#/components/schemas/CompanyDto'
+        linkMaterialDemandIds:
+          type: object
+          properties:
+            linkedMaterialDemandId:
+              type: array
+              items:
+                type: string
+                format: uuid
+              description: 'Array of UUIDs representing linked material demand IDs.'
 
     DemandResponseDto:
       type: object
@@ -704,7 +750,7 @@ components:
         materialNumberCustomer:
           type: string
 
-    CapacityGroupResponse:
+    DeprecatedCapacityGroupResponse:
       type: object
       properties:
         capacityGroupId:
@@ -755,6 +801,17 @@ components:
           type: string
         status:
           type: string
+
+    LinkedCapacityGroupMaterialDemandRequest:
+      type: object
+      properties:
+        capacityGroupID:
+          type: string
+        linkedMaterialDemandID:
+          type: array
+          items:
+            type: string
+            format: uuid
 
     CapacityGroupRequest:
       type: object

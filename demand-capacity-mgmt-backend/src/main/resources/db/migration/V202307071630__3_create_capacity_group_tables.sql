@@ -67,6 +67,7 @@ create table link_demand
 
 create table link_capacitygroup_materialdemand
 (
-    capacity_group_id uuid primary key,
+    id uuid primary key,
+    capacity_group_id uuid,
     linked_material_demand_id uuid
 )
