@@ -20,18 +20,15 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
-import java.util.List;
-import java.util.UUID;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
-
-public interface FavoriteService {
-    List<FavoriteResponse> getAllFavorites();
-    List<FavoriteResponse> getAllFavoritesByType(String type);
-    FavoriteResponse createFavorite(FavoriteRequest favoriteRequest);
-    FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest);
-    void deleteFavorite(UUID id);
+public enum EventStatus {
+    FAIL,
+    SUCCESS,
+    TRANSITIONED_FROM_RED_TO_YELLOW,
+    TRANSITIONED_FROM_RED_TO_GREEN,
+    TRANSITIONED_FROM_YELLOW_TO_GREEN,
+    TRANSITIONED_FROM_GREEN_TO_YELLOW,
+    TRANSITIONED_FROM_GREEN_TO_RED,
+    TRANSITIONED_FROM_YELLOW_TO_RED,
 }

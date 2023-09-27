@@ -20,18 +20,14 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
-import java.util.List;
-import java.util.UUID;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
-
-public interface FavoriteService {
-    List<FavoriteResponse> getAllFavorites();
-    List<FavoriteResponse> getAllFavoritesByType(String type);
-    FavoriteResponse createFavorite(FavoriteRequest favoriteRequest);
-    FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest);
-    void deleteFavorite(UUID id);
+public enum EventObjectType {
+    MATERIAL_DEMAND,
+    CAPACITY_GROUP,
+    DEMAND_CATEGORY,
+    COMPANY,
+    WEEKLY_MATERIAL_DEMAND,
+    WEEKLY_BASED_CAPACITY_GROUP,
+    LINK_DEMAND_SERVICE,
 }
