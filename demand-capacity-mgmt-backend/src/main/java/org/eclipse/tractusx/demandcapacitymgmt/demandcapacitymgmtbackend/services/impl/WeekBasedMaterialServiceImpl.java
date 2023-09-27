@@ -54,6 +54,8 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
 
     private final DemandService demandService;
 
+    private final LoggingHistoryService loggingHistoryService;
+
     @Override
     public void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDtoList) {
         weekBasedMaterialDemandRequestDtoList.forEach(
@@ -63,9 +65,23 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                 WeekBasedMaterialDemandEntity weekBasedMaterialDemand = convertEntity(
                     weekBasedMaterialDemandRequestDto
                 );
+                weekBasedMaterialDemand.setId(UUID.fromString(weekBasedMaterialDemandRequestDto.getMaterialDemandId()));
+                postLogs(weekBasedMaterialDemand.getId().toString());
                 weekBasedMaterialDemandRepository.save(weekBasedMaterialDemand);
             }
         );
+    }
+
+    private void postLogs(String weekBasedMaterialDemandId) {
+        LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
+        loggingHistoryRequest.setObjectType(EventObjectType.WEEKLY_MATERIAL_DEMAND.name());
+        loggingHistoryRequest.setMaterialDemandId(weekBasedMaterialDemandId);
+        loggingHistoryRequest.setIsFavorited(false);
+        loggingHistoryRequest.setEventDescription("WEEKLY_MATERIAL_DEMAND Created");
+        //TODO: Add Event
+        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
+
+        loggingHistoryService.createLog(loggingHistoryRequest);
     }
 
     @Override

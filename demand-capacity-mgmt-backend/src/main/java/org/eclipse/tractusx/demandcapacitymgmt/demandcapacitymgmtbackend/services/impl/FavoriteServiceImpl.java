@@ -97,8 +97,8 @@ public class FavoriteServiceImpl implements FavoriteService {
             .builder()
             .id(UUID.randomUUID()) //TODO USER ID HERE
             .favoriteId(UUID.fromString(request.getFavoriteId()))
-             .favoriteTypeId(UUID.fromString(request.getfTypeId()))
-             .type(FavoriteType.valueOf(request.getfType()))
+            .favoriteTypeId(UUID.fromString(request.getfTypeId()))
+            .type(FavoriteType.valueOf(request.getfType()))
             .build();
     }
 }
