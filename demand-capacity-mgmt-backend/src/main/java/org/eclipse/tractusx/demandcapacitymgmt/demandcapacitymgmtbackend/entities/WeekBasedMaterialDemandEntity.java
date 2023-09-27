@@ -50,7 +50,6 @@ public class WeekBasedMaterialDemandEntity {
 
     @Id
     @Column(name = "ID")
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
