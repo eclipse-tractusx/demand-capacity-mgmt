@@ -23,6 +23,9 @@ spring:
   jpa:
     database: POSTGRESQL
     show-sql: true
+    hibernate:
+      ddl-auto: update
+
   datasource:
     url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
     username: ${DCM_DATASOURCE_USER:dcm}
@@ -32,13 +35,13 @@ spring:
     init:
       platform: postgres
 
-flyway:
-  enabled: true
-  url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
-  user: ${DCM_DATASOURCE_USER:dcm}
-  password: ${DCM_DATASOURCE_PASS:dcm}
-  schemas: migrations
-  locations: classpath:db/migration/postgresql
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
+    user: ${DCM_DATASOURCE_USER:dcm}
+    password: ${DCM_DATASOURCE_PASS:dcm}
+    schemas: migrations
+    locations: classpath:db/migration/postgresql
 
 management:
   security:

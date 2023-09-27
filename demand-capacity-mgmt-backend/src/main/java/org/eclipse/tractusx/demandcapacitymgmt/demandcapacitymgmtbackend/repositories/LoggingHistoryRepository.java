@@ -20,18 +20,13 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
-import java.util.List;
 import java.util.UUID;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandCategoryEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LoggingHistoryEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface FavoriteService {
-    List<FavoriteResponse> getAllFavorites();
-    List<FavoriteResponse> getAllFavoritesByType(String type);
-    FavoriteResponse createFavorite(FavoriteRequest favoriteRequest);
-    FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest);
-    void deleteFavorite(UUID id);
-}
+@Repository
+public interface LoggingHistoryRepository extends JpaRepository<LoggingHistoryEntity, UUID> {}
