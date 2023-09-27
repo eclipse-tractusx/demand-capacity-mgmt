@@ -203,7 +203,7 @@ public class CapacityGroupServiceTest {
 
         WeekBasedMaterialDemandEntity entity = WeekBasedMaterialDemandEntity
             .builder()
-            .id(Long.valueOf("4"))
+            .id(UUID.randomUUID())
             .viewed(false)
             .weekBasedMaterialDemand(dto)
             .build();
