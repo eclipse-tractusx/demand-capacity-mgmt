@@ -43,12 +43,14 @@ public class CapacityGroupsController implements CapacityGroupApi {
 
     @Override
     public ResponseEntity<List<CapacityGroupDefaultViewResponse>> getCapacityGroups() throws Exception {
-        return null;
+        List<CapacityGroupDefaultViewResponse> capacityGroupDefaultViewResponses = service.getAll();
+        return ResponseEntity.status(HttpStatus.OK).body(capacityGroupDefaultViewResponses);
     }
 
     @Override
     public ResponseEntity<CapacityGroupResponse> getCapacityGroupById(String capacityGroupId) throws Exception {
-        return null;
+        CapacityGroupResponse capacityGroupResponse = service.getCapacityGroupById(capacityGroupId);
+        return ResponseEntity.status(HttpStatus.OK).body(capacityGroupResponse);
     }
 
     @Override

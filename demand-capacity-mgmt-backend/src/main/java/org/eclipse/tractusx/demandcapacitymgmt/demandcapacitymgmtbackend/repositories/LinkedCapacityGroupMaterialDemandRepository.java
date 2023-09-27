@@ -27,8 +27,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface LinkedCapacityGroupMaterialDemandRepository extends JpaRepository<LinkedCapacityGroupMaterialDemandEntity, UUID> {
-    void deleteByCapacityGroupID(@NonNull UUID capacityGroupID);}
+    @Transactional
+    void deleteByCapacityGroup(UUID capacityGroup);
+    List<LinkedCapacityGroupMaterialDemandEntity> findLinkedCapacityGroupMaterialDemandEntitiesByCapacityGroup(UUID capacityGroup);
+
+}

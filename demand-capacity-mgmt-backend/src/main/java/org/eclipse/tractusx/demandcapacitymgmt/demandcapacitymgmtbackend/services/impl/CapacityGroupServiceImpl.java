@@ -26,6 +26,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LinkedCapacityGroupMaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
@@ -36,6 +37,8 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,23 +55,50 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     @Override
     public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
-        validateRequestFields(capacityGroupRequest);
+        CapacityGroupEntity capacityGroupEntity = enrichCapacityGroup(capacityGroupRequest);
+        capacityGroupEntity = capacityGroupRepository.save(capacityGroupEntity);
+        for(UUID uuid : capacityGroupRequest.getLinkMaterialDemandIds()){
+            LinkedCapacityGroupMaterialDemandEntity entity = new LinkedCapacityGroupMaterialDemandEntity();
+            entity.setCapacityGroup(capacityGroupEntity.getId());
+            entity.setLinkedMaterialDemandID(uuid);
+            linkedCapacityGroupMaterialDemandRepository.save(entity);
+        }
+        return convertCapacityGroupDto(capacityGroupEntity);
+    }
+
+    private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest request){
+        CompanyEntity customer = companyService.getCompanyById(
+                UUID.fromString(request.getCustomer())
+        );
+        CompanyEntity supplier = companyService.getCompanyById(
+                UUID.fromString(request.getSupplier())
+        );
 
         CapacityGroupEntity capacityGroupEntity = new CapacityGroupEntity();
-
-        capacityGroupEntity = capacityGroupRepository.save(capacityGroupEntity);
-
-        return convertCapacityGroupDto(capacityGroupEntity);
+        capacityGroupEntity.setCapacityGroupName(request.getCapacitygroupname());
+        capacityGroupEntity.setDefaultActualCapacity(request.getDefaultActualCapacity());
+        capacityGroupEntity.setDefaultMaximumCapacity(request.getDefaultMaximumCapacity());
+        capacityGroupEntity.setStartDate(LocalDate.parse(request.getStartDate()));
+        capacityGroupEntity.setEndDate(LocalDate.parse(request.getEndDate()));
+        capacityGroupEntity.setCustomer(customer);
+        capacityGroupEntity.setSupplier(supplier);
+        return capacityGroupEntity;
     }
 
     @Override
     public void linkCapacityGroupToMaterialDemand(LinkedCapacityGroupMaterialDemandRequest linkedMaterialDemandRequest) {
-        linkedCapacityGroupMaterialDemandRepository.deleteByCapacityGroupID(UUID.fromString(linkedMaterialDemandRequest.getCapacityGroupID()));
+        linkedCapacityGroupMaterialDemandRepository.deleteByCapacityGroup(UUID.fromString(linkedMaterialDemandRequest.getCapacityGroupID()));
+        Optional<CapacityGroupEntity> optionalEntity = capacityGroupRepository.findById(
+                UUID.fromString(linkedMaterialDemandRequest.getCapacityGroupID())
+        );
         for (UUID uuid_helper : linkedMaterialDemandRequest.getLinkedMaterialDemandID()) {
             LinkedCapacityGroupMaterialDemandEntity entity = new LinkedCapacityGroupMaterialDemandEntity();
-            entity.setCapacityGroupID(UUID.fromString(linkedMaterialDemandRequest.getCapacityGroupID()));
-            entity.setLinkedMaterialDemandID(uuid_helper);
-            linkedCapacityGroupMaterialDemandRepository.save(entity);
+            if(optionalEntity.isPresent()) {
+                CapacityGroupEntity capacityGroupEntity = optionalEntity.get();
+                entity.setCapacityGroup(capacityGroupEntity.getId());
+                entity.setLinkedMaterialDemandID(uuid_helper);
+                linkedCapacityGroupMaterialDemandRepository.save(entity);
+            }
         }
     }
 
@@ -100,33 +130,14 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         return capacityGroup.get();
     }
 
-    private void validateRequestFields(CapacityGroupRequest capacityGroupRequest) {
-        if (!UUIDUtil.checkValidUUID(capacityGroupRequest.getCustomer())) {
-            throw new BadRequestException(
-                400,
-                "Not a valid customer ID",
-                new ArrayList<>(List.of(capacityGroupRequest.getCustomer()))
-            );
-        }
-
-        if (!UUIDUtil.checkValidUUID(capacityGroupRequest.getSupplier())) {
-            throw new BadRequestException(
-                400,
-                "Not a valid supplier ID",
-                new ArrayList<>(List.of(capacityGroupRequest.getSupplier()))
-            );
-        }
-
-    }
-
     private CapacityGroupResponse convertCapacityGroupDto(CapacityGroupEntity capacityGroupEntity) {
         final CapacityGroupResponse responseDto = new CapacityGroupResponse();
 
-        final CompanyDto customer = Optional.ofNullable(capacityGroupEntity.getCustomerId())
+        final CompanyDto customer = Optional.ofNullable(capacityGroupEntity.getCustomer())
                 .map(companyService::convertEntityToDto)
                 .orElse(null);
 
-        final CompanyDto supplier = Optional.ofNullable(capacityGroupEntity.getSupplierId())
+        final CompanyDto supplier = Optional.ofNullable(capacityGroupEntity.getSupplier())
                 .map(companyService::convertEntityToDto)
                 .orElse(null);
 
@@ -138,15 +149,16 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         responseDto.setEndDate(Optional.ofNullable(capacityGroupEntity.getEndDate()).map(Object::toString).orElse(null));
         responseDto.setCustomer(customer);
         responseDto.setSupplier(supplier);
-
-        final CapacityGroupResponseLinkMaterialDemandIds ids = new CapacityGroupResponseLinkMaterialDemandIds();
-        Optional.ofNullable(capacityGroupEntity.getLinkedMaterialDemands())
-                .ifPresent(linkedMaterialDemands -> linkedMaterialDemands.stream()
-                        .map(LinkedCapacityGroupMaterialDemandEntity::getLinkedMaterialDemandID)
-                        .forEach(ids::addLinkedMaterialDemandIdItem));
-
-        responseDto.setLinkMaterialDemandIds(ids);
-
+        List<LinkedCapacityGroupMaterialDemandEntity> linkedCGMD =
+        linkedCapacityGroupMaterialDemandRepository.
+                findLinkedCapacityGroupMaterialDemandEntitiesByCapacityGroup(
+                        capacityGroupEntity.getId()
+        );
+        List<UUID> linkedDemands = new ArrayList<>();
+        for(LinkedCapacityGroupMaterialDemandEntity ent : linkedCGMD){
+            linkedDemands.add(ent.getLinkedMaterialDemandID());
+        }
+        responseDto.setLinkMaterialDemandIds(linkedDemands);
         return responseDto;
     }
 
@@ -161,9 +173,9 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             CapacityGroupDefaultViewResponse response = new CapacityGroupDefaultViewResponse();
 
             response.setName(entity.getCapacityGroupName());
-            response.setSupplierBNPL(entity.getSupplierId().getBpn());
-            response.setCustomerName(entity.getCustomerId().getCompanyName());
-            response.setCustomerBPNL(entity.getCustomerId().getBpn());
+            response.setSupplierBNPL(entity.getSupplier().getBpn());
+            response.setCustomerName(entity.getCustomer().getCompanyName());
+            response.setCustomerBPNL(entity.getCustomer().getBpn());
             response.setInternalId(entity.getId().toString());
             capacityGroupList.add(response);
         }
