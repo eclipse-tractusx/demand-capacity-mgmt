@@ -27,7 +27,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
