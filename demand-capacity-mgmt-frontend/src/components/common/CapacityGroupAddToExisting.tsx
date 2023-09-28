@@ -19,63 +19,82 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
 import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { DemandProp } from '../../interfaces/demand_interfaces';
-import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
+import { CapacityGroupProp } from '../../interfaces/capacitygroup_interfaces';
+import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import LoadingMessage from './LoadingMessage';
+import { InputGroup } from 'react-bootstrap';
+import { FaSearch } from 'react-icons/fa';
 
 interface CapacityGroupAddToExistingProps {
   show: boolean;
   onHide: () => void;
   checkedDemands: DemandProp[] | null;
-  capacityGroups: SingleCapacityGroup[] | null;
 }
 
 const CapacityGroupAddToExisting: React.FC<CapacityGroupAddToExistingProps> = ({
   show,
   onHide,
-  checkedDemands,
-  capacityGroups
+  checkedDemands
 }) => {
   const [selectedCapacityGroupId, setSelectedCapacityGroupId] = useState<string | null>(null);
   const [customerFilter, setCustomerFilter] = useState<string | null>(null);
-  const [filteredCapacityGroups, setFilteredCapacityGroups] = useState<SingleCapacityGroup[] | null>(null);
+  const [filteredCapacityGroups, setFilteredCapacityGroups] = useState<CapacityGroupProp[] | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const capacityGroupContext = useContext(CapacityGroupContext);
+  const { capacitygroups } = capacityGroupContext || {};
 
   useEffect(() => {
-    // Filter capacity groups by customer
     if (checkedDemands) {
       const customer = checkedDemands[0]?.customer.companyName || null;
       setCustomerFilter(customer);
 
-      if (customer && capacityGroups) {
-        const filteredGroups = capacityGroups.filter(
-          (group) => group.customer.companyName === customer
-        );
-        setFilteredCapacityGroups(filteredGroups);
+      if (customer) {
+        setIsLoading(true);
+
+        if (capacitygroups) {
+          const filteredGroups = capacitygroups.filter((group) => group.customerName === customer);
+          setFilteredCapacityGroups(filteredGroups);
+          setIsLoading(false);
+        }
       }
     }
-  }, [checkedDemands, capacityGroups]);
+  }, [checkedDemands, capacityGroupContext]);
 
-  const handleLinkToCapacityGroup = () => {
-    if (selectedCapacityGroupId) {
-      onHide();
-    }
-  };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
+  useEffect(() => {
     // Filter capacity groups based on the search query
-    if (customerFilter && capacityGroups) {
-      const filteredGroups = capacityGroups.filter(
-        (group) =>
-          group.customer.companyName === customerFilter &&
-          (group.name.includes(query) || group.capacityGroupId.includes(query))
+    if (customerFilter && capacitygroups) {
+      const filteredGroups = capacitygroups.filter((group) =>
+        (group.name && group.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (group.customerName && group.customerName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (group.customerBPNL && group.customerBPNL.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (group.capacityGroupId && group.capacityGroupId.toString().toLowerCase().includes(searchQuery.toLowerCase()))
       );
       setFilteredCapacityGroups(filteredGroups);
+    }
+  }, [searchQuery, customerFilter, capacitygroups]);
+
+  const handleLinkToCapacityGroup = () => {
+    if (selectedCapacityGroupId && checkedDemands && checkedDemands.length > 0) {
+      const demandIds = checkedDemands.map((demand) => demand.id);
+
+      const capacityGroupLink = {
+        capacityGroupID: selectedCapacityGroupId,
+        linkedMaterialDemandID: demandIds,
+      };
+
+      // Send the capacityGroupLink object to the context
+      capacityGroupContext?.linkToCapacityGroup(capacityGroupLink);
+
+      onHide();
     }
   };
 
@@ -85,56 +104,77 @@ const CapacityGroupAddToExisting: React.FC<CapacityGroupAddToExistingProps> = ({
         <Modal.Title>Link to Existing Capacity Group</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div>
-          <Form.Control
-            type="text"
-            placeholder="Search for capacity groups..."
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-          <br />
-          <ListGroup>
-            {filteredCapacityGroups &&
-              filteredCapacityGroups.map((group) => (
-                <ListGroup.Item
-                  key={group.capacityGroupId}
-                  className="d-flex justify-content-between align-items-center"
-                >
-                  <span>{group.name}</span>
-                  <Button
-                    variant="outline-primary"
-                    onClick={() => setSelectedCapacityGroupId(group.capacityGroupId)}
-                  >
-                    Select
-                  </Button>
-                </ListGroup.Item>
-              ))}
-          </ListGroup>
-        </div>
-        <div>
-          <h4>Selected Capacity Groups to Link:</h4>
-          <ListGroup>
-            {selectedCapacityGroupId && (
-              <ListGroup.Item>
-                {selectedCapacityGroupId}
-                <Button
-                  variant="outline-danger"
-                  onClick={() => setSelectedCapacityGroupId(null)}
-                >
-                  Remove
-                </Button>
-              </ListGroup.Item>
-            )}
-          </ListGroup>
-        </div>
+        {(!checkedDemands || checkedDemands.length === 0) ? (
+          <Alert variant="danger" onClose={onHide} >
+            <Alert.Heading>Warning!</Alert.Heading>
+            <p>No Demands selected to link.</p>
+          </Alert>
+        ) : (
+          <>
+            <div>
+              <InputGroup className="mb-3">
+                <InputGroup.Text id="basic-addon1"><FaSearch /></InputGroup.Text>
+                <Form.Control
+                  type="text"
+                  placeholder="Search for capacity groups..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-describedby="basic-addon1"
+                />
+              </InputGroup>
+              <br />
+              <span>Customer - Capacity Group Name</span>
+              {isLoading ? (
+                <LoadingMessage />
+              ) : (
+                <ListGroup>
+                  {filteredCapacityGroups &&
+                    filteredCapacityGroups.map((group) => (
+                      <ListGroup.Item
+                        key={group.capacityGroupId}
+                        className="d-flex justify-content-between align-items-center"
+                      >
+                        <span> {group.customerName} - {group.name}</span>
+                        <Button
+                          variant={selectedCapacityGroupId === group.internalId ? 'primary' : 'outline-primary'}
+                          onClick={() => setSelectedCapacityGroupId(group.internalId)}
+                        >
+                          Select
+                        </Button>
+                      </ListGroup.Item>
+                    ))}
+                </ListGroup>
+              )}
+            </div>
+            <br />
+            <div>
+              <h4>Selected Capacity Group :</h4>
+              <ListGroup>
+                {selectedCapacityGroupId && (
+                  <ListGroup.Item>
+                    {selectedCapacityGroupId}
+                    <Button
+                      variant="danger"
+                      onClick={() => setSelectedCapacityGroupId(null)}
+                    >
+                      Remove
+                    </Button>
+                  </ListGroup.Item>
+                )}
+              </ListGroup>
+            </div>
+          </>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
-          Cancel
+          Close
         </Button>
-        <Button variant="primary" onClick={handleLinkToCapacityGroup}>
-          Link to Capacity Group
-        </Button>
+        {checkedDemands !== null && checkedDemands.length > 0 && (
+          <Button variant="primary" onClick={handleLinkToCapacityGroup}>
+            Link to Capacity Group
+          </Button>
+        )}
       </Modal.Footer>
     </Modal>
   );
