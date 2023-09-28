@@ -25,14 +25,13 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.FavoriteApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
+import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -65,8 +64,13 @@ public class FavoriteController implements FavoriteApi {
     }
 
     @Override
-    public ResponseEntity<FavoriteResponse> updateFavorite(String id,String type, FavoriteRequest favoriteRequest) throws Exception {
-        FavoriteResponse response = favoriteService.updateFavorite(UUID.fromString(id), FavoriteType.valueOf(type),favoriteRequest);
+    public ResponseEntity<FavoriteResponse> updateFavorite(String id, String type, FavoriteRequest favoriteRequest)
+        throws Exception {
+        FavoriteResponse response = favoriteService.updateFavorite(
+            UUID.fromString(id),
+            FavoriteType.valueOf(type),
+            favoriteRequest
+        );
         return ResponseEntity.status(200).body(response);
     }
 }
