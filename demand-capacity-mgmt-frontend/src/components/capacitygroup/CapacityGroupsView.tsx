@@ -20,14 +20,14 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useMemo} from 'react';
-import { Form,Col,Row } from 'react-bootstrap';
-import { CapacityGroupContext  } from '../../contexts/CapacityGroupsContextProvider';
-//import { CapacityGroup } from '../../interfaces/capacitygroup_interfaces';
-import Pagination from '../Pagination';
+import React, { useContext, useState, useMemo } from 'react';
+import { Form, Col, Row, Button, OverlayTrigger, Tooltip,Dropdown  } from 'react-bootstrap';
+import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import Pagination from '../common/Pagination';
 import CapacityGroupsTable from './CapacityGroupsTable';
-import Search from '../Search';
+import Search from '../common/Search';
 import '../../index.css';
+import { FaCopy, FaEllipsisV, FaSearch } from 'react-icons/fa';
 
 const CapacityGroupsList: React.FC = () => {
   // to do clean /const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);
@@ -56,7 +56,7 @@ const CapacityGroupsList: React.FC = () => {
 
     if (searchQuery !== '') {
       sortedcapacitygroups = sortedcapacitygroups.filter((capacitygroup) =>
-      capacitygroup.internalId.toString().includes(searchQuery.toLowerCase()) ||
+        capacitygroup.internalId.toString().includes(searchQuery.toLowerCase()) ||
         capacitygroup.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         capacitygroup.customerBPNL.toString().includes(searchQuery.toLowerCase()) ||
         capacitygroup.customerName.toString().includes(searchQuery.toLowerCase()) ||
@@ -71,7 +71,7 @@ const CapacityGroupsList: React.FC = () => {
       sortedcapacitygroups.sort((a, b) => {
         const aValue = String(a[sortColumn]); // Convert to string
         const bValue = String(b[sortColumn]); // Convert to string
-      
+
         return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
       });
 
@@ -99,7 +99,29 @@ const CapacityGroupsList: React.FC = () => {
     () =>
       slicedcapacitygroups.map((capacitygroup) => (
         <tr key={capacitygroup.internalId}>
-          <td>{capacitygroup.internalId}</td>
+          <td>
+            <Button href={`/details/${capacitygroup.internalId}`} target='new-tab' variant="outline-primary" >
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <FaSearch size={20} />
+              </div>
+            </Button>
+          </td>
+          <td>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip id={`tooltip-copy-${capacitygroup.internalId}`}>{capacitygroup.internalId}</Tooltip>}
+            >
+              <Button
+                variant="outline-secondary"
+                onClick={() => {
+                  // Function to copy the internalId to the clipboard
+                  navigator.clipboard.writeText(capacitygroup.internalId);
+                }}
+              >
+                <FaCopy/>
+              </Button>
+            </OverlayTrigger>
+          </td>
           <td>{capacitygroup.name}</td>
           <td>{capacitygroup.customerBPNL}</td>
           <td>{capacitygroup.customerName}</td>
@@ -108,10 +130,21 @@ const CapacityGroupsList: React.FC = () => {
           <td>{capacitygroup.favoritedBy}</td>
           <td>
             {/* TODO Depending on status, this should be a different span*/}
-        <span className="badge rounded-pill text-bg-success" id="tag-ok">OK</span>
-        <span className="badge rounded-pill text-bg-warning" id="tag-warning">Warning</span>
-        <span className="badge rounded-pill text-bg-danger" id="tag-danger">Danger</span>
-      </td>
+            <span className="badge rounded-pill text-bg-success" id="tag-ok">OK</span>
+            <span className="badge rounded-pill text-bg-warning" id="tag-warning">Warning</span>
+            <span className="badge rounded-pill text-bg-danger" id="tag-danger">Danger</span>
+          </td>
+          <td>
+            <Dropdown>
+              <Dropdown.Toggle variant="light" id={`dropdown-menu-${capacitygroup.internalId}`}>
+                <span ><FaEllipsisV/></span>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item href={`/details/${capacitygroup.internalId}`} target='new-tab'>Details</Dropdown.Item>
+                <Dropdown.Item className="red-delete-item" >Delete (WIP)</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </td>
         </tr>
       )),
     [slicedcapacitygroups]
@@ -126,9 +159,9 @@ const CapacityGroupsList: React.FC = () => {
           </div>
           <div className="col-sm-6">
             <Search
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-          />
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+            />
           </div>
         </div>
       </div>
@@ -140,38 +173,38 @@ const CapacityGroupsList: React.FC = () => {
         capacitygroupsItems={capacitygroupsItems}
       />
       <div className="container">
-      <div className="row">
+        <div className="row">
           <Pagination
             pages={totalPagesNum}
             setCurrentPage={setCurrentPage}
             currentItems={slicedcapacitygroups}
             items={filteredcapacitygroups}
           />
-        <div className="col-sm">
-          <div className="float-end">
-          <Form>
-            <Form.Group as={Row} className="mb-3">
-              <Form.Label column sm="6">
-              Per Page:
-              </Form.Label>
-              <Col sm="6">
-              <Form.Control
-                  type="number"
-                  aria-describedby="capacitygroupsPerPageInput"
-                  min={1}
-                  htmlSize={10}
-                  max={100}
-                  value={capacitygroupsPerPage}
-                  onChange={(e) => setcapacitygroupsPerPage(Number(e.target.value))}
-                />
-              </Col>
-            </Form.Group>
-          </Form>
+          <div className="col-sm">
+            <div className="float-end">
+              <Form>
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm="6">
+                    Per Page:
+                  </Form.Label>
+                  <Col sm="6">
+                    <Form.Control
+                      type="number"
+                      aria-describedby="capacitygroupsPerPageInput"
+                      min={1}
+                      htmlSize={10}
+                      max={100}
+                      value={capacitygroupsPerPage}
+                      onChange={(e) => setcapacitygroupsPerPage(Number(e.target.value))}
+                    />
+                  </Col>
+                </Form.Group>
+              </Form>
+            </div>
           </div>
         </div>
       </div>
-      </div>
-          </>
+    </>
   );
 };
 
