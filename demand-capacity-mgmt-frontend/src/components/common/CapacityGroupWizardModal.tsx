@@ -19,12 +19,14 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { DemandProp } from '../../interfaces/demand_interfaces';
-import { FormControl, Button, ListGroup, Container, Row, Col } from 'react-bootstrap';
+import { Button, ListGroup, Container, Row, Col, Alert, InputGroup } from 'react-bootstrap';
 import StepBreadcrumbs from './StepsBreadCrumbs';
+import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import { FaSearch } from 'react-icons/fa';
 
 interface CapacityGroupWizardModalProps {
   show: boolean;
@@ -36,14 +38,22 @@ interface CapacityGroupWizardModalProps {
 function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: CapacityGroupWizardModalProps) {
   const [step, setStep] = useState(0);
   const [groupName, setGroupName] = useState('');
-  const [capacity, setCapacity] = useState('');
+  const [defaultActualCapacity, setDefaultActualCapacity] = useState('');
+  const [defaultMaximumCapacity, setDefaultMaximumCapacity] = useState('');
   const [isInputShaking, setIsInputShaking] = useState(false);
+  const context = useContext(CapacityGroupContext);
+
+
+  const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestedDemands, setSuggestedDemands] = useState<DemandProp[]>([]);
 
   useEffect(() => {
     if (checkedDemands) {
       setSelectedDemands([...checkedDemands]);
     }
   }, [checkedDemands]);
+
 
   const nextStep = () => {
     if (step === 1 && !groupName) {
@@ -62,21 +72,6 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
       setStep(step - 1);
     }
   };
-
-  const handleSubmit = () => {
-    // Handle form submission, e.g., send data to the server
-    console.log('Group Name:', groupName);
-    console.log('Capacity:', capacity);
-    // Reset form and close modal
-    setGroupName('');
-    setCapacity('');
-    setStep(0); // Reset to Step 0 after submission
-    onHide(); // Call the onHide function to close the modal
-  };
-
-  const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [suggestedDemands, setSuggestedDemands] = useState<DemandProp[]>([]);
 
   // Function to handle selecting a suggestion
   const handleSuggestionSelect = (suggestion: DemandProp) => {
@@ -115,6 +110,74 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
     setSuggestedDemands(sortedSuggestions.slice(0, 3)); // Display up to 3 suggestions
   };
 
+  const calculateEarliestAndLatestDates = (selectedDemands: DemandProp[]) => {
+    let earliestDate = new Date();
+    let latestDate = new Date();
+
+    selectedDemands.forEach((demand) => {
+      demand.demandSeries?.forEach((series) => {
+        series.demandSeriesValues?.forEach((value) => {
+          const date = new Date(value?.calendarWeek || '');
+          if (date < earliestDate) {
+            earliestDate = date;
+          }
+          if (date > latestDate) {
+            latestDate = date;
+          }
+        });
+      });
+    });
+
+    return { earliestDate, latestDate };
+  };
+
+  function areUnitMeasureIdsEqual(demands: DemandProp[]): boolean {
+    if (demands.length <= 1) {
+      return true; // If there's only one or zero demands, they are equal.
+    }
+
+    const firstUnitMeasureId = demands[0].unitMeasureId;
+    return demands.every((demand) => demand.unitMeasureId.id === firstUnitMeasureId.id);
+  }
+
+
+  const handleSubmit = async () => {
+
+    if (!context) {
+      console.error('Context is undefined.');
+      return;
+    }
+    // Calculate earliest and latest dates
+    const { earliestDate, latestDate } = calculateEarliestAndLatestDates(selectedDemands);
+
+    // Create a new capacity group
+    const newCapacityGroup = {
+      capacitygroupname: groupName,
+      defaultActualCapacity: parseInt(defaultActualCapacity),
+      defaultMaximumCapacity: parseInt(defaultMaximumCapacity),
+      startDate: earliestDate.toISOString().split('T')[0],
+      endDate: latestDate.toISOString().split('T')[0],
+      customer: selectedDemands.length > 0 ? selectedDemands[0].customer.id : '', // Prefill with the customer ID of the first demand
+      supplier: selectedDemands.length > 0 ? selectedDemands[0].supplier.id : '', // Prefill with the supplier ID of the first demand
+      linkMaterialDemandIds: selectedDemands.map((demand) => demand.id), // IDs of linked demands
+    };
+
+    // Call the createCapacityGroup function
+    try {
+      await context.createCapacityGroup(newCapacityGroup);
+      console.log('Capacity Group Created Successfully');
+    } catch (error) {
+      console.error('Error creating capacity group:', error);
+    }
+
+    // Reset form and close modal
+    setGroupName('');
+    setDefaultActualCapacity('');
+    setStep(0); // Reset to Step 0 after submission
+    onHide(); // Call the onHide function to close the modal
+  };
+
+
   return (
     <>
       <Modal
@@ -150,24 +213,60 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                   className={isInputShaking ? 'shake-input' : ''}
                 />
               </Form.Group>
+              <Form.Group>
+                <Form.Label className="control-label required-field-label">Default Maximum Capacity</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Default Maximum Capacity"
+                  value={defaultActualCapacity}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    // Use a regular expression to allow only numbers
+                    const numericValue = newValue.replace(/[^0-9]/g, '');
+
+                    // Update the state with the numeric value
+                    setDefaultActualCapacity(numericValue);
+                    setDefaultMaximumCapacity(numericValue);
+
+                    // Add the shake class if the input contains non-numeric characters
+                    setIsInputShaking(newValue !== numericValue);
+                  }}
+                  required
+                  className={isInputShaking ? 'shake-input' : ''}
+                />
+              </Form.Group>
+
             </Form>
           )}
           {step === 2 && (
             <div>
               <StepBreadcrumbs currentStep={step} />
               <span>Demand Linkage</span>
+              {areUnitMeasureIdsEqual(selectedDemands) ? (
+                // No warning if unit measure IDs are equal
+                null
+              ) : (
+                // Display a warning alert if unit measure IDs are not equal
+                <Alert variant="warning">
+                  Units of measure of selected demands are not equal.
+                </Alert>
+              )}
               <Container className="mt-4">
                 <Row>
                   <Col md={15}>
-                    <FormControl
-                      type="text"
-                      placeholder="Search for demands..."
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        updateSuggestions(e.target.value);
-                      }}
-                    />
+                    <InputGroup>
+                      <InputGroup.Text id="basic-addon1"><FaSearch /></InputGroup.Text>
+                      <Form.Control
+                        type="text"
+                        placeholder="Search for demands..."
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          updateSuggestions(e.target.value);
+                        }}
+                        aria-describedby="basic-addon1"
+                      />
+                    </InputGroup>
                     <br />
                     <ListGroup>
                       {suggestedDemands.length > 0 && (
@@ -204,6 +303,8 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                               <strong>Customer:</strong> {demand ? demand.customer.companyName : 'Not selected'}
                               <br />
                               <strong>Material Number Customer:</strong> {demand ? demand.materialNumberCustomer : 'Not selected'}
+                              <br />
+                              <strong>Unit of Measure:</strong> {demand ? demand.unitMeasureId.id : 'Not selected'}
                             </p>
                           </div>
                         </div>
