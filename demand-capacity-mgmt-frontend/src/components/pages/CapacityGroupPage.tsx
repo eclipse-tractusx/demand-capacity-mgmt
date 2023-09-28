@@ -20,16 +20,27 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities;
+import CapacityGroupsProvider from "../../contexts/CapacityGroupsContextProvider";
+import CapacityGroupsList from "../../components/capacitygroup/CapacityGroupsView";
 
-import lombok.Builder;
-import lombok.Data;
 
-@Data
-@Builder
-public class Capacity {
+function CapacityGroupPage() {
 
-    private String calendarWeek;
-    private Double actualCapacity;
-    private Double maximumCapacity;
+    return (
+        <>
+        <div className="container-xl">
+            <br />
+            <div className="table">
+                <div className="table-wrapper">
+                    <CapacityGroupsProvider>
+                        <CapacityGroupsList />
+                    </CapacityGroupsProvider>
+                </div>
+            </div>
+        </div>
+        </>
+
+    );
 }
+
+export default CapacityGroupPage;

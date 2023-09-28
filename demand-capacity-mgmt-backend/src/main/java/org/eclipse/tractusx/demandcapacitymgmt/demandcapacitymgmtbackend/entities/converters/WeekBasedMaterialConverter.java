@@ -24,9 +24,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 
 import com.google.gson.Gson;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.WeekBasedMaterialDemand;
+import jakarta.persistence.*;
 
 @Converter(autoApply = true)
 public class WeekBasedMaterialConverter implements AttributeConverter<WeekBasedMaterialDemandRequestDto, String> {

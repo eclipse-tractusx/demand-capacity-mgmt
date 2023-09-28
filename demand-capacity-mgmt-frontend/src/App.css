@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+
 /*
  *  *******************************************************************************
  *  Copyright (c) 2023 BMW AG
@@ -19,55 +21,61 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
- 
- .App {
-  text-align: center;
-  display: flex;
-  min-height: 100vh;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  background-image: linear-gradient(79deg, #7439db, #C66FBC 48%, #F7944D);
+.App {
+    text-align: center;
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: white;
 }
 
 .auth-form-container, .login-form, .register-form {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 @media screen and (min-width: 600px) {
-  .auth-form-container {
-    padding: 5rem;
-    border: 1px solid white;
-    border-radius: 10px;
-    margin: 0.5rem;
-  }
+    .auth-form-container {
+        padding: 5rem;
+        border: 1px solid white;
+        border-radius: 10px;
+        margin: 0.5rem;
+    }
 }
 
 label {
-  text-align: left;
-  padding: 0.25rem 0;
+    text-align: left;
+    padding: 0.25rem 0;
 }
 
 input {
-  margin: 0.5rem 0;
-  padding: 1rem;
-  border: none;
-  border-radius: 10px;
+    margin: 0.5rem 0;
+    padding: 1rem;
+    border: none;
+    border-radius: 10px;
 }
 
 button {
-  border: none;
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  cursor: pointer;
-  color: #7439db;
+    border: none;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #7439db;
 }
 
 .link-btn {
-  background: none;
-  color: white;
-  text-decoration: underline;
+    background: none;
+    color: white;
+    text-decoration: underline;
 }
 
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    color: white;
+    overflow: hidden;
+    background: white;
+}

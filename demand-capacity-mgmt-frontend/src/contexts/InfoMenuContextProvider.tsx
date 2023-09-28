@@ -22,8 +22,9 @@
 
 
 import React, { createContext, useState, useEffect, useCallback, useContext, FunctionComponent } from 'react';
-import axios from 'axios';
 import { InfoMenuData } from '../interfaces/InfoMenu_interfaces';
+import api from "../util/Api";
+
 
 interface InfoMenuContextData {
     data: InfoMenuData | null;
@@ -41,12 +42,10 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
 
     const fetchData = useCallback(async () => {
         try {
-            const response = await axios.get('/statuses');
+            const response = await api.get('/statuses');
             const result: InfoMenuData = response.data;
             setData(result);
-            console.log(result)
         } catch (error) {
-            console.error('Error fetching data:', error);
         }
     }, []);
 
