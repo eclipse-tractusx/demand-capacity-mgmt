@@ -49,6 +49,7 @@ code {
   --header-color: #f1f1f1;
   --label-margin: 8px;
   --border-color: #ccc;
+  --danger-red:#dc3545;
 }
 
 .table-container {
@@ -108,11 +109,29 @@ code {
   border-left: 1px solid var(--border-color);
   border-right: 1px solid  var(--border-color);
   border-bottom: 1px solid  var(--border-color);
- /* border-top: 1px solid  var(--border-color);*/
   padding: var(--label-margin);
+}
+
+.table-header-nested-text {
+  text-indent: 20px;
+
+}
+
+.table-header-nested-text-child{
+  justify-content: flex-end;
 }
 
 .data-cell {
   text-align: center;
   border: 1px solid  var(--border-color);
+}
+
+
+.red-delete-item {
+  color: var(--danger-red); 
+}
+
+.red-delete-item:hover {
+  background-color: var(--danger-red);
+  color: white; 
 }

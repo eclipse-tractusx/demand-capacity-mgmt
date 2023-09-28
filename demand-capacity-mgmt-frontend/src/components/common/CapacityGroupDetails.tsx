@@ -20,31 +20,26 @@
  *    ********************************************************************************
  */
 
-import React, { useContext } from 'react';
-import { CompanyContext } from '../contexts/CompanyContextProvider';
+import CapacityGroupsList from "../capacitygroup/CapacityGroupsView";
+import CapacityGroupContext from "../../contexts/CapacityGroupsContextProvider";
 
-interface CompanyOptionsProps {
-  selectedCompanyName: string;
+function CapacityGroupDetails() {
+
+    return (
+        <>
+        <div className="container-xl">
+            <br />
+            <div className="table">
+                <div className="table-wrapper">
+                    <CapacityGroupContext>
+                        <CapacityGroupsList />
+                    </CapacityGroupContext>
+                </div>
+            </div>
+        </div>
+        </>
+
+    );
 }
 
-const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName }) => {
-  const companiesContextData = useContext(CompanyContext);
-  const { companies } = companiesContextData || {};
-
-  // Use the companies array to fill the <select> options
-  return (
-    <>
-      <option disabled={true} value="">
-        --Choose an option--
-      </option>
-      {companies &&
-        companies.map((company) => (
-          <option key={company.id} value={company.id} selected={company.companyName === selectedCompanyName}>
-            {company.companyName}
-          </option>
-        ))}
-    </>
-  );
-};
-
-export default CompanyOptions;
+export default CapacityGroupDetails;
