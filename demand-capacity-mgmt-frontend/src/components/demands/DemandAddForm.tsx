@@ -26,9 +26,9 @@ import { DemandContext } from '../../contexts/DemandContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import DemandCategoryOptions from './DemandCategoryOptions';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
-import CompanyOptions from '../CompanyOptions';
+import CompanyOptions from '../common/CompanyOptions';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
-import UnitsOfMeasureOptions from '../UnitsofMeasureOptions';
+import UnitsOfMeasureOptions from '../common/UnitsofMeasureOptions';
 import { Demand } from '../../interfaces/demand_interfaces';
 import '../../App.css';
 

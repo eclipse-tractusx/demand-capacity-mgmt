@@ -21,31 +21,30 @@
  */
 
 import React, { useContext } from 'react';
-import { UnitsofMeasureContext } from '../contexts/UnitsOfMeasureContextProvider';
+import { CompanyContext } from '../../contexts/CompanyContextProvider';
 
-interface UnitsOfMeasureOptionsProps {
-  selectedUnitMeasureId: string;
+interface CompanyOptionsProps {
+  selectedCompanyName: string;
 }
 
-const UnitsOfMeasureOptions: React.FC<UnitsOfMeasureOptionsProps> = ({ selectedUnitMeasureId }) => {
-  const UnitsOfMeasureContextData = useContext(UnitsofMeasureContext);
-  const { unitsofmeasure } = UnitsOfMeasureContextData || {};
+const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName }) => {
+  const companiesContextData = useContext(CompanyContext);
+  const { companies } = companiesContextData || {};
 
-  // Use the demandcategories array to fill the <select> options
+  // Use the companies array to fill the <select> options
   return (
     <>
       <option disabled={true} value="">
         --Choose an option--
       </option>
-      {unitsofmeasure &&
-        unitsofmeasure.map((unit) => (
-          <option key={unit.id} value={unit.id} selected={unit.id === selectedUnitMeasureId}>
-            {unit.displayValue}
+      {companies &&
+        companies.map((company) => (
+          <option key={company.id} value={company.id} selected={company.companyName === selectedCompanyName}>
+            {company.companyName}
           </option>
         ))}
     </>
   );
 };
 
-export default UnitsOfMeasureOptions;
-
+export default CompanyOptions;

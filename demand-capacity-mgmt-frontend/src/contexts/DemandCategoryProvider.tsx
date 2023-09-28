@@ -21,7 +21,7 @@
  */
 
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from "../util/Api";
 
 export interface DemandCategory {
   id: string
@@ -42,7 +42,7 @@ const DemandCategoryContextProvider: React.FC<React.PropsWithChildren<{}>> = (pr
   useEffect(() => {
     const fetchDemandCategories = async () => {
       try {
-        const response = await axios.get('/demandcategory', {
+        const response = await api.get('/demandcategory', {
           params: {
             project_id: 1, // Adjust the project ID parameter as needed
           },

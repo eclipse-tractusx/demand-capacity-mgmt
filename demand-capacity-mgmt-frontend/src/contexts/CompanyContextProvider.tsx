@@ -21,7 +21,7 @@
  */
 
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import Api from "../util/Api";
 
 export interface Company {
   id: string,
@@ -48,7 +48,7 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axios.get('/company', {
+        const response = await Api.get('/company', {
          
         });
         const result: Company[] = response.data;
