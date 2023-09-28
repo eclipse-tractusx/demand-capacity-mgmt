@@ -22,29 +22,26 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
+import java.util.List;
+import java.util.UUID;
+import javax.transaction.Transactional;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.FavoriteEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 
-import javax.transaction.Transactional;
-import java.util.List;
-import java.util.UUID;
-
 public interface FavoriteRepository extends JpaRepository<FavoriteEntity, UUID> {
-
     /* *
-    *
-    * We need @Transaction because we don't fetch the entity first
-    * that way Hibernate entity manager won't be blocked because of missing entity manager
-    * (since we don't fetch the entity at all we just send delete command)
-    *
-    *  */
+     *
+     * We need @Transaction because we don't fetch the entity first
+     * that way Hibernate entity manager won't be blocked because of missing entity manager
+     * (since we don't fetch the entity at all we just send delete command)
+     *
+     *  */
     @Transactional
     void deleteByFavoriteIdAndId(@NonNull UUID favoriteId, @NonNull UUID id);
 
     FavoriteEntity findByFavoriteIdAndTypeAndId(@NonNull UUID favoriteId, @NonNull FavoriteType type, @NonNull UUID id);
 
     List<FavoriteEntity> findByType(FavoriteType type);
-
 }
