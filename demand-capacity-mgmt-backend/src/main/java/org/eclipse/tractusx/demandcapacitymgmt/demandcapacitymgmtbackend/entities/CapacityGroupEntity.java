@@ -37,10 +37,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters.ListToStringConverter;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
 
@@ -85,9 +82,11 @@ public class CapacityGroupEntity {
     private UnitMeasureEntity unitMeasure;
 
     @OneToMany(mappedBy = "capacityGroupEntity", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<CapacityTimeSeries> capacityTimeSeries;
 
     @OneToMany(mappedBy = "capacityGroupEntity", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<LinkedDemandSeries> linkedDemandSeries;
 
     @Column(name = "supplier_locations")

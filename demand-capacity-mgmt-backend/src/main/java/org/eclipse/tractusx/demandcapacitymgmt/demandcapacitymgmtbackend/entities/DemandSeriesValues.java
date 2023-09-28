@@ -22,16 +22,9 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -54,7 +47,7 @@ public class DemandSeriesValues {
     private DemandSeries demandSeries;
 
     @Column(name = "calendar_week", nullable = false)
-    private LocalDateTime calendarWeek;
+    private LocalDate calendarWeek;
 
     @Column(name = "demand", nullable = false)
     private Double demand;

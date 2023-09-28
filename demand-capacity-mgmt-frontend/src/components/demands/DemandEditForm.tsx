@@ -23,8 +23,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Form, Button, Col, Row } from 'react-bootstrap';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import { Demand, DemandSeriesValue, DemandProp, DemandSeries } from '../../interfaces/demand_interfaces';
-import CompanyOptions from '../CompanyOptions';
-import UnitsOfMeasureOptions from '../UnitsofMeasureOptions';
+import CompanyOptions from '../common/CompanyOptions';
+import UnitsOfMeasureOptions from '../common/UnitsofMeasureOptions';
 import Spinner from 'react-bootstrap/Spinner';
 import { FiSave } from 'react-icons/fi';
 
