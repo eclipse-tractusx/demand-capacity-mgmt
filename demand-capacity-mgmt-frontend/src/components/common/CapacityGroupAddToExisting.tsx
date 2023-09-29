@@ -52,6 +52,19 @@ const CapacityGroupAddToExisting: React.FC<CapacityGroupAddToExistingProps> = ({
   const capacityGroupContext = useContext(CapacityGroupContext);
   const { capacitygroups } = capacityGroupContext || {};
 
+  const toggleDemandSelection = (demandId: string) => {
+    if (selectedCapacityGroupId === demandId) {
+      setSelectedCapacityGroupId(null);
+    } else {
+      setSelectedCapacityGroupId(demandId);
+    }
+  };
+
+  const resetModalValues = () => {
+    setSelectedCapacityGroupId(null);
+    setSearchQuery('');
+  };
+
   useEffect(() => {
     if (checkedDemands) {
       const customer = checkedDemands[0]?.customer.companyName || null;
@@ -70,7 +83,6 @@ const CapacityGroupAddToExisting: React.FC<CapacityGroupAddToExistingProps> = ({
   }, [checkedDemands, capacityGroupContext]);
 
   useEffect(() => {
-    // Filter capacity groups based on the search query
     if (customerFilter && capacitygroups) {
       const filteredGroups = capacitygroups.filter((group) =>
         (group.name && group.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -91,11 +103,78 @@ const CapacityGroupAddToExisting: React.FC<CapacityGroupAddToExistingProps> = ({
         linkedMaterialDemandID: demandIds,
       };
 
-      // Send the capacityGroupLink object to the context
       capacityGroupContext?.linkToCapacityGroup(capacityGroupLink);
 
       onHide();
+      resetModalValues(); 
     }
+  };
+
+  const renderDemands = () => {
+    if (!checkedDemands || checkedDemands.length === 0) {
+      return (
+        <Alert variant="danger" onClose={onHide}>
+          <p>No Demands selected.</p>
+        </Alert>
+      );
+    }
+
+    return (
+      <>
+        <div>
+          <InputGroup className="mb-3">
+            <InputGroup.Text id="basic-addon1"><FaSearch /></InputGroup.Text>
+            <Form.Control
+              type="text"
+              placeholder="Search for capacity groups..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-describedby="basic-addon1"
+            />
+          </InputGroup>
+          <br />
+          <span>Customer - Capacity Group Name</span>
+          {isLoading ? (
+            <LoadingMessage />
+          ) : (
+            <ListGroup>
+              {filteredCapacityGroups &&
+                filteredCapacityGroups.map((group) => (
+                  <ListGroup.Item
+                    key={group.capacityGroupId}
+                    className="d-flex justify-content-between align-items-center"
+                  >
+                    <span> {group.customerName} - {group.name}</span>
+                    <Button
+                      variant={selectedCapacityGroupId === group.internalId ? 'primary' : 'outline-primary'}
+                      onClick={() => toggleDemandSelection(group.internalId)}
+                    >
+                      Select
+                    </Button>
+                  </ListGroup.Item>
+                ))}
+            </ListGroup>
+          )}
+        </div>
+        <br />
+        <div>
+          <h4>Selected Capacity Group :</h4>
+          <ListGroup>
+            {selectedCapacityGroupId && (
+              <ListGroup.Item>
+                {selectedCapacityGroupId}
+                <Button
+                  variant="danger"
+                  onClick={() => setSelectedCapacityGroupId(null)}
+                >
+                  Remove
+                </Button>
+              </ListGroup.Item>
+            )}
+          </ListGroup>
+        </div>
+      </>
+    );
   };
 
   return (
@@ -104,67 +183,7 @@ const CapacityGroupAddToExisting: React.FC<CapacityGroupAddToExistingProps> = ({
         <Modal.Title>Link to Existing Capacity Group</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {(!checkedDemands || checkedDemands.length === 0) ? (
-          <Alert variant="danger" onClose={onHide} >
-            <Alert.Heading>Warning!</Alert.Heading>
-            <p>No Demands selected to link.</p>
-          </Alert>
-        ) : (
-          <>
-            <div>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="basic-addon1"><FaSearch /></InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  placeholder="Search for capacity groups..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  aria-describedby="basic-addon1"
-                />
-              </InputGroup>
-              <br />
-              <span>Customer - Capacity Group Name</span>
-              {isLoading ? (
-                <LoadingMessage />
-              ) : (
-                <ListGroup>
-                  {filteredCapacityGroups &&
-                    filteredCapacityGroups.map((group) => (
-                      <ListGroup.Item
-                        key={group.capacityGroupId}
-                        className="d-flex justify-content-between align-items-center"
-                      >
-                        <span> {group.customerName} - {group.name}</span>
-                        <Button
-                          variant={selectedCapacityGroupId === group.internalId ? 'primary' : 'outline-primary'}
-                          onClick={() => setSelectedCapacityGroupId(group.internalId)}
-                        >
-                          Select
-                        </Button>
-                      </ListGroup.Item>
-                    ))}
-                </ListGroup>
-              )}
-            </div>
-            <br />
-            <div>
-              <h4>Selected Capacity Group :</h4>
-              <ListGroup>
-                {selectedCapacityGroupId && (
-                  <ListGroup.Item>
-                    {selectedCapacityGroupId}
-                    <Button
-                      variant="danger"
-                      onClick={() => setSelectedCapacityGroupId(null)}
-                    >
-                      Remove
-                    </Button>
-                  </ListGroup.Item>
-                )}
-              </ListGroup>
-            </div>
-          </>
-        )}
+        {renderDemands()}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>

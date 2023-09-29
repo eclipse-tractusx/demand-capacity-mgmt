@@ -89,26 +89,38 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
 
   // Initialize suggestedDemands with the latest 3 demands
   useEffect(() => {
-    if (demands) {
-      const sortedSuggestions = demands
+    if (demands && selectedDemands && checkedDemands) {
+      // Filter out demands that are already selected or checked
+      const filteredDemands = demands.filter(demand =>
+        !selectedDemands.some(selectedDemand => selectedDemand.id === demand.id) &&
+        !checkedDemands.some(checkedDemand => checkedDemand.id === demand.id)
+      );
+  
+      const sortedSuggestions = filteredDemands
         .sort((a, b) => b.changedAt.localeCompare(a.changedAt))
         .slice(0, 3);
+  
       setSuggestedDemands(sortedSuggestions);
     }
-  }, [demands]);
+  }, [demands, selectedDemands, checkedDemands]);
+  
 
   const updateSuggestions = (query: string) => {
     const matchingDemands = demands?.filter((demand) =>
-      demand.id.toString().includes(query) ||
-      demand.materialDescriptionCustomer.toLowerCase().includes(query.toLowerCase())
+      (demand.id.toString().includes(query) ||
+      demand.materialDescriptionCustomer.toLowerCase().includes(query.toLowerCase())) &&
+      // Exclude demands that are already selected or checked
+      !selectedDemands.some(selectedDemand => selectedDemand.id === demand.id) &&
+      !checkedDemands?.some(checkedDemand => checkedDemand.id === demand.id)
     ) || [];
-
+    
     // Sort by changedAt in descending order
     const sortedSuggestions = matchingDemands
       .sort((a, b) => b.changedAt.localeCompare(a.changedAt));
-
+    
     setSuggestedDemands(sortedSuggestions.slice(0, 3)); // Display up to 3 suggestions
   };
+  
 
   const calculateEarliestAndLatestDates = (selectedDemands: DemandProp[]) => {
     let earliestDate = new Date();
