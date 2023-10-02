@@ -31,20 +31,34 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "link_capacitygroup_materialdemand")
+@Table(name = "link_capacitygroup_demandseries")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class LinkedCapacityGroupMaterialDemandEntity {
+
     @Id
     @GeneratedValue
     @Column(columnDefinition = "uuid", updatable = false, name = "id")
     private UUID id;
 
-    @Column(columnDefinition = "uuid", updatable = false, name = "linked_material_demand_id")
-    private UUID linkedMaterialDemandID;
+    @Column(columnDefinition = "uuid", updatable = false, name = "demand_category_code_id")
+    private UUID demandCategoryCodeID;
+
+    @Column(columnDefinition = "uuid", updatable = false, name = "customer_id")
+    private UUID customerID;
+
+    @Column(name = "material_number_customer")
+    private String materialNumberCustomer;
+
+    @Column(name = "material_number_supplier")
+    private String materialNumberSupplier;
 
     @Column(columnDefinition = "uuid", updatable = false, name = "capacity_group_id", nullable = false)
-    private UUID capacityGroup;
+    private UUID capacityGroupID;
+
+    @Column(columnDefinition = "uuid", updatable = false, name = "material_demand_id", nullable = false)
+    private UUID materialDemandID;
+
 }

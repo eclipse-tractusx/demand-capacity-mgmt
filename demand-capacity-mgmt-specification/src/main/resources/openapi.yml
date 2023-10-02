@@ -132,7 +132,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LinkedCapacityGroupMaterialDemandRequest'
+              $ref: '#/components/schemas/LinkCGDSRequest'
       responses:
         204:
           description: no content
@@ -800,7 +800,7 @@ components:
         status:
           type: string
 
-    LinkedCapacityGroupMaterialDemandRequest:
+    LinkCGDSRequest:
       type: object
       properties:
         capacityGroupID:
@@ -830,7 +830,7 @@ components:
           type: string
         supplier:
           type: string
-        linkMaterialDemandIds:
+        linkDemandSeriesID:
           type: array
           items:
             type: string
