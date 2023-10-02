@@ -37,6 +37,7 @@ spec:
         {{- include "chart.selectorLabels" . | nindent 8 }}
         component: frontend
     spec:
+      automountServiceAccountToken: false
       {{- with .Values.frontend.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
