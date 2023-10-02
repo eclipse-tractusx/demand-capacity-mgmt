@@ -61,6 +61,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 250
                 items:
                   $ref: '#/components/schemas/MaterialDemandResponse'
 
@@ -140,6 +141,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 250
                 items:
                   $ref: '#/components/schemas/CapacityGroupDefaultViewResponse'
 
@@ -199,6 +201,7 @@ paths:
           application/json:
             schema:
               type: array
+              maxItems: 250
               items:
                 $ref: '#/components/schemas/WeekBasedCapacityGroupRequest'
       responses:
@@ -218,6 +221,7 @@ paths:
           application/json:
             schema:
               type: array
+              maxItems: 250
               items:
                 $ref: '#/components/schemas/WeekBasedMaterialDemandRequestDto'
       responses:
@@ -238,6 +242,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 250
                 items:
                   $ref: '#/components/schemas/CompanyDto'
 
@@ -255,6 +260,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 250
                 items:
                   $ref: '#/components/schemas/UnitMeasure'
 
@@ -272,6 +278,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 250
                 items:
                   $ref: '#/components/schemas/DemandCategoryResponse'
   /favorite:
@@ -288,6 +295,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 250
                 items:
                   $ref: '#/components/schemas/FavoriteResponse'
     post:
@@ -382,6 +390,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 250
                 items:
                   $ref: '#/components/schemas/FavoriteResponse'
         404:
@@ -493,6 +502,7 @@ components:
           type: string
         linkedDemandSeries:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/LinkedDemandSeriesRequest'
         supplier:
@@ -501,10 +511,12 @@ components:
           type: string
         supplierLocations:
           type: array
+          maxItems: 250
           items:
             type: string
         capacities:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/CapacitiesDto'
         changedAt:
@@ -535,6 +547,7 @@ components:
           type: string
         demands:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/DemandSeriesDto'
         customerLocation:
@@ -559,6 +572,7 @@ components:
           type: string
         demandSeries:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/DemandWeekSeriesDto'
         materialNumberCustomer:
@@ -583,6 +597,7 @@ components:
           type: string
         materialDemandSeries:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/MaterialDemandSeries'
 
@@ -593,12 +608,14 @@ components:
           type: string
         expectedSupplierLocationId:
           type: array
+          maxItems: 250
           items:
             type: string
         demandCategoryId:
           type: string
         demandSeriesValues:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesValue'
 
@@ -631,6 +648,7 @@ components:
           type: string
         demandSeries:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesResponse'
 
@@ -671,6 +689,7 @@ components:
           $ref: '#/components/schemas/CompanyDto'
         expectedSupplierLocation:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/CompanyDto'
         demandCategory:
@@ -678,6 +697,7 @@ components:
 
         demandSeriesValues:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesValue'
 
@@ -708,6 +728,7 @@ components:
           type: string
         Capacities:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/CapacityRequest'
 
@@ -728,10 +749,12 @@ components:
       properties:
         capacities:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/CapacityRequest'
         supplierLocations:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/CompanyDto'
         customer:
@@ -742,6 +765,7 @@ components:
           type: string
         linkedDemandSeries:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/LinkedDemandSeriesResponse'
         unitOfMeasure:
@@ -778,14 +802,17 @@ components:
       properties:
         capacities:
           type: array
+          maxItems: 250
           items:
             $ref: '#/components/schemas/CapacityRequest'
         linkedDemandSeries:
           type: array
+          maxItems: 250
           items:
             type: string
         supplierLocations:
           type: array
+          maxItems: 250
           items:
             type: string
         customer:
