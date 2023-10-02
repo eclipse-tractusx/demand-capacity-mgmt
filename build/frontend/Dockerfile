@@ -23,8 +23,14 @@
 # Base image
 FROM node:16.15.1
 
+# Create a new user 'appuser'
+RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
+
 # Set the working directory
 WORKDIR /app
+
+# Make sure the new user owns the /app directory
+RUN chown appuser:appuser /app
 
 # Copy the app source code
 COPY ../../demand-capacity-mgmt-frontend .
@@ -38,5 +44,9 @@ RUN yarn build
 # Expose the port that the app will run on
 EXPOSE 3000
 
+# Switch to the non-root user 'appuser'
+USER appuser
+
 # Start the app
 CMD ["yarn", "start"]
+
