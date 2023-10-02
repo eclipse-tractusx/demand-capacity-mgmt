@@ -77,6 +77,7 @@ paths:
           name: 'demand_id'
           schema:
             type: string
+            maxLength: 255
           required: true
       responses:
         200:
@@ -103,6 +104,7 @@ paths:
           name: 'demand_id'
           schema:
             type: string
+            maxLength: 255
           required: true
       responses:
         200:
@@ -122,6 +124,7 @@ paths:
           name: 'demand_id'
           schema:
             type: string
+            maxLength: 255
           required: true
       responses:
         200:
@@ -177,6 +180,7 @@ paths:
           name: 'capacityGroup_id'
           schema:
             type: string
+            maxLength: 255
           required: true
       responses:
         200:
@@ -330,12 +334,14 @@ paths:
           description: ID of the favorite to update
           schema:
             type: string
+            maxLength: 255
         - name: type
           in: query
           required: true
           description: type of the favorite to update
           schema:
             type: string
+            maxLength: 255
       requestBody:
         required: true
         content:
@@ -362,6 +368,7 @@ paths:
           description: ID of the favorite to delete
           schema:
             type: string
+            maxLength: 255
       responses:
         200:
           description: Favorite deleted successfully
@@ -383,6 +390,7 @@ paths:
           description: type of the favorite
           schema:
             type: string
+            maxLength: 255
       responses:
         200:
           description: Favorite found
@@ -410,8 +418,10 @@ components:
       properties:
         startDate:
           type: string
+          maxLength: 255
         endDate:
           type: string
+          maxLength: 255
         requiredValue:
           type: number
           format: double
@@ -423,24 +433,32 @@ components:
           format: double
         productId:
           type: string
+          maxLength: 255
         projectId:
           type: string
+          maxLength: 255
         demandCategory:
           type: string
+          maxLength: 255
         companyId:
           type: string
+          maxLength: 255
         description:
           type: string
+          maxLength: 255
 
     DemandResponseDto:
       type: object
       properties:
         id:
           type: string
+          maxLength: 255
         startDate:
           type: string
+          maxLength: 255
         endDate:
           type: string
+          maxLength: 255
         requiredValue:
           type: number
           format: double
@@ -452,10 +470,13 @@ components:
           format: double
         description:
           type: string
+          maxLength: 255
         demandCategory:
           type: string
+          maxLength: 255
         companyId:
           type: string
+          maxLength: 255
         product:
           $ref: '#/components/schemas/ProductDto'
 
@@ -471,24 +492,30 @@ components:
       properties:
         name:
           type: string
+          maxLength: 255
         un:
           type: string
+          maxLength: 255
 
     DemandCategoryDto:
       type: object
       properties:
         demandCategory:
           type: string
+          maxLength: 255
 
     LinkedDemandSeriesRequest:
       type: object
       properties:
         materialNumberCustomer:
           type: string
+          maxLength: 255
         materialNumberSupplier:
           type: string
+          maxLength: 255
         customerLocation:
           type: string
+          maxLength: 255
         demandCategory:
           $ref: '#/components/schemas/DemandCategoryDto'
 
@@ -497,16 +524,20 @@ components:
       properties:
         calendarWeek:
           type: string
+          maxLength: 255
         actualCapacity:
           type: string
+          maxLength: 255
         maximumCapacity:
           type: string
+          maxLength: 255
 
     WeekBasedCapacityGroupRequest:
       type: object
       properties:
         unityOfMeasure:
           type: string
+          maxLength: 255
         linkedDemandSeries:
           type: array
           maxItems: 250
@@ -514,13 +545,16 @@ components:
             $ref: '#/components/schemas/LinkedDemandSeriesRequest'
         supplier:
           type: string
+          maxLength: 255
         name:
           type: string
+          maxLength: 255
         supplierLocations:
           type: array
           maxItems: 250
           items:
             type: string
+            maxLength: 255
         capacities:
           type: array
           maxItems: 250
@@ -528,30 +562,37 @@ components:
             $ref: '#/components/schemas/CapacitiesDto'
         changedAt:
           type: string
+          maxLength: 255
         capacityGroupId:
           type: string
+          maxLength: 255
         customer:
           type: string
+          maxLength: 255
 
     DemandSeriesDto:
       type: object
       properties:
         demand:
           type: string
+          maxLength: 255
         calendarWeek:
           type: string
+          maxLength: 255
 
     DemandSeriesCategoryDto:
       type: object
       properties:
         id:
           type: string
+          maxLength: 255
 
     DemandWeekSeriesDto:
       type: object
       properties:
         expectedSupplierLocation:
           type: string
+          maxLength: 255
         demands:
           type: array
           maxItems: 250
@@ -559,6 +600,7 @@ components:
             $ref: '#/components/schemas/DemandSeriesDto'
         customerLocation:
           type: string
+          maxLength: 255
         demandCategory:
           $ref: '#/components/schemas/DemandSeriesCategoryDto'
 
@@ -567,16 +609,22 @@ components:
       properties:
         unityOfMeasure:
           type: string
+          maxLength: 255
         materialDescriptionCustomer:
           type: string
+          maxLength: 255
         materialDemandId:
           type: string
+          maxLength: 255
         materialNumberSupplier:
           type: string
+          maxLength: 255
         supplier:
           type: string
+          maxLength: 255
         changedAt:
           type: string
+          maxLength: 255
         demandSeries:
           type: array
           maxItems: 250
@@ -584,24 +632,32 @@ components:
             $ref: '#/components/schemas/DemandWeekSeriesDto'
         materialNumberCustomer:
           type: string
+          maxLength: 255
         customer:
           type: string
+          maxLength: 255
 
     MaterialDemandRequest:
       type: object
       properties:
         materialDescriptionCustomer:
           type: string
+          maxLength: 255
         materialNumberCustomer:
           type: string
+          maxLength: 255
         materialNumberSupplier:
           type: string
+          maxLength: 255
         customerId:
           type: string
+          maxLength: 255
         supplierId:
           type: string
+          maxLength: 255
         unitMeasureId:
           type: string
+          maxLength: 255
         materialDemandSeries:
           type: array
           maxItems: 250
@@ -613,13 +669,16 @@ components:
       properties:
         customerLocationId:
           type: string
+          maxLength: 255
         expectedSupplierLocationId:
           type: array
           maxItems: 250
           items:
             type: string
+            maxLength: 255
         demandCategoryId:
           type: string
+          maxLength: 255
         demandSeriesValues:
           type: array
           maxItems: 250
@@ -631,6 +690,7 @@ components:
       properties:
         calendarWeek:
           type: string
+          maxLength: 255
         demand:
           type: number
           format: double
@@ -640,12 +700,16 @@ components:
       properties:
         id:
           type: string
+          maxLength: 255
         materialDescriptionCustomer:
           type: string
+          maxLength: 255
         materialNumberCustomer:
           type: string
+          maxLength: 255
         materialNumberSupplier:
           type: string
+          maxLength: 255
         customer:
           $ref: '#/components/schemas/CompanyDto'
         supplier:
@@ -654,6 +718,7 @@ components:
           $ref: '#/components/schemas/UnitMeasure'
         changedAt:
           type: string
+          maxLength: 255
         demandSeries:
           type: array
           maxItems: 250
@@ -665,30 +730,41 @@ components:
       properties:
         id:
           type: string
+          maxLength: 255
         bpn:
           type: string
+          maxLength: 255
         companyName:
           type: string
+          maxLength: 255
         street:
           type: string
+          maxLength: 255
         number:
           type: string
+          maxLength: 255
         zipCode:
           type: string
+          maxLength: 255
         country:
           type: string
+          maxLength: 255
         myCompany:
           type: string
+          maxLength: 255
 
     UnitMeasure:
       type: object
       properties:
         id:
           type: string
+          maxLength: 255
         codeValue:
           type: string
+          maxLength: 255
         displayValue:
           type: string
+          maxLength: 255
 
     MaterialDemandSeriesResponse:
       type: object
@@ -714,10 +790,13 @@ components:
       properties:
         id:
           type: string
+          maxLength: 255
         demandCategoryCode:
           type: string
+          maxLength: 255
         demandCategoryName:
           type: string
+          maxLength: 255
 
     CapacityRequest:
       type: object
@@ -730,12 +809,14 @@ components:
           format: double
         calendarWeek:
           type: string
+          maxLength: 255
 
     CapacityLink:
       type: object
       properties:
         LinkedMaterial:
           type: string
+          maxLength: 255
         Capacities:
           type: array
           maxItems: 250
@@ -751,8 +832,10 @@ components:
           $ref: '#/components/schemas/CompanyDto'
         materialNumberSupplier:
           type: string
+          maxLength: 255
         materialNumberCustomer:
           type: string
+          maxLength: 255
 
     CapacityGroupResponse:
       type: object
@@ -773,6 +856,7 @@ components:
           $ref: '#/components/schemas/CompanyDto'
         capacityGroupId:
           type: string
+          maxLength: 255
         linkedDemandSeries:
           type: array
           maxItems: 250
@@ -782,31 +866,41 @@ components:
           $ref: '#/components/schemas/UnitMeasure'
         changeAt:
           type: string
+          maxLength: 255
         name:
           type: string
+          maxLength: 255
 
     CapacityGroupDefaultViewResponse:
       type: object
       properties:
         internalId:
           type: string
+          maxLength: 255
         catXUuid:
           type: string
+          maxLength: 255
         name:
           type: string
+          maxLength: 255
         customerBPNL:
           type: string
+          maxLength: 255
         customerName:
           type: string
+          maxLength: 255
         supplierBNPL:
           type: string
+          maxLength: 255
         numberOfMaterials:
           type: number
           format: double
         favoritedBy:
           type: string
+          maxLength: 255
         status:
           type: string
+          maxLength: 255
 
     CapacityGroupRequest:
       type: object
@@ -821,34 +915,45 @@ components:
           maxItems: 250
           items:
             type: string
+            maxLength: 255
         supplierLocations:
           type: array
           maxItems: 250
           items:
             type: string
+            maxLength: 255
         customer:
           type: string
+          maxLength: 255
         supplier:
           type: string
+          maxLength: 255
         unitOfMeasure:
           type: string
+          maxLength: 255
         changeAt:
           type: string
+          maxLength: 255
         name:
           type: string
+          maxLength: 255
 
     FavoriteRequest:
       type: object
       properties:
         favoriteId:
           type: string
+          maxLength: 255
         fType:
           type: string
+          maxLength: 255
 
     FavoriteResponse:
       type: object
       properties:
         favoriteId:
           type: string
+          maxLength: 255
         fType:
           type: string
+          maxLength: 255
