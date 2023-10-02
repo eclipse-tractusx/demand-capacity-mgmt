@@ -20,32 +20,12 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
+
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
-import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 
-@Entity
-@Table(name = "favorites")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class FavoriteEntity {
-
-    @Id
-    @Column(columnDefinition = "uuid", updatable = false, name = "user_id")
-    private UUID id;
-
-    @Column(columnDefinition = "uuid", name = "favorite_id")
-    private UUID favoriteId;
-
-    @Column(name = "f_type", columnDefinition = "varchar")
-    @Enumerated(EnumType.STRING)
-    private FavoriteType type;
+public interface DemandSeriesRepository extends JpaRepository<DemandSeries, UUID> {
 }
