@@ -49,8 +49,8 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.frontend.securityContext | nindent 12 }}
-          seccompProfile:
-            type: RuntimeDefault
+            seccompProfile:
+              type: RuntimeDefault
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           ports:
@@ -80,7 +80,7 @@ spec:
             failureThreshold: { { .Values.frontend.readinessProbe.failureThreshold } }
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.frontend.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
