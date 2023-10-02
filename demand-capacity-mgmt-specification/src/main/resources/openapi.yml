@@ -48,6 +48,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MaterialDemandResponse'
+        default:
+          description: Unexpected error.
     get:
       tags:
         - Demand
@@ -64,6 +66,8 @@ paths:
                 maxItems: 250
                 items:
                   $ref: '#/components/schemas/MaterialDemandResponse'
+        default:
+          description: Unexpected error.
 
   /demand/{demand_id}:
     get:
@@ -86,6 +90,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MaterialDemandResponse'
+        default:
+          description: Unexpected error.
 
     put:
       tags:
@@ -113,6 +119,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MaterialDemandResponse'
+        default:
+          description: Unexpected error.
     delete:
       tags:
         - Demand
@@ -129,6 +137,8 @@ paths:
       responses:
         200:
           description: Delete demand with id
+        default:
+          description: Unexpected error.
 
   /capacityGroup:
     get:
@@ -147,6 +157,8 @@ paths:
                 maxItems: 250
                 items:
                   $ref: '#/components/schemas/CapacityGroupDefaultViewResponse'
+        default:
+          description: Unexpected error.
 
     post:
       tags:
@@ -167,6 +179,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CapacityGroupResponse'
+        default:
+          description: Unexpected error.
 
   /capacityGroup/{capacityGroup_id}:
     get:
@@ -189,6 +203,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CapacityGroupResponse'
+        default:
+          description: Unexpected error.
 
 
 
@@ -211,6 +227,8 @@ paths:
       responses:
         200:
           description: weekBasedCapacityGroup endpoint
+        default:
+          description: Unexpected error.
 
   /weekbasedmaterialdemand:
     post:
@@ -231,6 +249,8 @@ paths:
       responses:
         200:
           description: weekBasedCapacityGroup endpoint
+        default:
+          description: Unexpected error.
 
   /company:
     get:
@@ -249,6 +269,8 @@ paths:
                 maxItems: 250
                 items:
                   $ref: '#/components/schemas/CompanyDto'
+        default:
+          description: Unexpected error.
 
   /unitmeasure:
     get:
@@ -267,6 +289,8 @@ paths:
                 maxItems: 250
                 items:
                   $ref: '#/components/schemas/UnitMeasure'
+        default:
+          description: Unexpected error.
 
   /demandcategory:
     get:
@@ -285,6 +309,8 @@ paths:
                 maxItems: 250
                 items:
                   $ref: '#/components/schemas/DemandCategoryResponse'
+        default:
+          description: Unexpected error.
   /favorite:
     get:
       tags:
@@ -302,6 +328,8 @@ paths:
                 maxItems: 250
                 items:
                   $ref: '#/components/schemas/FavoriteResponse'
+        default:
+          description: Unexpected error.
     post:
       tags:
         - favorite
@@ -321,6 +349,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FavoriteResponse'
+        default:
+          description: Unexpected error.
     put:
       tags:
         - favorite
@@ -355,6 +385,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FavoriteResponse'
+        default:
+          description: Unexpected error.
     delete:
       tags:
         - favorite
@@ -374,6 +406,8 @@ paths:
           description: Favorite deleted successfully
         404:
           description: Favorite not found
+        default:
+          description: Unexpected error.
 
 
   /favorite/{type}:
@@ -403,6 +437,8 @@ paths:
                   $ref: '#/components/schemas/FavoriteResponse'
         404:
           description: Favorite not found
+        default:
+          description: Unexpected error.
 
 components:
 
