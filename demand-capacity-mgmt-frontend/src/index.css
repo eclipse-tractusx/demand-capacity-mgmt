@@ -163,3 +163,24 @@ code {
   50%, 60%, 70%, 80% { transform: translateX(-5px); }
   90%, 100% { transform: translateX(0); }
 }
+
+/*Breadcrumbs animation*/
+.active-step {
+  position: relative;
+}
+
+.active-step:after {
+  content: '';
+  position: absolute;
+  bottom: -5px; /* Adjust the position based on your design */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px; /* The height of the indicator line */
+  background-color: #007bff; /* Color of the indicator line */
+  transition: width 0.3s ease;
+}
+
+.active-step.active:after {
+  width: 100%; /* Width of the indicator line when the step is active */
+}
