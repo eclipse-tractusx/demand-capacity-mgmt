@@ -74,7 +74,7 @@ useEffect(() => {
   };
 
   fetchCapacityGroupsWithRetry();
-}, []);
+}, [retryCount]);
   
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {
@@ -100,9 +100,7 @@ useEffect(() => {
 
   const linkToCapacityGroup = async (linkToCapacityGroup: CapacityGroupLink) => {
     try {
-      console.log(linkToCapacityGroup);
-      const response = await axios.post('/capacityGroup/link', linkToCapacityGroup);
-      console.log(response)
+      const response = await axios.post('/capacityGroup/link', linkToCapacityGroup); 
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
     }

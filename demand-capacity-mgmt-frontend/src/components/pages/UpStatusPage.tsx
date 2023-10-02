@@ -21,7 +21,7 @@
  */
 
 import { FcBullish} from "react-icons/fc";
-import DemandList from "../demands/DemandList";
+import DemandList from "../common/DemandList";
 
 
 

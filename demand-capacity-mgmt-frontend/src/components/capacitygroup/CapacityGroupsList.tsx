@@ -41,7 +41,6 @@ const CapacityGroupsList: React.FC = () => {
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
 
   const handleSort = (column: string) => {
-    console.log('Sorting column:', column);
     if (sortColumn === column) {
       // If the same column is clicked again, toggle the sort order
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');

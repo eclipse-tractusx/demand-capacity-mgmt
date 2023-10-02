@@ -156,7 +156,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
 
 
   useEffect(() => {
-    console.log("aqui")
     const newDemandValuesMap: DemandValuesMap = {};
 
     demandData.demandSeries?.forEach((series) => {
