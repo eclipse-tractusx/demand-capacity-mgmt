@@ -415,6 +415,7 @@ components:
   schemas:
     DemandRequestDto:
       type: object
+      additionalProperties: false
       properties:
         startDate:
           type: string
@@ -449,6 +450,7 @@ components:
 
     DemandResponseDto:
       type: object
+      additionalProperties: false
       properties:
         id:
           type: string
@@ -482,6 +484,7 @@ components:
 
     DemandRequestUpdateDto:
       type: object
+      additionalProperties: false
       properties:
         actualDemand:
           type: number
@@ -489,6 +492,7 @@ components:
 
     ProductDto:
       type: object
+      additionalProperties: false
       properties:
         name:
           type: string
@@ -499,6 +503,7 @@ components:
 
     DemandCategoryDto:
       type: object
+      additionalProperties: false
       properties:
         demandCategory:
           type: string
@@ -506,6 +511,7 @@ components:
 
     LinkedDemandSeriesRequest:
       type: object
+      additionalProperties: false
       properties:
         materialNumberCustomer:
           type: string
@@ -521,6 +527,7 @@ components:
 
     CapacitiesDto:
       type: object
+      additionalProperties: false
       properties:
         calendarWeek:
           type: string
@@ -534,6 +541,7 @@ components:
 
     WeekBasedCapacityGroupRequest:
       type: object
+      additionalProperties: false
       properties:
         unityOfMeasure:
           type: string
@@ -572,6 +580,7 @@ components:
 
     DemandSeriesDto:
       type: object
+      additionalProperties: false
       properties:
         demand:
           type: string
@@ -582,6 +591,7 @@ components:
 
     DemandSeriesCategoryDto:
       type: object
+      additionalProperties: false
       properties:
         id:
           type: string
@@ -589,6 +599,7 @@ components:
 
     DemandWeekSeriesDto:
       type: object
+      additionalProperties: false
       properties:
         expectedSupplierLocation:
           type: string
@@ -606,6 +617,7 @@ components:
 
     WeekBasedMaterialDemandRequestDto:
       type: object
+      additionalProperties: false
       properties:
         unityOfMeasure:
           type: string
@@ -639,6 +651,7 @@ components:
 
     MaterialDemandRequest:
       type: object
+      additionalProperties: false
       properties:
         materialDescriptionCustomer:
           type: string
@@ -666,6 +679,7 @@ components:
 
     MaterialDemandSeries:
       type: object
+      additionalProperties: false
       properties:
         customerLocationId:
           type: string
@@ -687,6 +701,7 @@ components:
 
     MaterialDemandSeriesValue:
       type: object
+      additionalProperties: false
       properties:
         calendarWeek:
           type: string
@@ -697,6 +712,7 @@ components:
 
     MaterialDemandResponse:
       type: object
+      additionalProperties: false
       properties:
         id:
           type: string
@@ -727,6 +743,7 @@ components:
 
     CompanyDto:
       type: object
+      additionalProperties: false
       properties:
         id:
           type: string
@@ -755,6 +772,7 @@ components:
 
     UnitMeasure:
       type: object
+      additionalProperties: false
       properties:
         id:
           type: string
@@ -768,6 +786,7 @@ components:
 
     MaterialDemandSeriesResponse:
       type: object
+      additionalProperties: false
       properties:
         customerLocation:
           $ref: '#/components/schemas/CompanyDto'
@@ -787,6 +806,7 @@ components:
 
     DemandCategoryResponse:
       type: object
+      additionalProperties: false
       properties:
         id:
           type: string
@@ -800,6 +820,7 @@ components:
 
     CapacityRequest:
       type: object
+      additionalProperties: false
       properties:
         actualCapacity:
           type: number
@@ -813,6 +834,7 @@ components:
 
     CapacityLink:
       type: object
+      additionalProperties: false
       properties:
         LinkedMaterial:
           type: string
@@ -825,6 +847,7 @@ components:
 
     LinkedDemandSeriesResponse:
       type: object
+      additionalProperties: false
       properties:
         demandCategory:
           $ref: '#/components/schemas/DemandCategoryResponse'
@@ -839,6 +862,7 @@ components:
 
     CapacityGroupResponse:
       type: object
+      additionalProperties: false
       properties:
         capacities:
           type: array
@@ -873,6 +897,7 @@ components:
 
     CapacityGroupDefaultViewResponse:
       type: object
+      additionalProperties: false
       properties:
         internalId:
           type: string
@@ -904,6 +929,7 @@ components:
 
     CapacityGroupRequest:
       type: object
+      additionalProperties: false
       properties:
         capacities:
           type: array
@@ -940,6 +966,7 @@ components:
 
     FavoriteRequest:
       type: object
+      additionalProperties: false
       properties:
         favoriteId:
           type: string
@@ -950,6 +977,7 @@ components:
 
     FavoriteResponse:
       type: object
+      additionalProperties: false
       properties:
         favoriteId:
           type: string
