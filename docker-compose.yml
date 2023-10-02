@@ -30,6 +30,12 @@ services:
       - '127.0.0.1:5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dcm"]
+      interval: 180s
+      timeout: 30s
+      retries: 3
+
 volumes:
   db:
     driver: local
