@@ -23,10 +23,11 @@ import { useContext, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { DemandProp } from '../../interfaces/demand_interfaces';
-import { Button, ListGroup, Container, Row, Col, Alert, InputGroup } from 'react-bootstrap';
+import { Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import StepBreadcrumbs from './StepsBreadCrumbs';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
 import { FaSearch } from 'react-icons/fa';
+import Select from 'react-select';
 
 interface CapacityGroupWizardModalProps {
   show: boolean;
@@ -45,10 +46,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   const [isMaximumCapacityShaking, setIsMaximumCapacityShaking] = useState(false);
   const context = useContext(CapacityGroupContext);
 
-
   const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [suggestedDemands, setSuggestedDemands] = useState<DemandProp[]>([]);
 
   useEffect(() => {
     if (checkedDemands) {
@@ -57,6 +55,8 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   }, [checkedDemands]);
 
   const nextStep = () => {
+
+    //Validate if required fields are filled
     if (step === 1 && (!groupName || !defaultActualCapacity || !defaultMaximumCapacity)) {
       if (!groupName) {
         setIsNameInputShaking(true);
@@ -83,54 +83,12 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
     }
   };
 
-  // Function to handle selecting a suggestion
-  const handleSuggestionSelect = (suggestion: DemandProp) => {
-    setSelectedDemands([...selectedDemands, suggestion]);
-    setSearchQuery(''); // Clear the search input
-    setSuggestedDemands([]); // Clear suggestions
-  };
-
   // Function to handle removing a selected demand
   const handleRemoveDemand = (index: number) => {
     const updatedDemands = [...selectedDemands];
     updatedDemands.splice(index, 1);
     setSelectedDemands(updatedDemands);
   };
-
-  // Initialize suggestedDemands with the latest 3 demands
-  useEffect(() => {
-    if (demands && selectedDemands && checkedDemands) {
-      // Filter out demands that are already selected or checked
-      const filteredDemands = demands.filter(demand =>
-        !selectedDemands.some(selectedDemand => selectedDemand.id === demand.id) &&
-        !checkedDemands.some(checkedDemand => checkedDemand.id === demand.id)
-      );
-
-      const sortedSuggestions = filteredDemands
-        .sort((a, b) => b.changedAt.localeCompare(a.changedAt))
-        .slice(0, 3);
-
-      setSuggestedDemands(sortedSuggestions);
-    }
-  }, [demands, selectedDemands, checkedDemands]);
-
-
-  const updateSuggestions = (query: string) => {
-    const matchingDemands = demands?.filter((demand) =>
-      (demand.id.toString().includes(query) ||
-        demand.materialDescriptionCustomer.toLowerCase().includes(query.toLowerCase())) &&
-      // Exclude demands that are already selected or checked
-      !selectedDemands.some(selectedDemand => selectedDemand.id === demand.id) &&
-      !checkedDemands?.some(checkedDemand => checkedDemand.id === demand.id)
-    ) || [];
-
-    // Sort by changedAt in descending order
-    const sortedSuggestions = matchingDemands
-      .sort((a, b) => b.changedAt.localeCompare(a.changedAt));
-
-    setSuggestedDemands(sortedSuggestions.slice(0, 3)); // Display up to 3 suggestions
-  };
-
 
   const calculateEarliestAndLatestDates = (selectedDemands: DemandProp[]) => {
     let earliestDate = new Date();
@@ -166,7 +124,6 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   const handleSubmit = async () => {
 
     if (!context) {
-      console.error('Context is undefined.');
       return;
     }
     // Calculate earliest and latest dates
@@ -204,7 +161,6 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   const handleDefaultMaximumCapacityChange = (newValue: string) => {
     // Use a regular expression to allow only numbers
     const numericValue = newValue.replace(/[^0-9]/g, '');
-
     // Update the state with the numeric value
     setDefaultActualCapacity(numericValue);
     setDefaultMaximumCapacity(numericValue);
@@ -213,11 +169,9 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   const handleDefaultActualCapacityChange = (newValue: string) => {
     // Use a regular expression to allow only numbers
     const numericValue = newValue.replace(/[^0-9]/g, '');
-
     // Update the state with the numeric value
     setDefaultActualCapacity(numericValue);
   };
-
 
   return (
     <>
@@ -236,7 +190,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               <StepBreadcrumbs currentStep={step} />
               <br />
               <p>Welcome to the Capacity Group Wizard, this intuitive interface will simplify this task. <br />
-                Here, you'll effortlessly create capacity groups and seamlessly link them with demand step-by-step.</p>
+                Here, you'll effortlessly create capacity groups and seamlessly link them with demands step-by-step.</p>
             </div>
           )}
           {step === 1 && (
@@ -244,7 +198,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               <Form.Group>
                 <StepBreadcrumbs currentStep={step} />
                 <center><h5>Group Details</h5></center>
-              
+
                 <Form.Label className="control-label required-field-label">Capacity Group Name</Form.Label>
                 <Form.Control
                   type="text"
@@ -303,39 +257,26 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                 </Alert>
               )}
               <Container className="mt-4">
-                <Row>
-                  <Col md={15}>
-                    <InputGroup>
-                      <InputGroup.Text id="basic-addon1"><FaSearch /></InputGroup.Text>
-                      <Form.Control
-                        type="text"
-                        placeholder="Search for demands..."
-                        value={searchQuery}
-                        onChange={(e) => {
-                          setSearchQuery(e.target.value);
-                          updateSuggestions(e.target.value);
-                        }}
-                        aria-describedby="basic-addon1"
-                      />
-                    </InputGroup>
-                    <br />
-                    <ListGroup>
-                      {suggestedDemands.length > 0 && (
-                        <span>{searchQuery ? 'Results' : 'Suggestions'}: </span>
-                      )}
-                      {suggestedDemands.map((suggestion) => (
-                        <ListGroup.Item key={suggestion.id} className="suggestion">
-                          <Button
-                            variant="outline-primary"
-                            onClick={() => handleSuggestionSelect(suggestion)}
-                          >
-                            {suggestion.id} - {suggestion.materialDescriptionCustomer} - {suggestion.materialNumberCustomer}
-                          </Button>
-                        </ListGroup.Item>
-                      ))}
-                    </ListGroup>
-                  </Col>
-                </Row>
+                <Select
+                  options={demands?.filter(demand => {
+                    // Filter out demands that are in checkedDemands or selectedDemands
+                    return (
+                      !checkedDemands?.some(checkedDemand => checkedDemand.id === demand.id) &&
+                      !selectedDemands.some(selectedDemand => selectedDemand.id === demand.id)
+                    );
+                  }).map(demand => ({
+                    value: demand,
+                    label: `${demand.id} - ${demand.materialDescriptionCustomer} - ${demand.materialNumberCustomer}`
+                  }))}
+                  value={null} //Just so that we dont get stuck on the data that was selected
+                  onChange={selectedOption => {
+                    if (selectedOption) {
+                      setSelectedDemands([...selectedDemands, selectedOption.value]);
+                    }
+                  }}
+                  isSearchable
+                  placeholder={<><FaSearch /> Search for demands...</>}
+                />
                 {selectedDemands.length > 0 && (
                   <Row>
                     <Col>
@@ -370,9 +311,10 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
             <div>
               <StepBreadcrumbs currentStep={step} />
               <center><h5>Review and Submit</h5></center>
+              <br />
               <div className="row mb-2">
                 <div className="col-sm-3">
-                  <h6 className="text-end">Name:</h6>
+                  <h6 className="text-end">Capacity Group Name:</h6>
                 </div>
                 <div className="col-sm-9">
                   <span>{groupName}</span>

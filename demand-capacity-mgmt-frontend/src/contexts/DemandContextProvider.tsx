@@ -88,7 +88,6 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       return fetchedDemand;
     } catch (error) {
       console.error('Error fetching demand by id:', error);
-      return undefined;
     }
   };
 

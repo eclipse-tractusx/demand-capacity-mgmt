@@ -58,12 +58,6 @@ interface Capacities{
   calendarWeek: string
 }
 
-interface DemandCategory {
-  id: string;
-  demandCategoryCode: string;
-  demandCategoryName: string;
-}
-
 export interface SingleCapacityGroup {
   capacities: Capacities[];
   supplierLocations: Address[];

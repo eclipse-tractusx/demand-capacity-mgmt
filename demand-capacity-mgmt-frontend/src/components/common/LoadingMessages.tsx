@@ -19,45 +19,55 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
 import React, { useState, useEffect } from 'react';
-import { GridLoader, BounceLoader } from 'react-spinners';
+import { BounceLoader, GridLoader } from 'react-spinners';
 
-const GatheringDataMessage = () => {
-  const [loaderColor, setLoaderColor] = useState('#ffa600'); // Initial color
-  const [loadingDots, setLoadingDots] = useState('');
+const useLoader = (initialColor: string) => {
+  const [color, setColor] = useState<string>(initialColor);
+  const [loadingDots, setLoadingDots] = useState<string>('');
 
   useEffect(() => {
     const colorInterval = setInterval(() => {
-      // Define your two colors here
-      const color1 = '#ffa600'; // First color
-      const color2 = '#b3cb2d'; // Second color
-
-      setLoaderColor((prevColor) => (prevColor === color1 ? color2 : color1));
-    }, 1125); // Change color every 1.2 seconds (adjust as needed)
+      setColor((prevColor) => (prevColor === '#ffa600' ? '#b3cb2d' : '#ffa600'));
+    }, 1125);
 
     const loadingDotsInterval = setInterval(() => {
-      setLoadingDots((prevDots) => {
-        if (prevDots.length === 3) {
-          // Reset the dots to a single dot after three dots
-          return '.';
-        } else {
-          // Add a dot to the existing dots
-          return prevDots + '.';
-        }
-      });
-    }, 500); // Change dots every 0.5 seconds (adjust as needed)
+      setLoadingDots((prevDots) => (prevDots.length === 3 ? '.' : prevDots + '.'));
+    }, 500);
 
     return () => {
-      clearInterval(colorInterval); // Cleanup the color interval on component unmount
-      clearInterval(loadingDotsInterval); // Cleanup the loading dots interval on component unmount
+      clearInterval(colorInterval);
+      clearInterval(loadingDotsInterval);
     };
   }, []);
+
+  return { color, loadingDots };
+};
+
+interface CustomLoaderProps {
+  message: string;
+}
+
+const LoadingCustomMessage: React.FC<CustomLoaderProps> = ({ message }) => {
+  const { color, loadingDots } = useLoader('#ffa600');
 
   return (
     <div className="text-center">
       <center>
-        <GridLoader color={loaderColor} />
+        <BounceLoader color={color} />
+      </center>
+      <p className="loading-text">{message}{loadingDots}</p>
+    </div>
+  );
+};
+
+const LoadingGatheringDataMessage = () => {
+  const { color, loadingDots } = useLoader('#ffa600');
+
+  return (
+    <div className="text-center">
+      <center>
+        <GridLoader color={color} />
       </center>
       <p className="loading-text">Gathering data{loadingDots}</p>
     </div>
@@ -65,9 +75,7 @@ const GatheringDataMessage = () => {
 };
 
 const LoadingMessage = () => {
-  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
-  const [loaderColor, setLoaderColor] = useState('#ffa600'); // Initial color
-  const [loadingDots, setLoadingDots] = useState('');
+  const { color, loadingDots } = useLoader('#ffa600');
 
   const loadingPhrases = [
     'Loading',
@@ -83,44 +91,25 @@ const LoadingMessage = () => {
     'Optimizing performance',
   ];
 
+
+  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
+
   useEffect(() => {
     const phraseInterval = setInterval(() => {
       setCurrentPhraseIndex((prevIndex) => (prevIndex + 1) % loadingPhrases.length);
     }, 4000); // Change the phrase every 3 seconds
 
-    const loadingDotsInterval = setInterval(() => {
-      setLoadingDots((prevDots) => {
-        if (prevDots.length === 3) {
-          // Reset the dots to a single dot after three dots
-          return '.';
-        } else {
-          // Add a dot to the existing dots
-          return prevDots + '.';
-        }
-      });
-    }, 500); // Change dots every 0.5 seconds (adjust as needed)
-
-    const colorInterval = setInterval(() => {
-      // Define your two colors here
-      const color1 = '#ffa600'; // First color
-      const color2 = '#b3cb2d'; // Second color
-
-      setLoaderColor((prevColor) => (prevColor === color1 ? color2 : color1));
-    }, 1125);
-
     return () => {
       clearInterval(phraseInterval);
-      clearInterval(colorInterval);
-      clearInterval(loadingDotsInterval);
     };
-  }, []); // Specify an empty dependency array here
+  }, [loadingPhrases.length]);
 
   return (
     <>
       <br />
       <div className="text-center">
         <center>
-          <BounceLoader color={loaderColor} />
+          <BounceLoader color={color} />
         </center>
         <p className="loading-text">{loadingPhrases[currentPhraseIndex]}{loadingDots}</p>
       </div>
@@ -128,4 +117,4 @@ const LoadingMessage = () => {
   );
 };
 
-export { GatheringDataMessage, LoadingMessage };
+export { LoadingGatheringDataMessage, LoadingMessage, LoadingCustomMessage };
