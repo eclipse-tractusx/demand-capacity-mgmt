@@ -81,6 +81,7 @@ paths:
           name: 'demand_id'
           schema:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
           required: true
       responses:
@@ -110,6 +111,7 @@ paths:
           name: 'demand_id'
           schema:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
           required: true
       responses:
@@ -132,6 +134,7 @@ paths:
           name: 'demand_id'
           schema:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
           required: true
       responses:
@@ -194,6 +197,7 @@ paths:
           name: 'capacityGroup_id'
           schema:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
           required: true
       responses:
@@ -364,6 +368,7 @@ paths:
           description: ID of the favorite to update
           schema:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
         - name: type
           in: query
@@ -371,6 +376,7 @@ paths:
           description: type of the favorite to update
           schema:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
       requestBody:
         required: true
@@ -400,6 +406,7 @@ paths:
           description: ID of the favorite to delete
           schema:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
       responses:
         200:
@@ -424,6 +431,7 @@ paths:
           description: type of the favorite
           schema:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
       responses:
         200:
@@ -455,9 +463,11 @@ components:
       properties:
         startDate:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         endDate:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         requiredValue:
           type: number
@@ -476,18 +486,23 @@ components:
           format: double
         productId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         projectId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         demandCategory:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         companyId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         description:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     DemandResponseDto:
@@ -496,12 +511,15 @@ components:
       properties:
         id:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         startDate:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         endDate:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         requiredValue:
           type: number
@@ -520,12 +538,15 @@ components:
           format: double
         description:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         demandCategory:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         companyId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         product:
           $ref: '#/components/schemas/ProductDto'
@@ -546,9 +567,11 @@ components:
       properties:
         name:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         un:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     DemandCategoryDto:
@@ -557,6 +580,7 @@ components:
       properties:
         demandCategory:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     LinkedDemandSeriesRequest:
@@ -565,12 +589,15 @@ components:
       properties:
         materialNumberCustomer:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         materialNumberSupplier:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         customerLocation:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         demandCategory:
           $ref: '#/components/schemas/DemandCategoryDto'
@@ -581,12 +608,15 @@ components:
       properties:
         calendarWeek:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         actualCapacity:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         maximumCapacity:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     WeekBasedCapacityGroupRequest:
@@ -595,6 +625,7 @@ components:
       properties:
         unityOfMeasure:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         linkedDemandSeries:
           type: array
@@ -603,15 +634,18 @@ components:
             $ref: '#/components/schemas/LinkedDemandSeriesRequest'
         supplier:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         name:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         supplierLocations:
           type: array
           maxItems: 250
           items:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
         capacities:
           type: array
@@ -620,12 +654,15 @@ components:
             $ref: '#/components/schemas/CapacitiesDto'
         changedAt:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         capacityGroupId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         customer:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     DemandSeriesDto:
@@ -634,9 +671,11 @@ components:
       properties:
         demand:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         calendarWeek:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     DemandSeriesCategoryDto:
@@ -645,6 +684,7 @@ components:
       properties:
         id:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     DemandWeekSeriesDto:
@@ -653,6 +693,7 @@ components:
       properties:
         expectedSupplierLocation:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         demands:
           type: array
@@ -661,6 +702,7 @@ components:
             $ref: '#/components/schemas/DemandSeriesDto'
         customerLocation:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         demandCategory:
           $ref: '#/components/schemas/DemandSeriesCategoryDto'
@@ -671,21 +713,27 @@ components:
       properties:
         unityOfMeasure:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         materialDescriptionCustomer:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         materialDemandId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         materialNumberSupplier:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         supplier:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         changedAt:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         demandSeries:
           type: array
@@ -694,9 +742,11 @@ components:
             $ref: '#/components/schemas/DemandWeekSeriesDto'
         materialNumberCustomer:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         customer:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     MaterialDemandRequest:
@@ -705,21 +755,27 @@ components:
       properties:
         materialDescriptionCustomer:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         materialNumberCustomer:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         materialNumberSupplier:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         customerId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         supplierId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         unitMeasureId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         materialDemandSeries:
           type: array
@@ -733,15 +789,18 @@ components:
       properties:
         customerLocationId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         expectedSupplierLocationId:
           type: array
           maxItems: 250
           items:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
         demandCategoryId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         demandSeriesValues:
           type: array
@@ -755,6 +814,7 @@ components:
       properties:
         calendarWeek:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         demand:
           type: number
@@ -768,15 +828,19 @@ components:
       properties:
         id:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         materialDescriptionCustomer:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         materialNumberCustomer:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         materialNumberSupplier:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         customer:
           $ref: '#/components/schemas/CompanyDto'
@@ -786,6 +850,7 @@ components:
           $ref: '#/components/schemas/UnitMeasure'
         changedAt:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         demandSeries:
           type: array
@@ -799,27 +864,35 @@ components:
       properties:
         id:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         bpn:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         companyName:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         street:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         number:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         zipCode:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         country:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         myCompany:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     UnitMeasure:
@@ -828,12 +901,15 @@ components:
       properties:
         id:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         codeValue:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         displayValue:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     MaterialDemandSeriesResponse:
@@ -862,12 +938,15 @@ components:
       properties:
         id:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         demandCategoryCode:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         demandCategoryName:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     CapacityRequest:
@@ -886,6 +965,7 @@ components:
           format: double
         calendarWeek:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     CapacityLink:
@@ -894,6 +974,7 @@ components:
       properties:
         LinkedMaterial:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         Capacities:
           type: array
@@ -911,9 +992,11 @@ components:
           $ref: '#/components/schemas/CompanyDto'
         materialNumberSupplier:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         materialNumberCustomer:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     CapacityGroupResponse:
@@ -936,6 +1019,7 @@ components:
           $ref: '#/components/schemas/CompanyDto'
         capacityGroupId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         linkedDemandSeries:
           type: array
@@ -946,9 +1030,11 @@ components:
           $ref: '#/components/schemas/UnitMeasure'
         changeAt:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         name:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     CapacityGroupDefaultViewResponse:
@@ -957,21 +1043,27 @@ components:
       properties:
         internalId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         catXUuid:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         name:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         customerBPNL:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         customerName:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         supplierBNPL:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         numberOfMaterials:
           type: number
@@ -980,9 +1072,11 @@ components:
           format: double
         favoritedBy:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         status:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     CapacityGroupRequest:
@@ -999,27 +1093,34 @@ components:
           maxItems: 250
           items:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
         supplierLocations:
           type: array
           maxItems: 250
           items:
             type: string
+            pattern: '^[\w\s\p{P}\p{S}]+$'
             maxLength: 255
         customer:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         supplier:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         unitOfMeasure:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         changeAt:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         name:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     FavoriteRequest:
@@ -1028,9 +1129,11 @@ components:
       properties:
         favoriteId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         fType:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
     FavoriteResponse:
@@ -1039,7 +1142,9 @@ components:
       properties:
         favoriteId:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
         fType:
           type: string
+          pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
