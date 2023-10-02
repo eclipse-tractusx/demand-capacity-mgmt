@@ -24,7 +24,7 @@ import { Modal, Breadcrumb } from 'react-bootstrap';
 import WeeklyView from '../demands/DemandsOverview';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import { DemandProp } from '../../interfaces/demand_interfaces';
-import {GatheringDataMessage} from './LoadingMessages';
+import {LoadingGatheringDataMessage} from './LoadingMessages';
 
 interface DemandDetailsModalProps {
   show: boolean;
@@ -85,7 +85,7 @@ function DemandDetailsModal({
           </Breadcrumb>
         </Modal.Header>
         <Modal.Body>
-          <GatheringDataMessage/>
+          <LoadingGatheringDataMessage/>
         </Modal.Body>
       </Modal>
     );
