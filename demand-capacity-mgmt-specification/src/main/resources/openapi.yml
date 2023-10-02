@@ -414,10 +414,13 @@ components:
           type: string
         requiredValue:
           type: number
+          format: double
         deliveredValue:
           type: number
+          format: double
         maximumValue:
           type: number
+          format: double
         productId:
           type: string
         projectId:
@@ -440,10 +443,13 @@ components:
           type: string
         requiredValue:
           type: number
+          format: double
         deliveredValue:
           type: number
+          format: double
         maximumValue:
           type: number
+          format: double
         description:
           type: string
         demandCategory:
@@ -458,6 +464,7 @@ components:
       properties:
         actualDemand:
           type: number
+          format: double
 
     ProductDto:
       type: object
@@ -626,6 +633,7 @@ components:
           type: string
         demand:
           type: number
+          format: double
 
     MaterialDemandResponse:
       type: object
@@ -716,8 +724,10 @@ components:
       properties:
         actualCapacity:
           type: number
+          format: double
         MaximumCapacity:
           type: number
+          format: double
         calendarWeek:
           type: string
 
@@ -792,6 +802,7 @@ components:
           type: string
         numberOfMaterials:
           type: number
+          format: double
         favoritedBy:
           type: string
         status:
