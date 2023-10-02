@@ -22,13 +22,12 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
+import java.util.UUID;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.UUID;
 
 @Entity
 @Table(name = "link_capacitygroup_demandseries")
@@ -60,5 +59,4 @@ public class LinkedCapacityGroupMaterialDemandEntity {
 
     @Column(columnDefinition = "uuid", updatable = false, name = "material_demand_id", nullable = false)
     private UUID materialDemandID;
-
 }

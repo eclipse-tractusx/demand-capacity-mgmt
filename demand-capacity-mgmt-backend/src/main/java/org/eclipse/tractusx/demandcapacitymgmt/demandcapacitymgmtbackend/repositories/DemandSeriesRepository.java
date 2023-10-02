@@ -24,8 +24,16 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposi
 
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.lang.NonNull;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface DemandSeriesRepository extends JpaRepository<DemandSeries, UUID> {
+    @Query("""
+            select d from DemandSeries d
+            where d.customerLocation.id = ?1 and d.demandCategory.id = ?2 and d.materialDemand.materialNumberCustomer = ?3""")
+    List<DemandSeries> ByCategoryIDCustomerIDMaterialNrCustomer(@NonNull UUID id, @NonNull UUID id1, @NonNull String materialNumberCustomer);
+    
 }

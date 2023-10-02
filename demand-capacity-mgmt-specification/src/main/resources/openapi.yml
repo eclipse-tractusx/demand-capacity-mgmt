@@ -62,6 +62,27 @@ paths:
                 items:
                   $ref: '#/components/schemas/MaterialDemandResponse'
 
+  /demand/series/:
+    post:
+      tags:
+        - Demand
+      summary: get the list of demand series by composite key
+      operationId: getLinkedDemandSeriesByCompositeKeyID
+      requestBody:
+        description: Demand series composite request object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandSeriesCompositeRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemandSeriesCompositeResponse'
+
   /demand/{demand_id}:
     get:
       tags:
@@ -700,11 +721,49 @@ components:
             $ref: '#/components/schemas/CompanyDto'
         demandCategory:
           $ref: '#/components/schemas/DemandCategoryResponse'
-
         demandSeriesValues:
           type: array
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesValue'
+
+    DemandSeriesCompositeResponse:
+      type: object
+      properties:
+        demandSeries:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedDemandMaterialCompositeResponse'
+
+    LinkedDemandMaterialCompositeResponse:
+      type: object
+      properties:
+        demandSeriesID:
+          type: string
+        materialDemandID:
+          type: string
+        customerLocation:
+          $ref: '#/components/schemas/CompanyDto'
+        expectedSupplierLocation:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyDto'
+        demandCategory:
+          $ref: '#/components/schemas/DemandCategoryResponse'
+        demandSeriesValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialDemandSeriesValue'
+
+    DemandSeriesCompositeRequest:
+      type: object
+      properties:
+        demandCategoryCodeID:
+          type: string
+        customerID:
+          type: string
+        materialNumberCustomer:
+          type: string
+
 
     DemandCategoryResponse:
       type: object
