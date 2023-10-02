@@ -367,7 +367,7 @@ npm/npmjs/-/flatted/3.2.7, ISC AND (ISC AND MIT), approved, #2430
 npm/npmjs/-/flow-enums-runtime/0.0.5, MIT, approved, clearlydefined
 npm/npmjs/-/flow-parser/0.206.0, MIT, approved, clearlydefined
 npm/npmjs/-/flow-parser/0.209.0, MIT, approved, clearlydefined
-npm/npmjs/-/follow-redirects/1.15.2, MIT, approved, clearlydefined
+npm/npmjs/-/follow-redirects/1.15.2, MIT, approved, #10782
 npm/npmjs/-/for-each/0.3.3, MIT, approved, clearlydefined
 npm/npmjs/-/for-in/1.0.2, MIT, approved, clearlydefined
 npm/npmjs/-/fork-ts-checker-webpack-plugin/6.5.3, MIT, approved, #7487
