@@ -35,7 +35,7 @@ import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import DemandDetailsModal from '../common/DemandDetailsModal';
 import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 import DemandManagementTable from './DemandManagementTable';
-import LoadingMessage from '../common/LoadingMessage';
+import {LoadingMessage}  from '../common/LoadingMessages';
 
 const DemandManagement: React.FC = () => {
   const [showEditModal, setIsEditModalOpen] = useState(false);

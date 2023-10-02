@@ -28,7 +28,7 @@ import CapacityGroupsTable from './CapacityGroupsTable';
 import Search from '../common/Search';
 import '../../index.css';
 import { FaCopy, FaEllipsisV, FaEye } from 'react-icons/fa';
-import LoadingMessage from '../common/LoadingMessage';
+import {LoadingMessage}  from '../common/LoadingMessages';
 
 const CapacityGroupsList: React.FC = () => {
   // to do clean /const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);

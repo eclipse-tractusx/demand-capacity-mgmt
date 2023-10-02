@@ -29,7 +29,7 @@ import { DemandContext } from '../../contexts/DemandContextProvider';
 import DemandDetailsModal from './DemandDetailsModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import DemandListTable from '../demands/DemandListTable';
-import LoadingMessage from './LoadingMessage';
+import {LoadingMessage}  from './LoadingMessages';
 import CapacityGroupWizardModal from './CapacityGroupWizardModal';
 import CapacityGroupAddToExisting from './CapacityGroupAddToExisting';
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
