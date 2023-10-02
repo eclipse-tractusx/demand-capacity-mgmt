@@ -54,6 +54,27 @@ spec:
             - containerPort: 8080
               name: http
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: { { .Values.frontend.livenessProbe.path } }
+              port: { { .Values.frontend.livenessProbe.port } }
+              scheme: HTTP
+            initialDelaySeconds: { { .Values.frontend.livenessProbe.initialDelaySeconds } }
+            periodSeconds: { { .Values.frontend.livenessProbe.periodSeconds } }
+            timeoutSeconds: { { .Values.frontend.livenessProbe.timeoutSeconds } }
+            successThreshold: { { .Values.frontend.livenessProbe.successThreshold } }
+            failureThreshold: { { .Values.frontend.livenessProbe.failureThreshold } }
+
+          readinessProbe:
+            httpGet:
+              path: { { .Values.frontend.readinessProbe.path } }
+              port: { { .Values.frontend.readinessProbe.port } }
+              scheme: HTTP
+            initialDelaySeconds: { { .Values.frontend.readinessProbe.initialDelaySeconds } }
+            periodSeconds: { { .Values.frontend.readinessProbe.periodSeconds } }
+            timeoutSeconds: { { .Values.frontend.readinessProbe.timeoutSeconds } }
+            successThreshold: { { .Values.frontend.readinessProbe.successThreshold } }
+            failureThreshold: { { .Values.frontend.readinessProbe.failureThreshold } }
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
