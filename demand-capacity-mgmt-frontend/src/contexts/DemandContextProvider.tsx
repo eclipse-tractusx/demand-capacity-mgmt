@@ -38,6 +38,7 @@ export const DemandContext = createContext<DemandContextData | undefined>(undefi
 
 const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [demands, setDemands] = useState<Demand[]>([]);
   const [demandprops, setDemandProps] = useState<DemandProp[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,8 +104,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const createDemand = async (newDemand: Demand) => {
     try {
       console.log(newDemand);
-      const response = await axios.post('/demand', newDemand);
-      console.log(response) //TODO clean
+      await axios.post('/demand', newDemand);
       fetchDemandProps();
     } catch (error) {
       console.error('Error creating demand:', error);
@@ -113,7 +113,6 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const updateDemand = async (updatedDemand: Demand) => {
     try {
-      console.log(updatedDemand);
       const response = await axios.put(`/demand/${updatedDemand.id}`, updatedDemand);
       const modifiedDemand: Demand = response.data;
       setDemands((prevDemands) =>

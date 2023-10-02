@@ -21,44 +21,43 @@
  */
 
 import Nav from "react-bootstrap/Nav";
-import { FaArrowDown, FaArrowUp, FaHome, FaHouseUser, FaStar } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaHome, FaStar } from "react-icons/fa";
 import { useInfoMenu } from "../../contexts/InfoMenuContextProvider";
 
 function InfoMenu() {
     const { data } = useInfoMenu();
-    console.log(data);
 
     return (
         <>
             <Nav className="me-auto">
                 <Nav.Link href="/"><FaHome/> Home</Nav.Link>
-                <Nav.Link href="#favorites"><FaStar /> Favorites <span className="badge rounded-pill text-bg-primary" id="favorites-count">-</span></Nav.Link>
+                <Nav.Link href="../#favorites"><FaStar /> Favorites <span className="badge rounded-pill text-bg-primary" id="favorites-count">-</span></Nav.Link>
                 {/* TODO: Add functionality for Favorites link */}
-                <Nav.Link href="#alerts">Alerts
+                <Nav.Link href="../#alerts">Alerts
                     <span className="badge rounded-pill text-bg-danger" id="alerts-count">
                         {data?.general.count || '-'}
                     </span>
                 </Nav.Link>
                 {/* TODO: Add functionality for Alerts link */}
-                <Nav.Link href="up">
+                <Nav.Link href="../up">
                     <FaArrowUp /> Status
                     <span className="badge rounded-pill text-bg-success" id="status-plus-count">
                         {data?.statusImprovement.count || '-'}
                     </span>
                 </Nav.Link>
-                <Nav.Link href="down">
+                <Nav.Link href="../down">
                     <FaArrowDown /> Status
                     <span className="badge rounded-pill text-bg-danger" id="status-minus-count">
                         {data?.statusDegredation.count || '-'}
                     </span>
                 </Nav.Link>
-                <Nav.Link href="todo">
+                <Nav.Link href="../todo">
                     Todo
                     <span className="badge rounded-pill text-bg-warning" id="todo-count">
                         {data?.todos.count || '-'}
                     </span>
                 </Nav.Link>
-                <Nav.Link href="#events">Events <span className="badge rounded-pill text-bg-info" id="events-count">-</span></Nav.Link>
+                <Nav.Link href="../#events">Events <span className="badge rounded-pill text-bg-info" id="events-count">-</span></Nav.Link>
                 {/* TODO: Add functionality for events link */}
             </Nav>
         </>

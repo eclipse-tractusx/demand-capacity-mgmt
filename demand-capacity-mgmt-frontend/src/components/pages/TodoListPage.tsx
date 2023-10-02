@@ -21,7 +21,7 @@
  */
 
 import { FcTodoList } from "react-icons/fc";
-import DemandList from "../demands/DemandList";
+import DemandList from "../common/DemandList";
 import DemandsSearch from "../common/Search";
 import { Button } from "react-bootstrap";
 import { useState } from "react";

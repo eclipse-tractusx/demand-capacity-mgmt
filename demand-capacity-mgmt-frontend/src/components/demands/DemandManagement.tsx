@@ -24,7 +24,6 @@ import React, { useContext, useState, useMemo, useCallback, useEffect } from 're
 import { Modal, Button, Form, Col, Row, Dropdown } from 'react-bootstrap';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import Pagination from '../common/Pagination';
-
 import DemandsSearch from '../common/Search';
 import EditForm from './DemandEditForm';
 import { FaEllipsisV, FaSearch } from 'react-icons/fa';
@@ -33,7 +32,6 @@ import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
-
 import DemandDetailsModal from '../common/DemandDetailsModal';
 import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 import DemandManagementTable from './DemandManagementTable';
@@ -73,7 +71,6 @@ const DemandManagement: React.FC = () => {
       setSortOrder('asc');
     }
   };
-  console.log(demandprops);
 
   const handleDeleteDemand = useCallback(
     async (id: string) => {
@@ -276,7 +273,7 @@ const DemandManagement: React.FC = () => {
         </div>
       </div>
       {isLoading ? ( // Conditional rendering based on loading state
-      <LoadingMessage />
+        <LoadingMessage />
       ) : (
         <>
           <DemandManagementTable

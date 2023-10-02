@@ -151,10 +151,9 @@ code {
   text-decoration-thickness: 4px;
 }
 
-
+/*Shake Animation*/
 .shake-input {
   animation: shake 0.5s;
-  box-shadow: 1px solid red;
 }
 
 @keyframes shake {
