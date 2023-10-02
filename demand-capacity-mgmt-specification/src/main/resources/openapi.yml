@@ -462,14 +462,17 @@ components:
         requiredValue:
           type: number
           maximum: 5000
+          minimum: 0
           format: double
         deliveredValue:
           type: number
           maximum: 5000
+          minimum: 0
           format: double
         maximumValue:
           type: number
           maximum: 5000
+          minimum: 0
           format: double
         productId:
           type: string
@@ -503,14 +506,17 @@ components:
         requiredValue:
           type: number
           maximum: 5000
+          minimum: 0
           format: double
         deliveredValue:
           type: number
           maximum: 5000
+          minimum: 0
           format: double
         maximumValue:
           type: number
           maximum: 5000
+          minimum: 0
           format: double
         description:
           type: string
@@ -531,6 +537,7 @@ components:
         actualDemand:
           type: number
           maximum: 5000
+          minimum: 0
           format: double
 
     ProductDto:
@@ -752,6 +759,7 @@ components:
         demand:
           type: number
           maximum: 5000
+          minimum: 0
           format: double
 
     MaterialDemandResponse:
@@ -869,10 +877,12 @@ components:
         actualCapacity:
           type: number
           maximum: 5000
+          minimum: 0
           format: double
         MaximumCapacity:
           type: number
           maximum: 5000
+          minimum: 0
           format: double
         calendarWeek:
           type: string
@@ -966,6 +976,7 @@ components:
         numberOfMaterials:
           type: number
           maximum: 5000
+          minimum: 0
           format: double
         favoritedBy:
           type: string
