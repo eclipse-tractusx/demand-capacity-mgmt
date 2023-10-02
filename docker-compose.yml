@@ -41,6 +41,8 @@ services:
       interval: 180s
       timeout: 30s
       retries: 3
+    security_opt:
+      - apparmor:apparmor_profile
 
 networks:
   custom-network:
