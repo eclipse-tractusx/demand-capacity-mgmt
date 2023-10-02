@@ -22,6 +22,8 @@ version: '3.8'
 services:
   db:
     image: postgres:14.1-alpine
+    networks:
+      - custom-network
     deploy:
       resources:
         limits:
@@ -39,6 +41,10 @@ services:
       interval: 180s
       timeout: 30s
       retries: 3
+
+networks:
+  custom-network:
+    driver: bridge
 
 volumes:
   db:
