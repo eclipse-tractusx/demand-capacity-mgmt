@@ -40,7 +40,9 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   const [groupName, setGroupName] = useState('');
   const [defaultActualCapacity, setDefaultActualCapacity] = useState('');
   const [defaultMaximumCapacity, setDefaultMaximumCapacity] = useState('');
-  const [isInputShaking, setIsInputShaking] = useState(false);
+  const [isNameInputShaking, setIsNameInputShaking] = useState(false);
+  const [isActualCapacityInputShaking, setIsActualCapacityInputShaking] = useState(false);
+  const [isMaximumCapacityShaking, setIsMaximumCapacityShaking] = useState(false);
   const context = useContext(CapacityGroupContext);
 
 
@@ -54,12 +56,20 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
     }
   }, [checkedDemands]);
 
-
   const nextStep = () => {
-    if (step === 1 && !groupName) {
-      // Trigger the animation by setting isInputShaking to true
-      setIsInputShaking(true);
-      setTimeout(() => setIsInputShaking(false), 500); // Reset after animation duration
+    if (step === 1 && (!groupName || !defaultActualCapacity || !defaultMaximumCapacity)) {
+      if (!groupName) {
+        setIsNameInputShaking(true);
+        setTimeout(() => setIsNameInputShaking(false), 500); // Reset after animation duration
+      }
+      if (!defaultActualCapacity) {
+        setIsActualCapacityInputShaking(true);
+        setTimeout(() => setIsActualCapacityInputShaking(false), 500);
+      }
+      if (!defaultMaximumCapacity) {
+        setIsMaximumCapacityShaking(true);
+        setTimeout(() => setIsMaximumCapacityShaking(false), 500);
+      }
       return;
     }
     if (step < 3) {
@@ -95,32 +105,32 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
         !selectedDemands.some(selectedDemand => selectedDemand.id === demand.id) &&
         !checkedDemands.some(checkedDemand => checkedDemand.id === demand.id)
       );
-  
+
       const sortedSuggestions = filteredDemands
         .sort((a, b) => b.changedAt.localeCompare(a.changedAt))
         .slice(0, 3);
-  
+
       setSuggestedDemands(sortedSuggestions);
     }
   }, [demands, selectedDemands, checkedDemands]);
-  
+
 
   const updateSuggestions = (query: string) => {
     const matchingDemands = demands?.filter((demand) =>
       (demand.id.toString().includes(query) ||
-      demand.materialDescriptionCustomer.toLowerCase().includes(query.toLowerCase())) &&
+        demand.materialDescriptionCustomer.toLowerCase().includes(query.toLowerCase())) &&
       // Exclude demands that are already selected or checked
       !selectedDemands.some(selectedDemand => selectedDemand.id === demand.id) &&
       !checkedDemands?.some(checkedDemand => checkedDemand.id === demand.id)
     ) || [];
-    
+
     // Sort by changedAt in descending order
     const sortedSuggestions = matchingDemands
       .sort((a, b) => b.changedAt.localeCompare(a.changedAt));
-    
+
     setSuggestedDemands(sortedSuggestions.slice(0, 3)); // Display up to 3 suggestions
   };
-  
+
 
   const calculateEarliestAndLatestDates = (selectedDemands: DemandProp[]) => {
     let earliestDate = new Date();
@@ -177,7 +187,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
     // Call the createCapacityGroup function
     try {
       await context.createCapacityGroup(newCapacityGroup);
-      console.log('Capacity Group Created Successfully');
+
     } catch (error) {
       console.error('Error creating capacity group:', error);
     }
@@ -185,8 +195,27 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
     // Reset form and close modal
     setGroupName('');
     setDefaultActualCapacity('');
+    setDefaultMaximumCapacity('');
     setStep(0); // Reset to Step 0 after submission
     onHide(); // Call the onHide function to close the modal
+  };
+
+
+  const handleDefaultMaximumCapacityChange = (newValue: string) => {
+    // Use a regular expression to allow only numbers
+    const numericValue = newValue.replace(/[^0-9]/g, '');
+
+    // Update the state with the numeric value
+    setDefaultActualCapacity(numericValue);
+    setDefaultMaximumCapacity(numericValue);
+  };
+
+  const handleDefaultActualCapacityChange = (newValue: string) => {
+    // Use a regular expression to allow only numbers
+    const numericValue = newValue.replace(/[^0-9]/g, '');
+
+    // Update the state with the numeric value
+    setDefaultActualCapacity(numericValue);
   };
 
 
@@ -206,15 +235,16 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
             <div>
               <StepBreadcrumbs currentStep={step} />
               <br />
-              <p>Welcome to the Capacity Group Wizard, this intuitive interface will simplify this task.
-                Here, you'll effortlessly create capacity groups and seamlessly link them with demands.</p>
+              <p>Welcome to the Capacity Group Wizard, this intuitive interface will simplify this task. <br />
+                Here, you'll effortlessly create capacity groups and seamlessly link them with demand step-by-step.</p>
             </div>
           )}
           {step === 1 && (
             <Form>
               <Form.Group>
                 <StepBreadcrumbs currentStep={step} />
-                <br />
+                <center><h5>Group Details</h5></center>
+              
                 <Form.Label className="control-label required-field-label">Capacity Group Name</Form.Label>
                 <Form.Control
                   type="text"
@@ -222,38 +252,47 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
                   required
-                  className={isInputShaking ? 'shake-input' : ''}
+                  className={isNameInputShaking ? 'shake-input' : ''}
                 />
               </Form.Group>
-              <Form.Group>
-                <Form.Label className="control-label required-field-label">Default Maximum Capacity</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Default Maximum Capacity"
-                  value={defaultActualCapacity}
-                  onChange={(e) => {
-                    const newValue = e.target.value;
-                    // Use a regular expression to allow only numbers
-                    const numericValue = newValue.replace(/[^0-9]/g, '');
+              <br />
 
-                    // Update the state with the numeric value
-                    setDefaultActualCapacity(numericValue);
-                    setDefaultMaximumCapacity(numericValue);
+              <Row>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="control-label required-field-label">Default Maximum Capacity</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter Default Maximum Capacity"
+                      value={defaultMaximumCapacity}
+                      onChange={(e) => handleDefaultMaximumCapacityChange(e.target.value)}
+                      required
+                      className={isMaximumCapacityShaking ? 'shake-input' : ''}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="control-label required-field-label">Default Actual Capacity</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter Default Maximum Capacity"
+                      value={defaultActualCapacity}
+                      onChange={(e) => handleDefaultActualCapacityChange(e.target.value)}
+                      required
+                      className={isActualCapacityInputShaking ? 'shake-input' : ''}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
 
-                    // Add the shake class if the input contains non-numeric characters
-                    setIsInputShaking(newValue !== numericValue);
-                  }}
-                  required
-                  className={isInputShaking ? 'shake-input' : ''}
-                />
-              </Form.Group>
 
             </Form>
           )}
           {step === 2 && (
             <div>
               <StepBreadcrumbs currentStep={step} />
-              <span>Demand Linkage</span>
+              <center><h5>Demand Linkage</h5></center>
               {areUnitMeasureIdsEqual(selectedDemands) ? (
                 // No warning if unit measure IDs are equal
                 null
@@ -299,16 +338,16 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                 </Row>
                 {selectedDemands.length > 0 && (
                   <Row>
-                    <Col md={6}>
+                    <Col>
                       <h3 className="mt-4">Selected Demands:</h3>
                       {selectedDemands.map((demand, index) => (
-                        <div key={index} className="d-flex justify-content-between align-items-center">
+                        <div key={index} className="d-flex mt-1 border rounded border-opacity-10 align-items-center">
                           {demand && (
-                            <Button variant="danger" size="sm" onClick={() => handleRemoveDemand(index)}>
+                            <Button variant="danger" className="ms-3" size="sm" onClick={() => handleRemoveDemand(index)}>
                               Remove
                             </Button>
                           )}
-                          <div>
+                          <div className='ms-3 mt-2'>
                             <p key={index}>
                               <strong>Description:</strong> {demand ? demand.materialDescriptionCustomer : 'Not selected'}
                               <br />
@@ -330,10 +369,33 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
           {step === 3 && (
             <div>
               <StepBreadcrumbs currentStep={step} />
-              <span>Review and Submit</span>
+              <center><h5>Review and Submit</h5></center>
+              <div className="row mb-2">
+                <div className="col-sm-3">
+                  <h6 className="text-end">Name:</h6>
+                </div>
+                <div className="col-sm-9">
+                  <span>{groupName}</span>
+                </div>
+              </div>
+              <div className="row mb-2">
+                <div className="col-sm-3">
+                  <h6 className="text-end">Maximum Capacity:</h6>
+                </div>
+                <div className="col-sm-9">
+                  <span>{defaultMaximumCapacity}</span>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-sm-3">
+                  <h6 className="text-end">Actual Capacity:</h6>
+                </div>
+                <div className="col-sm-9">
+                  <span>{defaultActualCapacity}</span>
+                </div>
+              </div>
               <br />
-              <p>Group Name: {groupName}</p>
-              <p>Selected Demands:</p>
+              <h5>Selected Demands:</h5>
               <Container className="mt-4">
                 {selectedDemands.map((demand, index) => (
                   <Row key={index}>

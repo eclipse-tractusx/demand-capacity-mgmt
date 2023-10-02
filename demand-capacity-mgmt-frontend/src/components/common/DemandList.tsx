@@ -23,15 +23,15 @@
 import React, { useContext, useState, useMemo, useCallback, useEffect } from 'react';
 import { Button, Form, Col, Row, Dropdown } from 'react-bootstrap';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
-import Pagination from '../common/Pagination';
+import Pagination from './Pagination';
 import { FaEllipsisV, FaSearch } from 'react-icons/fa';
 import { DemandContext } from '../../contexts/DemandContextProvider';
-import DemandDetailsModal from '../common/DemandDetailsModal';
-import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
-import DemandListTable from './DemandListTable';
-import LoadingMessage from '../common/LoadingMessage';
-import CapacityGroupWizardModal from '../common/CapacityGroupWizardModal';
-import CapacityGroupAddToExisting from '../common/CapacityGroupAddToExisting';
+import DemandDetailsModal from './DemandDetailsModal';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
+import DemandListTable from '../demands/DemandListTable';
+import LoadingMessage from './LoadingMessage';
+import CapacityGroupWizardModal from './CapacityGroupWizardModal';
+import CapacityGroupAddToExisting from './CapacityGroupAddToExisting';
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 
 
@@ -60,7 +60,7 @@ const DemandList: React.FC<{
     const [showWizardModal, setShowWizardModal] = useState(false);
     const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
 
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);//Its updated from showWizard
     const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
@@ -192,20 +192,23 @@ const DemandList: React.FC<{
       demandsPerPage,
     ]);
 
-    const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, demandId: string) => {
-      if (event.target.checked) {
-        // If the checkbox is checked, find the corresponding demand and add it to the selectedDemands array
-        const selectedDemandToAdd = filteredDemands.find((demand) => demand.id === demandId);
-        if (selectedDemandToAdd) {
-          setSelectedDemands((prevSelectedDemands) => [...prevSelectedDemands, selectedDemandToAdd]);
+    const handleCheckboxChange = useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>, demandId: string) => {
+        if (event.target.checked) {
+          // If the checkbox is checked, find the corresponding demand and add it to the selectedDemands array
+          const selectedDemandToAdd = filteredDemands.find((demand) => demand.id === demandId);
+          if (selectedDemandToAdd) {
+            setSelectedDemands((prevSelectedDemands) => [...prevSelectedDemands, selectedDemandToAdd]);
+          }
+        } else {
+          // If the checkbox is unchecked, remove the demand from the selectedDemands array
+          setSelectedDemands((prevSelectedDemands) =>
+            prevSelectedDemands.filter((demand) => demand.id !== demandId)
+          );
         }
-      } else {
-        // If the checkbox is unchecked, remove the demand from the selectedDemands array
-        setSelectedDemands((prevSelectedDemands) =>
-          prevSelectedDemands.filter((demand) => demand.id !== demandId)
-        );
-      }
-    };
+      },
+      [filteredDemands]
+    );
 
     const demandItems = useMemo(
       () =>
@@ -269,7 +272,6 @@ const DemandList: React.FC<{
                 }, null)?.split('T')[0] ?? 'N/A'
               ) : 'N/A'}
             </td>
-
             <td>
               <span className="badge rounded-pill text-bg-success" id="tag-ok">Up</span>
               <span className="badge rounded-pill text-bg-warning" id="tag-warning">TODO</span>
@@ -289,7 +291,7 @@ const DemandList: React.FC<{
             </td>
           </tr>
         )),
-      [slicedDemands, selectedDemands]
+      [slicedDemands, selectedDemands, handleCheckboxChange]
     );
 
 
@@ -357,7 +359,7 @@ const DemandList: React.FC<{
 
             <CapacityGroupsProvider>
               <CapacityGroupWizardModal
-                show={showWizard}
+                show={showWizardModal}
                 onHide={handleCloseWizardModal}
                 checkedDemands={selectedDemands}
                 demands={filteredDemands}
@@ -373,4 +375,5 @@ const DemandList: React.FC<{
       </>
     );
   };
+  
 export default DemandList;

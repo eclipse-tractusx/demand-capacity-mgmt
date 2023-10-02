@@ -80,7 +80,7 @@ const CapacityGroupAddToExisting: React.FC<CapacityGroupAddToExistingProps> = ({
         }
       }
     }
-  }, [checkedDemands, capacityGroupContext]);
+  }, [checkedDemands, capacityGroupContext, capacitygroups]);
 
   useEffect(() => {
     if (customerFilter && capacitygroups) {
