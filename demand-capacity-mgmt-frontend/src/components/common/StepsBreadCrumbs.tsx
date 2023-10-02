@@ -30,18 +30,16 @@ const StepBreadcrumbs: React.FC<StepBreadcrumbsProps> = ({ currentStep }) => {
 
   return (
     <center>
-    <h4 className='content-flex'>
-      {steps.map((stepLabel, index) => (
-        <React.Fragment key={index}>
-          {index > 0 && <span>{' > '}</span>}
-          {currentStep === index ? (
-            <span className='active-step'>{stepLabel}</span>
-          ) : (
-            <span>{stepLabel}</span>
-          )}
-        </React.Fragment>
-      ))}
-    </h4 >
+      <h4 className='content-flex'>
+        {steps.map((stepLabel, index) => (
+          <React.Fragment key={index}>
+            {index > 0 && <span className='separator'>{' > '}</span>}
+            <span className={`step ${currentStep === index ? 'active-step' : ''}`}>
+              {stepLabel}
+            </span>
+          </React.Fragment>
+        ))}
+      </h4>
     </center>
   );
 };

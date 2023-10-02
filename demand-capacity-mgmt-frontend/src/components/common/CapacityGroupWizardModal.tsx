@@ -47,6 +47,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   const context = useContext(CapacityGroupContext);
 
   const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
+  
 
   useEffect(() => {
     if (checkedDemands) {
