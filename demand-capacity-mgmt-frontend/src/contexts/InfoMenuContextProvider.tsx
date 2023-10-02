@@ -44,7 +44,6 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
             const response = await axios.get('/statuses');
             const result: InfoMenuData = response.data;
             setData(result);
-            console.log(result)
         } catch (error) {
             console.error('Error fetching data:', error);
         }
