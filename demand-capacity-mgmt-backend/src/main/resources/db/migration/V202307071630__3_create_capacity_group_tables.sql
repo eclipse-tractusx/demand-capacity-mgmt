@@ -54,6 +54,17 @@ create table linked_demand_series
     capacity_group_id uuid constraint capacity_group_id references capacity_group(id)
 );
 
+create table link_capacitygroup_demandseries
+(
+    id uuid primary key,
+    demand_category_code_id uuid,
+    customer_id uuid,
+    material_number_customer varchar(400),
+    material_number_supplier varchar(400),
+    capacity_group_id uuid,
+    material_demand_id uuid
+);
+
 /*DEPRECATED TABLE TODO REMOVE*/
 create table link_demand
 (
@@ -64,10 +75,3 @@ create table link_demand
     linked boolean,
     week_based_material_demand_id integer constraint week_based_material_demand_id references week_based_material_demand(id)
 );
-
-create table link_capacitygroup_materialdemand
-(
-    id uuid primary key,
-    capacity_group_id uuid,
-    linked_material_demand_id uuid
-)

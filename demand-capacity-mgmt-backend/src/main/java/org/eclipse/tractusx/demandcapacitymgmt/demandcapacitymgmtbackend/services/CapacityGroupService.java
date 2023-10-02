@@ -22,17 +22,13 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupDefaultViewResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedCapacityGroupMaterialDemandRequest;
-
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.util.List;
 
 public interface CapacityGroupService {
     CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest);
 
-    void linkCapacityGroupToMaterialDemand(LinkedCapacityGroupMaterialDemandRequest linkedMaterialDemandRequest);
+    void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest);
 
     CapacityGroupResponse getCapacityGroupById(String CapacityGroupId);
 
