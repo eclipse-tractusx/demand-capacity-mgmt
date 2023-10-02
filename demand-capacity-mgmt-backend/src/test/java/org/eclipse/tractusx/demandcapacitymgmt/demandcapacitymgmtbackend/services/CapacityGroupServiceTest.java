@@ -101,8 +101,8 @@ public class CapacityGroupServiceTest {
         CapacityGroupRequest capacityGroupRequest = new CapacityGroupRequest();
 
         CapacityRequest capacityRequest = new CapacityRequest();
-        capacityRequest.setActualCapacity(BigDecimal.valueOf(20));
-        capacityRequest.setMaximumCapacity(BigDecimal.valueOf(20));
+        capacityRequest.setActualCapacity(20.00);
+        capacityRequest.setMaximumCapacity(20.00);
         capacityRequest.setCalendarWeek("2023-06-19");
 
         //08b95a75-11a7-4bea-a958-821b9cb01641

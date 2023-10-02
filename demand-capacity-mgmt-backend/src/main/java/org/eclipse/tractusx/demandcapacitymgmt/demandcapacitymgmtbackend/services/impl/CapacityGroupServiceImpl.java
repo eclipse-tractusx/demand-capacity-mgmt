@@ -23,7 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -191,8 +190,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 capacityRequest ->
                     enrichCapacityTimeSeries(
                         DataConverterUtil.convertFromString(capacityRequest.getCalendarWeek()),
-                        capacityRequest.getActualCapacity().doubleValue(),
-                        capacityRequest.getMaximumCapacity().doubleValue()
+                        capacityRequest.getActualCapacity(),
+                        capacityRequest.getMaximumCapacity()
                     )
             )
             .toList();
@@ -320,8 +319,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private CapacityRequest convertCapacityTimeSeries(CapacityTimeSeries capacityTimeSeries) {
         CapacityRequest capacityRequest = new CapacityRequest();
 
-        capacityRequest.setActualCapacity(BigDecimal.valueOf(capacityTimeSeries.getActualCapacity()));
-        capacityRequest.setMaximumCapacity(BigDecimal.valueOf(capacityTimeSeries.getMaximumCapacity()));
+        capacityRequest.setActualCapacity(capacityTimeSeries.getActualCapacity());
+        capacityRequest.setMaximumCapacity(capacityTimeSeries.getMaximumCapacity());
         capacityRequest.setCalendarWeek(capacityRequest.getCalendarWeek());
 
         return capacityRequest;
@@ -372,7 +371,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             response.setCustomerName(entity.getCustomerId().getCompanyName());
             response.setCustomerBPNL(entity.getCustomerId().getBpn());
             response.setInternalId(entity.getId().toString());
-            response.setNumberOfMaterials(new BigDecimal(entity.getCapacityTimeSeries().size()));
+            response.setNumberOfMaterials((double) entity.getCapacityTimeSeries().size());
             //response.setFavoritedBy();
             //response.setCatXUuid();
 

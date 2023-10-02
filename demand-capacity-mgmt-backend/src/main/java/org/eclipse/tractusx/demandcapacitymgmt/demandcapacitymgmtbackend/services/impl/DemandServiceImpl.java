@@ -346,7 +346,7 @@ public class DemandServiceImpl implements DemandService {
 
     private MaterialDemandSeriesValue enrichMaterialDemandSeriesValue(DemandSeriesValues demandSeriesValues) {
         MaterialDemandSeriesValue materialDemandSeriesValue = new MaterialDemandSeriesValue();
-        materialDemandSeriesValue.setDemand(BigDecimal.valueOf(demandSeriesValues.getDemand()));
+        materialDemandSeriesValue.setDemand(demandSeriesValues.getDemand());
         materialDemandSeriesValue.setCalendarWeek(demandSeriesValues.getCalendarWeek().toString());
 
         return materialDemandSeriesValue;
