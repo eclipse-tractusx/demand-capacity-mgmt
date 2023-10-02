@@ -82,7 +82,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             }
         }
 
-        for(MaterialDemandEntity matEntity : materialDemandEntities){
+        for (MaterialDemandEntity matEntity : materialDemandEntities) {
             LinkedCapacityGroupMaterialDemandEntity entity = new LinkedCapacityGroupMaterialDemandEntity();
             if (optionalCapacityGroupEntity.isPresent()) {
                 CapacityGroupEntity capacityGroupEntity = optionalCapacityGroupEntity.get();
@@ -94,10 +94,12 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
                 List<DemandSeries> demandSeriesList = matEntity.getDemandSeries();
 
-                List<DemandSeries> matchedDemandSeriesList = demandSeriesList.stream()
-                        .filter(d -> matEntity.getId().equals(d.getMaterialDemand().getId())).toList();
+                List<DemandSeries> matchedDemandSeriesList = demandSeriesList
+                    .stream()
+                    .filter(d -> matEntity.getId().equals(d.getMaterialDemand().getId()))
+                    .toList();
 
-                for(DemandSeries matchedDemandSeries : matchedDemandSeriesList) {
+                for (DemandSeries matchedDemandSeries : matchedDemandSeriesList) {
                     UUID demandCategoryId = matchedDemandSeries.getDemandCategory().getId();
                     entity.setDemandCategoryCodeID(demandCategoryId);
                     matchedDemandSeries.setCapacityGroupId(capacityGroupEntity.getId().toString());
@@ -107,7 +109,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 linkedCapacityGroupMaterialDemandRepository.save(entity);
             }
         }
-
     }
 
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest request) {
