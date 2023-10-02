@@ -32,6 +32,8 @@ paths:
     post:
       tags:
         - Demand
+      security:
+        - [ ]
       summary: create a demand
       operationId: postDemand
       requestBody:
@@ -50,6 +52,8 @@ paths:
     get:
       tags:
         - Demand
+      security:
+        - [ ]
       summary: get list of MaterialsDemand
       operationId: getDemandsByProjectID
       responses:
@@ -66,6 +70,8 @@ paths:
     get:
       tags:
         - Demand
+      security:
+        - [ ]
       summary: get demand by Id
       operationId: getDemandsById
       parameters:
@@ -86,6 +92,8 @@ paths:
       tags:
         - Demand
       summary: update demand by Id
+      security:
+        - [ ]
       operationId: updateDemandsById
       requestBody:
         required: true
@@ -109,6 +117,8 @@ paths:
     delete:
       tags:
         - Demand
+      security:
+        - [ ]
       summary: delete demand by Id
       operationId: deleteDemandsById
       parameters:
@@ -125,6 +135,8 @@ paths:
     get:
       tags:
         - capacityGroup
+      security:
+        - [ ]
       summary: capacityGroup
       operationId: getCapacityGroup
       responses:
@@ -140,6 +152,8 @@ paths:
     post:
       tags:
         - capacityGroup
+      security:
+        - [ ]
       summary: create capacityGroup
       operationId: postCapacityGroup
       requestBody:
@@ -160,6 +174,8 @@ paths:
     get:
       tags:
         - capacityGroup
+      security:
+        - [ ]
       summary: get capacityGroup by ID
       operationId: getCapacityGroupById
       parameters:
@@ -182,6 +198,8 @@ paths:
     post:
       tags:
         - weekBasedCapacityGroup
+      security:
+        - [ ]
       summary: weekBasedCapacityGroup
       operationId: postWeekBasedCapacityGroup
       requestBody:
@@ -200,6 +218,8 @@ paths:
     post:
       tags:
         - weekBasedMaterialDemand
+      security:
+        - [ ]
       summary: weekBasedCapacityGroup
       operationId: postWeekBasedMaterialDemand
       requestBody:
@@ -218,6 +238,8 @@ paths:
     get:
       tags:
         - company
+      security:
+        - [ ]
       summary: company
       operationId: getCompany
       responses:
@@ -234,6 +256,8 @@ paths:
     get:
       tags:
         - unitMeasure
+      security:
+        - [ ]
       summary: unitMeasure
       operationId: getUnitMeasure
       responses:
@@ -250,6 +274,8 @@ paths:
     get:
       tags:
         - demandCategory
+      security:
+        - [ ]
       summary: demandCategory
       operationId: getDemandCategory
       responses:
@@ -265,6 +291,8 @@ paths:
     get:
       tags:
         - favorite
+      security:
+        - [ ]
       summary: get all favorites
       operationId: getFavorite
       responses:
@@ -279,6 +307,8 @@ paths:
     post:
       tags:
         - favorite
+      security:
+        - [ ]
       summary: Create a New Favorite
       operationId: createFavorite
       requestBody:
@@ -297,6 +327,8 @@ paths:
     put:
       tags:
         - favorite
+      security:
+        - [ ]
       summary: Update a Favorite
       operationId: updateFavorite
       parameters:
@@ -328,6 +360,8 @@ paths:
     delete:
       tags:
         - favorite
+      security:
+        - [ ]
       summary: Delete a Favorite by ID
       operationId: deleteFavoriteById
       parameters:
@@ -348,6 +382,8 @@ paths:
     get:
       tags:
         - favorite
+      security:
+        - []
       summary: Get a Favorite by type
       operationId: getFavoriteByType
       parameters:
@@ -370,6 +406,14 @@ paths:
           description: Favorite not found
 
 components:
+
+  components:
+    securitySchemes:
+      ApiKeyAuth:
+        type: apiKey
+        in: header
+        name: X-API-KEY
+
   schemas:
     DemandRequestDto:
       type: object
