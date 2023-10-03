@@ -23,6 +23,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: config-frontend
+  namespace: prod
 data:
   {{- toYaml .Values.frontend.configmap.data | nindent 2 }}
   {{ end }}
