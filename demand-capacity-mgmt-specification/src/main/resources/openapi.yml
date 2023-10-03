@@ -1136,6 +1136,10 @@ components:
           pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255
 
+
+
+          
+
     FavoriteResponse:
       type: object
       additionalProperties: false
