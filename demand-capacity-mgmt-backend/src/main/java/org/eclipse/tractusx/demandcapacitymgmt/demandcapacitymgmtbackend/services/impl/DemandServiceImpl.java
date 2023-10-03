@@ -30,6 +30,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.DemandSeriesRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
@@ -58,6 +59,8 @@ public class DemandServiceImpl implements DemandService {
     private final DemandCategoryService demandCategoryService;
 
     private final DemandSeriesRepository demandSeriesRepository;
+
+    private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
 
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest) {
@@ -163,10 +166,9 @@ public class DemandServiceImpl implements DemandService {
 
     @Override
     public void unlinkComposites(DemandSeriesUnlinkRequest demandSeriesUnlinkRequest) {
-        DemandSeries demandSeries = demandSeriesRepository.fetchByCGIDandMatID(
-                UUID.fromString(demandSeriesUnlinkRequest.getCapacityGroupID()),
-                UUID.fromString(demandSeriesUnlinkRequest.getMaterialDemandID()));
-        demandSeriesRepository.delete(demandSeries);
+        UUID cgID = UUID.fromString(demandSeriesUnlinkRequest.getCapacityGroupID());
+        UUID mdID = UUID.fromString(demandSeriesUnlinkRequest.getMaterialDemandID());
+        linkedCapacityGroupMaterialDemandRepository.deleteByCapacityGroupIDAndMaterialDemandID(cgID,mdID);
     }
 
     private MaterialDemandEntity getDemandEntity(String demandId) {
