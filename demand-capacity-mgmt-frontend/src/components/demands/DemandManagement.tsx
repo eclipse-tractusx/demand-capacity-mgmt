@@ -26,16 +26,17 @@ import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/de
 import Pagination from '../common/Pagination';
 import DemandsSearch from '../common/Search';
 import EditForm from './DemandEditForm';
-import { FaEllipsisV, FaSearch } from 'react-icons/fa';
+import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt } from 'react-icons/fa';
 import AddForm from './DemandAddForm';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import DemandDetailsModal from '../common/DemandDetailsModal';
-import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
+
 import DemandManagementTable from './DemandManagementTable';
-import {LoadingMessage}  from '../common/LoadingMessages';
+import { LoadingMessage } from '../common/LoadingMessages';
+import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 
 const DemandManagement: React.FC = () => {
   const [showEditModal, setIsEditModalOpen] = useState(false);
@@ -43,6 +44,7 @@ const DemandManagement: React.FC = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+  const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction>(ConfirmationAction.Delete); 
 
   const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
   const { deleteDemand } = useContext(DemandContext)!;
@@ -98,18 +100,15 @@ const DemandManagement: React.FC = () => {
   const handleCloseDetails = () => setShowDetailsModal(false);
 
   const handleDeleteButtonClick = (id: string) => {
-    setDeleteItemId(id); // Set the ID of the item to be deleted
-    setShowDeleteConfirmation(true); // Show the delete confirmation modal
+    setDeleteItemId(id);
+    setConfirmationAction(ConfirmationAction.Delete); // Set the confirmation action type
+    setShowDeleteConfirmation(true);
   };
+
 
   const handleDeleteDemandWrapper = () => {
     if (deleteItemId) {
       handleDeleteDemand(deleteItemId)
-        .then(() => {
-          // After successful deletion, you can perform any additional actions if needed
-          // For example, you can fetch updated data
-          fetchDemandProps();
-        })
         .catch((error) => {
           console.error('Error deleting demand:', error);
         })
@@ -244,9 +243,9 @@ const DemandManagement: React.FC = () => {
                 <span ><FaEllipsisV /></span>
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => handleDetails(demand)}>Details</Dropdown.Item>
-                <Dropdown.Item onClick={() => { navigator.clipboard.writeText(demand.id) }}>Copy ID</Dropdown.Item>
-                <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteButtonClick(demand.id)}>Delete</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleDetails(demand)}><FaInfoCircle /> Details</Dropdown.Item>
+                <Dropdown.Item onClick={() => { navigator.clipboard.writeText(demand.id) }}><FaCopy /> Copy ID</Dropdown.Item>
+                <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteButtonClick(demand.id)}><FaTrashAlt /> Delete</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </td>
@@ -352,13 +351,15 @@ const DemandManagement: React.FC = () => {
             </Modal.Body>
           </Modal>
 
-          <DeleteConfirmationModal
+
+          <DangerConfirmationModal
             show={showDeleteConfirmation}
             onCancel={() => {
               setShowDeleteConfirmation(false);
               setDeleteItemId(null);
             }}
             onConfirm={handleDeleteDemandWrapper}
+            action={confirmationAction}
           />
 
 

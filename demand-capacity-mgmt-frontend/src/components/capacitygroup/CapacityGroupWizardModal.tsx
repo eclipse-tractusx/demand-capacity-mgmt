@@ -24,7 +24,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { DemandProp } from '../../interfaces/demand_interfaces';
 import { Button, Container, Row, Col, Alert } from 'react-bootstrap';
-import StepBreadcrumbs from './StepsBreadCrumbs';
+import StepBreadcrumbs from './../common/StepsBreadCrumbs';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
 import { FaSearch } from 'react-icons/fa';
 import Select from 'react-select';

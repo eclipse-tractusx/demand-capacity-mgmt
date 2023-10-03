@@ -64,7 +64,7 @@ export interface SingleCapacityGroup {
   customer: Address;
   supplier: Address;
   capacityGroupId: string;
-  linkedDemandSeries: DemandProp[];
+  linkMaterialDemandIds: string[];
   unitOfMeasure: UnitOfMeasure;
   changeAt: string;
   capacitygroupname: string;

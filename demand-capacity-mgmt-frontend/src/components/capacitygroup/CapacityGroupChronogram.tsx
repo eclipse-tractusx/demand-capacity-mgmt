@@ -38,10 +38,10 @@ type CapacityGroupChronogramProps = {
 };
 
 const computeLinkedDemandSum = (capacityGroup: SingleCapacityGroup | null | undefined) => {
-    if (!capacityGroup || !capacityGroup.linkedDemandSeries) return 0;
+    if (!capacityGroup || !capacityGroup.linkMaterialDemandIds) return 0;
 
 
-    return capacityGroup.linkedDemandSeries.length;
+    return capacityGroup.linkMaterialDemandIds.length;
 };
 
 function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {

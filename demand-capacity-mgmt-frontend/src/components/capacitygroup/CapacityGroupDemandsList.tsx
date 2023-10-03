@@ -20,48 +20,36 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useContext, useState, useMemo, useCallback } from 'react';
 import { Button, Form, Col, Row, Dropdown } from 'react-bootstrap';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
-import Pagination from './Pagination';
-import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt } from 'react-icons/fa';
+import Pagination from './../common/Pagination';
+import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt, FaUnlink } from 'react-icons/fa';
 import { DemandContext } from '../../contexts/DemandContextProvider';
-import DemandDetailsModal from './DemandDetailsModal';
+import DemandDetailsModal from './../common/DemandDetailsModal';
 import DemandListTable from '../demands/DemandListTable';
-import {LoadingMessage}  from './LoadingMessages';
-import CapacityGroupWizardModal from './../capacitygroup/CapacityGroupWizardModal';
-import CapacityGroupAddToExisting from './../capacitygroup/CapacityGroupAddToExisting';
-import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
-import DangerConfirmationModal, { ConfirmationAction } from './DangerConfirmationModal';
+import { LoadingMessage } from './../common/LoadingMessages';
+import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 
 
-const DemandList: React.FC<{
+const CapacityGroupDemandsList: React.FC<{
   searchQuery?: string;
-  showWizard?: boolean;
-  toggleWizardModal?: () => void;
-  showAddToExisting?: boolean;
-  toggleAddToExisting?: () => void;
   capacityGroupDemands?: string[];
+  capacityGroupId?: string;
 }> = ({
   searchQuery = '',
-  showWizard = false,
-  toggleWizardModal,
-  showAddToExisting = false,
-  toggleAddToExisting,
-  capacityGroupDemands=[],
+  capacityGroupDemands = [],
+  capacityGroupId='',
 }) => {
 
     const [showDetailsModal, setShowDetailsModal] = useState(false);
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-    const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
-    const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction>(ConfirmationAction.Delete);    
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction>(ConfirmationAction.Delete);
+    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
     const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
-    const { deleteDemand } = useContext(DemandContext)!;
+    const { deleteDemand, unlinkDemand} = useContext(DemandContext)!;
     const { demandprops, fetchDemandProps, isLoading } = useContext(DemandContext)!;  // Make sure to get the fetchDemands function from the context.
-
-    const [showWizardModal, setShowWizardModal] = useState(false);
-    const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
 
     const [currentPage, setCurrentPage] = useState(1);//Its updated from showWizard
     const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
@@ -69,13 +57,6 @@ const DemandList: React.FC<{
 
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
     const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
-
-    useEffect(() => {
-      // Update showWizardModal based on the showWizard prop, providing a default value of false if it's undefined
-      setShowWizardModal(showWizard || false);
-      fetchDemandProps();
-    }, [showWizard, fetchDemandProps]);
-
 
     const handleSort = (column: string | null) => {
       if (sortColumn === column) {
@@ -88,15 +69,15 @@ const DemandList: React.FC<{
       }
     };
 
-    const handleCloseWizardModal = () => {
-      if (toggleWizardModal) {
-        toggleWizardModal(); // Close the modal and set showWizard to false if the prop is provided
-      }
+    const handleDetails = (demand: DemandProp) => {
+      setSelectedDemand(demand);
+      setShowDetailsModal(true);
     };
-    const handleCloseAddToExistingModal = () => {
-      if (toggleAddToExisting) {
-        toggleAddToExisting(); // Close the modal and set showWizard to false if the prop is provided
-      }
+
+    const handleConfirmationButtonClick = (id: string, action: ConfirmationAction) => {
+      setSelectedItemId(id);
+      setConfirmationAction(action);
+      setShowConfirmationModal(true);
     };
 
     const handleDeleteDemand = useCallback(
@@ -107,35 +88,44 @@ const DemandList: React.FC<{
           console.error('Error deleting demand:', error);
         }
       },
-      [deleteDemand, fetchDemandProps]
+      [deleteDemand]
     );
 
-    const handleDetails = (demand: DemandProp) => {
-      setSelectedDemand(demand);
-      setShowDetailsModal(true);
-    };
+    const handleUnlinkDemand = useCallback(
+      async (id: string, capacityGroupID:string) => {
+        try {
+          await unlinkDemand(id,capacityGroupID);
+        } catch (error) {
+          console.error('Error deleting demand:', error);
+        }
+      },
+      [unlinkDemand]
+    );
 
-    const handleDeleteButtonClick = (id: string) => {
-      setDeleteItemId(id);
-      setConfirmationAction(ConfirmationAction.Delete); // Set the confirmation action type
-      setShowDeleteConfirmation(true);
-    };
-    
-
-    const handleDeleteDemandWrapper = () => {
-      if (deleteItemId) {
-        handleDeleteDemand(deleteItemId)
-          .catch((error) => {
-            console.error('Error deleting demand:', error);
-          })
-          .finally(() => {
-            // Close the delete confirmation modal
-            setShowDeleteConfirmation(false);
-            setDeleteItemId(null);
-          });
+    const handleConfirmationWrapper = () => {
+      if (selectedItemId && capacityGroupId) {
+        if (confirmationAction === ConfirmationAction.Delete) {
+          console.log('NOO')
+          handleDeleteDemand(selectedItemId)
+        } else if (confirmationAction === ConfirmationAction.Unlink) {
+          console.log('YES')
+          handleUnlinkDemand(selectedItemId, capacityGroupId) // Call unlinkDemand function with materialDemandID and capacityGroupID
+            .then(() => {
+              fetchDemandProps();
+            })
+            .catch((error) => {
+              console.error('Error unlinking demand:', error);
+            })
+            .finally(() => {
+              // Close the delete confirmation modal
+              setShowConfirmationModal(false);
+              setSelectedItemId(null);
+            });
+        }
+        console.log('WTH')
       }
+      console.log('WTF')
     };
-
 
     const handleCloseDetails = () => setShowDetailsModal(false);
 
@@ -151,6 +141,8 @@ const DemandList: React.FC<{
           demand.materialNumberSupplier.toString().toLowerCase().includes(searchQuery.toLowerCase())
         );
       }
+
+      sortedDemands = sortedDemands.filter((demand) => capacityGroupDemands.includes(demand.id));
 
       if (sortColumn) {
         sortedDemands.sort((a, b) => {
@@ -178,7 +170,7 @@ const DemandList: React.FC<{
 
 
       setFilteredDemands(sortedDemands);
-    }, [demandprops, searchQuery, sortColumn, sortOrder]);
+    }, [demandprops, searchQuery, sortColumn, sortOrder, capacityGroupDemands])
 
     const slicedDemands = useMemo(() => {
       const indexOfLastDemand = currentPage * demandsPerPage;
@@ -191,36 +183,10 @@ const DemandList: React.FC<{
       demandsPerPage,
     ]);
 
-    const handleCheckboxChange = useCallback(
-      (event: React.ChangeEvent<HTMLInputElement>, demandId: string) => {
-        if (event.target.checked) {
-          // If the checkbox is checked, find the corresponding demand and add it to the selectedDemands array
-          const selectedDemandToAdd = filteredDemands.find((demand) => demand.id === demandId);
-          if (selectedDemandToAdd) {
-            setSelectedDemands((prevSelectedDemands) => [...prevSelectedDemands, selectedDemandToAdd]);
-          }
-        } else {
-          // If the checkbox is unchecked, remove the demand from the selectedDemands array
-          setSelectedDemands((prevSelectedDemands) =>
-            prevSelectedDemands.filter((demand) => demand.id !== demandId)
-          );
-        }
-      },
-      [filteredDemands]
-    );
-
     const demandItems = useMemo(
       () =>
         slicedDemands.map((demand) => (
           <tr key={demand.id}>
-            <td>
-              <input
-                type="checkbox"
-                className="table-checkbox"
-                onChange={(e) => handleCheckboxChange(e, demand.id)}
-                checked={selectedDemands.includes(demand)} // Check if the demand is in the selectedDemands array
-              />
-            </td>
             <td>
               <Button data-toggle="modal" onClick={() => handleDetails(demand)} variant="outline-primary" >
                 <div style={{ display: "flex", justifyContent: "center" }}>
@@ -282,15 +248,16 @@ const DemandList: React.FC<{
                   <span ><FaEllipsisV /></span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => handleDetails(demand)}><FaInfoCircle/> Details</Dropdown.Item>
-                  <Dropdown.Item onClick={() => { navigator.clipboard.writeText(demand.id) }}><FaCopy/> Copy ID</Dropdown.Item>
-                  <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteButtonClick(demand.id)}><FaTrashAlt/> Delete</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleDetails(demand)}><FaInfoCircle /> Details</Dropdown.Item>
+                  <Dropdown.Item onClick={() => { navigator.clipboard.writeText(demand.id) }}><FaCopy /> Copy ID</Dropdown.Item>
+                  <Dropdown.Item className="red-delete-item" onClick={() => handleConfirmationButtonClick(demand.id, ConfirmationAction.Delete)}><FaTrashAlt /> Delete Demand</Dropdown.Item>
+                  <Dropdown.Item className="red-delete-item" onClick={() => handleConfirmationButtonClick(demand.id, ConfirmationAction.Unlink)}><FaUnlink /> Unlink</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </td>
           </tr>
         )),
-      [slicedDemands, selectedDemands, handleCheckboxChange]
+      [slicedDemands]
     );
 
 
@@ -307,7 +274,7 @@ const DemandList: React.FC<{
               demandItems={demandItems}
             />
 
-            <div className="container">
+            <div className="container fade">
               <div className="row">
                 <Pagination
                   pages={totalPagesNum}
@@ -341,14 +308,11 @@ const DemandList: React.FC<{
             </div>
 
             <DangerConfirmationModal
-            show={showDeleteConfirmation}
-            onCancel={() => {
-              setShowDeleteConfirmation(false);
-              setDeleteItemId(null);
-            }}
-            onConfirm={handleDeleteDemandWrapper}
-            action={confirmationAction}
-          />
+              show={showConfirmationModal}
+              onCancel={() => setShowConfirmationModal(false)}
+              onConfirm={handleConfirmationWrapper}
+              action={confirmationAction}
+            />
 
             <DemandDetailsModal
               show={showDetailsModal}
@@ -357,23 +321,10 @@ const DemandList: React.FC<{
               fullscreen="xl"
               selectedDemand={selectedDemand} />
 
-            <CapacityGroupsProvider>
-              <CapacityGroupWizardModal
-                show={showWizardModal}
-                onHide={handleCloseWizardModal}
-                checkedDemands={selectedDemands}
-                demands={filteredDemands}
-              />
-              <CapacityGroupAddToExisting
-                show={showAddToExisting}
-                onHide={handleCloseAddToExistingModal}
-                checkedDemands={selectedDemands}
-              />
-            </CapacityGroupsProvider>
           </>
         )}
       </>
     );
   };
-  
-export default DemandList;
+
+export default CapacityGroupDemandsList;
