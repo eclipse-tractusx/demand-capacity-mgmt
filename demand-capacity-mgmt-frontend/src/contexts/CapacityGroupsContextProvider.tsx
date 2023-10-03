@@ -100,7 +100,7 @@ useEffect(() => {
 
   const linkToCapacityGroup = async (linkToCapacityGroup: CapacityGroupLink) => {
     try {
-      const response = await axios.post('/capacityGroup/link', linkToCapacityGroup); 
+      await axios.post('/capacityGroup/link', linkToCapacityGroup); 
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
     }

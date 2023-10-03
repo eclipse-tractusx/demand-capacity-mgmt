@@ -28,7 +28,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { DemandProp } from '../../interfaces/demand_interfaces';
 import { CapacityGroupProp } from '../../interfaces/capacitygroup_interfaces';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
-import {LoadingMessage}  from './LoadingMessages';
+import {LoadingMessage}  from './../common/LoadingMessages';
 import { InputGroup } from 'react-bootstrap';
 import { FaSearch } from 'react-icons/fa';
 

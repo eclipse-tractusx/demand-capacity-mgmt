@@ -29,6 +29,7 @@ interface DemandContextData {
   createDemand: (newDemand: Demand) => Promise<void>;
   getDemandbyId: (id: string) =>Promise<DemandProp | undefined>;
   deleteDemand: (id: string) => Promise<void>;
+  unlinkDemand: (id: string,capacitygroupId: string) => Promise<void>;
   updateDemand: (updatedDemand: Demand) => Promise<void>;
   fetchDemandProps: () => void;
   isLoading: boolean;
@@ -94,7 +95,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const deleteDemand = async (id: string) => {
     try {
       await axios.delete(`/demand/${id}`);
-      setDemandProps((prevDemands) => prevDemands.filter((demand) => demand.id !== id));
+      fetchDemandProps();
     } catch (error) {
       console.error('Error deleting demand:', error);
     }
@@ -123,8 +124,24 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
     }
   };
 
+  const unlinkDemand = async (materialDemandID: string, capacityGroupID: string) => {
+
+    console.log('CALLED IT')
+    try {
+      const unlinkreq = {
+        materialDemandID: materialDemandID,
+        capacityGroupID: capacityGroupID,
+      };
+  
+      await axios.post('/demand/series/unlink', unlinkreq);
+    } catch (error) {
+      console.error('Error unlinking demand:', error);
+      throw error;
+    }
+  };
+
   return (
-    <DemandContext.Provider value={{ demandprops, deleteDemand, createDemand, updateDemand, getDemandbyId,fetchDemandProps,isLoading }}>
+    <DemandContext.Provider value={{ demandprops, deleteDemand,unlinkDemand, createDemand, updateDemand, getDemandbyId,fetchDemandProps,isLoading }}>
       {props.children}
     </DemandContext.Provider>
   );

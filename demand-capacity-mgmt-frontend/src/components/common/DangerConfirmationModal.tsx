@@ -19,35 +19,46 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
-interface DeleteConfirmationModalProps {
+export enum ConfirmationAction {
+  Delete = 'delete',
+  Unlink = 'unlink',
+}
+
+interface ConfirmationModalProps {
   show: boolean;
   onCancel: () => void;
   onConfirm: () => void;
+  action: ConfirmationAction; // Specify the action type
 }
 
-const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({ show, onCancel, onConfirm }) => {
+const DangerConfirmationModal: React.FC<ConfirmationModalProps> = ({ show, onCancel, onConfirm, action }) => {
+  const title = action === ConfirmationAction.Delete ? 'Confirm Deletion' : 'Confirm Unlink';
+  const confirmText = action === ConfirmationAction.Delete ? 'Confirm Delete' : 'Unlink';
+
+  const confirmationMessage =
+    action === ConfirmationAction.Delete
+      ? 'Are you sure you want to delete this item?'
+      : 'Are you sure you want to unlink this material demand from this capacity group?';
+
   return (
     <Modal show={show} onHide={onCancel} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
-        <Modal.Title>Confirm Deletion</Modal.Title>
+        <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        Are you sure you want to delete this item?
-      </Modal.Body>
+      <Modal.Body>{confirmationMessage}</Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
         <Button variant="danger" onClick={onConfirm}>
-          Confirm Delete
+          {confirmText}
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default DeleteConfirmationModal;
+export default DangerConfirmationModal;
