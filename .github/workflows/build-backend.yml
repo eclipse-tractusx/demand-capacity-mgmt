@@ -22,12 +22,12 @@
 name: build-backend
 
 on:
-    push:
+    pull_request:
       paths:
         - 'demand-capacity-mgmt-backend/**'
         - 'demand-capacity-mgmt-specification/**'
       branches:
-        - 'feat/workflows'
+        - 'main'
 
 
 jobs:

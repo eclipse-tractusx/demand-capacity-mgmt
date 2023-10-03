@@ -26,7 +26,7 @@ on:
     paths:
       - 'charts/**'
     branches:
-      - 'feat/workflows'
+      - 'main'
 jobs:
   release:
     permissions:

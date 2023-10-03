@@ -22,11 +22,11 @@
 name: build-frontend
 
 on:
-  push:
+  pull_request:
     paths:
       - 'demand-capacity-mgmt-frontend/**'
     branches:
-      - 'feat/workflows'
+      - 'main'
 
 jobs:
   build-and-analyze-frontend:

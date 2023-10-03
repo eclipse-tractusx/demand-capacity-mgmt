@@ -1138,7 +1138,7 @@ components:
 
 
 
-          
+
 
     FavoriteResponse:
       type: object
