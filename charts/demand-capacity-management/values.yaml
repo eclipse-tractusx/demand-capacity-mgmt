@@ -161,16 +161,20 @@ frontend:
             topologyKey: kubernetes.io/hostname
   livenessProbe:
     failureThreshold: 3
-    initialDelaySeconds: 10
-    periodSeconds: 1000
+    initialDelaySeconds: 300
+    periodSeconds: 30
     successThreshold: 1
-    timeoutSeconds: 1000
+    timeoutSeconds: 1
+    path: /actuator/health
+    port: 8080
   readinessProbe:
     failureThreshold: 3
-    initialDelaySeconds: 10
-    periodSeconds: 1000
+    initialDelaySeconds: 300
+    periodSeconds: 30
     successThreshold: 1
-    timeoutSeconds: 1000
+    timeoutSeconds: 1
+    path: /actuator/health
+    port: 8080
   applicationSecret:
     enabled: false
   configmap:
