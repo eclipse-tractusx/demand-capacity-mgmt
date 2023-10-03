@@ -35,5 +35,10 @@ public interface DemandSeriesRepository extends JpaRepository<DemandSeries, UUID
             select d from DemandSeries d
             where d.customerLocation.id = ?1 and d.demandCategory.id = ?2 and d.materialDemand.materialNumberCustomer = ?3""")
     List<DemandSeries> ByCategoryIDCustomerIDMaterialNrCustomer(@NonNull UUID id, @NonNull UUID id1, @NonNull String materialNumberCustomer);
-    
+
+    @Query("""
+        select d from DemandSeries d
+        where d.capacityGroupId = ?1 and d.materialDemand.id = ?2
+    """)
+    DemandSeries fetchByCGIDandMatID(@NonNull UUID id, @NonNull UUID id2);
 }

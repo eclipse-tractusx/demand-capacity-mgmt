@@ -62,7 +62,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/MaterialDemandResponse'
 
-  /demand/series/:
+  /demand/series:
     post:
       tags:
         - Demand
@@ -82,6 +82,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DemandSeriesCompositeResponse'
+  /demand/series/unlink:
+    post:
+      tags:
+        - Demand
+      summary: unlink material demands and demand series
+      operationId: unlinkedDemandSeriesComposites
+      requestBody:
+        description: Demand series composite request object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandSeriesUnlinkRequest'
+      responses:
+        204:
+          description: no content
 
   /demand/{demand_id}:
     get:
@@ -762,6 +778,13 @@ components:
         customerID:
           type: string
         materialNumberCustomer:
+          type: string
+    DemandSeriesUnlinkRequest:
+      type: object
+      properties:
+        materialDemandID:
+          type: string
+        capacityGroupID:
           type: string
 
 

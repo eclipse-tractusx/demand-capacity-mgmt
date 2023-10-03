@@ -23,10 +23,7 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.DemandApi;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesCompositeRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesCompositeResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
 import org.springframework.http.HttpStatus;
@@ -63,6 +60,12 @@ public class DemandController implements DemandApi {
     public ResponseEntity<DemandSeriesCompositeResponse> getLinkedDemandSeriesByCompositeKeyID(DemandSeriesCompositeRequest demandSeriesCompositeRequest) throws Exception {
         DemandSeriesCompositeResponse response = demandService.getAllDemandsByCompositeKey(demandSeriesCompositeRequest);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Override
+    public ResponseEntity<Void> unlinkedDemandSeriesComposites(DemandSeriesUnlinkRequest demandSeriesUnlinkRequest) throws Exception {
+        demandService.unlinkComposites(demandSeriesUnlinkRequest);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
