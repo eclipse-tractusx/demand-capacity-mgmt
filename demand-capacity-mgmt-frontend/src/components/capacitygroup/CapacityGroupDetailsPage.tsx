@@ -24,13 +24,6 @@ import { useState } from 'react';
 import { Tab, Tabs} from 'react-bootstrap';
 
 
-
-
-
-
-
-
-
 function CapacityGroupDetailsPage() {
   const [activeTab, setActiveTab] = useState('overview');
   

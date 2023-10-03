@@ -37,9 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class CapacityGroupController implements CapacityGroupApi {
 
-
-
-
     private final CapacityGroupService capacityGroupService;
 
     @Override
