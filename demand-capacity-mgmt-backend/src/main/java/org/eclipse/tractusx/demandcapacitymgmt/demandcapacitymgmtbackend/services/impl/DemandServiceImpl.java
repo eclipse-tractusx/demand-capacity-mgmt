@@ -161,6 +161,14 @@ public class DemandServiceImpl implements DemandService {
         return demandSeriesCompositeResponse;
     }
 
+    @Override
+    public void unlinkComposites(DemandSeriesUnlinkRequest demandSeriesUnlinkRequest) {
+        DemandSeries demandSeries = demandSeriesRepository.fetchByCGIDandMatID(
+                UUID.fromString(demandSeriesUnlinkRequest.getCapacityGroupID()),
+                UUID.fromString(demandSeriesUnlinkRequest.getMaterialDemandID()));
+        demandSeriesRepository.delete(demandSeries);
+    }
+
     private MaterialDemandEntity getDemandEntity(String demandId) {
         UUIDUtil.checkValidUUID(demandId);
         UUID uuid = UUIDUtil.generateUUIDFromString(demandId);
