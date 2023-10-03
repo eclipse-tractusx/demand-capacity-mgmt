@@ -65,15 +65,10 @@ spec:
             pathType: {{ .pathType }}
             {{- end }}
             backend:
-              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $fullName }}
                 port:
                   number: 8080
-              {{- else }}
-              serviceName: {{ $fullName }}
-              servicePort: 8080
-              {{- end }}
           {{- end }}
     {{- end }}
 {{- end }}
