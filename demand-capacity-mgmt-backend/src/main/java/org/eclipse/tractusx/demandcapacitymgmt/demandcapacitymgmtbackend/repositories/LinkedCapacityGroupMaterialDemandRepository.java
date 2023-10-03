@@ -22,6 +22,7 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import javax.transaction.Transactional;
@@ -38,4 +39,6 @@ public interface LinkedCapacityGroupMaterialDemandRepository
     List<LinkedCapacityGroupMaterialDemandEntity> findLinkedCapacityGroupMaterialDemandEntitiesByCapacityGroupID(
         UUID capacityGroup
     );
+
+    BigDecimal countByCapacityGroupID(UUID id);
 }
