@@ -33,6 +33,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -205,6 +206,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             response.setCustomerName(entity.getCustomer().getCompanyName());
             response.setCustomerBPNL(entity.getCustomer().getBpn());
             response.setInternalId(entity.getId().toString());
+            response.setNumberOfMaterials(
+                    linkedCapacityGroupMaterialDemandRepository.countByCapacityGroupID(entity.getId()));
             capacityGroupList.add(response);
         }
         return capacityGroupList;
