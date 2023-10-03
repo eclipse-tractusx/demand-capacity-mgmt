@@ -34,7 +34,7 @@ import org.springframework.stereotype.Repository;
 public interface LinkedCapacityGroupMaterialDemandRepository
     extends JpaRepository<LinkedCapacityGroupMaterialDemandEntity, UUID> {
     @Transactional
-    void deleteByCapacityGroupID(UUID capacityGroup);
+    void deleteByCapacityGroupIDAndMaterialDemandID(UUID capacityGroup, UUID materialDemandID);
 
     List<LinkedCapacityGroupMaterialDemandEntity> findLinkedCapacityGroupMaterialDemandEntitiesByCapacityGroupID(
         UUID capacityGroup
