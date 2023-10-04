@@ -78,22 +78,23 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     }
 
     public void updateStatus() {
-        if(statusesRepository != null){
-        List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemands = DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(
-            weekBasedMaterialDemandRepository.findAll()
-        );
-        if (newWeekBasedCapacityGroups == null) {
-            newWeekBasedCapacityGroups = List.of();
+        if (statusesRepository != null) {
+            List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemands = DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(
+                weekBasedMaterialDemandRepository.findAll()
+            );
+            if (newWeekBasedCapacityGroups == null) {
+                newWeekBasedCapacityGroups = List.of();
+            }
+            final StatusesService statusesService = new StatusesServiceImpl(
+                statusesRepository,
+                oldWeekBasedMaterialDemands,
+                oldWeekBasedMaterialDemands,
+                oldWeekBasedCapacityGroups,
+                newWeekBasedCapacityGroups
+            );
+            statusesService.updateStatus();
         }
-        final StatusesService statusesService = new StatusesServiceImpl(
-            statusesRepository,
-            oldWeekBasedMaterialDemands,
-            oldWeekBasedMaterialDemands,
-            oldWeekBasedCapacityGroups,
-            newWeekBasedCapacityGroups
-        );
-        statusesService.updateStatus();
-    }}
+    }
 
     @Override
     public void receiveWeekBasedCapacityGroup() {
@@ -154,28 +155,29 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity) {
         WeekBasedCapacityGroupRequest basedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
 
-        basedCapacityGroupRequest.setCapacityGroupId(capacityGroupEntity.getCapacityGroupId().toString());
-        basedCapacityGroupRequest.setUnityOfMeasure(capacityGroupEntity.getUnitMeasure().getCodeValue());
-        basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomerId().getBpn());
-        basedCapacityGroupRequest.setSupplier(capacityGroupEntity.getSupplierId().getBpn());
-        basedCapacityGroupRequest.setName(capacityGroupEntity.getName());
-        basedCapacityGroupRequest.setChangedAt(capacityGroupEntity.getChangedAt().toString());
-        basedCapacityGroupRequest.setSupplierLocations(capacityGroupEntity.getSupplierLocation());
+        basedCapacityGroupRequest.setCapacityGroupId(capacityGroupEntity.getId().toString());
+        //        basedCapacityGroupRequest.setUnityOfMeasure(capacityGroupEntity.getUnitMeasure().getCodeValue());
+        basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomer().getBpn());
+        //        basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomerId().getBpn());
+        basedCapacityGroupRequest.setSupplier(capacityGroupEntity.getSupplier().getBpn());
+        basedCapacityGroupRequest.setName(capacityGroupEntity.getCapacityGroupName());
+        //        basedCapacityGroupRequest.setChangedAt(capacityGroupEntity.getChangedAt().toString());
+        //        basedCapacityGroupRequest.setSupplierLocations(capacityGroupEntity.getSupplierLocation());
 
-        List<LinkedDemandSeriesRequest> linkedDemandSeries = capacityGroupEntity
-            .getLinkedDemandSeries()
-            .stream()
-            .map(WeekBasedCapacityGroupServiceImpl::getLinkedDemandSeries)
-            .toList();
-        basedCapacityGroupRequest.setLinkedDemandSeries(linkedDemandSeries);
-
-        List<CapacitiesDto> capacitiesDtos = capacityGroupEntity
-            .getCapacityTimeSeries()
-            .stream()
-            .map(WeekBasedCapacityGroupServiceImpl::getCapacitiesDto)
-            .toList();
-
-        basedCapacityGroupRequest.setCapacities(capacitiesDtos);
+        //        List<LinkedDemandSeriesRequest> linkedDemandSeries = capacityGroupEntity
+        //            .getLinkedDemandSeries()
+        //            .stream()
+        //            .map(WeekBasedCapacityGroupServiceImpl::getLinkedDemandSeries)
+        //            .toList();
+        //        basedCapacityGroupRequest.setLinkedDemandSeries(linkedDemandSeries);
+        //
+        //        List<CapacitiesDto> capacitiesDtos = capacityGroupEntity
+        //            .getCapacityTimeSeries()
+        //            .stream()
+        //            .map(WeekBasedCapacityGroupServiceImpl::getCapacitiesDto)
+        //            .toList();
+        //
+        //        basedCapacityGroupRequest.setCapacities(capacitiesDtos);
         updateStatus();
     }
 

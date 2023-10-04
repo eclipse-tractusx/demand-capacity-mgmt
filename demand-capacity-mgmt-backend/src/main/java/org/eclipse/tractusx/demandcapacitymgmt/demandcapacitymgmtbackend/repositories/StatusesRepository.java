@@ -20,7 +20,6 @@
  *    ********************************************************************************
  */
 
-
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
 import java.util.UUID;
