@@ -584,6 +584,14 @@ components:
           $ref: '#/components/schemas/StatusDto'
         statusDegredation:
           $ref: '#/components/schemas/StatusDto'
+        overall_general:
+          $ref: '#/components/schemas/StatusDto'
+        overall_todos:
+          $ref: '#/components/schemas/StatusDto'
+        overall_statusImprovement:
+          $ref: '#/components/schemas/StatusDto'
+        overall_statusDegredation:
+          $ref: '#/components/schemas/StatusDto'
 
 
     StatusRequest:
@@ -596,6 +604,14 @@ components:
         statusImprovement:
           $ref: '#/components/schemas/StatusDto'
         statusDegredation:
+          $ref: '#/components/schemas/StatusDto'
+        overall_general:
+          $ref: '#/components/schemas/StatusDto'
+        overall_todos:
+          $ref: '#/components/schemas/StatusDto'
+        overall_statusImprovement:
+          $ref: '#/components/schemas/StatusDto'
+        overall_statusDegredation:
           $ref: '#/components/schemas/StatusDto'
 
     StatusDto:

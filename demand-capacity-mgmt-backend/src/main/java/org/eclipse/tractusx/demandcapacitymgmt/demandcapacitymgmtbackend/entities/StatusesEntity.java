@@ -67,4 +67,20 @@ public class StatusesEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "general", referencedColumnName = "id")
     private StatusObjectEntity general;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "overall_todos", referencedColumnName = "id")
+    private StatusObjectEntity overAllTodos;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "overall_status_improvment", referencedColumnName = "id")
+    private StatusObjectEntity overAllStatusImprovment;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "overall_status_degredation", referencedColumnName = "id")
+    private StatusObjectEntity overAllStatusDegredation;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "overall_general", referencedColumnName = "id")
+    private StatusObjectEntity overAllGeneral;
 }

@@ -29,9 +29,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 
 public interface WeekBasedMaterialService {
     void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDto);
-
     void sendWeekBasedMaterial();
-
     void receiveWeekBasedMaterial();
 
     List<WeekBasedMaterialDemandResponseDto> getWeekBasedMaterialDemands();

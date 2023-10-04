@@ -52,6 +52,8 @@ public class StatusesServiceImpl implements StatusesService {
     List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemandResponse;
     List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse;
 
+    int materialDemandOrder = 0;
+
     public StatusesServiceImpl(
         StatusesRepository statusesRepository,
         List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse,
@@ -99,19 +101,52 @@ public class StatusesServiceImpl implements StatusesService {
             .count(statusRequest.getStatusDegredation().getCount())
             .build();
 
+        StatusObjectEntity overAllTodos = StatusObjectEntity
+            .builder()
+            .id(UUID.fromString("9e2e6aaf-5a39-4162-b101-e18813616b74"))
+            .count(statusRequest.getOverallTodos().getCount())
+            .build();
+
+        StatusObjectEntity overAllStatusDegredation = StatusObjectEntity
+            .builder()
+            .id(UUID.fromString("9e2e6aaf-5a39-4162-b101-e18813616b73"))
+            .count(statusRequest.getOverallStatusDegredation().getCount())
+            .build();
+
+        StatusObjectEntity overAllStatusImprovment = StatusObjectEntity
+            .builder()
+            .id(UUID.fromString("9e2e6aaf-5a39-4162-b101-e18813616b72"))
+            .count(statusRequest.getOverallStatusImprovement().getCount())
+            .build();
+
+        StatusObjectEntity overAllGeneral = StatusObjectEntity
+            .builder()
+            .id(UUID.fromString("9e2e6aaf-5a39-4162-b101-e18813616b71"))
+            .count(statusRequest.getOverallGeneral().getCount())
+            .build();
+
         return StatusesEntity
             .builder()
-            .id(UUID.fromString("67bb2c53-d717-4a73-90c2-4f18984b10f7"))
+            .id(UUID.fromString("9e2e6aaf-5a39-4162-b101-e18813616b70"))
             .todos(todos)
             .general(general)
             .statusImprovment(statusImprovement)
             .statusDegredation(statusDegredation)
+            .overAllStatusDegredation(overAllStatusDegredation)
+            .overAllGeneral(overAllGeneral)
+            .overAllStatusImprovment(overAllStatusImprovment)
+            .overAllTodos(overAllTodos)
             .build();
     }
 
     @Override
     public StatusesResponse getAllStatuses() {
         List<StatusesEntity> statusesEntities = statusesRepository.findAll();
+        if(statusesEntities.isEmpty()){
+            StatusDto zeroCountStatus = new StatusDto();
+            zeroCountStatus.setCount(0);
+            return new StatusesResponse(zeroCountStatus,zeroCountStatus,zeroCountStatus,zeroCountStatus,zeroCountStatus,zeroCountStatus,zeroCountStatus,zeroCountStatus);
+        }
         return statusesEntities.stream().map(this::convertStatusesResponseDto).toList().get(0);
     }
 
@@ -122,6 +157,11 @@ public class StatusesServiceImpl implements StatusesService {
         StatusDto statusImprovement = new StatusDto();
         StatusDto statusDegredation = new StatusDto();
 
+        StatusDto overallGeneral = new StatusDto();
+        StatusDto overallTodos = new StatusDto();
+        StatusDto overallStatusImprovement = new StatusDto();
+        StatusDto overallStatusDegredation = new StatusDto();
+
         todos.setCount(statusesEntity.getTodos().getCount());
 
         general.setCount(statusesEntity.getGeneral().getCount());
@@ -129,14 +169,39 @@ public class StatusesServiceImpl implements StatusesService {
         statusImprovement.setCount(statusesEntity.getStatusImprovment().getCount());
 
         statusDegredation.setCount(statusesEntity.getStatusDegredation().getCount());
+        overallGeneral.setCount(statusesEntity.getOverAllGeneral().getCount());
+        overallTodos.setCount(statusesEntity.getOverAllTodos().getCount());
+        overallStatusImprovement.setCount(statusesEntity.getOverAllStatusImprovment().getCount());
+        overallStatusDegredation.setCount(statusesEntity.getOverAllStatusDegredation().getCount());
 
         responseDto.setTodos(todos);
         responseDto.setGeneral(general);
         responseDto.setStatusImprovement(statusImprovement);
         responseDto.setStatusDegredation(statusDegredation);
+        responseDto.setOverallGeneral(overallGeneral);
+        responseDto.setOverallTodos(overallTodos);
+        responseDto.setOverallStatusImprovement(overallStatusImprovement);
+        responseDto.setOverallStatusDegredation(overallStatusDegredation);
 
         return responseDto;
     }
+
+    // TODO : Saja Add these methods
+    //    private EventType getStatusForMaterialDemand(){
+    //        EventType eventType;
+    //        if(eventType == EventType.TODO){
+    //            return EventType.TODO;
+    //        }
+    //        return EventType.LINKED;
+    //    }
+    //
+    //    private EventType getStatusForCapacityGroup(){
+    //        EventType eventType;
+    //        if(eventType == EventType.STATUS_IMPROVEMENT){
+    //            return EventType.TODO;
+    //        }
+    //        return EventType.STATUS_REDUCTION;
+    //    }
 
     @Override
     public void updateStatus() {
@@ -154,6 +219,10 @@ public class StatusesServiceImpl implements StatusesService {
         AtomicInteger statusImprovementCount = new AtomicInteger();
         AtomicInteger statusReductionCount = new AtomicInteger();
         AtomicInteger allDemandsCount = new AtomicInteger();
+        AtomicInteger overAllGeneralCount = new AtomicInteger();
+        AtomicInteger overAllStatusImprovementCount = new AtomicInteger();
+        AtomicInteger overAllStatusReductionCount = new AtomicInteger();
+        AtomicInteger overAllTodoCount = new AtomicInteger();
 
         Map<String, List<CapacitiesDto>> oldMaterialNumberCapacitiesMapList = createMaterialNumberCapacitiesMapList(
             oldWeekBasedCapacityGroupResponse
@@ -171,6 +240,7 @@ public class StatusesServiceImpl implements StatusesService {
 
         processMaterialDemands(
             todoCount,
+            overAllTodoCount,
             true,
             newCapacityQuantities,
             newMaterialNumberDemandsMapList,
@@ -179,6 +249,7 @@ public class StatusesServiceImpl implements StatusesService {
 
         processMaterialDemands(
             todoCount,
+            overAllTodoCount,
             false,
             oldCapacityQuantities,
             oldMaterialNumberDemandsMapList,
@@ -189,7 +260,9 @@ public class StatusesServiceImpl implements StatusesService {
             oldCapacityQuantities,
             newCapacityQuantities,
             statusReductionCount,
-            statusImprovementCount
+            statusImprovementCount,
+            overAllStatusReductionCount,
+            overAllStatusImprovementCount
         );
 
         setAllDemandsCountCount(allDemandsCount, newMaterialNumberDemandsMapList);
@@ -197,6 +270,11 @@ public class StatusesServiceImpl implements StatusesService {
         // set the general count
         generalCount.set(
             allDemandsCount.get() - (todoCount.get() + statusImprovementCount.get() + statusReductionCount.get())
+        );
+
+        overAllGeneralCount.set(
+            newMaterialNumberDemandsMapList.size() -
+            (overAllTodoCount.get() + overAllStatusImprovementCount.get() + overAllStatusReductionCount.get())
         );
 
         StatusDto todos = new StatusDto();
@@ -211,11 +289,27 @@ public class StatusesServiceImpl implements StatusesService {
         StatusDto degradationStatusDto = new StatusDto();
         degradationStatusDto.setCount(statusReductionCount.get());
 
+        StatusDto overAllTodos = new StatusDto();
+        overAllTodos.setCount(overAllTodoCount.get());
+
+        StatusDto overAllGeneralStatusDto = new StatusDto();
+        overAllGeneralStatusDto.setCount(overAllGeneralCount.get());
+
+        StatusDto overAllImprovementStatusDto = new StatusDto();
+        overAllImprovementStatusDto.setCount(overAllStatusImprovementCount.get());
+
+        StatusDto overAllDegradationStatusDto = new StatusDto();
+        overAllDegradationStatusDto.setCount(overAllStatusReductionCount.get());
+
         // Set DTOs in StatusRequest
         statusRequest.setTodos(todos);
         statusRequest.setGeneral(generalStatusDto);
         statusRequest.setStatusImprovement(improvementStatusDto);
         statusRequest.setStatusDegredation(degradationStatusDto);
+        statusRequest.setOverallTodos(overAllTodos);
+        statusRequest.setOverallGeneral(overAllGeneralStatusDto);
+        statusRequest.setOverallStatusImprovement(overAllImprovementStatusDto);
+        statusRequest.setOverallStatusDegredation(overAllDegradationStatusDto);
 
         // Post the StatusRequest
         postStatuses(statusRequest);
@@ -228,6 +322,7 @@ public class StatusesServiceImpl implements StatusesService {
 
         weekBasedMaterialDemandEntities.forEach(
             weekBasedMaterialDemand -> {
+                //                weekBasedMaterialDemand.getId()
                 String materialNumberCustomer = weekBasedMaterialDemand
                     .getWeekBasedMaterialDemandRequest()
                     .getMaterialNumberCustomer();
@@ -252,6 +347,8 @@ public class StatusesServiceImpl implements StatusesService {
 
         weekBasedCapacityGroupEntities.forEach(
             weekBasedCapacityGroup -> {
+                //                weekBasedCapacityGroup.getId();
+
                 List<CapacitiesDto> capacitiesDtos = weekBasedCapacityGroup
                     .getWeekBasedCapacityGroupRequest()
                     .getCapacities();
@@ -282,12 +379,19 @@ public class StatusesServiceImpl implements StatusesService {
 
     private void processMaterialDemands(
         AtomicInteger todoCount,
+        AtomicInteger overAllTodoCount,
         boolean isNewMaterialDemands,
         List<MaterialCapacityQuantity> capacityQuantities,
         Map<String, List<DemandSeriesDto>> materialNumberDemandsMap,
         Map<String, List<CapacitiesDto>> materialNumberCapacitiesMap
     ) {
         for (Map.Entry<String, List<DemandSeriesDto>> materialNumberDemandsMapEntry : materialNumberDemandsMap.entrySet()) {
+            if (
+                !materialNumberCapacitiesMap.containsKey(materialNumberDemandsMapEntry.getKey()) && isNewMaterialDemands
+            ) {
+                overAllTodoCount.incrementAndGet();
+            }
+            materialDemandOrder++;
             materialNumberDemandsMapEntry
                 .getValue()
                 .forEach(
@@ -318,7 +422,8 @@ public class StatusesServiceImpl implements StatusesService {
                                                         DataConverterUtil.convertFromString(
                                                             capacitiesDto.getCalendarWeek()
                                                         ),
-                                                        Double.parseDouble(demandSeriesDto.getDemand())
+                                                        Double.parseDouble(demandSeriesDto.getDemand()),
+                                                        materialDemandOrder
                                                     )
                                                 );
                                             }
@@ -336,8 +441,11 @@ public class StatusesServiceImpl implements StatusesService {
         List<MaterialCapacityQuantity> oldMaterialCapacityQuantities,
         List<MaterialCapacityQuantity> newMaterialCapacityQuantities,
         AtomicInteger statusReductionCount,
-        AtomicInteger statusImprovementCount
+        AtomicInteger statusImprovementCount,
+        AtomicInteger overAllStatusReductionCount,
+        AtomicInteger overAllStatusImprovementCount
     ) {
+        AtomicInteger previousDemand = new AtomicInteger(-1);
         oldMaterialCapacityQuantities.forEach(
             oldCapacityQuantity -> {
                 newMaterialCapacityQuantities.forEach(
@@ -349,10 +457,23 @@ public class StatusesServiceImpl implements StatusesService {
                             EventType eventType = getEventType(oldCapacityQuantity, newCapacityQuantity);
 
                             if (eventType == EventType.STATUS_REDUCTION) {
+                                if (
+                                    previousDemand.get() == -1 ||
+                                    previousDemand.get() != newCapacityQuantity.getMaterialDemandOrder()
+                                ) {
+                                    overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
+                                }
                                 statusReductionCount.set(statusReductionCount.get() + 1);
                             } else if (eventType == EventType.STATUS_IMPROVEMENT) {
+                                if (
+                                    previousDemand.get() != -1 ||
+                                    previousDemand.get() != newCapacityQuantity.getMaterialDemandOrder()
+                                ) {
+                                    overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
+                                }
                                 statusImprovementCount.set(statusImprovementCount.get() + 1);
                             }
+                            previousDemand.set(newCapacityQuantity.getMaterialDemandOrder());
                         }
                     }
                 );
@@ -385,16 +506,20 @@ public class StatusesServiceImpl implements StatusesService {
         private LocalDateTime calendarWeek;
         private double demand;
 
+        private int materialDemandOrder;
+
         public MaterialCapacityQuantity(
             double maximumCapacity,
             double actualCapacity,
             LocalDateTime calendarWeek,
-            double demand
+            double demand,
+            int materialDemandOrder
         ) {
             this.maximumCapacity = maximumCapacity;
             this.actualCapacity = actualCapacity;
             this.calendarWeek = calendarWeek;
             this.demand = demand;
+            this.materialDemandOrder = materialDemandOrder;
         }
 
         public double getMaximumCapacity() {
@@ -407,6 +532,10 @@ public class StatusesServiceImpl implements StatusesService {
 
         public double getActualCapacity() {
             return actualCapacity;
+        }
+
+        public int getMaterialDemandOrder() {
+            return materialDemandOrder;
         }
 
         public void setActualCapacity(double actualCapacity) {
@@ -427,6 +556,10 @@ public class StatusesServiceImpl implements StatusesService {
 
         public void setDemand(double demand) {
             this.demand = demand;
+        }
+
+        public void setMaterialDemandOrder(int materialDemandOrder) {
+            this.materialDemandOrder = materialDemandOrder;
         }
 
         @Override
