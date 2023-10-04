@@ -20,13 +20,38 @@
  *    ********************************************************************************
  */
 
-import { useState } from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import { Tab, Tabs} from 'react-bootstrap';
-
+import CapacityGroupChronogram from "./CapacityGroupChronogram";
+import CapacityGroupSumView from "./CapacityGroupSumView";
+import {useParams} from "react-router-dom";
+import {CapacityGroupContext} from "../../contexts/CapacityGroupsContextProvider";
+import {SingleCapacityGroup} from "../../interfaces/capacitygroup_interfaces";
 
 function CapacityGroupDetailsPage() {
+  const { id } = useParams();
+  const context = useContext(CapacityGroupContext);
+
+  if (!context) {
+    throw new Error('CapacityGroupDetailsPage must be used within a CapacityGroupsProvider');
+  }
+
+  const { getCapacityGroupById } = context;
+
   const [activeTab, setActiveTab] = useState('overview');
-  
+  const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const fetchedCapacityGroup = await getCapacityGroupById(id!);
+        setCapacityGroup(fetchedCapacityGroup || null);
+      } catch (error) {
+        console.error('Failed to fetch capacity group:', error);
+      }
+    })();
+  }, [id, getCapacityGroupById]);
+
 
   return (
     <>
@@ -34,12 +59,12 @@ function CapacityGroupDetailsPage() {
         <br />
         <div className="row">
           <div className="col"></div>
-          <div className="col-6 border d-flex align-items-center justify-content-center">
-            UUID - CapacityGroupName
+          <div className="col-6 border d-flex align-items-center justify-content-center" style={{ padding: '10px' }}>
+            {capacityGroup?.capacityGroupId} - {capacityGroup?.name}
           </div>
             <div className="col d-flex justify-content-end">
               <br />
-            </div>  
+            </div>
         </div>
         <Tabs
           defaultActiveKey="overview"
@@ -53,9 +78,8 @@ function CapacityGroupDetailsPage() {
           }}
         >
           <Tab eventKey="overview" title="Overview">
-
-            TABLE
-            chronogram here
+            <CapacityGroupSumView capacityGroup={capacityGroup}/>
+            <CapacityGroupChronogram capacityGroup={capacityGroup} />
           </Tab>
           <Tab eventKey="materials" title="Materials">
             Materials Table here

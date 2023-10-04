@@ -24,7 +24,9 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -75,6 +77,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     @Override
     public CapacityGroupResponse getCapacityGroupById(String capacityGroupId) {
         CapacityGroupEntity capacityGroupEntity = getCapacityGroupEntity(capacityGroupId);
+
         return convertCapacityGroupDto(capacityGroupEntity);
     }
 
@@ -190,7 +193,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             .map(
                 capacityRequest ->
                     enrichCapacityTimeSeries(
-                        DataConverterUtil.convertFromString(capacityRequest.getCalendarWeek()),
+                        LocalDate.parse(capacityRequest.getCalendarWeek()).atStartOfDay(),
                         capacityRequest.getActualCapacity().doubleValue(),
                         capacityRequest.getMaximumCapacity().doubleValue()
                     )
@@ -279,7 +282,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         responseDto.setUnitOfMeasure(unitMeasure);
         responseDto.setChangeAt(capacityGroupEntity.getChangedAt().toString());
         responseDto.setName(capacityGroupEntity.getName());
-        responseDto.setCapacityGroupId(capacityGroupEntity.getCapacityGroupId().toString());
+        responseDto.setWeekBasedCapacityGroupId(capacityGroupEntity.getCapacityGroupId().toString());
+        responseDto.setCapacityGroupId(capacityGroupEntity.getId().toString());
 
         List<CapacityRequest> capacityRequests = capacityGroupEntity
             .getCapacityTimeSeries()
@@ -320,9 +324,13 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private CapacityRequest convertCapacityTimeSeries(CapacityTimeSeries capacityTimeSeries) {
         CapacityRequest capacityRequest = new CapacityRequest();
 
-        capacityRequest.setActualCapacity(BigDecimal.valueOf(capacityTimeSeries.getActualCapacity()));
-        capacityRequest.setMaximumCapacity(BigDecimal.valueOf(capacityTimeSeries.getMaximumCapacity()));
-        capacityRequest.setCalendarWeek(capacityRequest.getCalendarWeek());
+        capacityRequest.setActualCapacity(new BigDecimal(capacityTimeSeries.getActualCapacity()));
+        capacityRequest.setMaximumCapacity(new BigDecimal(capacityTimeSeries.getMaximumCapacity()));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = capacityTimeSeries.getCalendarWeek().format(formatter);
+
+        capacityRequest.setCalendarWeek(formattedDate);
 
         return capacityRequest;
     }
