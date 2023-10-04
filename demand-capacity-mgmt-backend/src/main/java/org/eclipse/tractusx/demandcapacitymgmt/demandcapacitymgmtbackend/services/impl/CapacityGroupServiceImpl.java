@@ -23,7 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +44,6 @@ import org.springframework.stereotype.Service;
 public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     private final MaterialDemandRepository materialDemandRepository;
-
-    private final CompanyRepository companyRepository;
     private final CompanyService companyService;
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
     private final CapacityGroupRepository capacityGroupRepository;
@@ -129,6 +126,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     @Override
     public CapacityGroupResponse getCapacityGroupById(String capacityGroupId) {
         CapacityGroupEntity capacityGroupEntity = getCapacityGroupEntity(capacityGroupId);
+
         return convertCapacityGroupDto(capacityGroupEntity);
     }
 
