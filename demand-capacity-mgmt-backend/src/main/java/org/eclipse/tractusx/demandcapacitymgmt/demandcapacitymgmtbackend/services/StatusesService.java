@@ -22,25 +22,16 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandResponseDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusesResponse;
 import java.util.List;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
+import java.util.UUID;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
 
-public interface WeekBasedMaterialService {
-    void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDto);
-
-    void sendWeekBasedMaterial();
-
-    void receiveWeekBasedMaterial();
-
-    List<WeekBasedMaterialDemandResponseDto> getWeekBasedMaterialDemands();
-    List<WeekBasedMaterialDemandResponseDto> getOldWeekBasedMaterialDemands();
-    List<WeekBasedMaterialDemandResponseDto> getUpdatedWeekBasedMaterialDemands();
-    WeekBasedMaterialDemandResponseDto updateWeekBasedMaterial(
-        String id,
-        WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto
-    );
-
-    void createWeekBasedMaterialRequestFromEntity(MaterialDemandEntity materialDemandEntity);
+public interface StatusesService {
+    StatusesResponse postStatuses(StatusRequest statusRequest);
+    StatusesResponse getAllStatuses();
+    void updateStatus();
 }

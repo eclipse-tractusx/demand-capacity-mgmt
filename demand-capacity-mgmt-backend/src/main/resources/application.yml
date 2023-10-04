@@ -21,6 +21,8 @@
 
 spring:
   jpa:
+    hibernate:
+      ddl-auto: update
     database: POSTGRESQL
     show-sql: true
   datasource:
@@ -32,17 +34,14 @@ spring:
     init:
       platform: postgres
 
-flyway:
-  enabled: true
-  url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
-  user: ${DCM_DATASOURCE_USER:dcm}
-  password: ${DCM_DATASOURCE_PASS:dcm}
-  schemas: migrations
-  locations: classpath:db/migration/postgresql
+  flyway:
+   enabled: true
+   url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
+   user: ${DCM_DATASOURCE_USER:dcm}
+   password: ${DCM_DATASOURCE_PASS:dcm}
+   schemas: migrations
+   locations: classpath:db/migration/postgresql
 
 management:
   security:
     enable:false
-
-
-#url: jdbc:oracle:thin:@//${ORACLEDB_HOST}:${ORACLEDB_PORT}/${ORACLEDB_SERVICENAME}
