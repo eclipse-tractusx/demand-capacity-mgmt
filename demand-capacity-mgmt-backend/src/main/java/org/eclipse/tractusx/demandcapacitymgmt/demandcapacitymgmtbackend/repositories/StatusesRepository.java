@@ -20,25 +20,11 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters;
 
-import com.google.gson.Gson;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequest;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
-@Converter(autoApply = true)
-public class WeekBasedMaterialConverter implements AttributeConverter<WeekBasedMaterialDemandRequest, String> {
+import java.util.UUID;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusesEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    private static final Gson GSON = new Gson();
-
-    @Override
-    public String convertToDatabaseColumn(WeekBasedMaterialDemandRequest mjo) {
-        return GSON.toJson(mjo);
-    }
-
-    @Override
-    public WeekBasedMaterialDemandRequest convertToEntityAttribute(String dbData) {
-        return GSON.fromJson(dbData, WeekBasedMaterialDemandRequest.class);
-    }
-}
+public interface StatusesRepository extends JpaRepository<StatusesEntity, UUID> {}

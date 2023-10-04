@@ -20,25 +20,11 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
 
-import com.google.gson.Gson;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequest;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
-@Converter(autoApply = true)
-public class WeekBasedMaterialConverter implements AttributeConverter<WeekBasedMaterialDemandRequest, String> {
-
-    private static final Gson GSON = new Gson();
-
-    @Override
-    public String convertToDatabaseColumn(WeekBasedMaterialDemandRequest mjo) {
-        return GSON.toJson(mjo);
-    }
-
-    @Override
-    public WeekBasedMaterialDemandRequest convertToEntityAttribute(String dbData) {
-        return GSON.fromJson(dbData, WeekBasedMaterialDemandRequest.class);
-    }
+public enum EventType {
+    GENERAL_EVENT,
+    TODO,
+    STATUS_IMPROVEMENT,
+    STATUS_REDUCTION,
 }
