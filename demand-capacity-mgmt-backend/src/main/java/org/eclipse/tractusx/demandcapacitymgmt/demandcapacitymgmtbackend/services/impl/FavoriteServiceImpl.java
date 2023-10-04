@@ -76,11 +76,13 @@ public class FavoriteServiceImpl implements FavoriteService {
             entity.setType(FavoriteType.valueOf(favoriteRequest.getfType()));
             favoriteRepository.saveAndFlush(entity);
             return convertFavoriteResponse(entity);
+
         } else throw new NotFoundException(
             404,
-            "The capacity group provided was not found",
-            new ArrayList<>(List.of("UUID provided : " + UUID.fromString(favoriteRequest.getFavoriteId())))
+            "Demand category not found",
+            new ArrayList<>(List.of("provided UUID did not match any records. - " + id))
         );
+
     }
 
     @Override
