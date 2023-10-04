@@ -142,10 +142,10 @@ public class StatusesServiceImpl implements StatusesService {
     @Override
     public StatusesResponse getAllStatuses() {
         List<StatusesEntity> statusesEntities = statusesRepository.findAll();
-        if(statusesEntities.isEmpty()){
+        if (statusesEntities.isEmpty()) {
             StatusDto zeroCountStatus = new StatusDto();
             zeroCountStatus.setCount(0);
-            return new StatusesResponse(zeroCountStatus,zeroCountStatus,zeroCountStatus,zeroCountStatus,zeroCountStatus,zeroCountStatus,zeroCountStatus,zeroCountStatus);
+            return new StatusesResponse();
         }
         return statusesEntities.stream().map(this::convertStatusesResponseDto).toList().get(0);
     }
@@ -331,9 +331,8 @@ public class StatusesServiceImpl implements StatusesService {
                     .getWeekBasedMaterialDemandRequest()
                     .getDemandSeries()
                     .forEach(
-                        demandWeekSeriesDto -> {
-                            materialNumberDemandsMapList.put(materialNumberCustomer, demandWeekSeriesDto.getDemands());
-                        }
+                        demandWeekSeriesDto ->
+                            materialNumberDemandsMapList.put(materialNumberCustomer, demandWeekSeriesDto.getDemands())
                     );
             }
         );
@@ -356,12 +355,11 @@ public class StatusesServiceImpl implements StatusesService {
                     .getWeekBasedCapacityGroupRequest()
                     .getLinkedDemandSeries()
                     .forEach(
-                        linkedDemandSeriesRequest -> {
+                        linkedDemandSeriesRequest ->
                             materialNumberCapacitiesMap.put(
                                 linkedDemandSeriesRequest.getMaterialNumberCustomer(),
                                 capacitiesDtos
-                            );
-                        }
+                            )
                     );
             }
         );
@@ -447,7 +445,7 @@ public class StatusesServiceImpl implements StatusesService {
     ) {
         AtomicInteger previousDemand = new AtomicInteger(-1);
         oldMaterialCapacityQuantities.forEach(
-            oldCapacityQuantity -> {
+            oldCapacityQuantity ->
                 newMaterialCapacityQuantities.forEach(
                     newCapacityQuantity -> {
                         if (
@@ -476,8 +474,7 @@ public class StatusesServiceImpl implements StatusesService {
                             previousDemand.set(newCapacityQuantity.getMaterialDemandOrder());
                         }
                     }
-                );
-            }
+                )
         );
     }
 
@@ -499,7 +496,7 @@ public class StatusesServiceImpl implements StatusesService {
         return StatusManager.getEventType(true, oldStatusColor, newStatusColor);
     }
 
-    public class MaterialCapacityQuantity {
+    public static class MaterialCapacityQuantity {
 
         private double maximumCapacity;
         private double actualCapacity;
