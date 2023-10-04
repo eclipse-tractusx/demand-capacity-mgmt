@@ -27,4 +27,6 @@ public enum EventType {
     TODO,
     STATUS_IMPROVEMENT,
     STATUS_REDUCTION,
+    LINKED,
+    NOT_LINKED,
 }
