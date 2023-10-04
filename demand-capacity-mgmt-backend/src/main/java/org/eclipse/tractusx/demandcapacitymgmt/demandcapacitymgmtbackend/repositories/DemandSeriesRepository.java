@@ -22,23 +22,30 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
+import java.util.List;
+import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 
-import java.util.List;
-import java.util.UUID;
-
 public interface DemandSeriesRepository extends JpaRepository<DemandSeries, UUID> {
-    @Query("""
+    @Query(
+        """
             select d from DemandSeries d
-            where d.customerLocation.id = ?1 and d.demandCategory.id = ?2 and d.materialDemand.materialNumberCustomer = ?3""")
-    List<DemandSeries> ByCategoryIDCustomerIDMaterialNrCustomer(@NonNull UUID id, @NonNull UUID id1, @NonNull String materialNumberCustomer);
+            where d.customerLocation.id = ?1 and d.demandCategory.id = ?2 and d.materialDemand.materialNumberCustomer = ?3"""
+    )
+    List<DemandSeries> ByCategoryIDCustomerIDMaterialNrCustomer(
+        @NonNull UUID id,
+        @NonNull UUID id1,
+        @NonNull String materialNumberCustomer
+    );
 
-    @Query("""
+    @Query(
+        """
         select d from DemandSeries d
         where d.capacityGroupId = ?1 and d.materialDemand.id = ?2
-    """)
+    """
+    )
     DemandSeries fetchByCGIDandMatID(@NonNull UUID id, @NonNull UUID id2);
 }

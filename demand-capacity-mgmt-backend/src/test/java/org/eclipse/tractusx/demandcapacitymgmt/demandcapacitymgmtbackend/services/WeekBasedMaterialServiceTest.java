@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesCategoryDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandSeriesDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandWeekSeriesDto;
@@ -38,7 +39,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 
 @ExtendWith(SpringExtension.class)
 public class WeekBasedMaterialServiceTest {

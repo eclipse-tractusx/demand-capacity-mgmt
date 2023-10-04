@@ -24,13 +24,12 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.DemandApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -57,13 +56,18 @@ public class DemandController implements DemandApi {
     }
 
     @Override
-    public ResponseEntity<DemandSeriesCompositeResponse> getLinkedDemandSeriesByCompositeKeyID(DemandSeriesCompositeRequest demandSeriesCompositeRequest) throws Exception {
-        DemandSeriesCompositeResponse response = demandService.getAllDemandsByCompositeKey(demandSeriesCompositeRequest);
+    public ResponseEntity<DemandSeriesCompositeResponse> getLinkedDemandSeriesByCompositeKeyID(
+        DemandSeriesCompositeRequest demandSeriesCompositeRequest
+    ) throws Exception {
+        DemandSeriesCompositeResponse response = demandService.getAllDemandsByCompositeKey(
+            demandSeriesCompositeRequest
+        );
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Override
-    public ResponseEntity<Void> unlinkedDemandSeriesComposites(DemandSeriesUnlinkRequest demandSeriesUnlinkRequest) throws Exception {
+    public ResponseEntity<Void> unlinkedDemandSeriesComposites(DemandSeriesUnlinkRequest demandSeriesUnlinkRequest)
+        throws Exception {
         demandService.unlinkComposites(demandSeriesUnlinkRequest);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

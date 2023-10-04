@@ -113,23 +113,23 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     }
 
     public void updateStatus() {
-        if(statusesRepository != null){
-        List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroups = DataConverterUtil.convertToWeekBasedCapacityGroupDtoList(
-            weekBasedCapacityGroupRepository.findAll()
-        );
+        if (statusesRepository != null) {
+            List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroups = DataConverterUtil.convertToWeekBasedCapacityGroupDtoList(
+                weekBasedCapacityGroupRepository.findAll()
+            );
 
-        if (newWeekBasedMaterialDemands == null) {
-            newWeekBasedMaterialDemands = List.of();
+            if (newWeekBasedMaterialDemands == null) {
+                newWeekBasedMaterialDemands = List.of();
+            }
+            final StatusesService statusesService = new StatusesServiceImpl(
+                statusesRepository,
+                oldWeekBasedMaterialDemands,
+                newWeekBasedMaterialDemands,
+                oldWeekBasedCapacityGroups,
+                oldWeekBasedCapacityGroups
+            );
+            statusesService.updateStatus();
         }
-        final StatusesService statusesService = new StatusesServiceImpl(
-            statusesRepository,
-            oldWeekBasedMaterialDemands,
-            newWeekBasedMaterialDemands,
-            oldWeekBasedCapacityGroups,
-            oldWeekBasedCapacityGroups
-        );
-        statusesService.updateStatus();
-    }
     }
 
     @Override
