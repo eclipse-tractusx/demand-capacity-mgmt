@@ -64,7 +64,6 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     public LoggingHistoryResponse createLog(LoggingHistoryRequest loggingHistoryRequest) {
         loggingHistoryRequest.setUserAccount(CookieUtil.getUserName());
         LocalDateTime currentLocalDateTime = LocalDateTime.now();
-        loggingHistoryRequest.setId(String.valueOf(UUID.randomUUID()));
         loggingHistoryRequest.setTimeCreated(Timestamp.valueOf(currentLocalDateTime).toString());
         LoggingHistoryEntity loggingHistoryEntity = convertDtoToEntity(loggingHistoryRequest);
         loggingHistoryRepository.save(loggingHistoryEntity);
@@ -99,43 +98,48 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     }
 
     @Override
-    public void deleteArchivedLogById(String logId) {}
+    public void deleteArchivedLogById(String logId) {
+        archivedLogsRepository.deleteById(UUID.fromString(logId));
+    }
 
     private LoggingHistoryEntity convertDtoToEntity(LoggingHistoryRequest loggingHistoryRequest) {
-        String materialDemandId = loggingHistoryRequest.getMaterialDemandId() == null
-            ? null
-            : loggingHistoryRequest.getMaterialDemandId();
-        String capacityGroupId = loggingHistoryRequest.getCapacityGroupId() == null
-            ? null
-            : loggingHistoryRequest.getCapacityGroupId();
+        LoggingHistoryEntity loggingHistoryEntity = new LoggingHistoryEntity();
+        loggingHistoryEntity.setId(UUID.randomUUID());
+        loggingHistoryEntity.setEventType(EventType.valueOf(loggingHistoryRequest.getEventType()));
+        loggingHistoryEntity.setObjectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()));
+        if(loggingHistoryRequest.getMaterialDemandId() != null){
+            loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
+        }
 
-        return LoggingHistoryEntity
-            .builder()
-            .id(UUID.randomUUID())
-            .eventType(EventType.valueOf(loggingHistoryRequest.getEventType()))
-            .objectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()))
-            .materialDemandId(materialDemandId == null ? null: UUID.fromString(materialDemandId))
-            .capacityGroupId(capacityGroupId == null ? null: UUID.fromString(capacityGroupId))
-            .userAccount(loggingHistoryRequest.getUserAccount())
-            .time_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()))
-            .description(loggingHistoryRequest.getEventDescription())
-            .isFavorited(loggingHistoryRequest.getIsFavorited())
-            .build();
+        if(loggingHistoryRequest.getCapacityGroupId() != null){
+            loggingHistoryEntity.setCapacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()));
+        }
+        loggingHistoryEntity.setUserAccount(loggingHistoryRequest.getUserAccount());
+        loggingHistoryEntity.setTime_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()));
+        loggingHistoryEntity.setDescription(loggingHistoryRequest.getEventDescription());
+        loggingHistoryEntity.setIsFavorited(loggingHistoryRequest.getIsFavorited());
+
+        return loggingHistoryEntity;
     }
 
     private ArchivedLogEntity convertDtoToArchivedEntity(LoggingHistoryRequest loggingHistoryRequest) {
-        return ArchivedLogEntity
-            .builder()
-            .id(UUID.randomUUID())
-            .eventType(EventType.valueOf(loggingHistoryRequest.getEventType()))
-            .objectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()))
-            .materialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()))
-            .capacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()))
-            .userAccount(loggingHistoryRequest.getUserAccount())
-            .time_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()))
-            .description(loggingHistoryRequest.getEventDescription())
-            .isFavorited(loggingHistoryRequest.getIsFavorited())
-            .build();
+        ArchivedLogEntity loggingHistoryEntity = new ArchivedLogEntity();
+        loggingHistoryEntity.setId(UUID.randomUUID());
+        loggingHistoryEntity.setEventType(EventType.valueOf(loggingHistoryRequest.getEventType()));
+        loggingHistoryEntity.setObjectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()));
+        if(loggingHistoryRequest.getMaterialDemandId() != null){
+            loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
+        }
+
+        if(loggingHistoryRequest.getCapacityGroupId() != null){
+            loggingHistoryEntity.setCapacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()));
+        }
+        loggingHistoryEntity.setUserAccount(loggingHistoryRequest.getUserAccount());
+        loggingHistoryEntity.setTime_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()));
+        loggingHistoryEntity.setDescription(loggingHistoryRequest.getEventDescription());
+        loggingHistoryEntity.setIsFavorited(loggingHistoryRequest.getIsFavorited());
+
+        return loggingHistoryEntity;
     }
 
     //    @Override
@@ -275,8 +279,10 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         responseDto.setUserAccount(archivedLogEntity.getUserAccount());
         responseDto.setIsFavorited(archivedLogEntity.getIsFavorited());
         responseDto.setEventType(archivedLogEntity.getEventType().toString());
-        responseDto.setCapacityGroupId(archivedLogEntity.getCapacityGroupId().toString());
-        responseDto.setMaterialDemandId(archivedLogEntity.getMaterialDemandId().toString());
+        if (archivedLogEntity.getCapacityGroupId() != null) {
+            responseDto.setCapacityGroupId(archivedLogEntity.getCapacityGroupId().toString());
+        }
+        responseDto.setMaterialDemandId(Objects.requireNonNull(archivedLogEntity.getMaterialDemandId()).toString());
         responseDto.setObjectType(archivedLogEntity.getObjectType().toString());
         responseDto.setTimeCreated(archivedLogEntity.getTime_created().toString());
 
