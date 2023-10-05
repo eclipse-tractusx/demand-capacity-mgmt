@@ -70,8 +70,6 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
           setIsLoading(false); // Set isLoading to false on max retries
         }
       }
-    }
-  };
   
   const fetchDemandProps = useCallback(() => {
     fetchDemandPropsWithRetry();

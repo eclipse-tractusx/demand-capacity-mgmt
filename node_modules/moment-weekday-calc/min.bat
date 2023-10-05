@@ -1,1 +1,0 @@
-uglifyjs --compress --mangle --source-map moment.weekdaycalc.min.js.map -- moment.weekdaycalc.js > moment.weekdaycalc.min.js
