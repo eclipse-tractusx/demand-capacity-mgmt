@@ -51,7 +51,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       });
       const result: DemandProp[] = response.data;
       setDemandProps(result);
-      console.log(demands)// TODO clean
+      console.log(demands);
     } catch (error) {
       console.error('Error fetching demands:', error);
     }

@@ -23,9 +23,9 @@ import { FaChartLine, FaLink } from 'react-icons/fa';
 import { FcComboChart } from 'react-icons/fc';
 import { Modal, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import DemandsPage from './demands/DemandPage';
-import DemandContextProvider from '../contexts/DemandContextProvider';
-import '../index.css';
+import DemandsPage from '../demands/DemandPage';
+import DemandContextProvider from '../../contexts/DemandContextProvider';
+import '../../index.css';
 
 function QuickAcessItems() {
 

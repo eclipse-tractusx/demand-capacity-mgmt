@@ -1,4 +1,4 @@
-/*
+    /*
  *  *******************************************************************************
  *  Copyright (c) 2023 BMW AG
  *  Copyright (c) 2023 Contributors to the Eclipse Foundation
@@ -324,13 +324,9 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private CapacityRequest convertCapacityTimeSeries(CapacityTimeSeries capacityTimeSeries) {
         CapacityRequest capacityRequest = new CapacityRequest();
 
-        capacityRequest.setActualCapacity(new BigDecimal(capacityTimeSeries.getActualCapacity()));
-        capacityRequest.setMaximumCapacity(new BigDecimal(capacityTimeSeries.getMaximumCapacity()));
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedDate = capacityTimeSeries.getCalendarWeek().format(formatter);
-
-        capacityRequest.setCalendarWeek(formattedDate);
+        capacityRequest.setActualCapacity(BigDecimal.valueOf(capacityTimeSeries.getActualCapacity()));
+        capacityRequest.setMaximumCapacity(BigDecimal.valueOf(capacityTimeSeries.getMaximumCapacity()));
+        capacityRequest.setCalendarWeek(capacityTimeSeries.getCalendarWeek().toString());
 
         return capacityRequest;
     }

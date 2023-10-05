@@ -20,32 +20,27 @@
  *    ********************************************************************************
  */
 
-import React, { useContext } from 'react';
-import { UnitsofMeasureContext } from '../contexts/UnitsOfMeasureContextProvider';
+import CapacityGroupsProvider from "../../contexts/CapacityGroupsContextProvider";
+import CapacityGroupsList from "../../components/capacitygroup/CapacityGroupsView";
 
-interface UnitsOfMeasureOptionsProps {
-  selectedUnitMeasureId: string;
+
+function CapacityGroupPage() {
+
+    return (
+        <>
+        <div className="container-xl">
+            <br />
+            <div className="table">
+                <div className="table-wrapper">
+                    <CapacityGroupsProvider>
+                        <CapacityGroupsList />
+                    </CapacityGroupsProvider>
+                </div>
+            </div>
+        </div>
+        </>
+
+    );
 }
 
-const UnitsOfMeasureOptions: React.FC<UnitsOfMeasureOptionsProps> = ({ selectedUnitMeasureId }) => {
-  const UnitsOfMeasureContextData = useContext(UnitsofMeasureContext);
-  const { unitsofmeasure } = UnitsOfMeasureContextData || {};
-
-  // Use the demandcategories array to fill the <select> options
-  return (
-    <>
-      <option disabled={true} value="">
-        --Choose an option--
-      </option>
-      {unitsofmeasure &&
-        unitsofmeasure.map((unit) => (
-          <option key={unit.id} value={unit.id} selected={unit.id === selectedUnitMeasureId}>
-            {unit.displayValue}
-          </option>
-        ))}
-    </>
-  );
-};
-
-export default UnitsOfMeasureOptions;
-
+export default CapacityGroupPage;

@@ -23,9 +23,9 @@
 import React, { useContext, useState, useMemo, useCallback } from 'react';
 import { Modal, Button, Form, Col, Row, Breadcrumb, Dropdown } from 'react-bootstrap';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
-import Pagination from '../Pagination';
+import Pagination from '../common/Pagination';
 import DemandsTable from './DemandsTable';
-import DemandsSearch from '../Search';
+import DemandsSearch from '../common/Search';
 import EditForm from './DemandEditForm';
 import { FaEllipsisV, FaSearch} from 'react-icons/fa';
 import AddForm from './DemandAddForm';
@@ -33,7 +33,7 @@ import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
-import WeeklyView from '../WeeklyView';
+import WeeklyView from './DemandsOverview';
 
 const DemandsPage: React.FC = () => {
   const [showEditModal, setIsEditModalOpen] = useState(false);
