@@ -22,8 +22,8 @@
 
 import React, {useState, useContext, useEffect} from 'react';
 import { Tab, Tabs} from 'react-bootstrap';
-import CapacityGroupChronogram from "./CapacityGroupChronogram";
-import CapacityGroupSumView from "./CapacityGroupSumView";
+import CapacityGroupChronogram from "../../components/capacitygroup/CapacityGroupChronogram";
+import CapacityGroupSumView from "../capacitygroup/CapacityGroupSumView";
 import {useParams} from "react-router-dom";
 import {CapacityGroupContext} from "../../contexts/CapacityGroupsContextProvider";
 import {SingleCapacityGroup} from "../../interfaces/capacitygroup_interfaces";

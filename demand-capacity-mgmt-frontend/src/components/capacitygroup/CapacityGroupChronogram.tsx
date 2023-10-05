@@ -27,9 +27,11 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend, Brush
+    Legend,
+    Brush, ReferenceArea, BarChart
 } from "recharts";
 import {SingleCapacityGroup} from "../../interfaces/capacitygroup_interfaces";
+import {useEffect, useRef, useState} from "react";
 
 type CapacityGroupChronogramProps = {
     capacityGroup: SingleCapacityGroup | null | undefined;
@@ -38,10 +40,18 @@ type CapacityGroupChronogramProps = {
 const computeLinkedDemandSum = (capacityGroup: SingleCapacityGroup | null | undefined) => {
     if (!capacityGroup || !capacityGroup.linkedDemandSeries) return 0;
 
+
     return capacityGroup.linkedDemandSeries.length;
 };
 
 function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
+
+    type SelectedRangeType = {
+        start: string | null;
+        end: string | null;
+    };
+
+
     const { capacityGroup } = props;
 
     const rawCapacities = capacityGroup?.capacities || [];
@@ -51,11 +61,18 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
 
     // Sorted data by date
-    const data = rawCapacities.map(d => ({
-        ...d,
-        Demand: linkedDemandSum,
-        dateEpoch: new Date(d.calendarWeek).getTime()
-    })).sort((a, b) => a.dateEpoch - b.dateEpoch);
+// Sorted data by date
+    const data = rawCapacities.map(d => {
+        // Convert to Date and back to simplified string format
+        const simplifiedDate = new Date(d.calendarWeek).toISOString().split('T')[0];
+
+        return {
+            ...d,
+            Demand: linkedDemandSum,
+            dateEpoch: new Date(simplifiedDate).getTime(),
+            calendarWeek: simplifiedDate
+        };
+    }).sort((a, b) => a.dateEpoch - b.dateEpoch);
 
     const getWeekNumber = (d: Date) => {
         d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -106,8 +123,37 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
     };
 
 
+    const [selectedRange, setSelectedRange] = useState<SelectedRangeType>({ start: null, end: null });
+    type BrushStartEndIndex = {
+        startIndex?: number;
+        endIndex?:number;
+    };
+
+    const timer = useRef(2000);
+    const brushIndexesRef = useRef<BrushStartEndIndex | null>(null);
+
+    const handleBrushChange = (newIndex: BrushStartEndIndex) => {
+        if (typeof newIndex.startIndex === 'number' && typeof newIndex.endIndex === 'number') {
+            brushIndexesRef.current = newIndex;
+        }
+    };
+
+
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (brushIndexesRef.current?.startIndex !== undefined && brushIndexesRef.current?.endIndex !== undefined) {
+                const start = data[brushIndexesRef.current.startIndex].calendarWeek;
+                const end = data[brushIndexesRef.current.endIndex].calendarWeek;
+                setSelectedRange({ start, end });
+            }
+        }, timer.current);
+
+        return () => clearInterval(interval);
+    }, [data]);
 
     return (
+        <div>
         <ComposedChart
             width={1300}
             height={500}
@@ -147,8 +193,41 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
             <Bar dataKey="Demand" barSize={20} fill="#413ea0"/>
             <Line type="monotone" dataKey="actualCapacity" stroke="#ff7300"/>
             <Line type="monotone" dataKey="maximumCapacity"  stroke="#8884d8"/>
-            <Brush y={450} dataKey="calendarWeek" height={20} stroke="#8884d8" />
+            <Brush
+                y={450}
+                dataKey="calendarWeek"
+                height={20}
+                stroke="#8884d8"
+                onChange={handleBrushChange}
+                startIndex={brushIndexesRef.current?.startIndex}
+                endIndex={brushIndexesRef.current?.endIndex}
+            />
+
+
         </ComposedChart>
+
+            {/* Mini preview AreaChart */}
+            <BarChart
+                width={1300}
+                height={100}  // Adjust height as needed
+                data={data}
+                margin={{
+                    top: 5,
+                    right: 80,
+                    bottom: 20,
+                    left: 20
+                }}
+            >
+                <CartesianGrid />
+                <XAxis dataKey="calendarWeek" hide={true} />
+                <Bar type="monotone" dataKey="Demand" fill="#8884d8" stroke="#8884d8" />
+
+                {/* Highlighted area based on the brush selection from the main graph */}
+                {selectedRange.start && selectedRange.end && (
+                    <ReferenceArea x1={selectedRange.start} x2={selectedRange.end} fill="rgba(255,0,0,0.2)" />
+                )}
+            </BarChart>
+        </div>
     );
 }
 
