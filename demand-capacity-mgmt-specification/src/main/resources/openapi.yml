@@ -137,6 +137,49 @@ paths:
                   $ref: '#/components/schemas/LoggingHistoryResponse'
 
 
+  /loggingHistory/filterLogs:
+    get:
+      tags:
+        - loggingHistory
+      summary: filter Logs
+      operationId: filterLogs
+      parameters:
+        - name: start_time
+          in: query
+          description: The start time for the logging history (optional)
+          schema:
+            type: string  # You can change the type to match your data format (e.g., datetime)
+        - name: end_time
+          in: query
+          description: The end time for the logging history (optional)
+          schema:
+            type: string  # You can change the type to match your data format (e.g., datetime)
+        - name: event
+          in: query
+          description: The event type (optional)
+          schema:
+            type: string
+        - name: material_demand_id
+          in: query
+          description: The material demand ID (optional)
+          schema:
+            type: string  # Adjust the type as needed
+        - name: capacity_group_id
+          in: query
+          description: The capacity group ID (optional)
+          schema:
+            type: string  # Adjust the type as needed
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoggingHistoryResponse'
+
+
   /loggingHistory/{log_id}:
     delete:
       tags:
@@ -215,58 +258,6 @@ paths:
       responses:
         200:
           description: Delete log with id
-
-
-  /loggingHistory/{capacity_group_id}:
-    get:
-      tags:
-        - loggingHistory
-      summary: Get a loggingHistory by capacity_group_id
-      operationId: getLoggingHistoryByCapacityGroupId
-      parameters:
-        - name: capacity_group_id
-          in: path
-          required: true
-          description: id of capacity group
-          schema:
-            type: string
-      responses:
-        200:
-          description: loggingHistory found
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/LoggingHistoryResponse'
-        404:
-          description: loggingHistory not found
-
-  /loggingHistory/{material_demand_id}:
-    get:
-      tags:
-        - loggingHistory
-      summary: Get a loggingHistory by MaterialDemandId
-      operationId: getLoggingHistoryByMaterialDemandId
-      parameters:
-        - name: material_demand_id
-          in: path
-          required: true
-          description: id of material demand
-          schema:
-            type: string
-      responses:
-        200:
-          description: loggingHistory found
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/LoggingHistoryResponse'
-        404:
-          description: loggingHistory not found
-
 
   /loggingHistory/favoriteMaterialDemands:
     get:

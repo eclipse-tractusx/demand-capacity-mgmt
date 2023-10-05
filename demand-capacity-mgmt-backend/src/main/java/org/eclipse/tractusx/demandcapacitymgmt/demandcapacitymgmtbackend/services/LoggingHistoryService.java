@@ -37,14 +37,15 @@ public interface LoggingHistoryService {
     List<ArchivedLoggingHistoryResponse> getAllArchivedLogs();
     void deleteAllArchivedLogs();
     void deleteArchivedLogById(String logId);
-    List<LoggingHistoryResponse> getLoggingHistoryByCapacityId(String capacityGroupId);
-    List<LoggingHistoryResponse> getLoggingHistoryByMaterialDemandId(String materialDemandId);
     List<LoggingHistoryResponse> filterByFavoriteMaterialDemand();
     List<LoggingHistoryResponse> filterByFavoriteCapacityGroup();
-    List<LoggingHistoryResponse> filterByTime(Timestamp startTime, Timestamp endTime);
-    List<LoggingHistoryResponse> filterByEventStatus(EventStatus eventStatus);
-    List<LoggingHistoryResponse> filterByEventType(EventType eventType);
-    List<LoggingHistoryResponse> getLogsFavoredByMe();
+
+    List<LoggingHistoryResponse> filterLog(
+        String capacityGroupId,
+        String materialDemandId,
+        String filterText,
+        String startTime,
+        String endTime
+    );
     List<LoggingHistoryResponse> getLogsManagedByMe();
-    List<LoggingHistoryResponse> getAllEventsRelatedToMeOnly();
 }

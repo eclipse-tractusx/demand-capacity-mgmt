@@ -24,6 +24,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.LoggingHistoryApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.sql.Timestamp;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
@@ -73,23 +74,21 @@ public class LoggingHistoryController implements LoggingHistoryApi {
     }
 
     @Override
+    public ResponseEntity<List<LoggingHistoryResponse>> filterLogs(
+        String startTime,
+        String endTime,
+        String event,
+        String materialDemandId,
+        String capacityGroupId
+    ) throws Exception {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(loggingHistoryService.filterLog(capacityGroupId, materialDemandId, event, startTime, endTime));
+    }
+
+    @Override
     public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistory() {
         return ResponseEntity.status(HttpStatus.OK).body(loggingHistoryService.getAllLoggingHistory());
-    }
-
-    @Override
-    public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistoryByCapacityGroupId(String capacityGroupId) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(loggingHistoryService.getLoggingHistoryByCapacityId(capacityGroupId));
-    }
-
-    @Override
-    public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistoryByMaterialDemandId(String materialDemandId)
-        throws Exception {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(loggingHistoryService.getLoggingHistoryByMaterialDemandId(materialDemandId));
     }
 
     @Override

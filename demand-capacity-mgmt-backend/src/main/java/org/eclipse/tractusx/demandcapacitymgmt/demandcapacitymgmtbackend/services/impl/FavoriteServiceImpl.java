@@ -27,7 +27,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRespons
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.FavoriteEntity;
@@ -41,7 +40,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class FavoriteServiceImpl implements FavoriteService {
+
     private final FavoriteRepository favoriteRepository;
+
     @Override
     public List<FavoriteResponse> getAllFavorites() {
         List<FavoriteEntity> favoriteEntities = favoriteRepository.findAll();
@@ -61,25 +62,30 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest, String cookieUserID) {
+    public FavoriteResponse updateFavorite(
+        UUID id,
+        FavoriteType type,
+        FavoriteRequest favoriteRequest,
+        String cookieUserID
+    ) {
         FavoriteEntity entity = favoriteRepository.findByFavoriteIdAndTypeAndId(
-            id,
-            type,
-            UUID.fromString(cookieUserID)
-        );
+                id,
+                type,
+                UUID.fromString("8842f835-38e9-42b1-8c07-fb310b90ef3a")
+        ); //TODO FETCH USER ID TO UPDATE OPERATION
 
         if (entity != null) {
             entity.setFavoriteId(UUID.fromString(favoriteRequest.getFavoriteId()));
             entity.setType(FavoriteType.valueOf(favoriteRequest.getfType()));
             favoriteRepository.saveAndFlush(entity);
             return convertFavoriteResponse(entity);
-        } else {
-            throw new NotFoundException(
+
+        } else throw new NotFoundException(
                 404,
-                "Entity to update was not found in DB." + "\n" + "Did you meant to create?",
+                "Demand category not found",
                 new ArrayList<>(List.of("provided UUID did not match any records. - " + id))
-            );
-        }
+        );
+
     }
 
     @Override
@@ -97,11 +103,11 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private FavoriteEntity generateFavoriteEntity(FavoriteRequest request, String cookieUserID) {
         return FavoriteEntity
-            .builder()
-            .id(UUID.fromString(cookieUserID))
-            .favoriteId(UUID.fromString(request.getFavoriteId()))
-            .favoriteTypeId(UUID.fromString(request.getfTypeId()))
-            .type(FavoriteType.valueOf(request.getfType()))
-            .build();
+                .builder()
+                .id(UUID.randomUUID()) //TODO USER ID HERE
+                .favoriteId(UUID.fromString(request.getFavoriteId()))
+                .favoriteTypeId(UUID.fromString(request.getfTypeId()))
+                .type(FavoriteType.valueOf(request.getfType()))
+                .build();
     }
 }
