@@ -22,24 +22,44 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router } from "react-router-dom";
-import { isAuthenticated } from './util/Auth';
-import AuthenticationComponent from './components/auth/AuthenticationComponent';
-import AppComponent from './components/dcm/AppComponent';
+import reportWebVitals from './reportWebVitals';
+import {BrowserRouter as Router, Route,Routes } from "react-router-dom";
 
-function App() {
-    const authenticated = isAuthenticated();
-    return (
-        <Router>
-            {authenticated ? <AppComponent /> : <AuthenticationComponent />}
-        </Router>
-    );
-}
 
+
+//Import Default always visible components.
+import TopMenu from "./components/common/TopMenu";
+import { InfoMenuProvider } from './contexts/InfoMenuContextProvider';
+import QuickAcessItems from "./components/common/QuickAcessItems";
+//Import Context Providers
+import DemandContextProvider from "../src/contexts/DemandContextProvider";
+// Import your components for different routes
+import Home from "./components/pages/CapacityGroupPage";
+import CapacityGroupDetailsPage from "./components/pages/CapacityGroupDetailsPage";
+import CapacityGroupsProvider from './contexts/CapacityGroupsContextProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <>
-        <App/>
-    </>
+<>
+    <InfoMenuProvider>
+    <TopMenu></TopMenu>
+    </InfoMenuProvider>
+
+    <Router>
+    <Routes>
+        <Route  path="/" element={<Home/>} />
+        <Route path="/details/:id" element={<CapacityGroupsProvider><CapacityGroupDetailsPage/></CapacityGroupsProvider>} />
+        <Route path="/contact" />
+    </Routes>
+</Router>
+<DemandContextProvider>
+            <QuickAcessItems></QuickAcessItems>
+</DemandContextProvider>
+</>
+
 );
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
