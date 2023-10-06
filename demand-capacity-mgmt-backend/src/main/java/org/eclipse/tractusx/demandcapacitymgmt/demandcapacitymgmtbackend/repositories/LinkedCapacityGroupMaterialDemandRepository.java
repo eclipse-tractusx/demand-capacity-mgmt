@@ -20,26 +20,25 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsList from "../capacitygroup/CapacityGroupsView";
-import CapacityGroupContext from "../../contexts/CapacityGroupsContextProvider";
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
-function CapacityGroupDetails() {
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+import javax.transaction.Transactional;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LinkedCapacityGroupMaterialDemandEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-    return (
-        <>
-        <div className="container-xl">
-            <br />
-            <div className="table">
-                <div className="table-wrapper">
-                    <CapacityGroupContext>
-                        <CapacityGroupsList />
-                    </CapacityGroupContext>
-                </div>
-            </div>
-        </div>
-        </>
+@Repository
+public interface LinkedCapacityGroupMaterialDemandRepository
+    extends JpaRepository<LinkedCapacityGroupMaterialDemandEntity, UUID> {
+    @Transactional
+    void deleteByCapacityGroupIDAndMaterialDemandID(UUID capacityGroup, UUID materialDemandID);
 
+    List<LinkedCapacityGroupMaterialDemandEntity> findLinkedCapacityGroupMaterialDemandEntitiesByCapacityGroupID(
+        UUID capacityGroup
     );
-}
 
-export default CapacityGroupDetails;
+    BigDecimal countByCapacityGroupID(UUID id);
+}

@@ -352,6 +352,43 @@ paths:
                 items:
                   $ref: '#/components/schemas/MaterialDemandResponse'
 
+  /demand/series:
+    post:
+      tags:
+        - Demand
+      summary: get the list of demand series by composite key
+      operationId: getLinkedDemandSeriesByCompositeKeyID
+      requestBody:
+        description: Demand series composite request object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandSeriesCompositeRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemandSeriesCompositeResponse'
+  /demand/series/unlink:
+    post:
+      tags:
+        - Demand
+      summary: unlink material demands and demand series
+      operationId: unlinkedDemandSeriesComposites
+      requestBody:
+        description: Demand series composite request object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandSeriesUnlinkRequest'
+      responses:
+        204:
+          description: no content
+
   /demand/{demand_id}:
     get:
       tags:
@@ -411,12 +448,27 @@ paths:
         200:
           description: Delete demand with id
 
+  /capacityGroup/link:
+    post:
+      tags:
+        - capacityGroup
+      summary: create a link to capacityGroup and linkedDemand
+      operationId: postLinkedCapacityGroupDemand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkCGDSRequest'
+      responses:
+        204:
+          description: no content
   /capacityGroup:
     get:
       tags:
         - capacityGroup
       summary: capacityGroup
-      operationId: getCapacityGroup
+      operationId: getCapacityGroups
       responses:
         200:
           description: CapacityGroupResponse
@@ -426,7 +478,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CapacityGroupDefaultViewResponse'
-
     post:
       tags:
         - capacityGroup
@@ -460,12 +511,11 @@ paths:
           required: true
       responses:
         200:
-          description: General greeting
+          description: Get capacity group representation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CapacityGroupResponse'
-
 
 
   /weekbasedcapacitygroup:
@@ -720,6 +770,35 @@ components:
           type: string
         description:
           type: string
+
+    CapacityGroupResponse:
+      type: object
+      properties:
+        capacityGroupId:
+          type: string
+        capacitygroupname:
+          type: string
+        defaultActualCapacity:
+          type: number
+          format: float
+        defaultMaximumCapacity:
+          type: number
+          format: float
+        startDate:
+          type: string
+        endDate:
+          type: string
+        customer:
+          $ref: '#/components/schemas/CompanyDto'
+        supplier:
+          $ref: '#/components/schemas/CompanyDto'
+        linkMaterialDemandIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: 'Array of UUIDs representing linked material demand IDs.'
+
     DemandResponseDto:
       type: object
       properties:
@@ -1051,9 +1130,17 @@ components:
       properties:
         id:
           type: string
-        codeValue:
+        dimension:
           type: string
-        displayValue:
+        unCode:
+          type: string
+        description:
+          type: string
+        descriptionGerman:
+          type: string
+        unSymbol:
+          type: string
+        cxSymbol:
           type: string
 
     MaterialDemandSeriesResponse:
@@ -1067,11 +1154,56 @@ components:
             $ref: '#/components/schemas/CompanyDto'
         demandCategory:
           $ref: '#/components/schemas/DemandCategoryResponse'
-
         demandSeriesValues:
           type: array
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesValue'
+
+    DemandSeriesCompositeResponse:
+      type: object
+      properties:
+        demandSeries:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedDemandMaterialCompositeResponse'
+
+    LinkedDemandMaterialCompositeResponse:
+      type: object
+      properties:
+        demandSeriesID:
+          type: string
+        materialDemandID:
+          type: string
+        customerLocation:
+          $ref: '#/components/schemas/CompanyDto'
+        expectedSupplierLocation:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyDto'
+        demandCategory:
+          $ref: '#/components/schemas/DemandCategoryResponse'
+        demandSeriesValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialDemandSeriesValue'
+
+    DemandSeriesCompositeRequest:
+      type: object
+      properties:
+        demandCategoryCodeID:
+          type: string
+        customerID:
+          type: string
+        materialNumberCustomer:
+          type: string
+    DemandSeriesUnlinkRequest:
+      type: object
+      properties:
+        materialDemandID:
+          type: string
+        capacityGroupID:
+          type: string
+
 
     DemandCategoryResponse:
       type: object
@@ -1115,7 +1247,7 @@ components:
         materialNumberCustomer:
           type: string
 
-    CapacityGroupResponse:
+    DeprecatedCapacityGroupResponse:
       type: object
       properties:
         capacityGroupId:
@@ -1167,31 +1299,41 @@ components:
         status:
           type: string
 
+    LinkCGDSRequest:
+      type: object
+      properties:
+        capacityGroupID:
+          type: string
+        linkedMaterialDemandID:
+          type: array
+          items:
+            type: string
+            format: uuid
+
     CapacityGroupRequest:
       type: object
       properties:
-        capacities:
-          type: array
-          items:
-            $ref: '#/components/schemas/CapacityRequest'
-        linkedDemandSeries:
-          type: array
-          items:
-            type: string
-        supplierLocations:
-          type: array
-          items:
-            type: string
+        capacitygroupname:
+          type: string
+        defaultActualCapacity:
+          type: number
+          format: float
+        defaultMaximumCapacity:
+          type: number
+          format: float
+        startDate:
+          type: string
+        endDate:
+          type: string
         customer:
           type: string
         supplier:
           type: string
-        unitOfMeasure:
-          type: string
-        changeAt:
-          type: string
-        name:
-          type: string
+        linkDemandSeriesID:
+          type: array
+          items:
+            type: string
+            format: uuid
 
     FavoriteRequest:
       type: object

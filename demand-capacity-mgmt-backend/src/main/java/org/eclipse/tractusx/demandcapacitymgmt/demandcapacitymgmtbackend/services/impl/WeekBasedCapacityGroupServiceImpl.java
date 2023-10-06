@@ -41,9 +41,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @RequiredArgsConstructor
 @Service
@@ -135,14 +133,15 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity) {
         WeekBasedCapacityGroupRequest basedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
 
-        basedCapacityGroupRequest.setCapacityGroupId(capacityGroupEntity.getCapacityGroupId().toString());
-        basedCapacityGroupRequest.setUnityOfMeasure(capacityGroupEntity.getUnitMeasure().getCodeValue());
-        basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomerId().getBpn());
-        basedCapacityGroupRequest.setSupplier(capacityGroupEntity.getSupplierId().getBpn());
-        basedCapacityGroupRequest.setName(capacityGroupEntity.getName());
-        basedCapacityGroupRequest.setChangedAt(capacityGroupEntity.getChangedAt().toString());
-        basedCapacityGroupRequest.setSupplierLocations(capacityGroupEntity.getSupplierLocation());
+        basedCapacityGroupRequest.setCapacityGroupId(capacityGroupEntity.getId().toString());
+        //basedCapacityGroupRequest.setUnityOfMeasure(capacityGroupEntity.getUnitMeasure().getCxSymbol());
+        basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomer().getBpn());
+        basedCapacityGroupRequest.setSupplier(capacityGroupEntity.getSupplier().getBpn());
+        basedCapacityGroupRequest.setName(capacityGroupEntity.getCapacityGroupName());
+        //basedCapacityGroupRequest.setChangedAt(capacityGroupEntity.getChangedAt().toString());
+        //basedCapacityGroupRequest.setSupplierLocations(capacityGroupEntity.getSupplierLocation());
 
+        /*
         List<LinkedDemandSeriesRequest> linkedDemandSeries = capacityGroupEntity
             .getLinkedDemandSeries()
             .stream()
@@ -155,8 +154,8 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
             .stream()
             .map(WeekBasedCapacityGroupServiceImpl::getCapacitiesDto)
             .toList();
-
-        basedCapacityGroupRequest.setCapacities(capacitiesDtos);
+        */
+        //basedCapacityGroupRequest.setCapacities(capacitiesDtos);
     }
 
     @Override

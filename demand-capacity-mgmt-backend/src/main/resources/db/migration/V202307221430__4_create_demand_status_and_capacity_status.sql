@@ -23,6 +23,3 @@
 
 ALTER TABLE material_demand
 ADD COLUMN status varchar(40);
-
-ALTER TABLE capacity_group
-ADD COLUMN status varchar(40);

@@ -20,15 +20,26 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
+import CapacityGroupsList from "./CapacityGroupsList";
+import CapacityGroupContext from "../../contexts/CapacityGroupsContextProvider";
 
-import java.util.List;
-import java.util.UUID;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+function CapacityGroupDetails() {
 
-@Repository
-public interface CapacityGroupRepository extends JpaRepository<CapacityGroupEntity, UUID> {
-    List<CapacityGroupEntity> findAll();
+    return (
+        <>
+        <div className="container-xl">
+            <br />
+            <div className="table">
+                <div className="table-wrapper">
+                    <CapacityGroupContext>
+                        <CapacityGroupsList />
+                    </CapacityGroupContext>
+                </div>
+            </div>
+        </div>
+        </>
+
+    );
 }
+
+export default CapacityGroupDetails;

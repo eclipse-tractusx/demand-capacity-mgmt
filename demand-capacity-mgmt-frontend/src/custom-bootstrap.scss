@@ -1,0 +1,92 @@
+// Import Bootstrap's functions file
+@import '~bootstrap/scss/bootstrap';
+
+// Theme 1 variables
+$theme1-primary: #94cb2d;
+$theme1-secondary: #ffa600;
+$theme1-info: #6c757d;
+
+// Theme 2 variables
+$theme2-primary: #ffa600;
+$theme2-secondary: #94cb2d;
+$theme2-info: #6c757d;
+
+// Define classes for Theme 1
+.theme1 {
+  --bs-primary: $theme1-primary; /* Override Bootstrap primary color */
+  --bs-secondary: $theme1-secondary; /* Override Bootstrap secondary color */
+  --bs-info: $theme1-info; /* Override Bootstrap info color */
+}
+
+// Define classes for Theme 2
+.theme2 {
+  --bs-primary: $theme2-primary; /* Override Bootstrap primary color */
+  --bs-secondary: $theme2-secondary; /* Override Bootstrap secondary color */
+  --bs-info: $theme2-info; /* Override Bootstrap info color */
+}
+
+// Override Bootstrap variables with custom colors
+$theme-colors: (
+  primary: $theme1-primary,
+  secondary: $theme1-secondary,
+  info: $theme1-info
+);
+
+@import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/root';
+@import '~bootstrap/scss/reboot';
+@import '~bootstrap/scss/forms';
+@import '~bootstrap/scss/buttons';
+@import '~bootstrap/scss/dropdown';
+
+// Override button text color
+.btn {
+  color: #ffffff; // White text color
+}
+.btn-light {
+  color: black;
+}
+
+// Override outline button text color
+.btn-outline-primary {
+  color: var(--bs-primary); // Custom primary color
+}
+
+.btn-outline-secondary {
+  color: var(--bs-secondary); // Custom secondary color
+}
+
+.btn-outline-info {
+  color: var(--bs-info); // Custom info color
+}
+
+.btn-danger {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #dc3545 !important;
+}
+
+// Override Bootstrap pagination button text color
+.pagination .page-link {
+  color: #ffffff; // White text color
+}
+
+// Override Bootstrap pagination active button background color
+.pagination .page-item.active .page-link {
+  background-color: var(--bs-primary); // Custom primary color
+  border-color: var(--bs-primary); // Custom primary color
+}
+.pagination .page-link {
+  color: #303030;
+}
+
+.dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--bs-primary);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--bs-primary);
+}
+
+@import '~bootstrap/scss/pagination';
+@import 'index.css';
