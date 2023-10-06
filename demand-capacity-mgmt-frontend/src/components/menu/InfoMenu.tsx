@@ -20,12 +20,22 @@
  *    ********************************************************************************
  */
 
+import React from "react";
 import Nav from "react-bootstrap/Nav";
 import { FaArrowDown, FaArrowUp, FaStar } from "react-icons/fa";
 import { useInfoMenu } from "../../contexts/InfoMenuContextProvider";
+import { useNavigate } from "react-router-dom";
+
 
 function InfoMenu() {
     const { data } = useInfoMenu();
+    const navigate = useNavigate();
+    const handleNavigation = (path: string) => {
+        navigate(path);
+    }
+
+
+
     return (
         <>
             <Nav className="me-auto">
@@ -55,7 +65,12 @@ function InfoMenu() {
                         {data?.todos.count || '-'}
                     </span>
                 </Nav.Link>
-                <Nav.Link href="#events">Events <span className="badge rounded-pill text-bg-info" id="events-count">-</span></Nav.Link>
+                <Nav.Link onClick={() => handleNavigation('/events')}>
+                    Events
+                    <span className="badge rounded-pill text-bg-info" id="events-count">
+                    -
+                </span>
+                </Nav.Link>
                 {/* TODO: Add functionality for events link */}
             </Nav>
         </>
