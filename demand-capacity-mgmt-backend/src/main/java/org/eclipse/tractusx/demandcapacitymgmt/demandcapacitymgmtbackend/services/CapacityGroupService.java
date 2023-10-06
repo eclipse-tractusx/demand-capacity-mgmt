@@ -25,18 +25,17 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupDefaultViewResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupResponse;
-import java.util.List;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkCGDSRequest;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
+
+import java.util.List;
 
 public interface CapacityGroupService {
     CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest);
 
+    void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest);
+
     CapacityGroupResponse getCapacityGroupById(String CapacityGroupId);
-
-    CapacityGroupEntity getCapacityGroupEntityById(String CapacityGroupId);
-
-    List<CapacityGroupEntity> getAllByStatus(CapacityGroupStatus status);
-
     List<CapacityGroupDefaultViewResponse> getAll();
 }

@@ -156,7 +156,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
 
 
   useEffect(() => {
-    console.log("aqui")
     const newDemandValuesMap: DemandValuesMap = {};
 
     demandData.demandSeries?.forEach((series) => {
@@ -295,17 +294,17 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
               <ToggleButton
                   id="toggle-edit"
                   type="checkbox"
-                  variant="secondary"
+                  variant="info"
                   name="edit"
                   value="0"
                   checked={editMode}
                   onChange={() => setEditMode(!editMode)}
               >Edit
               </ToggleButton>
-              <Button variant="secondary" name="save" onClick={handleSave} disabled={!editMode}>
+              <Button variant="info" name="save" onClick={handleSave} disabled={!editMode}>
                 Save
               </Button>
-              <Button variant="secondary" name="revert" onClick={handleRevert} disabled={!editMode}>
+              <Button variant="info" name="revert" onClick={handleRevert} disabled={!editMode}>
                 Revert Changes
               </Button>
             </ButtonGroup>

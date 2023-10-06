@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UnitMeasureEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UnitMeasureRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UnityOfMeasureService;
 import org.springframework.stereotype.Service;
@@ -48,10 +48,10 @@ public class UnityOfMeasureServiceImpl implements UnityOfMeasureService {
         Optional<UnitMeasureEntity> unitMeasure = unitMeasureRepository.findById(id);
 
         if (unitMeasure.isEmpty()) {
-            throw new NotFoundException(
+            throw new BadRequestException(
                 404,
-                "The unit of measure was not found in DB.",
-                new ArrayList<>(List.of("Provided ID : " + id))
+                "Unit of measure not found",
+                new ArrayList<>(List.of("unit of measure could not be retrieved by DB"))
             );
         }
         return unitMeasure.get();
@@ -69,8 +69,12 @@ public class UnityOfMeasureServiceImpl implements UnityOfMeasureService {
         UnitMeasure unitMeasure = new UnitMeasure();
 
         unitMeasure.setId(String.valueOf(unitMeasureEntity.getId()));
-        unitMeasure.setDisplayValue(unitMeasureEntity.getDisplayValue());
-        unitMeasure.setCodeValue(unitMeasureEntity.getCodeValue());
+        unitMeasure.setDimension(unitMeasureEntity.getDimension());
+        unitMeasure.setUnCode(unitMeasureEntity.getUnCode());
+        unitMeasure.setDescription(unitMeasureEntity.getDescription());
+        unitMeasure.setDescriptionGerman(unitMeasureEntity.getDescriptionGerman());
+        unitMeasure.setUnSymbol(unitMeasureEntity.getUnSymbol());
+        unitMeasure.setCxSymbol(unitMeasureEntity.getCxSymbol());
 
         return unitMeasure;
     }

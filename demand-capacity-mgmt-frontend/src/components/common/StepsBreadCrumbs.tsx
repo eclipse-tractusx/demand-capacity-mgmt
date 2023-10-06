@@ -19,16 +19,29 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
+import React from 'react';
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
-
-import java.util.List;
-import java.util.UUID;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface CapacityGroupRepository extends JpaRepository<CapacityGroupEntity, UUID> {
-    List<CapacityGroupEntity> findAll();
+interface StepBreadcrumbsProps {
+  currentStep: number;
 }
+
+const StepBreadcrumbs: React.FC<StepBreadcrumbsProps> = ({ currentStep }) => {
+  const steps = ['Welcome', 'Step 1', 'Step 2', 'Step 3'];
+
+  return (
+    <center>
+      <h4 className='content-flex'>
+        {steps.map((stepLabel, index) => (
+          <React.Fragment key={index}>
+            {index > 0 && <span className='separator'>{' > '}</span>}
+            <span className={`step ${currentStep === index ? 'active-step' : ''}`}>
+              {stepLabel}
+            </span>
+          </React.Fragment>
+        ))}
+      </h4>
+    </center>
+  );
+};
+
+export default StepBreadcrumbs;

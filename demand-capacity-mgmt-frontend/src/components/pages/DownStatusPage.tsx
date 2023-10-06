@@ -20,15 +20,29 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
+import { FcBearish} from "react-icons/fc";
+import DemandList from "../common/DemandList";
 
-import java.util.List;
-import java.util.UUID;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface CapacityGroupRepository extends JpaRepository<CapacityGroupEntity, UUID> {
-    List<CapacityGroupEntity> findAll();
+
+function DownStatusPage() {
+
+    return (
+        <>
+        <br />
+            <div className="container-xl">
+            <div style={{ display: "flex",  }}>
+                <FcBearish size={35} /><h3 className="icon-text-padding">Negative</h3>
+            </div>
+                <div className="table">
+                    <div className="table-wrapper">
+                    <DemandList />
+                    </div>
+                </div>
+            </div>
+        </>
+
+    );
 }
+
+export default DownStatusPage;
