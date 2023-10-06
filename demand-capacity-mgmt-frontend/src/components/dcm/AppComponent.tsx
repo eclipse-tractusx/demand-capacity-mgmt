@@ -29,31 +29,37 @@ import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
 import AuthenticationComponent from "../auth/AuthenticationComponent";
 import { UserProvider } from '../../contexts/UserContext';
+import EventsPage from "../pages/EventsPage";
 
 
 const AppComponent: React.FC = () => {
     return (
         <UserProvider>
-        <div>
-            <Routes>
-                <Route path="/" element={
-                    <AuthenticatedRoute>
-                        <InfoMenuProvider>
-                            <TopMenu />
-                        </InfoMenuProvider>
-                        <Home />
-                    </AuthenticatedRoute>
-                } />
+            <div>
+                <Routes>
+                    <Route path="/" element={
+                        <AuthenticatedRoute>
+                            <InfoMenuProvider>
+                                <TopMenu />
+                            </InfoMenuProvider>
+                            <Home />
+                        </AuthenticatedRoute>
+                    } />
 
-                <Route path="/details" element={
-                    <AuthenticatedRoute>
-                        <CapacityGroupDetailsPage />
-                    </AuthenticatedRoute>
-                } />
+                    <Route path="/details" element={
+                        <AuthenticatedRoute>
+                            <CapacityGroupDetailsPage />
+                        </AuthenticatedRoute>
+                    } />
+                    <Route path="/events" element={
+                        <AuthenticatedRoute>
+                            <EventsPage />
+                        </AuthenticatedRoute>
+                    } />
 
-                <Route path="/login" element={<AuthenticationComponent />} />
-            </Routes>
-        </div>
+                    <Route path="/login" element={<AuthenticationComponent />} />
+                </Routes>
+            </div>
         </UserProvider>
     );
 }
