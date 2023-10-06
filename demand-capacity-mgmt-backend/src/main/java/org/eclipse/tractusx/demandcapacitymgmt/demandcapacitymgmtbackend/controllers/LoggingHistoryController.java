@@ -23,14 +23,16 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.LoggingHistoryApi;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.sql.Timestamp;
-import java.util.List;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.ArchivedLoggingHistoryResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryResponse;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor

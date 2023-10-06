@@ -107,11 +107,11 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         loggingHistoryEntity.setId(UUID.randomUUID());
         loggingHistoryEntity.setEventType(EventType.valueOf(loggingHistoryRequest.getEventType()));
         loggingHistoryEntity.setObjectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()));
-        if(loggingHistoryRequest.getMaterialDemandId() != null){
+        if (loggingHistoryRequest.getMaterialDemandId() != null) {
             loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
         }
 
-        if(loggingHistoryRequest.getCapacityGroupId() != null){
+        if (loggingHistoryRequest.getCapacityGroupId() != null) {
             loggingHistoryEntity.setCapacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()));
         }
         loggingHistoryEntity.setUserAccount(loggingHistoryRequest.getUserAccount());
@@ -127,11 +127,11 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         loggingHistoryEntity.setId(UUID.randomUUID());
         loggingHistoryEntity.setEventType(EventType.valueOf(loggingHistoryRequest.getEventType()));
         loggingHistoryEntity.setObjectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()));
-        if(loggingHistoryRequest.getMaterialDemandId() != null){
+        if (loggingHistoryRequest.getMaterialDemandId() != null) {
             loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
         }
 
-        if(loggingHistoryRequest.getCapacityGroupId() != null){
+        if (loggingHistoryRequest.getCapacityGroupId() != null) {
             loggingHistoryEntity.setCapacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()));
         }
         loggingHistoryEntity.setUserAccount(loggingHistoryRequest.getUserAccount());

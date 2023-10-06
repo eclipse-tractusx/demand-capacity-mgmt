@@ -69,9 +69,9 @@ public class FavoriteServiceImpl implements FavoriteService {
         String cookieUserID
     ) {
         FavoriteEntity entity = favoriteRepository.findByFavoriteIdAndTypeAndId(
-                id,
-                type,
-                UUID.fromString("8842f835-38e9-42b1-8c07-fb310b90ef3a")
+            id,
+            type,
+            UUID.fromString("8842f835-38e9-42b1-8c07-fb310b90ef3a")
         ); //TODO FETCH USER ID TO UPDATE OPERATION
 
         if (entity != null) {
@@ -79,13 +79,11 @@ public class FavoriteServiceImpl implements FavoriteService {
             entity.setType(FavoriteType.valueOf(favoriteRequest.getfType()));
             favoriteRepository.saveAndFlush(entity);
             return convertFavoriteResponse(entity);
-
         } else throw new NotFoundException(
-                404,
-                "Demand category not found",
-                new ArrayList<>(List.of("provided UUID did not match any records. - " + id))
+            404,
+            "Demand category not found",
+            new ArrayList<>(List.of("provided UUID did not match any records. - " + id))
         );
-
     }
 
     @Override
@@ -103,11 +101,11 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private FavoriteEntity generateFavoriteEntity(FavoriteRequest request, String cookieUserID) {
         return FavoriteEntity
-                .builder()
-                .id(UUID.randomUUID()) //TODO USER ID HERE
-                .favoriteId(UUID.fromString(request.getFavoriteId()))
-                .favoriteTypeId(UUID.fromString(request.getfTypeId()))
-                .type(FavoriteType.valueOf(request.getfType()))
-                .build();
+            .builder()
+            .id(UUID.randomUUID()) //TODO USER ID HERE
+            .favoriteId(UUID.fromString(request.getFavoriteId()))
+            .favoriteTypeId(UUID.fromString(request.getfTypeId()))
+            .type(FavoriteType.valueOf(request.getfType()))
+            .build();
     }
 }
