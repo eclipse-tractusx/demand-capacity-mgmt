@@ -23,20 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.DemandSeriesRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,20 +32,32 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.DemandSeriesRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
-
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
@@ -155,31 +153,35 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
-    public DemandSeriesCompositeResponse getAllDemandsByCompositeKey(DemandSeriesCompositeRequest demandSeriesCompositeRequest) {
+    public DemandSeriesCompositeResponse getAllDemandsByCompositeKey(
+        DemandSeriesCompositeRequest demandSeriesCompositeRequest
+    ) {
         List<DemandSeries> demandSeriesEntities = demandSeriesRepository.ByCategoryIDCustomerIDMaterialNrCustomer(
-                UUID.fromString(demandSeriesCompositeRequest.getCustomerID()),
-                UUID.fromString(demandSeriesCompositeRequest.getDemandCategoryCodeID()),
-                demandSeriesCompositeRequest.getMaterialNumberCustomer()
+            UUID.fromString(demandSeriesCompositeRequest.getCustomerID()),
+            UUID.fromString(demandSeriesCompositeRequest.getDemandCategoryCodeID()),
+            demandSeriesCompositeRequest.getMaterialNumberCustomer()
         );
 
         DemandSeriesCompositeResponse demandSeriesCompositeResponse = new DemandSeriesCompositeResponse();
         List<LinkedDemandMaterialCompositeResponse> linkedDemandMaterialCompositeResponses = new ArrayList<>();
 
-        for(DemandSeries demandSeries : demandSeriesEntities){
+        for (DemandSeries demandSeries : demandSeriesEntities) {
             LinkedDemandMaterialCompositeResponse compositeResponse = new LinkedDemandMaterialCompositeResponse();
 
             DemandCategoryResponse demandCategory = demandCategoryService.convertEntityToDto(
-                    demandCategoryService.
-                            findById(demandSeries.getDemandCategory().getId()));
+                demandCategoryService.findById(demandSeries.getDemandCategory().getId())
+            );
             compositeResponse.setDemandCategory(demandCategory);
 
-            Optional<MaterialDemandEntity> materialDemand = materialDemandRepository.findById(demandSeries.getMaterialDemand().getId());
-            if(materialDemand.isPresent()){
+            Optional<MaterialDemandEntity> materialDemand = materialDemandRepository.findById(
+                demandSeries.getMaterialDemand().getId()
+            );
+            if (materialDemand.isPresent()) {
                 MaterialDemandResponse materialDemandResponse = convertDemandResponseDto(materialDemand.get());
                 compositeResponse.setMaterialDemandID(materialDemandResponse.getId());
                 compositeResponse.setCustomerLocation(materialDemandResponse.getCustomer());
                 List<CompanyDto> supplierLocations = new ArrayList<>();
-                for(String locations : demandSeries.getExpectedSupplierLocation()){
+                for (String locations : demandSeries.getExpectedSupplierLocation()) {
                     CompanyEntity entity = companyService.getCompanyById(UUID.fromString(locations));
                     CompanyDto companyDto = new CompanyDto();
                     companyDto.setBpn(entity.getBpn());
@@ -197,7 +199,7 @@ public class DemandServiceImpl implements DemandService {
 
             List<MaterialDemandSeriesValue> materialDemandSeriesValues = new ArrayList<>();
 
-            for(DemandSeriesValues values : demandSeries.getDemandSeriesValues()){
+            for (DemandSeriesValues values : demandSeries.getDemandSeriesValues()) {
                 MaterialDemandSeriesValue demandSeriesValue = new MaterialDemandSeriesValue();
                 demandSeriesValue.setDemand(BigDecimal.valueOf(values.getDemand()));
                 demandSeriesValue.setCalendarWeek(values.getCalendarWeek().toString());
@@ -215,7 +217,7 @@ public class DemandServiceImpl implements DemandService {
     public void unlinkComposites(DemandSeriesUnlinkRequest demandSeriesUnlinkRequest) {
         UUID cgID = UUID.fromString(demandSeriesUnlinkRequest.getCapacityGroupID());
         UUID mdID = UUID.fromString(demandSeriesUnlinkRequest.getMaterialDemandID());
-        linkedCapacityGroupMaterialDemandRepository.deleteByCapacityGroupIDAndMaterialDemandID(cgID,mdID);
+        linkedCapacityGroupMaterialDemandRepository.deleteByCapacityGroupIDAndMaterialDemandID(cgID, mdID);
     }
 
     private MaterialDemandEntity getDemandEntity(String demandId) {
@@ -238,15 +240,14 @@ public class DemandServiceImpl implements DemandService {
         MaterialDemandResponse responseDto = new MaterialDemandResponse();
 
         CompanyDto customer = null;
-        if(materialDemandEntity.getCustomerId() != null) {
+        if (materialDemandEntity.getCustomerId() != null) {
             customer = companyService.convertEntityToDto(materialDemandEntity.getCustomerId());
         }
 
         CompanyDto supplier = null;
-        if(materialDemandEntity.getSupplierId() != null) {
+        if (materialDemandEntity.getSupplierId() != null) {
             supplier = companyService.convertEntityToDto(materialDemandEntity.getSupplierId());
         }
-
 
         responseDto.setMaterialDescriptionCustomer(materialDemandEntity.getMaterialDescriptionCustomer());
         responseDto.setMaterialNumberCustomer(materialDemandEntity.getMaterialNumberCustomer());

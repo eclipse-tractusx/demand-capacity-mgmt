@@ -26,10 +26,9 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupDe
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacityGroupResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkCGDSRequest;
+import java.util.List;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
-
-import java.util.List;
 
 public interface CapacityGroupService {
     CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest);
