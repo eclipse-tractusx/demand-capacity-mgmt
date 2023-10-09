@@ -44,6 +44,7 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
         try {
             const response = await api.get('/statuses');
             const result: InfoMenuData = response.data;
+            console.log('data fetch : ' + result)
             setData(result);
         } catch (error) {
         }

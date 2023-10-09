@@ -22,10 +22,10 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
-import {BrowserRouter as Router, Route,Routes } from "react-router-dom";
-
-
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import { isAuthenticated } from './util/Auth';
+import AuthenticationComponent from './components/auth/AuthenticationComponent';
+import AppComponent from './components/dcm/AppComponent';
 
 //Import Default always visible components.
 import TopMenu from "./components/common/TopMenu";
@@ -43,16 +43,28 @@ import UpStatusPage from "./components/pages/UpStatusPage";
 
 import './custom-bootstrap.scss';
 import'./index.css';
+import {UserProvider} from "./contexts/UserContext";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+function App() {
+    const authenticated = isAuthenticated();
+    return (
+        <UserProvider>
+            <Router>
+                {authenticated ? <AppComponent /> : <AuthenticationComponent />}
+            </Router>
+        </UserProvider>
+    );
+}
+
 root.render(
-<>
+<App>
     <InfoMenuProvider>
     <TopMenu></TopMenu>
     </InfoMenuProvider>
     <Router>
     <Routes>
-        <Route  path="/" element={<Home/>} />
+        <Route path="/" element={<Home/>} />
         <Route path="/details/:id" element={<CapacityGroupsProvider><CapacityGroupDetailsPage/></CapacityGroupsProvider>} />
         <Route path="/up" element={<DemandContextProvider><UpStatusPage/></DemandContextProvider>} />
         <Route path="/down" element={<DemandContextProvider><DownStatusPage/></DemandContextProvider>} />
@@ -62,11 +74,6 @@ root.render(
 <DemandContextProvider>
             <QuickAcessItems></QuickAcessItems>
 </DemandContextProvider>
-</>
+</App>
 
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
