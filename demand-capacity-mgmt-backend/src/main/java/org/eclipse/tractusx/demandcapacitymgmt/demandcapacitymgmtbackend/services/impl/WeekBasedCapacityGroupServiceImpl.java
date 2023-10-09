@@ -140,7 +140,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
                 }
             }
         );
-        //        updateStatus(); TODO: remove the comment when the EDC is ready
+        // updateStatus(); TODO: remove the comment when the EDC is ready
     }
 
     @Override

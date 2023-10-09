@@ -577,48 +577,43 @@ components:
       type: object
       properties:
         general:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         todos:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         statusImprovement:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         statusDegredation:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         overall_general:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         overall_todos:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         overall_statusImprovement:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         overall_statusDegredation:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
 
 
     StatusRequest:
       type: object
       properties:
         general:
-          $ref: '#/components/schemas/StatusDto'
-        todos:
-          $ref: '#/components/schemas/StatusDto'
-        statusImprovement:
-          $ref: '#/components/schemas/StatusDto'
-        statusDegredation:
-          $ref: '#/components/schemas/StatusDto'
-        overall_general:
-          $ref: '#/components/schemas/StatusDto'
-        overall_todos:
-          $ref: '#/components/schemas/StatusDto'
-        overall_statusImprovement:
-          $ref: '#/components/schemas/StatusDto'
-        overall_statusDegredation:
-          $ref: '#/components/schemas/StatusDto'
-
-    StatusDto:
-      type: object
-      properties:
-        count:
           type: integer
+        todos:
+          type: integer
+        statusImprovement:
+          type: integer
+        statusDegradation:
+          type: integer
+        overall_general:
+          type: integer
+        overall_todos:
+          type: integer
+        overall_statusImprovement:
+          type: integer
+        overall_statusDegradation:
+          type: integer
+
 
     DemandRequestDto:
       type: object
