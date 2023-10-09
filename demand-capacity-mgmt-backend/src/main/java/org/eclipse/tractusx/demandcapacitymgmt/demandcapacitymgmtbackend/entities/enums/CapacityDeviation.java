@@ -20,26 +20,20 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
 
-import com.google.gson.Gson;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
-import jakarta.persistence.*;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequest;
+public enum CapacityDeviation {
+    BOTTLENECK(StatusColor.RED),
+    SURPLUS(StatusColor.GREEN),
+    ZERO(StatusColor.GREEN);
 
+    private final StatusColor statusColor;
 
-@Converter(autoApply = true)
-public class WeekBasedMaterialConverter implements AttributeConverter<WeekBasedMaterialDemandRequest, String> {
-
-    private static final Gson GSON = new Gson();
-
-    @Override
-    public String convertToDatabaseColumn(WeekBasedMaterialDemandRequest mjo) {
-        return GSON.toJson(mjo);
+    CapacityDeviation(StatusColor statusColor) {
+        this.statusColor = statusColor;
     }
 
-    @Override
-    public WeekBasedMaterialDemandRequest convertToEntityAttribute(String dbData) {
-        return GSON.fromJson(dbData, WeekBasedMaterialDemandRequest.class);
+    public StatusColor getStatusColor() {
+        return statusColor;
     }
 }
