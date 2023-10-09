@@ -22,42 +22,51 @@
 
 import React from "react";
 import Nav from "react-bootstrap/Nav";
-import { FaArrowDown, FaArrowUp, FaHome, FaStar } from "react-icons/fa";
-import { useInfoMenu } from "../../contexts/InfoMenuContextProvider";
+import {FaArrowDown, FaArrowUp, FaHome, FaStar} from "react-icons/fa";
+import {useInfoMenu} from "../../contexts/InfoMenuContextProvider";
 import {useNavigate} from "react-router-dom";
 
 
 function InfoMenu() {
-    const { data } = useInfoMenu();
+    const {data} = useInfoMenu();
     const navigate = useNavigate();
     const handleNavigation = (path: string) => {
         navigate(path);
     }
 
+    const formatData = (data: number | null | undefined): number | string => {
+        return data !== null && data !== undefined ? data : '-';
+    };
+
     return (
         <>
             <Nav className="me-auto">
                 <Nav.Link href="/"><FaHome/> Home</Nav.Link>
-                <Nav.Link href="../#favorites"><FaStar /> Favorites <span className="badge rounded-pill text-bg-primary" id="favorites-count">-</span></Nav.Link>
-                {/* TODO: Add functionality for Favorites link */}
+                <Nav.Link href="../#favorites"><FaStar/> Favorites <span className="badge rounded-pill text-bg-primary"
+                                                                         id="favorites-count">-</span></Nav.Link>
+
                 <Nav.Link href="../#alerts">Alerts
                     <span className="badge rounded-pill text-bg-danger" id="alerts-count">
+                        {formatData(data?.general)}
                     </span>
                 </Nav.Link>
-                {/* TODO: Add functionality for Alerts link */}
+
                 <Nav.Link href="../up">
-                    <FaArrowUp /> Status
+                    <FaArrowUp/> Status
                     <span className="badge rounded-pill text-bg-success" id="status-plus-count">
+                        {formatData(data?.statusImprovement)}
                     </span>
                 </Nav.Link>
                 <Nav.Link href="../down">
-                    <FaArrowDown /> Status
+                    <FaArrowDown/> Status
                     <span className="badge rounded-pill text-bg-danger" id="status-minus-count">
+                        {formatData(data?.statusDegredation)}
                     </span>
                 </Nav.Link>
                 <Nav.Link href="../todo">
                     Todo
                     <span className="badge rounded-pill text-bg-warning" id="todo-count">
+                        {formatData(data?.todos)}
                     </span>
                 </Nav.Link>
                 <Nav.Link onClick={() => handleNavigation('/events')}>
@@ -66,7 +75,6 @@ function InfoMenu() {
                 </Nav.Link>
             </Nav>
         </>
-
     );
 }
 

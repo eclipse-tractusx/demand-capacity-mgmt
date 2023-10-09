@@ -20,15 +20,13 @@
  *    ********************************************************************************
  */
 
-export interface Status {
-    count: number;
-    materialDemandsIds: string[];
-    capacityGroups: string[];
-}
-
 export interface InfoMenuData {
-    todos: Status;
-    general: Status;
-    statusImprovement: Status;
-    statusDegredation: Status;
+    general: number;
+    todos: number;
+    statusImprovement: number;
+    statusDegredation: number;
+    overall_general: number;
+    overall_todos: number;
+    overall_statusImprovement: number;
+    overall_statusDegredation: number;
 }

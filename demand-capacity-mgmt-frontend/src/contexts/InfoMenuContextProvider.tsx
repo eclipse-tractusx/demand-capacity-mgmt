@@ -25,7 +25,6 @@ import React, { createContext, useState, useEffect, useCallback, useContext, Fun
 import { InfoMenuData } from '../interfaces/InfoMenu_interfaces';
 import api from "../util/Api";
 
-
 interface InfoMenuContextData {
     data: InfoMenuData | null;
     fetchData: () => void;
@@ -44,9 +43,10 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
         try {
             const response = await api.get('/statuses');
             const result: InfoMenuData = response.data;
-            console.log('data fetch : ' + result)
+            console.log('data fetch : ', result);
             setData(result);
         } catch (error) {
+            console.error("Error fetching data: ", error);
         }
     }, []);
 
