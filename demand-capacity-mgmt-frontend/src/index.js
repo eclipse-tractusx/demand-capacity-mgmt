@@ -37,11 +37,7 @@ import CapacityGroupsProvider from './contexts/CapacityGroupsContextProvider';
 //Pages
 import Home from "./components/pages/CapacityGroupPage";
 import CapacityGroupDetailsPage from "./components/pages/CapacityGroupDetailsPage";
-import TodoListPage from "./components/pages/TodoListPage";
-import DownStatusPage from "./components/pages/DownStatusPage";
-import UpStatusPage from "./components/pages/UpStatusPage";
 
-import './custom-bootstrap.scss';
 import'./index.css';
 import {UserProvider} from "./contexts/UserContext";
 
@@ -66,9 +62,7 @@ root.render(
             <Routes>
                 <Route path="/" element={<Home/>} />
                 <Route path="/details/:id" element={<CapacityGroupsProvider><CapacityGroupDetailsPage/></CapacityGroupsProvider>} />
-                <Route path="/up" element={<DemandContextProvider><UpStatusPage/></DemandContextProvider>} />
-                <Route path="/down" element={<DemandContextProvider><DownStatusPage/></DemandContextProvider>} />
-                <Route path="/todo" element={<DemandContextProvider><TodoListPage/></DemandContextProvider>} />
+            
             </Routes>
         </Router>
         <DemandContextProvider>
