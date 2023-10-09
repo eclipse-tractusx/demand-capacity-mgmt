@@ -23,6 +23,12 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -37,13 +43,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @Service
@@ -238,7 +237,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             response.setCustomerBPNL(entity.getCustomer().getBpn());
             response.setInternalId(entity.getId().toString());
             response.setNumberOfMaterials(
-                    linkedCapacityGroupMaterialDemandRepository.countByCapacityGroupID(entity.getId()));
+                linkedCapacityGroupMaterialDemandRepository.countByCapacityGroupID(entity.getId())
+            );
             capacityGroupList.add(response);
         }
         return capacityGroupList;

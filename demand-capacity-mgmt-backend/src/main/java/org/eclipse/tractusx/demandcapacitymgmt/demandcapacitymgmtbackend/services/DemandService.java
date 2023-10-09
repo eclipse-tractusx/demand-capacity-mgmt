@@ -23,10 +23,9 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.util.List;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
-
-import java.util.List;
 
 public interface DemandService {
     MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest);
@@ -43,7 +42,9 @@ public interface DemandService {
 
     List<MaterialDemandEntity> getAllByStatus(MaterialDemandStatus status);
 
-    DemandSeriesCompositeResponse getAllDemandsByCompositeKey(DemandSeriesCompositeRequest demandSeriesCompositeRequest);
+    DemandSeriesCompositeResponse getAllDemandsByCompositeKey(
+        DemandSeriesCompositeRequest demandSeriesCompositeRequest
+    );
 
     void unlinkComposites(DemandSeriesUnlinkRequest demandSeriesUnlinkRequest);
 }
