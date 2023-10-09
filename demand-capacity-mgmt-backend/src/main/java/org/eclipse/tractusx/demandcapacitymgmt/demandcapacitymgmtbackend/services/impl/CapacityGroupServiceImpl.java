@@ -23,6 +23,7 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,9 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
@@ -57,6 +61,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final CapacityGroupRepository capacityGroupRepository;
 
     private final DemandSeriesRepository demandSeriesRepository;
+    private UnitMeasure unitMeasure;
 
     private final LoggingHistoryService loggingHistoryService;
 
@@ -221,6 +226,57 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         }
         responseDto.setLinkMaterialDemandIds(linkedDemands);
         return responseDto;
+    }
+
+    private UnitMeasure enrichUnitMeasure(UnitMeasureEntity unitMeasureEntity) {
+        UnitMeasure unitMeasure = new UnitMeasure();
+
+        unitMeasure.setId(unitMeasureEntity.getId().toString());
+        unitMeasure.setUnCode(unitMeasureEntity.getUnCode());
+        unitMeasure.setCxSymbol(unitMeasureEntity.getCxSymbol());
+
+        return unitMeasure;
+    }
+
+    private CapacityRequest convertCapacityTimeSeries(CapacityTimeSeries capacityTimeSeries) {
+        CapacityRequest capacityRequest = new CapacityRequest();
+
+        capacityRequest.setActualCapacity(BigDecimal.valueOf(capacityTimeSeries.getActualCapacity()));
+        capacityRequest.setMaximumCapacity(BigDecimal.valueOf(capacityTimeSeries.getMaximumCapacity()));
+        capacityRequest.setCalendarWeek(capacityTimeSeries.getCalendarWeek().toString());
+
+        return capacityRequest;
+    }
+
+    private LinkedDemandSeriesResponse convertLinkedDemandSeries(LinkedDemandSeries linkedDemandSeries) {
+        LinkedDemandSeriesResponse linkedDemandSeriesResponse = new LinkedDemandSeriesResponse();
+
+        linkedDemandSeriesResponse.setMaterialNumberCustomer(linkedDemandSeries.getMaterialNumberCustomer());
+        linkedDemandSeriesResponse.setMaterialNumberSupplier(linkedDemandSeries.getMaterialNumberSupplier());
+
+        CompanyDto customer = companyService.convertEntityToDto(linkedDemandSeries.getCustomerId());
+        linkedDemandSeriesResponse.setCustomerLocation(customer);
+
+        DemandCategoryResponse demand = convertDemandCategoryEntity(linkedDemandSeries.getDemandCategory());
+        linkedDemandSeriesResponse.setDemandCategory(demand);
+
+        return linkedDemandSeriesResponse;
+    }
+
+    private DemandCategoryResponse convertDemandCategoryEntity(DemandCategoryEntity demandCategoryEntity) {
+        DemandCategoryResponse response = new DemandCategoryResponse();
+
+        response.setId(demandCategoryEntity.getId().toString());
+        response.setDemandCategoryCode(demandCategoryEntity.getDemandCategoryCode());
+        response.setDemandCategoryName(demandCategoryEntity.getDemandCategoryName());
+
+        return response;
+    }
+
+    private CompanyDto convertString(String supplier) {
+        CompanyEntity entity = companyService.getCompanyById(UUID.fromString(supplier));
+
+        return companyService.convertEntityToDto(entity);
     }
 
     private List<CapacityGroupDefaultViewResponse> convertCapacityGroupEntity(

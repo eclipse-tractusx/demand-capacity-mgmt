@@ -107,7 +107,7 @@ const DemandList: React.FC<{
           console.error('Error deleting demand:', error);
         }
       },
-      [deleteDemand, fetchDemandProps]
+      [deleteDemand]
     );
 
     const handleDetails = (demand: DemandProp) => {

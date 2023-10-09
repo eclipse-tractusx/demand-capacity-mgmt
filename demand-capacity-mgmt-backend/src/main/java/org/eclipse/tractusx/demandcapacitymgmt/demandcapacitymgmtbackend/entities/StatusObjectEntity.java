@@ -21,35 +21,26 @@
  */
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
-import jakarta.persistence.*;
+
 import java.util.UUID;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequest;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters.WeekBasedMaterialConverter;
-import org.hibernate.annotations.ColumnTransformer;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "week_based_material_demand")
+@Table(name = "status_object")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WeekBasedMaterialDemandEntity {
+public class StatusObjectEntity {
 
     @Id
-    @Column(columnDefinition = "uuid", updatable = false, name = "id")
+    @Column(columnDefinition = "uuid")
     private UUID id;
 
-    @Convert(converter = WeekBasedMaterialConverter.class)
-    @Column(name = "data", columnDefinition = "jsonb")
-    @ColumnTransformer(write = "?::jsonb")
-    private WeekBasedMaterialDemandRequest weekBasedMaterialDemand;
-
-    @Column(name = "viewed")
-    private Boolean viewed;
+    @Column(name = "count")
+    private int count;
 }
