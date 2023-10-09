@@ -44,7 +44,6 @@ const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ children }) => 
 
     useEffect(() => {
         if (isAuthed === false) {
-            console.log("im not authed")
             navigate('/login', { replace: true, state: { from: location } });
         }
     }, [isAuthed, navigate, location]);
