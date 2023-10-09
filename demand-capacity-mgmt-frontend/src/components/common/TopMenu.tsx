@@ -30,6 +30,7 @@ import {useNavigate} from "react-router-dom";
 import {logout} from "../../util/Auth";
 
 function TopMenuLinks() {
+
   const { user } = useUser();
   const navigate = useNavigate();
   const { setUser } = useUser();
