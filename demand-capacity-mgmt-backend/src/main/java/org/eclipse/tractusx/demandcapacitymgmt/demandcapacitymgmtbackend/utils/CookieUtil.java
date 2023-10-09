@@ -5,9 +5,8 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-
 import java.util.Objects;
+import org.slf4j.Logger;
 
 public class CookieUtil {
 

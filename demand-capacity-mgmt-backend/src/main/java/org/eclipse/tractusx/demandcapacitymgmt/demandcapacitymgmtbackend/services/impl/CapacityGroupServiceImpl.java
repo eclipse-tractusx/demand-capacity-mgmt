@@ -1,4 +1,4 @@
-    /*
+/*
  *  *******************************************************************************
  *  Copyright (c) 2023 BMW AG
  *  Copyright (c) 2023 Contributors to the Eclipse Foundation
