@@ -1,4 +1,4 @@
-/*
+    /*
  *  *******************************************************************************
  *  Copyright (c) 2023 BMW AG
  *  Copyright (c) 2023 Contributors to the Eclipse Foundation
@@ -24,7 +24,9 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -75,6 +77,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     @Override
     public CapacityGroupResponse getCapacityGroupById(String capacityGroupId) {
         CapacityGroupEntity capacityGroupEntity = getCapacityGroupEntity(capacityGroupId);
+
         return convertCapacityGroupDto(capacityGroupEntity);
     }
 
@@ -190,7 +193,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             .map(
                 capacityRequest ->
                     enrichCapacityTimeSeries(
-                        DataConverterUtil.convertFromString(capacityRequest.getCalendarWeek()),
+                        LocalDate.parse(capacityRequest.getCalendarWeek()).atStartOfDay(),
                         capacityRequest.getActualCapacity().doubleValue(),
                         capacityRequest.getMaximumCapacity().doubleValue()
                     )
