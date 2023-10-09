@@ -45,42 +45,21 @@ import org.hibernate.annotations.GenericGenerator;
 public class StatusesEntity {
 
     @Id
-    //    @SequenceGenerator(name = "status_id_sequence", sequenceName = "status_id_sequence")
-    //    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "status_id_sequence")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    //    @Type(type = "uuid-char") // This is important for PostgreSQL
-    @Column(columnDefinition = "uuid")
-    private UUID id;
+    private String id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "todos", referencedColumnName = "id")
-    private StatusObjectEntity todos;
+    private int todosCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "status_improvment", referencedColumnName = "id")
-    private StatusObjectEntity statusImprovment;
+    private int statusImprovementCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "status_degredation", referencedColumnName = "id")
-    private StatusObjectEntity statusDegredation;
+    private int statusDegradationCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "general", referencedColumnName = "id")
-    private StatusObjectEntity general;
+    private int generalCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_todos", referencedColumnName = "id")
-    private StatusObjectEntity overAllTodos;
+    private int overAllTodosCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_status_improvment", referencedColumnName = "id")
-    private StatusObjectEntity overAllStatusImprovment;
+    private int overAllStatusImprovementCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_status_degredation", referencedColumnName = "id")
-    private StatusObjectEntity overAllStatusDegredation;
+    private int overAllStatusDegradationCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_general", referencedColumnName = "id")
-    private StatusObjectEntity overAllGeneral;
+    private int overAllGeneralCount;
 }
