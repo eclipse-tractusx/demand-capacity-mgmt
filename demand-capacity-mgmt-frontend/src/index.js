@@ -58,22 +58,6 @@ function App() {
 }
 
 root.render(
-<App>
-    <InfoMenuProvider>
-    <TopMenu></TopMenu>
-    </InfoMenuProvider>
-    <Router>
-    <Routes>
-        <Route path="/" element={<Home/>} />
-        <Route path="/details/:id" element={<CapacityGroupsProvider><CapacityGroupDetailsPage/></CapacityGroupsProvider>} />
-        <Route path="/up" element={<DemandContextProvider><UpStatusPage/></DemandContextProvider>} />
-        <Route path="/down" element={<DemandContextProvider><DownStatusPage/></DemandContextProvider>} />
-        <Route path="/todo" element={<DemandContextProvider><TodoListPage/></DemandContextProvider>} /> 
-    </Routes>
-</Router>
-<DemandContextProvider>
-            <QuickAcessItems></QuickAcessItems>
-</DemandContextProvider>
-</App>
+<App/>
 
 );

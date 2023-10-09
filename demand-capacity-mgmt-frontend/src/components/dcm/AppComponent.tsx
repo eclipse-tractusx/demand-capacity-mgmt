@@ -21,15 +21,21 @@
  */
 
 import React from 'react';
-import {Route, Routes} from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import TopMenu from "../common/TopMenu";
-import {InfoMenuProvider} from '../../contexts/InfoMenuContextProvider';
+import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
 import Home from "../pages/CapacityGroupPage";
 import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
 import AuthenticationComponent from "../auth/AuthenticationComponent";
 import { UserProvider } from '../../contexts/UserContext';
 import EventsPage from "../pages/EventsPage";
+import DemandContextProvider from '../../contexts/DemandContextProvider';
+import QuickAcessItems from '../common/QuickAcessItems';
+import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
+import UpStatusPage from '../pages/UpStatusPage';
+import DownStatusPage from '../pages/DownStatusPage';
+import TodoListPage from '../pages/TodoListPage';
 
 
 const AppComponent: React.FC = () => {
@@ -37,20 +43,54 @@ const AppComponent: React.FC = () => {
         <UserProvider>
             <div>
                 <Routes>
+
                     <Route path="/" element={
                         <AuthenticatedRoute>
                             <InfoMenuProvider>
                                 <TopMenu />
                             </InfoMenuProvider>
                             <Home />
+                            <DemandContextProvider><QuickAcessItems /></DemandContextProvider>
                         </AuthenticatedRoute>
                     } />
 
-                    <Route path="/details" element={
+                    <Route path="/details/:id" element={
                         <AuthenticatedRoute>
-                            <CapacityGroupDetailsPage />
+                            <InfoMenuProvider>
+                                <TopMenu />
+                            </InfoMenuProvider>
+                            <CapacityGroupsProvider><CapacityGroupDetailsPage /></CapacityGroupsProvider>
+                            <QuickAcessItems />
                         </AuthenticatedRoute>
                     } />
+                    <Route path="/up" element={
+                        <AuthenticatedRoute>
+                            <InfoMenuProvider>
+                                <TopMenu />
+                            </InfoMenuProvider>
+                            <DemandContextProvider>  <UpStatusPage />
+                                <QuickAcessItems /></DemandContextProvider>
+                        </AuthenticatedRoute>
+                    } />
+                    <Route path="/down" element={
+                        <AuthenticatedRoute>
+                            <InfoMenuProvider>
+                                <TopMenu />
+                            </InfoMenuProvider>
+                            <DemandContextProvider><DownStatusPage />
+                                <QuickAcessItems /></DemandContextProvider>
+                        </AuthenticatedRoute>
+                    } />
+                    <Route path="/todo" element={
+                        <AuthenticatedRoute>
+                            <InfoMenuProvider>
+                                <TopMenu />
+                            </InfoMenuProvider>
+                            <DemandContextProvider><TodoListPage />
+                                <QuickAcessItems /></DemandContextProvider>
+                        </AuthenticatedRoute>
+                    } />
+
                     <Route path="/events" element={
                         <AuthenticatedRoute>
                             <EventsPage />
