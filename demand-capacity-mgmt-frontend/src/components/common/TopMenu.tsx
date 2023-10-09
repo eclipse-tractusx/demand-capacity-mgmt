@@ -25,25 +25,39 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { FiSettings,FiLogOut } from 'react-icons/fi';
 import InfoMenu from "../menu/InfoMenu";
-import { useState } from 'react';
-
+import {useUser} from "../../contexts/UserContext";
+import {useNavigate} from "react-router-dom";
+import {logout} from "../../util/Auth";
 
 function TopMenuLinks() {
+  const { user } = useUser();
+  const navigate = useNavigate();
+  const { setUser } = useUser();
+
+  const handleLogout = async () =>{
+    try {
+      await logout();
+      setUser(null); // Clear user data stored in context
+      navigate('/login'); // Redirect the user to the login page
+    } catch (error) {
+      console.error('Error during logout', error);
+    }
+  }
 
   return (
     <Navbar expand="lg" className="navbar navbar-expand-sm bg-dark navbar-dark">
       <Container>
-        <Navbar.Brand  ><img srcSet='/media/logo.png' alt="Logo" width="30" height="24" className='d-inline-block align-text-top'/> - CompanyName</Navbar.Brand>
+        <Navbar.Brand  ><img srcSet='/media/logo.png' alt="Logo" width="30" height="24" className='d-inline-block align-text-top'/> Demand Capacity Management</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <InfoMenu/>
         </Navbar.Collapse>
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
-            Signed in as: <a href="#login">USERID</a>
+            Signed in as: <a href="/login"> {user?.username}</a>
           </Navbar.Text>
           <Nav.Link href="#settings" className="p-3 navbar-nav nav-item"><FiSettings/></Nav.Link>
-          <Nav.Link href="#logout" className="p-2 navbar-nav nav-item"><FiLogOut/></Nav.Link>
+          <Nav.Link onClick={handleLogout} className="p-2 navbar-nav nav-item"><FiLogOut/></Nav.Link>
         </Navbar.Collapse>
       </Container>
     </Navbar>
