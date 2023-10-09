@@ -1,4 +1,4 @@
-/*
+    /*
  *  *******************************************************************************
  *  Copyright (c) 2023 BMW AG
  *  Copyright (c) 2023 Contributors to the Eclipse Foundation
@@ -191,6 +191,57 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         }
         responseDto.setLinkMaterialDemandIds(linkedDemands);
         return responseDto;
+    }
+
+    private UnitMeasure enrichUnitMeasure(UnitMeasureEntity unitMeasureEntity) {
+        UnitMeasure unitMeasure = new UnitMeasure();
+
+        unitMeasure.setId(unitMeasureEntity.getId().toString());
+        unitMeasure.setCodeValue(unitMeasureEntity.getCodeValue());
+        unitMeasure.setDisplayValue(unitMeasureEntity.getDisplayValue());
+
+        return unitMeasure;
+    }
+
+    private CapacityRequest convertCapacityTimeSeries(CapacityTimeSeries capacityTimeSeries) {
+        CapacityRequest capacityRequest = new CapacityRequest();
+
+        capacityRequest.setActualCapacity(BigDecimal.valueOf(capacityTimeSeries.getActualCapacity()));
+        capacityRequest.setMaximumCapacity(BigDecimal.valueOf(capacityTimeSeries.getMaximumCapacity()));
+        capacityRequest.setCalendarWeek(capacityTimeSeries.getCalendarWeek().toString());
+
+        return capacityRequest;
+    }
+
+    private LinkedDemandSeriesResponse convertLinkedDemandSeries(LinkedDemandSeries linkedDemandSeries) {
+        LinkedDemandSeriesResponse linkedDemandSeriesResponse = new LinkedDemandSeriesResponse();
+
+        linkedDemandSeriesResponse.setMaterialNumberCustomer(linkedDemandSeries.getMaterialNumberCustomer());
+        linkedDemandSeriesResponse.setMaterialNumberSupplier(linkedDemandSeries.getMaterialNumberSupplier());
+
+        CompanyDto customer = companyService.convertEntityToDto(linkedDemandSeries.getCustomerId());
+        linkedDemandSeriesResponse.setCustomerLocation(customer);
+
+        DemandCategoryResponse demand = convertDemandCategoryEntity(linkedDemandSeries.getDemandCategory());
+        linkedDemandSeriesResponse.setDemandCategory(demand);
+
+        return linkedDemandSeriesResponse;
+    }
+
+    private DemandCategoryResponse convertDemandCategoryEntity(DemandCategoryEntity demandCategoryEntity) {
+        DemandCategoryResponse response = new DemandCategoryResponse();
+
+        response.setId(demandCategoryEntity.getId().toString());
+        response.setDemandCategoryCode(demandCategoryEntity.getDemandCategoryCode());
+        response.setDemandCategoryName(demandCategoryEntity.getDemandCategoryName());
+
+        return response;
+    }
+
+    private CompanyDto convertString(String supplier) {
+        CompanyEntity entity = companyService.getCompanyById(UUID.fromString(supplier));
+
+        return companyService.convertEntityToDto(entity);
     }
 
     private List<CapacityGroupDefaultViewResponse> convertCapacityGroupEntity(
