@@ -45,13 +45,16 @@ public class FavoriteController implements FavoriteApi {
 
     @Override
     public ResponseEntity<FavoriteResponse> createFavorite(FavoriteRequest favoriteRequest) {
-        FavoriteResponse response = favoriteService.createFavorite(favoriteRequest,CookieUtil.getCookieUserID(request));
+        FavoriteResponse response = favoriteService.createFavorite(
+            favoriteRequest,
+            CookieUtil.getCookieUserID(request)
+        );
         return ResponseEntity.status(200).body(response);
     }
 
     @Override
     public ResponseEntity<Void> deleteFavoriteById(String id) {
-        favoriteService.deleteFavorite(UUID.fromString(id),CookieUtil.getCookieUserID(request));
+        favoriteService.deleteFavorite(UUID.fromString(id), CookieUtil.getCookieUserID(request));
         return ResponseEntity.status(200).build();
     }
 
