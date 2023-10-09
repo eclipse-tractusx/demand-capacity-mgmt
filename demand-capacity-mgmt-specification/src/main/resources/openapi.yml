@@ -1003,6 +1003,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        capacityGroupId:
+          type: string
         capacities:
           type: array
           maxItems: 250
@@ -1017,7 +1019,7 @@ components:
           $ref: '#/components/schemas/CompanyDto'
         supplier:
           $ref: '#/components/schemas/CompanyDto'
-        capacityGroupId:
+        weekBasedCapacityGroupId:
           type: string
           pattern: '^[\w\s\p{P}\p{S}]+$'
           maxLength: 255

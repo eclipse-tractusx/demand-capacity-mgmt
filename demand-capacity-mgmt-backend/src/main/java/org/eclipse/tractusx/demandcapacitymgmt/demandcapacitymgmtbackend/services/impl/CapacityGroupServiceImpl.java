@@ -24,6 +24,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +75,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     @Override
     public CapacityGroupResponse getCapacityGroupById(String capacityGroupId) {
         CapacityGroupEntity capacityGroupEntity = getCapacityGroupEntity(capacityGroupId);
+
         return convertCapacityGroupDto(capacityGroupEntity);
     }
 
@@ -189,9 +191,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             .map(
                 capacityRequest ->
                     enrichCapacityTimeSeries(
+
                         DataConverterUtil.convertFromString(capacityRequest.getCalendarWeek()),
                         capacityRequest.getActualCapacity(),
                         capacityRequest.getMaximumCapacity()
+
                     )
             )
             .toList();
@@ -278,7 +282,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         responseDto.setUnitOfMeasure(unitMeasure);
         responseDto.setChangeAt(capacityGroupEntity.getChangedAt().toString());
         responseDto.setName(capacityGroupEntity.getName());
-        responseDto.setCapacityGroupId(capacityGroupEntity.getCapacityGroupId().toString());
+        responseDto.setWeekBasedCapacityGroupId(capacityGroupEntity.getCapacityGroupId().toString());
+        responseDto.setCapacityGroupId(capacityGroupEntity.getId().toString());
 
         List<CapacityRequest> capacityRequests = capacityGroupEntity
             .getCapacityTimeSeries()
@@ -322,6 +327,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         capacityRequest.setActualCapacity(capacityTimeSeries.getActualCapacity());
         capacityRequest.setMaximumCapacity(capacityTimeSeries.getMaximumCapacity());
         capacityRequest.setCalendarWeek(capacityRequest.getCalendarWeek());
+
 
         return capacityRequest;
     }
