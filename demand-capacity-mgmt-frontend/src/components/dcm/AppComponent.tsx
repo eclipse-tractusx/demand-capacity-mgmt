@@ -93,7 +93,11 @@ const AppComponent: React.FC = () => {
 
                     <Route path="/events" element={
                         <AuthenticatedRoute>
+                            <InfoMenuProvider>
+                                <TopMenu />
+                            </InfoMenuProvider>
                             <EventsPage />
+                            <DemandContextProvider><QuickAcessItems /></DemandContextProvider>
                         </AuthenticatedRoute>
                     } />
 

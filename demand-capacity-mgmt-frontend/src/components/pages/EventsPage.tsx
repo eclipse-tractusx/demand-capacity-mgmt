@@ -29,9 +29,6 @@ import EventsTable from "../events/EventsTable";
 function EventsPage() {
     return (
         <div>
-            <InfoMenuProvider>
-                <TopMenu/>
-            </InfoMenuProvider>
             <div className="container-xl">
                 <br />
                 <div className="table">
