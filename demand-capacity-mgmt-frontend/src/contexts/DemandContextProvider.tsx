@@ -47,7 +47,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchDemandPropsWithRetry = async (maxRetries = 3) => {
     let retries = 0;
-  
+
     while (retries < maxRetries) {
       try {
         setIsLoading(true);
@@ -70,7 +70,9 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
           setIsLoading(false); // Set isLoading to false on max retries
         }
       }
-  
+    }
+  };
+
   const fetchDemandProps = useCallback(() => {
     fetchDemandPropsWithRetry();
   }, []);
@@ -78,7 +80,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   useEffect(() => {
     fetchDemandProps();
   }, [fetchDemandProps]);
-  
+
 
   const getDemandbyId = async (id: string): Promise<DemandProp | undefined> => {
     try {
@@ -114,7 +116,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       const response = await axios.put(`/demand/${updatedDemand.id}`, updatedDemand);
       const modifiedDemand: Demand = response.data;
       setDemands((prevDemands) =>
-        prevDemands.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
+          prevDemands.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
       );
       fetchDemandProps();
     } catch (error) {
@@ -130,7 +132,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
         materialDemandID: materialDemandID,
         capacityGroupID: capacityGroupID,
       };
-  
+
       await axios.post('/demand/series/unlink', unlinkreq);
     } catch (error) {
       console.error('Error unlinking demand:', error);
@@ -139,9 +141,9 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   };
 
   return (
-    <DemandContext.Provider value={{ demandprops, deleteDemand,unlinkDemand, createDemand, updateDemand, getDemandbyId,fetchDemandProps,isLoading }}>
-      {props.children}
-    </DemandContext.Provider>
+      <DemandContext.Provider value={{ demandprops, deleteDemand,unlinkDemand, createDemand, updateDemand, getDemandbyId,fetchDemandProps,isLoading }}>
+        {props.children}
+      </DemandContext.Provider>
   );
 };
 

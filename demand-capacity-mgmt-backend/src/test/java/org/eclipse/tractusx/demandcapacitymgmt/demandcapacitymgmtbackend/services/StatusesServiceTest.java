@@ -60,6 +60,10 @@ public class StatusesServiceTest {
         statusRequest.setStatusImprovement(createStatusDto());
         statusRequest.setTodos(createStatusDto());
         statusRequest.setGeneral(createStatusDto());
+        statusRequest.setOverallTodos(createStatusDto());
+        statusRequest.setOverallStatusDegredation(createStatusDto());
+        statusRequest.setOverallStatusImprovement(createStatusDto());
+        statusRequest.setOverallGeneral(createStatusDto());
         return statusRequest;
     }
 
