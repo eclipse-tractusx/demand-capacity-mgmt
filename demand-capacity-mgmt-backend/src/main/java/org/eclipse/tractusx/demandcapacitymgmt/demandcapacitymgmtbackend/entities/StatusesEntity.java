@@ -39,11 +39,8 @@ import org.hibernate.annotations.GenericGenerator;
 public class StatusesEntity {
 
     @Id
-    //    @SequenceGenerator(name = "status_id_sequence", sequenceName = "status_id_sequence")
-    //    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "status_id_sequence")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    //    @Type(type = "uuid-char") // This is important for PostgreSQL
-    @Column(columnDefinition = "uuid")
+    @GeneratedValue
+    @Column(columnDefinition = "uuid", name = "id")
     private UUID id;
 
     @OneToOne(cascade = CascadeType.ALL)

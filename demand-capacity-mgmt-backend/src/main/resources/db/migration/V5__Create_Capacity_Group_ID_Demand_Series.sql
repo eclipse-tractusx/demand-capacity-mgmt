@@ -20,6 +20,6 @@
  *   ********************************************************************************
  *
  */
-
+SET search_path TO public;
 ALTER TABLE demand_series
 ADD COLUMN capacity_group_id varchar(200);

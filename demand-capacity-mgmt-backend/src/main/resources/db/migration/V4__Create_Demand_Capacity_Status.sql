@@ -20,6 +20,6 @@
  *   ********************************************************************************
  *
  */
-
+SET search_path TO public;
 ALTER TABLE material_demand
 ADD COLUMN status varchar(40);

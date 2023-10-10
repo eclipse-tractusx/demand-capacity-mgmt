@@ -20,7 +20,7 @@
  * *******************************************************************************
  */
 
-
+SET search_path TO public;
 create table if not exists dcm_users
 (
     id uuid DEFAULT uuid_generate_v4() primary key,

@@ -19,7 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
+SET search_path TO public;
  create table  if not exists favorites
  (
      user_id uuid primary key,

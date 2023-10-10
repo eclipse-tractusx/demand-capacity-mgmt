@@ -19,7 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
+SET search_path TO public;
 create table week_based_material_demand
 (
     id     integer constraint week_based_material_demand_pk primary key,
