@@ -12,11 +12,11 @@ public class MaterialCapacityQuantity {
     private int materialDemandOrder;
 
     public MaterialCapacityQuantity(
-            double maximumCapacity,
-            double actualCapacity,
-            LocalDateTime calendarWeek,
-            double demand,
-            int materialDemandOrder
+        double maximumCapacity,
+        double actualCapacity,
+        LocalDateTime calendarWeek,
+        double demand,
+        int materialDemandOrder
     ) {
         this.maximumCapacity = maximumCapacity;
         this.actualCapacity = actualCapacity;
@@ -68,16 +68,16 @@ public class MaterialCapacityQuantity {
     @Override
     public String toString() {
         return (
-                "MaterialCapacityQuantity{" +
-                        "maximumCapacity=" +
-                        maximumCapacity +
-                        ", actualCapacity=" +
-                        actualCapacity +
-                        ", calendarWeek=" +
-                        calendarWeek +
-                        ", demand=" +
-                        demand +
-                        '}'
+            "MaterialCapacityQuantity{" +
+            "maximumCapacity=" +
+            maximumCapacity +
+            ", actualCapacity=" +
+            actualCapacity +
+            ", calendarWeek=" +
+            calendarWeek +
+            ", demand=" +
+            demand +
+            '}'
         );
     }
 }

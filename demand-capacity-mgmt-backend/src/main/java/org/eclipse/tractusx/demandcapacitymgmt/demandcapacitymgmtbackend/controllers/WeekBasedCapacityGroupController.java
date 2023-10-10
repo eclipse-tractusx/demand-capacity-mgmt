@@ -23,8 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.WeekBasedCapacityGroupApi;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.util.List;
 import lombok.AllArgsConstructor;
