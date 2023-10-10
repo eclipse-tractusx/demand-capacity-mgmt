@@ -21,7 +21,7 @@
  */
 
 import Api from '../util/Api';
-import {User} from "../interfaces/UserInterface";
+import {User} from "../interfaces/user_interface";
 
 export const isAuthenticated = async (): Promise<boolean> => {
     try {
