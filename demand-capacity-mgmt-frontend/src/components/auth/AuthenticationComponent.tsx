@@ -25,7 +25,7 @@ import { login } from '../../util/Auth';
 import { useNavigate } from 'react-router-dom';
 import {useUser} from "../../contexts/UserContext";
 import { Container, Form, Button, Col, Row} from "react-bootstrap";
-import {User} from "../../interfaces/UserInterface";
+import {User} from "../../interfaces/user_interface";
 import '../../Auth.css';
 
 const AuthenticationComponent: React.FC = () => {

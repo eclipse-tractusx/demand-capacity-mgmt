@@ -23,7 +23,7 @@
 
 import React, { createContext, useState, useEffect, useCallback, useContext, FunctionComponent } from 'react';
 import { InfoMenuData } from '../interfaces/InfoMenu_interfaces';
-import api from "../util/Api";
+import Api from "../util/Api";
 
 interface InfoMenuContextData {
     data: InfoMenuData | null;
@@ -41,7 +41,7 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
 
     const fetchData = useCallback(async () => {
         try {
-            const response = await api.get('/statuses');
+            const response = await Api.get('/statuses');
             const result: InfoMenuData = response.data;
             setData(result);
         } catch (error) {

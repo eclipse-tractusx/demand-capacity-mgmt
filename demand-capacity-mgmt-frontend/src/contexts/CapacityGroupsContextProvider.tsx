@@ -21,9 +21,8 @@
  */
 
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
 import {CapacityGroupProp, CapacityGroupCreate, CapacityGroupLink, SingleCapacityGroup} from '../interfaces/capacitygroup_interfaces';
-
+import Api from "../util/Api";
 
 
 interface CapacityGroupContextData {
@@ -51,7 +50,7 @@ useEffect(() => {
     setIsLoading(true);
 
       try {
-        const response = await axios.get('/capacityGroup', {});
+        const response = await Api.get('/capacityGroup', {});
         const result: CapacityGroupProp[] = response.data;
         setCapacityGroups(result);
         setIsLoading(false); // Set isLoading to false on success
@@ -79,7 +78,7 @@ useEffect(() => {
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {
     try {
-      const response = await axios.get(`/capacityGroup/${id}`);
+      const response = await Api.get(`/capacityGroup/${id}`);
       const fetchedCapacityGroup: SingleCapacityGroup = response.data;
       return fetchedCapacityGroup;
     } catch (error) {
@@ -91,7 +90,7 @@ useEffect(() => {
   const createCapacityGroup = async (newCapacityGroup: CapacityGroupCreate) => {
     try {
       console.log(newCapacityGroup);
-      const response = await axios.post('/capacityGroup', newCapacityGroup);
+      const response = await Api.post('/capacityGroup', newCapacityGroup);
       console.log(response)
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
@@ -100,7 +99,7 @@ useEffect(() => {
 
   const linkToCapacityGroup = async (linkToCapacityGroup: CapacityGroupLink) => {
     try {
-      await axios.post('/capacityGroup/link', linkToCapacityGroup); 
+      await Api.post('/capacityGroup/link', linkToCapacityGroup); 
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
     }
