@@ -48,7 +48,7 @@ function TopMenuLinks() {
   return (
     <Navbar expand="lg" className="navbar navbar-expand-sm bg-dark navbar-dark">
       <Container>
-        <Navbar.Brand  ><img srcSet='/media/logo.png' alt="Logo" width="30" height="24" className='d-inline-block align-text-top'/> Demand Capacity Management</Navbar.Brand>
+        <Navbar.Brand  ><img srcSet='/media/logos/cx-short.svg' alt="Logo" width="30" height="auto" className='d-inline-block align-text-top'/> Demand Capacity Management</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <InfoMenu/>

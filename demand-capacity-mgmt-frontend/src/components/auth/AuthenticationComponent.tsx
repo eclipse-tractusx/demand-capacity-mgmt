@@ -20,13 +20,15 @@
  *    ********************************************************************************
  */
 
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { login } from '../../util/Auth';
 import { useNavigate } from 'react-router-dom';
-import {useUser} from "../../contexts/UserContext";
-import { Container, Form, Button, Col, Row} from "react-bootstrap";
-import {User} from "../../interfaces/user_interface";
+import { useUser } from "../../contexts/UserContext";
+import { Form, Button, Col, Row, Toast, ToastContainer, InputGroup } from "react-bootstrap";
+import { BarLoader } from "react-spinners"; // Import PacmanLoader component from react-spinners
+import { User } from "../../interfaces/user_interface";
 import '../../Auth.css';
+import { FaKey, FaUser, FaUserAlt } from 'react-icons/fa';
 
 const AuthenticationComponent: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -34,22 +36,43 @@ const AuthenticationComponent: React.FC = () => {
     const { setUser } = useUser();
     const navigate = useNavigate();
     const [showRegister, setShowRegister] = useState(false);
+    const [loading, setLoading] = useState(false); // State to manage loading state
+    const [showErrorToast, setShowErrorToast] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleLogin = async () => {
         try {
+            setLoading(true);
             const user: User = await login(username, password);
-            setUser(user)
-            navigate('/'); // Redirect to home page after login
+            setUser(user);
+            navigate('/');
         } catch (error) {
             console.error("Failed login", error);
+            setErrorMessage("Login failed. Please check your credentials.");
+            setShowErrorToast(true);
+        } finally {
+            setLoading(false);
         }
     }
 
     return (
-        <Container className="login-page" >
+        <div className="login-page" >
+
+            <Toast className='login-toast'
+                show={showErrorToast}
+                onClose={() => setShowErrorToast(false)} delay={5000} autohide>
+                <Toast.Header>
+                    <strong className="mr-auto">Login Error</strong>
+                </Toast.Header>
+                <Toast.Body>{errorMessage}</Toast.Body>
+            </Toast>
             <Row className="justify-content-center align-items-center min-vh-100">
                 <Col xs={12} sm={8} md={6} lg={4}>
                     <div className="form">
+                        <div className="d-flex flex-column align-items-center mb-4">
+                            <img srcSet='/media/logos/cx-short.svg' alt="Logo" width="50" height="auto" className='' />
+                            <h4 className="text-center">Demand Capacity Management</h4>
+                        </div>
                         {showRegister ? (
                             <div className="register-form">
                                 <Form>
@@ -63,17 +86,55 @@ const AuthenticationComponent: React.FC = () => {
                         ) : (
                             <div className="login-form">
                                 <Form>
-                                    <Form.Control value={username} onChange={e => setUsername(e.target.value)} placeholder="Username"  />
-                                    <Form.Control value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" type="password" />
-                                    <Button onClick={handleLogin}>Login</Button>
+                                    <InputGroup className="mb-3">
+                                        <InputGroup.Text id="basic-addon1"><FaUser /></InputGroup.Text>
+                                        <Form.Control
+                                            value={username}
+                                            onChange={e => setUsername(e.target.value)}
+                                            aria-describedby="basic-addon1"
+                                            placeholder="Username"
+                                        />
+                                    </InputGroup>
+                                    <InputGroup className="mb-3">
+                                        <InputGroup.Text id="basic-addon2"><FaKey /></InputGroup.Text>
+                                        <Form.Control
+                                            value={password}
+                                            onChange={e => setPassword(e.target.value)}
+                                            aria-describedby="basic-addon2"
+                                            placeholder="Password"
+                                            type="password"
+                                        />
+                                    </InputGroup>
+
+                                    <Button onClick={handleLogin}>
+                                        {loading ? <BarLoader color="#ffffff" /> : 'Login'}
+                                    </Button>
                                 </Form>
-                                <p className="message">Not registered? <a href="/login" onClick={(e) => {e.preventDefault(); setShowRegister(true);}}>Create an Account</a></p>
+                                <p className="message">Not registered? <a href="/login" onClick={(e) => { e.preventDefault(); setShowRegister(true); }}>Create an Account</a></p>
                             </div>
                         )}
                     </div>
                 </Col>
             </Row>
-        </Container>
+            <div className='background'>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+        </div>
+
+
     );
 }
 

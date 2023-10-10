@@ -20,7 +20,6 @@
  *    ********************************************************************************
  */
 
-import React from "react";
 import Nav from "react-bootstrap/Nav";
 import {FaArrowDown, FaArrowUp, FaHome, FaStar} from "react-icons/fa";
 import {useInfoMenu} from "../../contexts/InfoMenuContextProvider";
