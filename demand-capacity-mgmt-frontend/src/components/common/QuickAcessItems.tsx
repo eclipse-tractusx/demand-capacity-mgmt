@@ -23,7 +23,7 @@ import { FaChartLine, FaLink } from 'react-icons/fa';
 import { FcComboChart } from 'react-icons/fc';
 import { Modal, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import DemandsPage from '../demands/DemandPage';
+import DemandManagement from '../demands/DemandManagement';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
 import '../../index.css';
 
@@ -53,13 +53,13 @@ function QuickAcessItems() {
           <Modal.Header closeButton>
             <Modal.Title>
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <FcComboChart size={35} /><span > Demand Management View</span>
+                <FcComboChart size={35} /><h3 className='icon-text-padding'> Demand Management View</h3>
               </div>
               </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <DemandContextProvider>
-              <DemandsPage></DemandsPage>
+              <DemandManagement/>
             </DemandContextProvider>
           </Modal.Body>
 
