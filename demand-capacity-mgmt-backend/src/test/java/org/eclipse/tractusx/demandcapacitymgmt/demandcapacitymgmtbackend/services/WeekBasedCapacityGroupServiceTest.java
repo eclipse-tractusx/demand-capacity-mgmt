@@ -28,11 +28,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.CapacitiesDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryDto;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.LinkedDemandSeriesRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.util.List;
+import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
@@ -63,7 +61,7 @@ public class WeekBasedCapacityGroupServiceTest {
     private static DemandCategoryDto demandCategoryDto = createDemandCategoryDto();
     private static CapacitiesDto capacitiesDto = createCapacitiesDto();
     private static LinkedDemandSeriesRequest linkedDemandSeriesRequest = createLinkedDemandSeriesRequest();
-    private static WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest = createWeekBasedCapacityGroupRequest();
+    private static WeekBasedCapacityGroupDtoRequest weekBasedCapacityGroupRequest = createWeekBasedCapacityGroupRequest();
     private static WeekBasedCapacityGroupEntity weekBasedCapacityGroup = createWeekBasedCapacityGroupEntity();
     private static MaterialDemandEntity materialDemandEntity = createMaterialDemandEntity();
 
@@ -91,18 +89,21 @@ public class WeekBasedCapacityGroupServiceTest {
         verify(materialDemandRepository, times(1)).saveAll(any());
     }
 
-    private static WeekBasedCapacityGroupRequest createWeekBasedCapacityGroupRequest() {
-        WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
+    private static WeekBasedCapacityGroupDtoRequest createWeekBasedCapacityGroupRequest() {
+        WeekBasedCapacityGroupDtoRequest weekBasedCapacityGroupRequest = new WeekBasedCapacityGroupDtoRequest();
+        WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest1 = new WeekBasedCapacityGroupRequest();
 
-        weekBasedCapacityGroupRequest.setName("test");
-        weekBasedCapacityGroupRequest.setCustomer("test");
-        weekBasedCapacityGroupRequest.setCapacityGroupId("2c478e29-3909-481a-99b9-df3d0db97a4c");
-        weekBasedCapacityGroupRequest.setUnityOfMeasure("un");
+        weekBasedCapacityGroupRequest.setId(UUID.randomUUID().toString());
 
-        weekBasedCapacityGroupRequest.setCapacities(List.of(capacitiesDto));
-        weekBasedCapacityGroupRequest.setLinkedDemandSeries(List.of(linkedDemandSeriesRequest));
-        weekBasedCapacityGroupRequest.setSupplierLocations(List.of(""));
+        weekBasedCapacityGroupRequest1.setName("test");
+        weekBasedCapacityGroupRequest1.setCustomer("test");
+        weekBasedCapacityGroupRequest1.setCapacityGroupId("2c478e29-3909-481a-99b9-df3d0db97a4c");
+        weekBasedCapacityGroupRequest1.setUnityOfMeasure("un");
+        weekBasedCapacityGroupRequest1.setCapacities(List.of(capacitiesDto));
+        weekBasedCapacityGroupRequest1.setLinkedDemandSeries(List.of(linkedDemandSeriesRequest));
+        weekBasedCapacityGroupRequest1.setSupplierLocations(List.of(""));
 
+        weekBasedCapacityGroupRequest.setWeekBasedCapacityGroupRequest(weekBasedCapacityGroupRequest1);
         return weekBasedCapacityGroupRequest;
     }
 
@@ -137,8 +138,8 @@ public class WeekBasedCapacityGroupServiceTest {
         return WeekBasedCapacityGroupEntity
             .builder()
             .viewed(false)
-            .id(1l)
-            .weekBasedCapacityGroup(weekBasedCapacityGroupRequest)
+            .id(UUID.randomUUID())
+            .weekBasedCapacityGroup(weekBasedCapacityGroupRequest.getWeekBasedCapacityGroupRequest())
             .build();
     }
 

@@ -20,26 +20,18 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsList from "../capacitygroup/CapacityGroupsView";
-import CapacityGroupContext from "../../contexts/CapacityGroupsContextProvider";
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
-function CapacityGroupDetails() {
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusesResponse;
+import java.util.List;
+import java.util.UUID;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
 
-    return (
-        <>
-        <div className="container-xl">
-            <br />
-            <div className="table">
-                <div className="table-wrapper">
-                    <CapacityGroupContext>
-                        <CapacityGroupsList />
-                    </CapacityGroupContext>
-                </div>
-            </div>
-        </div>
-        </>
-
-    );
+public interface StatusesService {
+    StatusesResponse postStatuses(StatusRequest statusRequest);
+    StatusesResponse getAllStatuses();
+    void updateStatus();
 }
-
-export default CapacityGroupDetails;

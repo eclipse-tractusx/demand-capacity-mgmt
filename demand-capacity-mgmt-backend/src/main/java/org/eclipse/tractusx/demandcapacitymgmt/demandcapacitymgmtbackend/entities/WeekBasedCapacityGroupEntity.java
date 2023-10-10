@@ -40,9 +40,8 @@ import org.hibernate.annotations.ColumnTransformer;
 public class WeekBasedCapacityGroupEntity {
 
     @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    @Column(columnDefinition = "uuid", updatable = false, name = "id")
+    private UUID id;
 
     @Convert(converter = WeekBasedCapacityGroupConverter.class)
     @Column(name = "data", columnDefinition = "jsonb")

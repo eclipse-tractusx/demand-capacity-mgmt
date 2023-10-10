@@ -39,10 +39,28 @@ public class WeekBasedMaterialController implements WeekBasedMaterialDemandApi {
     private final WeekBasedMaterialService weekBasedMaterialService;
 
     @Override
+    public ResponseEntity<List<WeekBasedMaterialDemandResponseDto>> getWeekBasedMaterialDemand() {
+        List<WeekBasedMaterialDemandResponseDto> capacityGroupDefaultViewResponseList = weekBasedMaterialService.getWeekBasedMaterialDemands();
+        return ResponseEntity.status(HttpStatus.OK).body(capacityGroupDefaultViewResponseList);
+    }
+
+    @Override
     public ResponseEntity<Void> postWeekBasedMaterialDemand(
         List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDto
     ) {
         weekBasedMaterialService.createWeekBasedMaterial(weekBasedMaterialDemandRequestDto);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Override
+    public ResponseEntity<WeekBasedMaterialDemandResponseDto> updateWeekBasedMaterialDemandById(
+        String demandId,
+        WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto
+    ) {
+        WeekBasedMaterialDemandResponseDto responseDto = weekBasedMaterialService.updateWeekBasedMaterial(
+            demandId,
+            weekBasedMaterialDemandRequestDto
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

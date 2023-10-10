@@ -58,6 +58,23 @@ public class DemandController implements DemandApi {
     }
 
     @Override
+    public ResponseEntity<DemandSeriesCompositeResponse> getLinkedDemandSeriesByCompositeKeyID(
+        DemandSeriesCompositeRequest demandSeriesCompositeRequest
+    ) throws Exception {
+        DemandSeriesCompositeResponse response = demandService.getAllDemandsByCompositeKey(
+            demandSeriesCompositeRequest
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Override
+    public ResponseEntity<Void> unlinkedDemandSeriesComposites(DemandSeriesUnlinkRequest demandSeriesUnlinkRequest)
+        throws Exception {
+        demandService.unlinkComposites(demandSeriesUnlinkRequest);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @Override
     public ResponseEntity<MaterialDemandResponse> postDemand(MaterialDemandRequest materialDemandRequest) {
         MaterialDemandResponse responseDto = demandService.createDemand(materialDemandRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);

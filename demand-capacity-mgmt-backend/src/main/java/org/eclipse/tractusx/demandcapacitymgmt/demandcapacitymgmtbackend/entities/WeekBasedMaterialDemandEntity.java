@@ -40,14 +40,13 @@ import org.hibernate.annotations.ColumnTransformer;
 public class WeekBasedMaterialDemandEntity {
 
     @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    @Column(columnDefinition = "uuid", updatable = false, name = "id")
+    private UUID id;
 
     @Convert(converter = WeekBasedMaterialConverter.class)
     @Column(name = "data", columnDefinition = "jsonb")
     @ColumnTransformer(write = "?::jsonb")
-    private WeekBasedMaterialDemandRequestDto weekBasedMaterialDemand;
+    private WeekBasedMaterialDemandRequest weekBasedMaterialDemand;
 
     @Column(name = "viewed")
     private Boolean viewed;
