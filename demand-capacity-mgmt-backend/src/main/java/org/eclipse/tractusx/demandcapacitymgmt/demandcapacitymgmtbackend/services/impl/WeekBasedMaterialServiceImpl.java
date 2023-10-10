@@ -75,9 +75,11 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                 WeekBasedMaterialDemandEntity weekBasedMaterialDemand = convertEntity(
                     weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest()
                 );
-                weekBasedMaterialDemand.setId(UUID.fromString(weekBasedMaterialDemandRequestDto.
-                        getWeekBasedMaterialDemandRequest().
-                        getMaterialDemandId()));
+                //                weekBasedMaterialDemand.setId(
+                //                    UUID.fromString(
+                //                        weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest().getMaterialDemandId()
+                //                    )
+                //                );
                 postLogs(weekBasedMaterialDemand.getId().toString());
                 weekBasedMaterialDemandRepository.save(weekBasedMaterialDemand);
             }

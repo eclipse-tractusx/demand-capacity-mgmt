@@ -24,6 +24,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.micrometer.core.lang.Nullable;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
@@ -36,6 +37,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 
 @Entity
@@ -85,4 +87,7 @@ public class MaterialDemandEntity {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private MaterialDemandStatus status;
+
+    @Column(name = "link_status")
+    private EventType linkStatus;
 }

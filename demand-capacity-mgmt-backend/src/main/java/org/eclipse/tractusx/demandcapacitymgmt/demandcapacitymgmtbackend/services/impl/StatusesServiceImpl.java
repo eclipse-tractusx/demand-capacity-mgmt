@@ -43,6 +43,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Lazy
 public class StatusesServiceImpl implements StatusesService {
+
     private final StatusesRepository statusesRepository;
     List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroupResponse;
     List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroupResponse;
@@ -124,14 +125,20 @@ public class StatusesServiceImpl implements StatusesService {
     //        return EventType.STATUS_REDUCTION;
     //    }
 
-//    @Override
-//    public void updateStatus() {
-//        saveStatusesData();
-//    }
+    //    @Override
+    //    public void updateStatus() {
+    //        saveStatusesData();
+    //    }
 
     public void updateStatus() {
         StatusManager statusManager = new StatusManager();
-        postStatuses(statusManager.retrieveUpdatedStatusRequest(oldWeekBasedCapacityGroupResponse,newWeekBasedCapacityGroupResponse,
-                oldWeekBasedMaterialDemandResponse, newWeekBasedMaterialDemandResponse));
+        postStatuses(
+            statusManager.retrieveUpdatedStatusRequest(
+                oldWeekBasedCapacityGroupResponse,
+                newWeekBasedCapacityGroupResponse,
+                oldWeekBasedMaterialDemandResponse,
+                newWeekBasedMaterialDemandResponse
+            )
+        );
     }
 }
