@@ -22,7 +22,7 @@
 
 import { DemandProp } from "./demand_interfaces"
 
-export interface CapacityGroup {
+export interface CapacityGroupProp {
   internalId: string
   catXUuid: string
   name: string
@@ -58,27 +58,30 @@ interface Capacities{
   calendarWeek: string
 }
 
-interface DemandCategory {
-  id: string;
-  demandCategoryCode: string;
-  demandCategoryName: string;
-}
-
-interface LinkedDemand {
-  demandCategory: DemandCategory;
-  customerLocation: Address;
-  materialNumberSupplier: string;
-  materialNumberCustomer: string;
-}
-
 export interface SingleCapacityGroup {
   capacities: Capacities[];
   supplierLocations: Address[];
   customer: Address;
   supplier: Address;
   capacityGroupId: string;
-  linkedDemandSeries: DemandProp[];
+  linkMaterialDemandIds: string[];
   unitOfMeasure: UnitOfMeasure;
   changeAt: string;
-  name: string;
+  capacitygroupname: string;
+}
+
+export interface CapacityGroupCreate {
+  capacitygroupname: string
+  defaultActualCapacity: number
+  defaultMaximumCapacity: number
+  startDate: string
+  endDate: string
+  customer: string
+  supplier: string
+  linkMaterialDemandIds: string[]
+}
+
+export interface CapacityGroupLink {
+  capacityGroupID: string
+  linkedMaterialDemandID: string[]
 }

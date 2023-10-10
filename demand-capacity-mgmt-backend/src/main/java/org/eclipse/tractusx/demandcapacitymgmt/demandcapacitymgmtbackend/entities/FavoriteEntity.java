@@ -39,7 +39,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 public class FavoriteEntity {
 
     @Id
-    @GeneratedValue
     @Column(columnDefinition = "uuid", updatable = false, name = "user_id")
     private UUID id;
 

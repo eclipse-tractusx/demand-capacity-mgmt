@@ -30,7 +30,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "unity_of_measure")
+@Table(name = "unit_of_measure")
 @Data
 @Builder
 @NoArgsConstructor
@@ -42,9 +42,21 @@ public class UnitMeasureEntity {
     @Column(columnDefinition = "uuid", updatable = false, name = "id")
     private UUID id;
 
-    @Column(name = "code_value")
-    private String codeValue;
+    @Column(name = "dimension")
+    private String dimension;
 
-    @Column(name = "display_value")
-    private String displayValue;
+    @Column(name = "un_code")
+    private String unCode;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "description_german")
+    private String descriptionGerman;
+
+    @Column(name = "un_symbol")
+    private String unSymbol;
+
+    @Column(name = "c_x_symbol")
+    private String cxSymbol;
 }

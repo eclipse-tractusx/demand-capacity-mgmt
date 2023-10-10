@@ -344,7 +344,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
             />
           </Form.Group>
 
-          <Button variant="success" type="submit" onClick={handleFormSubmit} disabled={submissionStatus === 'submitting'}>
+          <Button variant="primary" type="submit" onClick={handleFormSubmit} disabled={submissionStatus === 'submitting'}>
           {submissionStatus === 'submitting' ? 'Adding...' : 'Add New Demand'}
         </Button>
         </Form>
