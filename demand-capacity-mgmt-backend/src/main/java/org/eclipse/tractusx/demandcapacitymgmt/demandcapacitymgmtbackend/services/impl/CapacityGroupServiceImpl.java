@@ -71,8 +71,9 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
         CapacityGroupEntity capacityGroupEntity = enrichCapacityGroup(capacityGroupRequest);
         capacityGroupEntity = capacityGroupRepository.save(capacityGroupEntity);
-        postLogs(capacityGroupEntity.getId().toString());
-        for (UUID uuid : capacityGroupRequest.getLinkDemandSeriesID()) {
+        String cgID = capacityGroupEntity.getId().toString();
+        postLogs(cgID);
+        for (UUID uuid : capacityGroupRequest.getLinkMaterialDemandIds()) {
             LinkedCapacityGroupMaterialDemandEntity entity = new LinkedCapacityGroupMaterialDemandEntity();
             entity.setCapacityGroupID(capacityGroupEntity.getId());
             entity.setMaterialDemandID(uuid);
@@ -110,7 +111,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
         List<MaterialDemandEntity> materialDemandEntities = new ArrayList<>();
 
-        for (UUID uuid : linkCGDSRequest.getLinkedMaterialDemandID()) {
+        for (UUID uuid : linkCGDSRequest.getLinkMaterialDemandIds()) {
             Optional<MaterialDemandEntity> materialDemandEntity = materialDemandRepository.findById(uuid);
             if (materialDemandEntity.isPresent()) {
                 MaterialDemandEntity materialDemand = materialDemandEntity.get();

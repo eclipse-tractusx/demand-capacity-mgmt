@@ -1568,7 +1568,7 @@ components:
       properties:
         capacityGroupID:
           type: string
-        linkedMaterialDemandID:
+        linkMaterialDemandIds:
           type: array
           items:
             type: string
@@ -1593,7 +1593,7 @@ components:
           type: string
         supplier:
           type: string
-        linkDemandSeriesID:
+        linkMaterialDemandIds:
           type: array
           items:
             type: string
