@@ -28,8 +28,8 @@ create table capacity_group
     capacity_group_name varchar(400),
     defaultActualCapacity float,
     defaultMaximumCapacity float,
-    start_date varchar(50),
-    end_date varchar(50),
+    start_date date,
+    end_date date,
     customer uuid constraint capacity_group_customer_id references company_base_data(id),
     supplier uuid constraint capacity_group_supplier_id references company_base_data(id)
 );
@@ -73,5 +73,5 @@ create table link_demand
     material_number_supplier varchar(400),
     demand_category_id varchar(400),
     linked boolean,
-    week_based_material_demand_id integer constraint week_based_material_demand_id references week_based_material_demand(id)
+    week_based_material_demand_id uuid constraint week_based_material_demand_id references week_based_material_demand(id)
 );
