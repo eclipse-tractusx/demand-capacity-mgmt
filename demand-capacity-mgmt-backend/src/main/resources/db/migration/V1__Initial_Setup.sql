@@ -20,6 +20,9 @@
  *    ********************************************************************************
  */
 
+SET search_path TO public;
+
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 create table demand_category
