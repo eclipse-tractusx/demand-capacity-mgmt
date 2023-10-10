@@ -107,13 +107,17 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         loggingHistoryEntity.setId(UUID.randomUUID());
         loggingHistoryEntity.setEventType(EventType.valueOf(loggingHistoryRequest.getEventType()));
         loggingHistoryEntity.setObjectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()));
-        if (loggingHistoryRequest.getMaterialDemandId() != null) {
+
+        String materialDemandID = loggingHistoryRequest.getMaterialDemandId();
+        String capacityGroupID = loggingHistoryRequest.getCapacityGroupId();
+
+        if (null != materialDemandID && !materialDemandID.isEmpty()) {
             loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
         }
-
-        if (loggingHistoryRequest.getCapacityGroupId() != null) {
+        if (null != capacityGroupID && !capacityGroupID.isEmpty()) {
             loggingHistoryEntity.setCapacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()));
         }
+
         loggingHistoryEntity.setUserAccount(loggingHistoryRequest.getUserAccount());
         loggingHistoryEntity.setTime_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()));
         loggingHistoryEntity.setDescription(loggingHistoryRequest.getEventDescription());
@@ -127,11 +131,14 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         loggingHistoryEntity.setId(UUID.randomUUID());
         loggingHistoryEntity.setEventType(EventType.valueOf(loggingHistoryRequest.getEventType()));
         loggingHistoryEntity.setObjectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()));
-        if (loggingHistoryRequest.getMaterialDemandId() != null) {
+
+        String materialDemandID = loggingHistoryRequest.getMaterialDemandId();
+        String capacityGroupID = loggingHistoryRequest.getCapacityGroupId();
+
+        if (null != materialDemandID && !materialDemandID.isEmpty()) {
             loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
         }
-
-        if (loggingHistoryRequest.getCapacityGroupId() != null) {
+        if (null != capacityGroupID && !capacityGroupID.isEmpty()) {
             loggingHistoryEntity.setCapacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()));
         }
         loggingHistoryEntity.setUserAccount(loggingHistoryRequest.getUserAccount());
