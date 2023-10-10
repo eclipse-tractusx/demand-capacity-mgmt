@@ -39,39 +39,22 @@ import org.hibernate.annotations.GenericGenerator;
 public class StatusesEntity {
 
     @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid", name = "id")
-    private UUID id;
+    private String id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "todos", referencedColumnName = "id")
-    private StatusObjectEntity todos;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "status_improvment", referencedColumnName = "id")
-    private StatusObjectEntity statusImprovment;
+    private int todosCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "status_degredation", referencedColumnName = "id")
-    private StatusObjectEntity statusDegredation;
+    private int statusImprovementCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "general", referencedColumnName = "id")
-    private StatusObjectEntity general;
+    private int statusDegradationCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_todos", referencedColumnName = "id")
-    private StatusObjectEntity overAllTodos;
+    private int generalCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_status_improvment", referencedColumnName = "id")
-    private StatusObjectEntity overAllStatusImprovment;
+    private int overAllTodosCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_status_degredation", referencedColumnName = "id")
-    private StatusObjectEntity overAllStatusDegredation;
+    private int overAllStatusImprovementCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_general", referencedColumnName = "id")
-    private StatusObjectEntity overAllGeneral;
+    private int overAllStatusDegradationCount;
+
+    private int overAllGeneralCount;
 }

@@ -29,6 +29,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 
 @Entity
 @Table(name = "capacity_group")
@@ -65,4 +66,7 @@ public class CapacityGroupEntity {
     @OneToOne
     @JoinColumn(name = "supplier", referencedColumnName = "ID")
     private CompanyEntity supplier;
+
+    @Column(name = "link_status")
+    private EventType linkStatus;
 }
