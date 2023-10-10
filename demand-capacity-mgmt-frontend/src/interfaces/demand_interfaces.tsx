@@ -83,3 +83,9 @@ export interface Demand {
     codeValue: string
     displayValue: string
   }
+
+  //Demand Unlink
+  export interface DemandUnlink {
+    materialDemandID: string
+    capacityGroupID: string
+  }

@@ -24,6 +24,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.*;
@@ -43,49 +44,26 @@ public class CapacityGroupEntity {
     @Column(columnDefinition = "uuid", updatable = false, name = "id")
     private UUID id;
 
-    @Column(columnDefinition = "uuid", updatable = false, name = "capacity_group_id")
-    private UUID capacityGroupId;
+    @Column(name = "capacity_group_name")
+    private String capacityGroupName;
 
-    @Column(name = "material_description_customer")
-    private String materialDescriptionCustomer;
+    @Column(name = "defaultactualcapacity")
+    private float defaultActualCapacity;
 
-    @Column(name = "material_number_customer")
-    private String materialNumberCustomer;
+    @Column(name = "defaultmaximumcapacity")
+    private float defaultMaximumCapacity;
 
-    @Column(name = "material_number_supplier")
-    private String materialNumberSupplier;
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
 
-    @Column(name = "changed_at", nullable = false)
-    private LocalDateTime changedAt;
-
-    @OneToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "ID")
-    private CompanyEntity customerId;
+    @Column(name = "end_date", nullable = false)
+    private LocalDate endDate;
 
     @OneToOne
-    @JoinColumn(name = "supplier_id", referencedColumnName = "ID")
-    private CompanyEntity supplierId;
+    @JoinColumn(name = "customer", referencedColumnName = "ID")
+    private CompanyEntity customer;
 
     @OneToOne
-    @JoinColumn(name = "unity_of_measure_id", referencedColumnName = "ID")
-    private UnitMeasureEntity unitMeasure;
-
-    @OneToMany(mappedBy = "capacityGroupEntity", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<CapacityTimeSeries> capacityTimeSeries;
-
-    @OneToMany(mappedBy = "capacityGroupEntity", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<LinkedDemandSeries> linkedDemandSeries;
-
-    @Column(name = "supplier_locations")
-    @Convert(converter = ListToStringConverter.class)
-    private List<String> supplierLocation;
-
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private CapacityGroupStatus status;
+    @JoinColumn(name = "supplier", referencedColumnName = "ID")
+    private CompanyEntity supplier;
 }

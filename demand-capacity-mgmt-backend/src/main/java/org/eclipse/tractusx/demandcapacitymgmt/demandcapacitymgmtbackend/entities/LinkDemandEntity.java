@@ -35,6 +35,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Deprecated
 public class LinkDemandEntity {
 
     @Id

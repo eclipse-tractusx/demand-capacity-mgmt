@@ -31,17 +31,17 @@ type DemandsSearchProps = {
 const DemandsSearch: React.FC<DemandsSearchProps> = ({ searchQuery, setSearchQuery }) => {
   return (
 
-      <Form className="d-flex">
-    <Form.Control
-      type="search"
-      placeholder="Search"
-      className="me-1"
-      aria-label="Search"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-    />
-    <Button variant="outline-primary">Search</Button>
-  </Form>
+<Form className="d-flex align-items-center">
+  <Form.Control
+    type="search"
+    placeholder="Search"
+    className="me-1"
+    aria-label="Search"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+  />
+  <Button variant="outline-secondary">Search</Button>
+</Form>
     
   );
 };

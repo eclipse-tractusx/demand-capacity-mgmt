@@ -39,10 +39,28 @@ public class WeekBasedCapacityGroupController implements WeekBasedCapacityGroupA
     private final WeekBasedCapacityGroupService weekBasedCapacityGroupService;
 
     @Override
+    public ResponseEntity<List<WeekBasedCapacityGroupDtoResponse>> getWeekBasedCapacityGroup() {
+        List<WeekBasedCapacityGroupDtoResponse> capacityGroupDefaultViewResponseList = weekBasedCapacityGroupService.getWeekBasedCapacityGroups();
+        return ResponseEntity.status(HttpStatus.OK).body(capacityGroupDefaultViewResponseList);
+    }
+
+    @Override
     public ResponseEntity<Void> postWeekBasedCapacityGroup(
-        List<WeekBasedCapacityGroupRequest> weekBasedCapacityGroupRequest
+        List<WeekBasedCapacityGroupDtoRequest> weekBasedCapacityGroupRequest
     ) {
         weekBasedCapacityGroupService.createWeekBasedCapacityGroup(weekBasedCapacityGroupRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Override
+    public ResponseEntity<WeekBasedCapacityGroupDtoResponse> updateWeekBasedCapacityGroupById(
+        String weekBasedCapacityId,
+        WeekBasedCapacityGroupDtoRequest weekBasedCapacityGroupRequest
+    ) {
+        WeekBasedCapacityGroupDtoResponse responseDto = weekBasedCapacityGroupService.updateWeekBasedCapacityGroup(
+            weekBasedCapacityId,
+            weekBasedCapacityGroupRequest
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

@@ -21,34 +21,62 @@
  */
 
 import React, { createContext, useState, useEffect } from 'react';
-import {CapacityGroup, SingleCapacityGroup} from '../interfaces/capacitygroup_interfaces';
 import api from '../util/Api';
+import axios from 'axios';
+import {CapacityGroupProp, CapacityGroupCreate, CapacityGroupLink, SingleCapacityGroup} from '../interfaces/capacitygroup_interfaces';
+
 
 
 interface CapacityGroupContextData {
-  capacitygroups: CapacityGroup[];
+  capacitygroups: CapacityGroupProp[];
   getCapacityGroupById: (id: string) =>Promise<SingleCapacityGroup | undefined>;
+  isLoading: boolean;
+  createCapacityGroup: (newCapacityGroup: CapacityGroupCreate) => Promise<void>;
+  linkToCapacityGroup: (linkToCapacityGroup: CapacityGroupLink)=> Promise<void>;
 }
 
 export const CapacityGroupContext = createContext<CapacityGroupContextData | undefined>(undefined);
 
+
 const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-
-  const [capacitygroups, setCapacityGroups] = useState<CapacityGroup[]>([]);
-
-  useEffect(() => {
-    const fetchCapacityGroups = async () => {
-      try {
-        const response = await api.get('/capacityGroup', {});
-        const result: CapacityGroup[] = response.data;
-        setCapacityGroups(result);
-      } catch (error) {
-        console.error('Error fetching capacitygroups:', error);
-      }
-    };
   
-    fetchCapacityGroups();
-  }, []);
+
+  const [capacitygroups, setCapacityGroups] = useState<CapacityGroupProp[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+
+useEffect(() => {
+  const maxRetries = 3;
+
+  const fetchCapacityGroupsWithRetry = async () => {
+    setIsLoading(true);
+
+      try {
+        const response = await axios.get('/capacityGroup', {});
+        const result: CapacityGroupProp[] = response.data;
+        setCapacityGroups(result);
+        setIsLoading(false); // Set isLoading to false on success
+        setRetryCount(0); // Reset the retry count on success
+        return; // Exit the loop on success
+      } catch (error) {
+        console.error(`Error fetching capacitygroups (Retry ${retryCount + 1}):`, error);
+
+        if (retryCount < maxRetries - 1) {
+          // If not the last retry, delay for 30 seconds before the next retry
+          await new Promise((resolve) => setTimeout(resolve, 30000));
+          setRetryCount(retryCount + 1); // Increment the retry count
+        } else {
+          // If the last retry failed, set isLoading to false and do not retry further
+          setIsLoading(false);
+          setRetryCount(0); // Reset the retry count
+        }
+      }
+
+  };
+
+  fetchCapacityGroupsWithRetry();
+}, [retryCount]);
+  
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {
     try {
@@ -61,18 +89,29 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     }
   };
 
+  const createCapacityGroup = async (newCapacityGroup: CapacityGroupCreate) => {
+    try {
+      console.log(newCapacityGroup);
+      const response = await axios.post('/capacityGroup', newCapacityGroup);
+      console.log(response)
+    } catch (error) {
+      console.error('Error creating capacityGroup:', error);
+    }
+  };
+
+  const linkToCapacityGroup = async (linkToCapacityGroup: CapacityGroupLink) => {
+    try {
+      await axios.post('/capacityGroup/link', linkToCapacityGroup); 
+    } catch (error) {
+      console.error('Error creating capacityGroup:', error);
+    }
+  };
+
   return (
-      <CapacityGroupContext.Provider value={{capacitygroups, getCapacityGroupById}}>
+      <CapacityGroupContext.Provider value={{capacitygroups, getCapacityGroupById, isLoading,createCapacityGroup, linkToCapacityGroup}}>
         {props.children}
       </CapacityGroupContext.Provider>
   );
 };
-
-
-
-
-
-
-
 
     export default CapacityGroupsProvider;

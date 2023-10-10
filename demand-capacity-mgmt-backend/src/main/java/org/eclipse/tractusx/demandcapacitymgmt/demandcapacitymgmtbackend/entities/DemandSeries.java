@@ -37,6 +37,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class DemandSeries {
 
     @Id
@@ -63,6 +64,8 @@ public class DemandSeries {
     @JoinColumn(name = "demand_series_id")
     private List<DemandSeriesValues> demandSeriesValues;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     private MaterialDemandEntity materialDemand;
 }

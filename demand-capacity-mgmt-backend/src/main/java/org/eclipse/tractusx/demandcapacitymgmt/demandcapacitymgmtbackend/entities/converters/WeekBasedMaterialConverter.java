@@ -27,17 +27,17 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMateri
 import jakarta.persistence.*;
 
 @Converter(autoApply = true)
-public class WeekBasedMaterialConverter implements AttributeConverter<WeekBasedMaterialDemandRequestDto, String> {
+public class WeekBasedMaterialConverter implements AttributeConverter<WeekBasedMaterialDemandRequest, String> {
 
     private static final Gson GSON = new Gson();
 
     @Override
-    public String convertToDatabaseColumn(WeekBasedMaterialDemandRequestDto mjo) {
+    public String convertToDatabaseColumn(WeekBasedMaterialDemandRequest mjo) {
         return GSON.toJson(mjo);
     }
 
     @Override
-    public WeekBasedMaterialDemandRequestDto convertToEntityAttribute(String dbData) {
-        return GSON.fromJson(dbData, WeekBasedMaterialDemandRequestDto.class);
+    public WeekBasedMaterialDemandRequest convertToEntityAttribute(String dbData) {
+        return GSON.fromJson(dbData, WeekBasedMaterialDemandRequest.class);
     }
 }
