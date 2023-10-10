@@ -21,7 +21,7 @@
  */
 
 import React, { createContext, useContext, useState } from 'react';
-import {User} from "../interfaces/UserInterface";
+import {User} from "../interfaces/user_interface";
 
 
 interface UserContextProps {

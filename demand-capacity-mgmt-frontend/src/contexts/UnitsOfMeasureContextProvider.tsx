@@ -21,7 +21,7 @@
  */
 
 import React, { createContext, useState, useEffect } from 'react';
-import api from "../util/Api";
+import Api from "../util/Api";
 
 
 export interface UnitMeasure {
@@ -47,7 +47,7 @@ const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>
   useEffect(() => {
     const fetchUnitsofMeasure = async () => {
       try {
-        const response = await api.get('/unitmeasure');
+        const response = await Api.get('/unitmeasure');
         const result: UnitMeasure[] = response.data;
         setUnitsofMeasure(result);
       } catch (error) {
