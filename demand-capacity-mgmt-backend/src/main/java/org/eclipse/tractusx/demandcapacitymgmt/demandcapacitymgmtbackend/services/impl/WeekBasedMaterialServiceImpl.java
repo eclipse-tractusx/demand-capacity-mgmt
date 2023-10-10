@@ -103,13 +103,13 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
 
     @Override
     public void receiveWeekBasedMaterial() {
-       /* List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities = weekBasedMaterialDemandRepository.getAllByViewed(
+        List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities = weekBasedMaterialDemandRepository.getAllByViewed(
             false
         );
         //  updateStatus(); TODO: remove the comment when the EDC is ready
 
         linkDemandService.createLinkDemands(weekBasedMaterialDemandEntities);
-        */
+
     }
 
     @Override
