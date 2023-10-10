@@ -32,9 +32,9 @@ import org.springframework.stereotype.Component;
 public class WeekBasedCapacityGroupSchedulerReceived {
 
     private final WeekBasedCapacityGroupService weekBasedCapacityGroupService;
-
     @Scheduled(fixedRate = 60 * 60 * 1000)
     public void capacityGroupSync() {
         weekBasedCapacityGroupService.receiveWeekBasedCapacityGroup();
     }
+
 }

@@ -19,7 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
+SET search_path TO public;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 create table capacity_group
