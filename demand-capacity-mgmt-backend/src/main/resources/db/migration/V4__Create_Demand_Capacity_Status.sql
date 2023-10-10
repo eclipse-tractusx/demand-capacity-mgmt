@@ -20,6 +20,6 @@
  *   ********************************************************************************
  *
  */
-
-ALTER TABLE demand_series
-ADD COLUMN capacity_group_id varchar(200);
+SET search_path TO public;
+ALTER TABLE material_demand
+ADD COLUMN status varchar(40);
