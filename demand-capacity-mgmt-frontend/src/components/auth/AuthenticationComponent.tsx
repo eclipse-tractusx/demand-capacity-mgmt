@@ -24,8 +24,8 @@ import React, { useState } from 'react';
 import { login } from '../../util/Auth';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from "../../contexts/UserContext";
-import { Form, Button, Col, Row, Toast, ToastContainer, InputGroup } from "react-bootstrap";
-import { BarLoader } from "react-spinners"; // Import PacmanLoader component from react-spinners
+import { Form, Button, Col, Row, Toast, InputGroup } from "react-bootstrap";
+import { PulseLoader } from "react-spinners"; // Import PacmanLoader component from react-spinners
 import { User } from "../../interfaces/user_interface";
 import '../../Auth.css';
 import { FaKey, FaUser, FaUserAlt } from 'react-icons/fa';
@@ -107,7 +107,7 @@ const AuthenticationComponent: React.FC = () => {
                                     </InputGroup>
 
                                     <Button onClick={handleLogin}>
-                                        {loading ? <BarLoader color="#ffffff" /> : 'Login'}
+                                        {loading ? <PulseLoader color="#ffffff" /> : 'Login'}
                                     </Button>
                                 </Form>
                                 <p className="message">Not registered? <a href="/login" onClick={(e) => { e.preventDefault(); setShowRegister(true); }}>Create an Account</a></p>
