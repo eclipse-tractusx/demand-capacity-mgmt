@@ -23,10 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
@@ -37,14 +33,15 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.excepti
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LinkDemandService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -75,9 +72,11 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                 WeekBasedMaterialDemandEntity weekBasedMaterialDemand = convertEntity(
                     weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest()
                 );
-                weekBasedMaterialDemand.setId(UUID.fromString(weekBasedMaterialDemandRequestDto.
-                        getWeekBasedMaterialDemandRequest().
-                        getMaterialDemandId()));
+                weekBasedMaterialDemand.setId(
+                    UUID.fromString(
+                        weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest().getMaterialDemandId()
+                    )
+                );
                 postLogs(weekBasedMaterialDemand.getId().toString());
                 weekBasedMaterialDemandRepository.save(weekBasedMaterialDemand);
             }
@@ -104,12 +103,13 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
 
     @Override
     public void receiveWeekBasedMaterial() {
-        List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities = weekBasedMaterialDemandRepository.getAllByViewed(
+       /* List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities = weekBasedMaterialDemandRepository.getAllByViewed(
             false
         );
         //  updateStatus(); TODO: remove the comment when the EDC is ready
 
         linkDemandService.createLinkDemands(weekBasedMaterialDemandEntities);
+        */
     }
 
     @Override

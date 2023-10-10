@@ -24,8 +24,8 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.WeekBasedMaterialDemandApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandResponseDto;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
