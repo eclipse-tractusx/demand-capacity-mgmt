@@ -43,6 +43,7 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
         try {
             const response = await Api.get('/statuses');
             const result: InfoMenuData = response.data;
+            console.log(result)
             setData(result);
         } catch (error) {
             console.error("Error fetching data: ", error);
