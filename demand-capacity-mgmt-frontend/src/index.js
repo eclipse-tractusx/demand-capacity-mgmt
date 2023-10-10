@@ -22,25 +22,10 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import {BrowserRouter as Router} from "react-router-dom";
 import { isAuthenticated } from './util/Auth';
 import AuthenticationComponent from './components/auth/AuthenticationComponent';
 import AppComponent from './components/dcm/AppComponent';
-
-//Import Default always visible components.
-import TopMenu from "./components/common/TopMenu";
-import { InfoMenuProvider } from './contexts/InfoMenuContextProvider';
-import QuickAcessItems from "./components/common/QuickAcessItems";
-//Import Context Providers
-import DemandContextProvider from "../src/contexts/DemandContextProvider";
-import CapacityGroupsProvider from './contexts/CapacityGroupsContextProvider';
-//Pages
-import Home from "./components/pages/CapacityGroupPage";
-import CapacityGroupDetailsPage from "./components/pages/CapacityGroupDetailsPage";
-import TodoListPage from "./components/pages/TodoListPage";
-import DownStatusPage from "./components/pages/DownStatusPage";
-import UpStatusPage from "./components/pages/UpStatusPage";
-
 import './custom-bootstrap.scss';
 import'./index.css';
 import {UserProvider} from "./contexts/UserContext";
