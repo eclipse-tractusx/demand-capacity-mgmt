@@ -70,7 +70,7 @@ const AuthenticationComponent: React.FC = () => {
                 <Col xs={12} sm={8} md={6} lg={4}>
                     <div className="form">
                         <div className="d-flex flex-column align-items-center mb-4">
-                            <img srcSet='/media/logos/cx-short.svg' alt="Logo" width="50" height="auto" className='' />
+                            <img srcSet='/media/logos/cx-short.svg' alt="Logo" width="50" height="auto" />
                             <h4 className="text-center">Demand Capacity Management</h4>
                         </div>
                         {showRegister ? (
@@ -131,10 +131,7 @@ const AuthenticationComponent: React.FC = () => {
                 <span></span>
                 <span></span>
             </div>
-
         </div>
-
-
     );
 }
 

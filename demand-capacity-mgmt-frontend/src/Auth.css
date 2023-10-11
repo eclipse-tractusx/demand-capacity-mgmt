@@ -1,14 +1,35 @@
+/*
+ *  *******************************************************************************
+ *  Copyright (c) 2023 BMW AG
+ *  Copyright (c) 2023 Contributors to the Eclipse Foundation
+ *
+ *    See the NOTICE file(s) distributed with this work for additional
+ *    information regarding copyright ownership.
+ *
+ *    This program and the accompanying materials are made available under the
+ *    terms of the Apache License, Version 2.0 which is available at
+ *    https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *    License for the specific language governing permissions and limitations
+ *    under the License.
+ *
+ *    SPDX-License-Identifier: Apache-2.0
+ *    ********************************************************************************
+ */
 :root {
     --first-color: #e7eaf6;
     --second-color: #ffa600;
-    --second-color-darker: #FF7D00 ;
-    --third-color: #78A423 ;
+    --second-color-darker: #FF7D00;
+    --third-color: #78A423;
     --fourth-color: #94cb2d;
     --input-bgcolor: #f2f2f2;
 }
 
-
-body, html {
+body,
+html {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -57,7 +78,9 @@ body, html {
     cursor: pointer;
 }
 
-.form button:hover, .form button:active, .form button:focus {
+.form button:hover,
+.form button:active,
+.form button:focus {
     background: var(--third-color);
 }
 
@@ -72,21 +95,44 @@ body, html {
     text-decoration: none;
 }
 
-.register-form, .login-form {
+.register-form,
+.login-form {
     transition: all 0.5s ease-in-out;
 }
 
 .input-group-text {
-    font-size: 1.2rem; /* Adjust the font size as needed */
-    height: 3.36rem; /* Ensure the icon takes full height of the input field */
-    align-items: center; /* Center the icon vertically */
-    justify-content: center; /* Center the icon horizontally */
+    font-size: 1.2rem;
+    /* Adjust the font size as needed */
+    height: 3.36rem;
+    /* Ensure the icon takes full height of the input field */
+    align-items: center;
+    /* Center the icon vertically */
+    justify-content: center;
+    /* Center the icon horizontally */
 }
 
+.error-text {
+    position: relative;
+    z-index: 1;
+}
 
 @keyframes move {
     100% {
         transform: translate3d(0, 0, 1px) rotate(360deg);
+    }
+}
+
+@keyframes fadeColors {
+    0% {
+        color: #ffa600;
+    }
+
+    50% {
+        color: #94cb2d;
+    }
+
+    100% {
+        color: #ffa600;
     }
 }
 
@@ -105,8 +151,8 @@ body, html {
     height: 23vmin;
     backface-visibility: hidden;
     position: absolute;
-    animation: move;
-    animation-duration: 45s;
+    animation-name: fadeColors, move;
+    animation-duration: 10s, 45s !important;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
 }
@@ -130,6 +176,7 @@ body, html {
     transform-origin: 15vw 14vh;
     box-shadow: 46vmin 0 6.4838443649441375vmin currentColor;
 }
+
 .background span:nth-child(3) {
     color: #94cb2d;
     top: 68%;
@@ -139,6 +186,7 @@ body, html {
     transform-origin: 2vw 5vh;
     box-shadow: -46vmin 0 5.986792347079153vmin currentColor;
 }
+
 .background span:nth-child(4) {
     color: #ffa600;
     top: 82%;
@@ -148,6 +196,7 @@ body, html {
     transform-origin: 16vw 10vh;
     box-shadow: 46vmin 0 6.526409312898938vmin currentColor;
 }
+
 .background span:nth-child(5) {
     color: #94cb2d;
     top: 34%;
@@ -157,6 +206,7 @@ body, html {
     transform-origin: -4vw -20vh;
     box-shadow: -46vmin 0 6.005790263207851vmin currentColor;
 }
+
 .background span:nth-child(6) {
     color: #94cb2d;
     top: 10%;
@@ -166,6 +216,7 @@ body, html {
     transform-origin: 21vw 25vh;
     box-shadow: -46vmin 0 5.7744538868704804vmin currentColor;
 }
+
 .background span:nth-child(7) {
     color: #94cb2d;
     top: 19%;
@@ -175,6 +226,7 @@ body, html {
     transform-origin: -11vw -7vh;
     box-shadow: -46vmin 0 6.095211062141666vmin currentColor;
 }
+
 .background span:nth-child(8) {
     color: #ffa600;
     top: 50%;
@@ -184,6 +236,7 @@ body, html {
     transform-origin: 15vw 17vh;
     box-shadow: -46vmin 0 6.18377142653627vmin currentColor;
 }
+
 .background span:nth-child(9) {
     color: #94cb2d;
     top: 1%;
@@ -193,6 +246,7 @@ body, html {
     transform-origin: -16vw -5vh;
     box-shadow: -46vmin 0 5.9655505993736vmin currentColor;
 }
+
 .background span:nth-child(10) {
     color: #ffa600;
     top: 94%;
@@ -202,6 +256,7 @@ body, html {
     transform-origin: 19vw 18vh;
     box-shadow: 46vmin 0 6.481513708490059vmin currentColor;
 }
+
 .background span:nth-child(11) {
     color: #ffa600;
     top: 16%;
@@ -211,6 +266,7 @@ body, html {
     transform-origin: -4vw 7vh;
     box-shadow: 46vmin 0 5.782666245649501vmin currentColor;
 }
+
 .background span:nth-child(12) {
     color: #94cb2d;
     top: 43%;
@@ -220,6 +276,7 @@ body, html {
     transform-origin: 20vw -23vh;
     box-shadow: -46vmin 0 6.386302150004884vmin currentColor;
 }
+
 .background span:nth-child(13) {
     color: #ffa600;
     top: 97%;
@@ -229,6 +286,7 @@ body, html {
     transform-origin: 20vw -22vh;
     box-shadow: 46vmin 0 5.974554877536007vmin currentColor;
 }
+
 .background span:nth-child(14) {
     color: #94cb2d;
     top: 44%;

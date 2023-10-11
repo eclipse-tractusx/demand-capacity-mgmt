@@ -22,20 +22,21 @@
 
 import React from 'react';
 import { Route, Routes } from "react-router-dom";
-import TopMenu from "../common/TopMenu";
-import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
-import Home from "../pages/CapacityGroupPage";
-import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
-import AuthenticatedRoute from "../../util/AuthenticatedRoute";
-import AuthenticationComponent from "../pages/AuthenticationPage";
-import { UserProvider } from '../../contexts/UserContext';
-import EventsPage from "../pages/EventsPage";
-import DemandContextProvider from '../../contexts/DemandContextProvider';
-import QuickAcessItems from '../common/QuickAcessItems';
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
-import UpStatusPage from '../pages/UpStatusPage';
+import DemandContextProvider from '../../contexts/DemandContextProvider';
+import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
+import { UserProvider } from '../../contexts/UserContext';
+import AuthenticatedRoute from "../../util/AuthenticatedRoute";
+import QuickAcessItems from '../common/QuickAcessItems';
+import TopMenu from "../common/TopMenu";
+import AuthenticationComponent from "../pages/AuthenticationPage";
+import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
+import Home from "../pages/CapacityGroupPage";
 import DownStatusPage from '../pages/DownStatusPage';
+import ErrorPage from '../pages/ErrorPage';
+import EventsPage from "../pages/EventsPage";
 import TodoListPage from '../pages/TodoListPage';
+import UpStatusPage from '../pages/UpStatusPage';
 
 
 const AppComponent: React.FC = () => {
@@ -102,6 +103,7 @@ const AppComponent: React.FC = () => {
                     } />
 
                     <Route path="/login" element={<AuthenticationComponent />} />
+                    <Route path="*" element={<ErrorPage />} />
                 </Routes>
             </div>
         </UserProvider>
