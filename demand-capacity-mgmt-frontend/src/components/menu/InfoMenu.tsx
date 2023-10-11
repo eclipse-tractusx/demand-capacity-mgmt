@@ -27,50 +27,50 @@ import { useInfoMenu } from "../../contexts/InfoMenuContextProvider";
 
 
 function InfoMenu() {
-    const {data} = useInfoMenu();
+    const { data } = useInfoMenu();
     const navigate = useNavigate();
     const handleNavigation = (path: string) => {
         navigate(path);
     }
 
     const formatData = (data: number | null | undefined): number | string => {
-        return data !== null && data !== undefined ? data : '-';
+        return data !== null && data !== undefined ? data : '0';
     };
 
     return (
         <>
             <Nav className="me-auto">
-                <Nav.Link href="/"><FaHome/> Home</Nav.Link>
-                <Nav.Link href="../#favorites"><FaStar/> Favorites <span className="badge rounded-pill text-bg-primary"
-                                                                         id="favorites-count">-</span></Nav.Link>
+                <Nav.Link href="/"><FaHome /> Home</Nav.Link>
+                <Nav.Link href="../#favorites"><FaStar /> Favorites <span className="ms-1 badge rounded-pill text-bg-primary"
+                    id="favorites-count">-</span></Nav.Link>
 
                 <Nav.Link href="../#alerts">Alerts
-                    <span className="badge rounded-pill text-bg-danger" id="alerts-count">
+                    <span className="ms-1 badge rounded-pill text-bg-danger" id="alerts-count">
                         {formatData(data?.general)}
                     </span>
                 </Nav.Link>
 
                 <Nav.Link href="../up">
-                    <FaArrowUp/> Status
-                    <span className="badge rounded-pill text-bg-success" id="status-plus-count">
+                    <FaArrowUp /> Status
+                    <span className="ms-1 badge rounded-pill text-bg-success" id="status-plus-count">
                         {formatData(data?.statusImprovement)}
                     </span>
                 </Nav.Link>
                 <Nav.Link href="../down">
-                    <FaArrowDown/> Status
-                    <span className="badge rounded-pill text-bg-danger" id="status-minus-count">
+                    <FaArrowDown /> Status
+                    <span className="ms-1 badge rounded-pill text-bg-danger" id="status-minus-count">
                         {formatData(data?.statusDegredation)}
                     </span>
                 </Nav.Link>
                 <Nav.Link href="../todo">
                     Todo
-                    <span className="badge rounded-pill text-bg-warning" id="todo-count">
+                    <span className="ms-1 badge rounded-pill text-bg-warning" id="todo-count">
                         {formatData(data?.todos)}
                     </span>
                 </Nav.Link>
                 <Nav.Link onClick={() => handleNavigation('/events')}>
                     Events
-                    <span className="badge rounded-pill text-bg-info" id="events-count">-</span>
+                    <span className="ms-1 badge rounded-pill text-bg-info" id="events-count">-</span>
                 </Nav.Link>
             </Nav>
         </>
