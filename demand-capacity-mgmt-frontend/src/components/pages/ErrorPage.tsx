@@ -20,18 +20,25 @@
  *    ********************************************************************************
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Row } from "react-bootstrap";
 import '../../Auth.css';
 
 const ErrorPage: React.FC = () => {
 
+    const [randomNumber, setRandomNumber] = useState<number>(1);
+
+    useEffect(() => {
+        const randomNum = Math.floor(Math.random() * 9) + 1;
+        setRandomNumber(randomNum);
+    }, []);
+
     return (
         <div>
             <Row className="justify-content-center align-items-center min-vh-100">
-                <Col xs={12} sm={8} md={6} lg={4}>
+                <Col xs={10} sm={8} md={6} lg={4}>
                     <div className='error-text'>
-                        <img srcSet='/media/engine.png' width="100" height="auto" className='d-inline-block align-text-top' />
+                        <img src={`/media/error/error(${randomNumber}).png`} width="100" height="100" className='d-inline-block align-text-top' />
                         <h1>Oops! Something went wrong.</h1>
                         <p>Sorry, we encountered an error while processing your request.</p>
                     </div>
