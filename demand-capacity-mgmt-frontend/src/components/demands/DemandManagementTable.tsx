@@ -32,52 +32,52 @@ type DemandsTableProps = {
 const DemandManagementTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, handleSort, demandItems }) => {
 
   return (
-<table className="table table-striped table-hover">
-    <thead>
-      <tr>
-        <th></th>
-        <th onClick={() => handleSort('customer.bpn')}>
-          Company Id{' '}
-          {sortColumn === 'customer.bpn' && sortOrder === 'asc' && <BiCaretUp />}
-          {sortColumn === 'customer.bpn' && sortOrder === 'desc' && <BiCaretDown />}
-          {!sortColumn && <i className="material-icons">...</i>}
-        </th>
-        <th onClick={() => handleSort('materialNumberCustomer')}>
-          Material No. Customer{' '}
-          {sortColumn === 'materialNumberCustomer' && sortOrder === 'asc' && <BiCaretUp />}
-          {sortColumn === 'materialNumberCustomer' && sortOrder === 'desc' && <BiCaretDown />}
-        </th>
-        <th onClick={() => handleSort('materialNumberSupplier')}>
-          Material No. Supplier{' '}
-          {sortColumn === 'materialNumberSupplier' && sortOrder === 'asc' && <BiCaretUp />}
-          {sortColumn === 'materialNumberSupplier' && sortOrder === 'desc' && <BiCaretDown />}
-        </th>
-        <th onClick={() => handleSort('demandSeries.demandCategory')}>
-          Demand cat.
-          {sortColumn === 'demandSeries.demandCategory' && sortOrder === 'asc' && <BiCaretUp />}
-          {sortColumn === 'demandSeries.demandCategory' && sortOrder === 'desc' && <BiCaretDown />}
-        </th>
-        <th onClick={() => handleSort('materialDescriptionCustomer')}>
-          Description{' '}
-          {sortColumn === 'materialDescriptionCustomer' && sortOrder === 'asc' && <BiCaretUp />}
-          {sortColumn === 'materialDescriptionCustomer' && sortOrder === 'desc' && <BiCaretDown />}
-        </th>
-        <th onClick={() => handleSort('startDate')}>
-          Start Date {sortColumn === 'startDate' && sortOrder === 'asc' && <BiCaretUp />}
-          {sortColumn === 'startDate' && sortOrder === 'desc' && <BiCaretDown />}
-        </th>
-        <th onClick={() => handleSort('endDate')}>
-          End Date {sortColumn === 'endDate' && sortOrder === 'asc' && <BiCaretUp />}
-          {sortColumn === 'endDate' && sortOrder === 'desc' && <BiCaretDown />}
-        </th>
-        <th onClick={() => handleSort('status')}>
-          Status {sortColumn === 'status' && sortOrder === 'asc' && <BiCaretUp />}
-          {sortColumn === 'status' && sortOrder === 'desc' && <BiCaretDown />}
-        </th>
-      </tr>
-    </thead>
-    <tbody>{demandItems}</tbody>
-  </table>
+    <table className="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th></th>
+          <th onClick={() => handleSort('customer.bpn')}>
+            Company Id{' '}
+            {sortColumn === 'customer.bpn' && sortOrder === 'asc' && <BiCaretUp />}
+            {sortColumn === 'customer.bpn' && sortOrder === 'desc' && <BiCaretDown />}
+            {!sortColumn && <i className="material-icons">...</i>}
+          </th>
+          <th onClick={() => handleSort('materialNumberCustomer')}>
+            Material No. Customer{' '}
+            {sortColumn === 'materialNumberCustomer' && sortOrder === 'asc' && <BiCaretUp />}
+            {sortColumn === 'materialNumberCustomer' && sortOrder === 'desc' && <BiCaretDown />}
+          </th>
+          <th onClick={() => handleSort('materialNumberSupplier')}>
+            Material No. Supplier{' '}
+            {sortColumn === 'materialNumberSupplier' && sortOrder === 'asc' && <BiCaretUp />}
+            {sortColumn === 'materialNumberSupplier' && sortOrder === 'desc' && <BiCaretDown />}
+          </th>
+          <th onClick={() => handleSort('demandSeries.demandCategory')}>
+            Demand cat.
+            {sortColumn === 'demandSeries.demandCategory' && sortOrder === 'asc' && <BiCaretUp />}
+            {sortColumn === 'demandSeries.demandCategory' && sortOrder === 'desc' && <BiCaretDown />}
+          </th>
+          <th onClick={() => handleSort('materialDescriptionCustomer')}>
+            Description{' '}
+            {sortColumn === 'materialDescriptionCustomer' && sortOrder === 'asc' && <BiCaretUp />}
+            {sortColumn === 'materialDescriptionCustomer' && sortOrder === 'desc' && <BiCaretDown />}
+          </th>
+          <th onClick={() => handleSort('startDate')}>
+            Start Date {sortColumn === 'startDate' && sortOrder === 'asc' && <BiCaretUp />}
+            {sortColumn === 'startDate' && sortOrder === 'desc' && <BiCaretDown />}
+          </th>
+          <th onClick={() => handleSort('endDate')}>
+            End Date {sortColumn === 'endDate' && sortOrder === 'asc' && <BiCaretUp />}
+            {sortColumn === 'endDate' && sortOrder === 'desc' && <BiCaretDown />}
+          </th>
+          <th onClick={() => handleSort('status')}>
+            Status {sortColumn === 'status' && sortOrder === 'asc' && <BiCaretUp />}
+            {sortColumn === 'status' && sortOrder === 'desc' && <BiCaretDown />}
+          </th>
+        </tr>
+      </thead>
+      <tbody>{demandItems}</tbody>
+    </table>
   );
 };
 

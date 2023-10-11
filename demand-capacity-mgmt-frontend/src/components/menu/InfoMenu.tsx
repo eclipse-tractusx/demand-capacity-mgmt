@@ -21,9 +21,9 @@
  */
 
 import Nav from "react-bootstrap/Nav";
-import {FaArrowDown, FaArrowUp, FaHome, FaStar} from "react-icons/fa";
-import {useInfoMenu} from "../../contexts/InfoMenuContextProvider";
-import {useNavigate} from "react-router-dom";
+import { FaArrowDown, FaArrowUp, FaHome, FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useInfoMenu } from "../../contexts/InfoMenuContextProvider";
 
 
 function InfoMenu() {

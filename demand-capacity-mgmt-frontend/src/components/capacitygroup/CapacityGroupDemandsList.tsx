@@ -20,16 +20,16 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useMemo, useCallback } from 'react';
-import { Button, Form, Col, Row, Dropdown } from 'react-bootstrap';
-import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
-import Pagination from './../common/Pagination';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
+import { Button, Col, Dropdown, Form, Row } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt, FaUnlink } from 'react-icons/fa';
 import { DemandContext } from '../../contexts/DemandContextProvider';
-import DemandDetailsModal from './../common/DemandDetailsModal';
-import DemandListTable from '../demands/DemandListTable';
-import { LoadingMessage } from './../common/LoadingMessages';
+import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
+import DemandListTable from '../demands/DemandListTable';
+import DemandDetailsModal from './../common/DemandDetailsModal';
+import { LoadingMessage } from './../common/LoadingMessages';
+import Pagination from './../common/Pagination';
 
 
 const CapacityGroupDemandsList: React.FC<{
@@ -39,7 +39,7 @@ const CapacityGroupDemandsList: React.FC<{
 }> = ({
   searchQuery = '',
   capacityGroupDemands = [],
-  capacityGroupId='',
+  capacityGroupId = '',
 }) => {
 
     const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -48,7 +48,7 @@ const CapacityGroupDemandsList: React.FC<{
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
     const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
-    const { deleteDemand, unlinkDemand} = useContext(DemandContext)!;
+    const { deleteDemand, unlinkDemand } = useContext(DemandContext)!;
     const { demandprops, fetchDemandProps, isLoading } = useContext(DemandContext)!;  // Make sure to get the fetchDemands function from the context.
 
     const [currentPage, setCurrentPage] = useState(1);//Its updated from showWizard
@@ -92,9 +92,9 @@ const CapacityGroupDemandsList: React.FC<{
     );
 
     const handleUnlinkDemand = useCallback(
-      async (id: string, capacityGroupID:string) => {
+      async (id: string, capacityGroupID: string) => {
         try {
-          await unlinkDemand(id,capacityGroupID);
+          await unlinkDemand(id, capacityGroupID);
         } catch (error) {
           console.error('Error deleting demand:', error);
         }

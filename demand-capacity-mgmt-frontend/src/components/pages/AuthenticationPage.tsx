@@ -21,14 +21,14 @@
  */
 
 import React, { useState } from 'react';
-import { login } from '../../util/Auth';
+import { Button, Col, Form, InputGroup, Row, Toast } from "react-bootstrap";
+import { FaKey, FaUser } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from "../../contexts/UserContext";
-import { Form, Button, Col, Row, Toast, InputGroup } from "react-bootstrap";
 import { PulseLoader } from "react-spinners"; // Import PacmanLoader component from react-spinners
-import { User } from "../../interfaces/user_interface";
 import '../../Auth.css';
-import { FaKey, FaUser, FaUserAlt } from 'react-icons/fa';
+import { useUser } from "../../contexts/UserContext";
+import { User } from "../../interfaces/user_interface";
+import { login } from '../../util/Auth';
 
 const AuthenticationComponent: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -40,7 +40,8 @@ const AuthenticationComponent: React.FC = () => {
     const [showErrorToast, setShowErrorToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    const handleLogin = async () => {
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault(); // Prevent default form submission behavior
         try {
             setLoading(true);
             const user: User = await login(username, password);
@@ -54,7 +55,6 @@ const AuthenticationComponent: React.FC = () => {
             setLoading(false);
         }
     }
-
     return (
         <div className="login-page" >
 
@@ -85,7 +85,7 @@ const AuthenticationComponent: React.FC = () => {
                             </div>
                         ) : (
                             <div className="login-form">
-                                <Form>
+                                <Form onSubmit={handleLogin}>
                                     <InputGroup className="mb-3">
                                         <InputGroup.Text id="basic-addon1"><FaUser /></InputGroup.Text>
                                         <Form.Control
@@ -106,7 +106,7 @@ const AuthenticationComponent: React.FC = () => {
                                         />
                                     </InputGroup>
 
-                                    <Button onClick={handleLogin}>
+                                    <Button type='submit'>
                                         {loading ? <PulseLoader color="#ffffff" /> : 'Login'}
                                     </Button>
                                 </Form>

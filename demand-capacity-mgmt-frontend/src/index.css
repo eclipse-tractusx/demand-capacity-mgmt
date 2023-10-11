@@ -29,6 +29,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.floating-fixed-buttons{
+  color: black;
+  position: absolute !important;
+  z-index: 1;
+  top: 50%;
+  left: 5;
+  transform: translate(0%, -50%);
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -184,3 +193,4 @@ code {
 .active-step.active:after {
   width: 100%; /* Width of the indicator line when the step is active */
 }
+

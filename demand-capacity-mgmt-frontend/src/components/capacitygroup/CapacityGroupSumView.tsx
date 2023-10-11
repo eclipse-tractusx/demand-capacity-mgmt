@@ -15,17 +15,17 @@
  *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  *    License for the specific language governing permissions and limitations
  *    under the License.
- *
+ *  
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
 
 import React, { useContext, useState } from 'react';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import '../../../src/index.css';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-import { getISOWeek, startOfMonth, addDays, format, addWeeks, addMonths } from 'date-fns';
+import { addDays, addMonths, addWeeks, format, getISOWeek, startOfMonth } from 'date-fns';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 
 interface WeeklyViewProps {

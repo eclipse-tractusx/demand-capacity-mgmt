@@ -21,7 +21,7 @@
  */
 
 import React, { useContext } from 'react';
-import { UnitsofMeasureContext } from '../../contexts/UnitsOfMeasureContextProvider'
+import { UnitsofMeasureContext } from '../../contexts/UnitsOfMeasureContextProvider';
 
 interface UnitsOfMeasureOptionsProps {
     selectedUnitMeasureId: string;

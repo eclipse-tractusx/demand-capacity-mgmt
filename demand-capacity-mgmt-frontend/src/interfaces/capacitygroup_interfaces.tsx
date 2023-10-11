@@ -20,8 +20,6 @@
  *    ********************************************************************************
  */
 
-import { DemandProp } from "./demand_interfaces"
-
 export interface CapacityGroupProp {
   internalId: string
   catXUuid: string
