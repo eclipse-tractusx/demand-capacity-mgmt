@@ -272,9 +272,9 @@ const DemandList: React.FC<{
               ) : 'N/A'}
             </td>
             <td>
-              <span className="badge rounded-pill text-bg-success" id="tag-ok">Up</span>
-              <span className="badge rounded-pill text-bg-warning" id="tag-warning">TODO</span>
-              <span className="badge rounded-pill text-bg-danger" id="tag-danger">Down</span>
+              <span className="badge rounded-pill bg-primary text-white" id="tag-ok">Linked</span>
+              <span className="badge rounded-pill bg-warning text-black" id="tag-warning">TODO</span>
+              <span className="badge rounded-pill bg-danger text-white" id="tag-danger">Unlinked</span>
             </td>
             <td>
               <Dropdown>
