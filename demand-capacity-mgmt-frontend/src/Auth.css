@@ -19,6 +19,36 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
+@keyframes move {
+    100% {
+        transform: translate3d(0, 0, 1px) rotate(360deg);
+    }
+}
+
+@keyframes fadeColors {
+    0% {
+        color: #ffa600;
+    }
+
+    50% {
+        color: #94cb2d;
+    }
+
+    100% {
+        color: #ffa600;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 :root {
     --first-color: #e7eaf6;
     --second-color: #ffa600;
@@ -35,6 +65,7 @@ html {
     height: 100%;
     color: white;
     overflow: hidden;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 .login-toast {
@@ -114,26 +145,6 @@ html {
 .error-text {
     position: relative;
     z-index: 1;
-}
-
-@keyframes move {
-    100% {
-        transform: translate3d(0, 0, 1px) rotate(360deg);
-    }
-}
-
-@keyframes fadeColors {
-    0% {
-        color: #ffa600;
-    }
-
-    50% {
-        color: #94cb2d;
-    }
-
-    100% {
-        color: #ffa600;
-    }
 }
 
 .background {
