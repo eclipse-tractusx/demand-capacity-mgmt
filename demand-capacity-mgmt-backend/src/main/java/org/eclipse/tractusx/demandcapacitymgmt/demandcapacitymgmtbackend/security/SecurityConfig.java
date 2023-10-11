@@ -48,6 +48,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.cors(cors -> corsConfigurationSource());
+        http.csrf(AbstractHttpConfigurer::disable);
         http.addFilterBefore(jwtCookieFilter(), UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement(
             sessionMgmt ->
@@ -61,8 +63,6 @@ public class SecurityConfig {
                     .expiredUrl("http://localhost:3000/login")
                     .sessionRegistry(sessionRegistry())
         );
-        http.cors(cors -> corsConfigurationSource());
-        http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(
             authorize ->
                 authorize
