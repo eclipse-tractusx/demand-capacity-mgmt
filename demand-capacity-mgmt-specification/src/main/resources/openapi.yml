@@ -877,6 +877,12 @@ components:
           type: string
         role:
           $ref: '#/components/schemas/Role'
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
     Role:
       type: string
       enum:

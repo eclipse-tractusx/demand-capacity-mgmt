@@ -54,8 +54,7 @@ public class DemandController implements DemandApi {
     }
 
     @Override
-    public ResponseEntity<List<MaterialDemandResponse>> getDemandsByProjectID() {
-        List<MaterialDemandResponse> demandResponseDtos = demandService.getAllDemandsByProjectId();
+    public ResponseEntity<List<MaterialDemandResponse>> getDemandsByProjectID() {List<MaterialDemandResponse> demandResponseDtos = demandService.getAllDemandsByProjectId();
         return ResponseEntity.status(HttpStatus.OK).body(demandResponseDtos);
     }
 
