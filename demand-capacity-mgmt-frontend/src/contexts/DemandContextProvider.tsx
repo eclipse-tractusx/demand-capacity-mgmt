@@ -52,9 +52,6 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       try {
         setIsLoading(true);
         const response = await Api.get('/demand', {
-          params: {
-            project_id: 1, // Adjust the project ID parameter as needed
-          },
         });
         const result: DemandProp[] = response.data;
         setDemandProps(result);

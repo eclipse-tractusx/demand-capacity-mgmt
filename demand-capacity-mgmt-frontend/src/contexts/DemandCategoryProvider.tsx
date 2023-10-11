@@ -43,9 +43,6 @@ const DemandCategoryContextProvider: React.FC<React.PropsWithChildren<{}>> = (pr
     const fetchDemandCategories = async () => {
       try {
         const response = await Api.get('/demandcategory', {
-          params: {
-            project_id: 1, // Adjust the project ID parameter as needed
-          },
         });
         const result: DemandCategory[] = response.data;
         setDemandCategory(result);

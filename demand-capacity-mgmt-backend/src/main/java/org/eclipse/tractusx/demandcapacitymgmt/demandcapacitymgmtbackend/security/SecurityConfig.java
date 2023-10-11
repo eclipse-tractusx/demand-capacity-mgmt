@@ -23,59 +23,39 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public JwtCookieFilter jwtCookieFilter() {
-        return new JwtCookieFilter();
-    }
-
-    @Bean
+    /*@Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type","x-auth-token"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000","http://localhost:8080"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
         configuration.setExposedHeaders(List.of("x-auth-token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
+    }*/
 
-    @Bean
-    public SessionRegistry sessionRegistry() {
-        return new SessionRegistryImpl();
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(cors -> corsConfigurationSource());
         http.csrf(AbstractHttpConfigurer::disable);
-        http.addFilterBefore(jwtCookieFilter(), UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement(
-            sessionMgmt ->
-                sessionMgmt
-                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                    .invalidSessionUrl("http://localhost:3000/login")
-                    .sessionFixation()
-                    .migrateSession()
-                    .maximumSessions(1) // one session per user
-                    .maxSessionsPreventsLogin(false)
-                    .expiredUrl("http://localhost:3000/login")
-                    .sessionRegistry(sessionRegistry())
+            sessionMgmt -> sessionMgmt.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
         http.authorizeHttpRequests(
-            authorize ->
-                authorize
-                    .requestMatchers(
-                        HttpMethod.POST,
-                        "/token/login",
-                        "/token/refresh",
-                        "/token/logout",
-                        "/token/introspect"
-                    )
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated()
+                authorize ->
+                        authorize
+                                .requestMatchers(
+                                        HttpMethod.POST,
+                                        "/token/login",
+                                        "/token/refresh",
+                                        "/token/logout",
+                                        "/token/introspect"
+                                )
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated()
         );
         http.oauth2ResourceServer(t -> t.jwt(Customizer.withDefaults()));
         return http.build();
