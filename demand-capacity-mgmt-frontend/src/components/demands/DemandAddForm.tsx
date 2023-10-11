@@ -20,17 +20,16 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, ChangeEvent, FormEvent, useCallback } from 'react';
-import { Form, Button, Row, Col } from 'react-bootstrap';
-import { DemandContext } from '../../contexts/DemandContextProvider';
-import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
-import DemandCategoryOptions from './DemandCategoryOptions';
+import React, { ChangeEvent, FormEvent, useCallback, useContext, useState } from 'react';
+import { Button, Col, Form, Row } from 'react-bootstrap';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
-import CompanyOptions from '../common/CompanyOptions';
+import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
+import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
-import UnitsOfMeasureOptions from '../common/UnitsofMeasureOptions';
 import { Demand } from '../../interfaces/demand_interfaces';
-import '../../App.css';
+import CompanyOptions from '../common/CompanyOptions';
+import UnitsOfMeasureOptions from '../common/UnitsofMeasureOptions';
+import DemandCategoryOptions from './DemandCategoryOptions';
 
 type AddFormProps = {
   fetchDemandProps: () => void; // Function to fetch demands
@@ -114,7 +113,7 @@ const useHandleSubmit = (initialFormState: Demand) => {
   return { submissionStatus, handleSubmit };
 };
 
-const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
+const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
   const initialFormState: Demand = {
     id: '',
     materialDescriptionCustomer: '',
@@ -154,7 +153,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
 
   const onInputChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
+
     setFormState((prevFormState) => {
       if (name === 'supplierId') {
         return {
@@ -217,7 +216,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
 
   return (
     <>
-        {showSuccessMessage && submissionStatus === 'submitted' ? (
+      {showSuccessMessage && submissionStatus === 'submitted' ? (
         <div className="alert alert-success" role="alert">
           Material demand has been created!
           Please reach to the <a href='#overview'>Overview</a> to adjust the demand.
@@ -268,7 +267,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
                 required
               >
                 <UnitsofMeasureContextContextProvider>
-                  <UnitsOfMeasureOptions selectedUnitMeasureId=''/>
+                  <UnitsOfMeasureOptions selectedUnitMeasureId='' />
                 </UnitsofMeasureContextContextProvider>
               </Form.Select>
             </Form.Group>
@@ -284,7 +283,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
               required
             >
               <CompanyContextProvider>
-                <CompanyOptions selectedCompanyName=''/>
+                <CompanyOptions selectedCompanyName='' />
               </CompanyContextProvider>
             </Form.Select>
           </Form.Group>
@@ -301,7 +300,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
               required
             >
               <DemandCategoryContextProvider>
-                <DemandCategoryOptions selectedDemandCategoryId=''/>
+                <DemandCategoryOptions selectedDemandCategoryId='' />
               </DemandCategoryContextProvider>
             </Form.Select>
           </Form.Group>
@@ -345,8 +344,8 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps  }) => {
           </Form.Group>
 
           <Button variant="primary" type="submit" onClick={handleFormSubmit} disabled={submissionStatus === 'submitting'}>
-          {submissionStatus === 'submitting' ? 'Adding...' : 'Add New Demand'}
-        </Button>
+            {submissionStatus === 'submitting' ? 'Adding...' : 'Add New Demand'}
+          </Button>
         </Form>
       )}
     </>
