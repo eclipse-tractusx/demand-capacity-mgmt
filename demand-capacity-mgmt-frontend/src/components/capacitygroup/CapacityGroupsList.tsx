@@ -20,22 +20,22 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useMemo } from 'react';
-import { Form, Col, Row, Button, OverlayTrigger, Tooltip,Dropdown  } from 'react-bootstrap';
-import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
-import Pagination from '../common/Pagination';
-import CapacityGroupsTable from './CapacityGroupsTable';
-import Search from '../common/Search';
-import '../../index.css';
+import React, { useContext, useMemo, useState } from 'react';
+import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaEye } from 'react-icons/fa';
-import {LoadingMessage}  from '../common/LoadingMessages';
-import {useUser} from "../../contexts/UserContext";
+import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import { useUser } from "../../contexts/UserContext";
+import '../../index.css';
+import { LoadingMessage } from '../common/LoadingMessages';
+import Pagination from '../common/Pagination';
+import Search from '../common/Search';
+import CapacityGroupsTable from './CapacityGroupsTable';
 
 const CapacityGroupsList: React.FC = () => {
   const { user } = useUser();
   // to do clean /const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);
 
-  const { capacitygroups, isLoading} = useContext(CapacityGroupContext)!;
+  const { capacitygroups, isLoading } = useContext(CapacityGroupContext)!;
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState('');
@@ -120,7 +120,7 @@ const CapacityGroupsList: React.FC = () => {
                   navigator.clipboard.writeText(capacitygroup.internalId);
                 }}
               >
-                <FaCopy/>
+                <FaCopy />
               </Button>
             </OverlayTrigger>
           </td>
@@ -132,14 +132,14 @@ const CapacityGroupsList: React.FC = () => {
           <td>{capacitygroup.favoritedBy}</td>
           <td>
             {/* TODO Depending on status, this should be a different span*/}
-            <span className="badge rounded-pill text-bg-success" id="tag-ok">OK</span>
-            <span className="badge rounded-pill text-bg-warning" id="tag-warning">Warning</span>
-            <span className="badge rounded-pill text-bg-danger" id="tag-danger">Danger</span>
+            <span className="badge rounded-pill text-bg-success" id="tag-ok">Up</span>
+            <span className="badge rounded-pill text-bg-warning" id="tag-warning">Todo</span>
+            <span className="badge rounded-pill text-bg-danger" id="tag-danger">Down</span>
           </td>
           <td>
             <Dropdown>
               <Dropdown.Toggle variant="light" id={`dropdown-menu-${capacitygroup.internalId}`}>
-                <span ><FaEllipsisV/></span>
+                <span ><FaEllipsisV /></span>
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item href={`/details/${capacitygroup.internalId}`} target='new-tab'>Details</Dropdown.Item>
@@ -168,46 +168,46 @@ const CapacityGroupsList: React.FC = () => {
         </div>
       </div>
       {isLoading ? ( // Conditional rendering based on loading state
-      <LoadingMessage />
+        <LoadingMessage />
       ) : (<>
-      <CapacityGroupsTable
-        sortColumn={sortColumn}
-        sortOrder={sortOrder}
-        handleSort={handleSort}
-        capacitygroupsItems={capacitygroupsItems}
-      />
-      <div className="container">
-        <div className="row">
-          <Pagination
-            pages={totalPagesNum}
-            setCurrentPage={setCurrentPage}
-            currentItems={slicedcapacitygroups}
-            items={filteredcapacitygroups}
-          />
-          <div className="col-sm">
-            <div className="float-end">
-              <Form>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm="6">
-                    Per Page:
-                  </Form.Label>
-                  <Col sm="6">
-                    <Form.Control
-                      type="number"
-                      aria-describedby="capacitygroupsPerPageInput"
-                      min={1}
-                      htmlSize={10}
-                      max={100}
-                      value={capacitygroupsPerPage}
-                      onChange={(e) => setcapacitygroupsPerPage(Number(e.target.value))}
-                    />
-                  </Col>
-                </Form.Group>
-              </Form>
+        <CapacityGroupsTable
+          sortColumn={sortColumn}
+          sortOrder={sortOrder}
+          handleSort={handleSort}
+          capacitygroupsItems={capacitygroupsItems}
+        />
+        <div className="container">
+          <div className="row">
+            <Pagination
+              pages={totalPagesNum}
+              setCurrentPage={setCurrentPage}
+              currentItems={slicedcapacitygroups}
+              items={filteredcapacitygroups}
+            />
+            <div className="col-sm">
+              <div className="float-end">
+                <Form>
+                  <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="6">
+                      Per Page:
+                    </Form.Label>
+                    <Col sm="6">
+                      <Form.Control
+                        type="number"
+                        aria-describedby="capacitygroupsPerPageInput"
+                        min={1}
+                        htmlSize={10}
+                        max={100}
+                        value={capacitygroupsPerPage}
+                        onChange={(e) => setcapacitygroupsPerPage(Number(e.target.value))}
+                      />
+                    </Col>
+                  </Form.Group>
+                </Form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </>
       )}
     </>
