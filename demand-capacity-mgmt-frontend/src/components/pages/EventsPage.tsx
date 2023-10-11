@@ -21,9 +21,6 @@
  */
 
 
-import React from "react";
-import {InfoMenuProvider} from "../../contexts/InfoMenuContextProvider";
-import TopMenu from "../common/TopMenu";
 import EventsTable from "../events/EventsTable";
 
 function EventsPage() {

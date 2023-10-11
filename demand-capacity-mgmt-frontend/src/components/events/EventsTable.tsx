@@ -20,10 +20,11 @@
  * *******************************************************************************
  */
 
-import React, {useState} from 'react';
+import React, { useMemo, useState } from 'react';
+import { Col, Form, Row } from 'react-bootstrap';
 import Table from 'react-bootstrap/Table';
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
-
+import Pagination from '../common/Pagination';
 // Example data
 const eventData = [
     {
@@ -51,6 +52,8 @@ const eventData = [
 const EventsTable: React.FC = () => {
     const [sortField, setSortField] = useState<string>('timestamp');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [eventsPerPage, setEventsPerPage] = useState<number>(10);
 
     const handleSort = (field: string) => {
         if (sortField === field) {
@@ -61,58 +64,118 @@ const EventsTable: React.FC = () => {
         }
     };
 
-    const sortedData = [...eventData].sort((a, b) => {
-        let comparison = 0;
-        if ((a as any)[sortField] > (b as any)[sortField]) {
-            comparison = 1;
-        } else if ((a as any)[sortField] < (b as any)[sortField]) {
-            comparison = -1;
-        }
-        return sortOrder === 'asc' ? comparison : -comparison;
-    });
+    const sortedData = useMemo(() => {
+        const sortedArray = [...eventData].sort((a, b) => {
+            let comparison = 0;
+            if ((a as any)[sortField] > (b as any)[sortField]) {
+                comparison = 1;
+            } else if ((a as any)[sortField] < (b as any)[sortField]) {
+                comparison = -1;
+            }
+            return sortOrder === 'asc' ? comparison : -comparison;
+        });
+        return sortedArray;
+    }, [eventData, sortField, sortOrder]);
+
+    const indexOfLastEvent = currentPage * eventsPerPage;
+    const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
+    const currentEvents = sortedData.slice(indexOfFirstEvent, indexOfLastEvent);
+    const totalPagesNum = Math.ceil(sortedData.length / eventsPerPage);
+
+    const paginate = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
 
     return (
-        <Table striped bordered hover>
-            <thead>
-            <tr>
-                <th onClick={() => handleSort('eventId')}>
-                    Event ID {sortField === 'eventId' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                </th>
-                <th onClick={() => handleSort('eventType')}>
-                    Event Type {sortField === 'eventType' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                </th>
-                <th onClick={() => handleSort('status')}>
-                    Status {sortField === 'status' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                </th>
-                <th onClick={() => handleSort('objectId')}>
-                    Object ID {sortField === 'objectId' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                </th>
-                <th onClick={() => handleSort('type')}>
-                    Type {sortField === 'type' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                </th>
-                <th onClick={() => handleSort('name')}>
-                    Name {sortField === 'name' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                </th>
-                <th onClick={() => handleSort('timestamp')}>
-                    Timestamp {sortField === 'timestamp' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            {sortedData.map((event, index) => (
-                <tr key={index}>
-                    <td>{event.eventId}</td>
-                    <td>{event.eventType}</td>
-                    <td>{event.status}</td>
-                    <td>{event.objectId}</td>
-                    <td>{event.type}</td>
-                    <td>{event.name}</td>
-                    <td>{new Date(event.timestamp).toLocaleString()}</td>
-                </tr>
-            ))}
-            </tbody>
-        </Table>
+        <>
+            <div className="table-title">
+                <div className="row">
+                    <div className="col-sm-6">
+                        Events
+                    </div>
+                    <div className="col-sm-6">
+                        Filters
+                    </div>
+                </div>
+            </div>
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th onClick={() => handleSort('timestamp')}>
+                            Timestamp {sortField === 'timestamp' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                        </th>
+                        <th onClick={() => handleSort('eventId')}>
+                            Event ID {sortField === 'eventId' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                        </th>
+                        <th onClick={() => handleSort('eventType')}>
+                            Event Type {sortField === 'eventType' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                        </th>
+                        <th onClick={() => handleSort('status')}>
+                            Status {sortField === 'status' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                        </th>
+                        <th onClick={() => handleSort('objectId')}>
+                            Object ID {sortField === 'objectId' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                        </th>
+                        <th onClick={() => handleSort('type')}>
+                            Type {sortField === 'type' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                        </th>
+                        <th onClick={() => handleSort('name')}>
+                            Name {sortField === 'name' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {currentEvents.map((event, index) => (
+                        <tr key={index}>
+                            <td>{new Date(event.timestamp).toLocaleString()}</td>
+                            <td>{event.eventId}</td>
+                            <td>{event.eventType}</td>
+                            <td>{event.status}</td>
+                            <td>{event.objectId}</td>
+                            <td>{event.type}</td>
+                            <td>{event.name}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+
+            <div className="container">
+                <div className="row">
+                    <Pagination
+                        pages={totalPagesNum}
+                        setCurrentPage={setCurrentPage}
+                        currentItems={currentEvents}
+                        items={eventData}
+                    />
+                    <div className="col-sm">
+                        <div className="float-end">
+                            <Form>
+                                <Form.Group as={Row} className="mb-3">
+                                    <Form.Label column sm="6">
+                                        Per Page:
+                                    </Form.Label>
+                                    <Col sm="6">
+                                        <Form.Control
+                                            type="number"
+                                            aria-describedby="capacitygroupsPerPageInput"
+                                            min={1}
+                                            htmlSize={10}
+                                            max={100}
+                                            value={eventsPerPage}
+                                            onChange={(e) => setEventsPerPage(Number(e.target.value))}
+                                        />
+                                    </Col>
+                                </Form.Group>
+                            </Form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
     );
 };
 
 export default EventsTable;
+
+
+

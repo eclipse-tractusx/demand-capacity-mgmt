@@ -19,18 +19,18 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { useState, useEffect, useContext } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import React, { useContext, useEffect, useState } from 'react';
+import { InputGroup } from 'react-bootstrap';
 import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { DemandProp } from '../../interfaces/demand_interfaces';
-import { CapacityGroupProp } from '../../interfaces/capacitygroup_interfaces';
-import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
-import {LoadingMessage}  from './../common/LoadingMessages';
-import { InputGroup } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 import { FaSearch } from 'react-icons/fa';
+import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import { CapacityGroupProp } from '../../interfaces/capacitygroup_interfaces';
+import { DemandProp } from '../../interfaces/demand_interfaces';
+import { LoadingMessage } from './../common/LoadingMessages';
 
 interface CapacityGroupAddToExistingProps {
   show: boolean;

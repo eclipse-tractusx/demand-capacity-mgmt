@@ -20,19 +20,19 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useMemo, useCallback, useEffect } from 'react';
-import { Button, Form, Col, Row, Dropdown } from 'react-bootstrap';
-import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
-import Pagination from './Pagination';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Button, Col, Dropdown, Form, Row } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt } from 'react-icons/fa';
-import { DemandContext } from '../../contexts/DemandContextProvider';
-import DemandDetailsModal from './DemandDetailsModal';
-import DemandListTable from '../demands/DemandListTable';
-import {LoadingMessage}  from './LoadingMessages';
-import CapacityGroupWizardModal from './../capacitygroup/CapacityGroupWizardModal';
-import CapacityGroupAddToExisting from './../capacitygroup/CapacityGroupAddToExisting';
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
+import { DemandContext } from '../../contexts/DemandContextProvider';
+import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
+import DemandListTable from '../demands/DemandListTable';
+import CapacityGroupAddToExisting from './../capacitygroup/CapacityGroupAddToExisting';
+import CapacityGroupWizardModal from './../capacitygroup/CapacityGroupWizardModal';
 import DangerConfirmationModal, { ConfirmationAction } from './DangerConfirmationModal';
+import DemandDetailsModal from './DemandDetailsModal';
+import { LoadingMessage } from './LoadingMessages';
+import Pagination from './Pagination';
 
 
 const DemandList: React.FC<{
@@ -48,13 +48,13 @@ const DemandList: React.FC<{
   toggleWizardModal,
   showAddToExisting = false,
   toggleAddToExisting,
-  capacityGroupDemands=[],
+  capacityGroupDemands = [],
 }) => {
 
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
-    const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction>(ConfirmationAction.Delete);    
+    const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction>(ConfirmationAction.Delete);
 
     const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
     const { deleteDemand } = useContext(DemandContext)!;
@@ -120,7 +120,7 @@ const DemandList: React.FC<{
       setConfirmationAction(ConfirmationAction.Delete); // Set the confirmation action type
       setShowDeleteConfirmation(true);
     };
-    
+
 
     const handleDeleteDemandWrapper = () => {
       if (deleteItemId) {
@@ -282,9 +282,9 @@ const DemandList: React.FC<{
                   <span ><FaEllipsisV /></span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => handleDetails(demand)}><FaInfoCircle/> Details</Dropdown.Item>
-                  <Dropdown.Item onClick={() => { navigator.clipboard.writeText(demand.id) }}><FaCopy/> Copy ID</Dropdown.Item>
-                  <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteButtonClick(demand.id)}><FaTrashAlt/> Delete</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleDetails(demand)}><FaInfoCircle /> Details</Dropdown.Item>
+                  <Dropdown.Item onClick={() => { navigator.clipboard.writeText(demand.id) }}><FaCopy /> Copy ID</Dropdown.Item>
+                  <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteButtonClick(demand.id)}><FaTrashAlt /> Delete</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </td>
@@ -341,14 +341,14 @@ const DemandList: React.FC<{
             </div>
 
             <DangerConfirmationModal
-            show={showDeleteConfirmation}
-            onCancel={() => {
-              setShowDeleteConfirmation(false);
-              setDeleteItemId(null);
-            }}
-            onConfirm={handleDeleteDemandWrapper}
-            action={confirmationAction}
-          />
+              show={showDeleteConfirmation}
+              onCancel={() => {
+                setShowDeleteConfirmation(false);
+                setDeleteItemId(null);
+              }}
+              onConfirm={handleDeleteDemandWrapper}
+              action={confirmationAction}
+            />
 
             <DemandDetailsModal
               show={showDetailsModal}
@@ -375,5 +375,5 @@ const DemandList: React.FC<{
       </>
     );
   };
-  
+
 export default DemandList;

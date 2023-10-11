@@ -27,7 +27,7 @@ import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
 import Home from "../pages/CapacityGroupPage";
 import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
-import AuthenticationComponent from "../auth/AuthenticationComponent";
+import AuthenticationComponent from "../pages/AuthenticationPage";
 import { UserProvider } from '../../contexts/UserContext';
 import EventsPage from "../pages/EventsPage";
 import DemandContextProvider from '../../contexts/DemandContextProvider';

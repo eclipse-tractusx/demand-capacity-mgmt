@@ -20,17 +20,17 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useEffect } from 'react';
-import '../../index.css';
-import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
-import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSery } from '../../interfaces/demand_interfaces';
-import { Button, ButtonGroup, ToggleButton, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { DemandContext } from '../../contexts/DemandContextProvider';
 import moment from 'moment';
 import 'moment-weekday-calc';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, ButtonGroup, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
+import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
+import { DemandContext } from '../../contexts/DemandContextProvider';
+import '../../index.css';
+import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSery } from '../../interfaces/demand_interfaces';
 
 
-import {getISOWeek, format,} from 'date-fns';
+import { format, getISOWeek, } from 'date-fns';
 
 interface WeeklyViewProps {
   demandData: DemandProp;
@@ -224,7 +224,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
 
     // Filter out null values and assert the type
     const filteredUpdatedDemandSeries: MaterialDemandSery[] = updatedDemandSeries.filter(
-        (series): series is MaterialDemandSery => series !== null
+      (series): series is MaterialDemandSery => series !== null
     );
 
     const updatedDemand: Demand = {
@@ -282,160 +282,160 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
   };
 
   return (
-      <div className='container'>
-        <div className="row">
-          <div className="col"></div>
-          <div className="col-6 border d-flex align-items-center justify-content-center">
-            {demandData.id} - {demandData.materialDescriptionCustomer}
-          </div>
-          <div className="col d-flex justify-content-end">
-            <br />
-            <ButtonGroup className="mb-2 align-middle">
-              <ToggleButton
-                  id="toggle-edit"
-                  type="checkbox"
-                  variant="info"
-                  name="edit"
-                  value="0"
-                  checked={editMode}
-                  onChange={() => setEditMode(!editMode)}
-              >Edit
-              </ToggleButton>
-              <Button variant="info" name="save" onClick={handleSave} disabled={!editMode}>
-                Save
-              </Button>
-              <Button variant="info" name="revert" onClick={handleRevert} disabled={!editMode}>
-                Revert Changes
-              </Button>
-            </ButtonGroup>
-          </div>
+    <div className='container'>
+      <div className="row">
+        <div className="col"></div>
+        <div className="col-6 border d-flex align-items-center justify-content-center">
+          {demandData.id} - {demandData.materialDescriptionCustomer}
         </div>
-        <br />
-        <div className="table-container">
-          <div className="container">
-            <table className="vertical-table">
-              <thead>
+        <div className="col d-flex justify-content-end">
+          <br />
+          <ButtonGroup className="mb-2 align-middle">
+            <ToggleButton
+              id="toggle-edit"
+              type="checkbox"
+              variant="info"
+              name="edit"
+              value="0"
+              checked={editMode}
+              onChange={() => setEditMode(!editMode)}
+            >Edit
+            </ToggleButton>
+            <Button variant="info" name="save" onClick={handleSave} disabled={!editMode}>
+              Save
+            </Button>
+            <Button variant="info" name="revert" onClick={handleRevert} disabled={!editMode}>
+              Revert Changes
+            </Button>
+          </ButtonGroup>
+        </div>
+      </div>
+      <br />
+      <div className="table-container">
+        <div className="container">
+          <table className="vertical-table">
+            <thead>
               <tr>
                 <th className="empty-header-cell"></th>
                 <th colSpan={totalWeeksPreviousYear} className="header-cell">
-                  {currentYear-1}
+                  {currentYear - 1}
                 </th>
                 <th colSpan={totalWeeksCurrentYear} className="header-cell">
                   {currentYear}
                 </th>
                 <th colSpan={totalWeeksNextYear} className="header-cell">
-                  {currentYear+1}
+                  {currentYear + 1}
                 </th>
               </tr>
               <tr>
                 <th className="empty-header-cell"></th>
                 {monthsPreviousYear.map((month) => (
-                    <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                      {month.name}
-                    </th>
+                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
+                    {month.name}
+                  </th>
                 ))}
                 {monthsCurrentYear.map((month) => (
-                    <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                      {month.name}
-                    </th>
+                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
+                    {month.name}
+                  </th>
                 ))}
                 {monthsNextYear.map((month) => (
-                    <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                      {month.name}
-                    </th>
+                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
+                    {month.name}
+                  </th>
                 ))}
               </tr>
               <tr>
                 <th className="empty-header-cell"></th>
                 {[monthsPreviousYear, monthsCurrentYear, monthsNextYear].reduce((acc, curr) => acc.concat(curr), []).map((month) =>
-                    month.weeks.map((week) => (
-                        <th key={month.name + week} className="header-cell week-header-cell">
-                          <OverlayTrigger
-                              placement="top"
-                              overlay={
-                                <Tooltip id={`week-tooltip-${month.year}-${week}`}>
-                                  {`Week ${week} - ${getWeekDates(month.year, month.name, week).startDate} to ${getWeekDates(
-                                      month.year,
-                                      month.name,
-                                      week
-                                  ).endDate}`}
-                                </Tooltip>
-                              }
-                          >
-                            <span>{week}</span>
-                          </OverlayTrigger>
-                        </th>
-                    ))
+                  month.weeks.map((week) => (
+                    <th key={month.name + week} className="header-cell week-header-cell">
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={
+                          <Tooltip id={`week-tooltip-${month.year}-${week}`}>
+                            {`Week ${week} - ${getWeekDates(month.year, month.name, week).startDate} to ${getWeekDates(
+                              month.year,
+                              month.name,
+                              week
+                            ).endDate}`}
+                          </Tooltip>
+                        }
+                      >
+                        <span>{week}</span>
+                      </OverlayTrigger>
+                    </th>
+                  ))
                 )}
               </tr>
               {demandcategories?.sort((a, b) => a.id.localeCompare(b.id))
-                      .map((category: DemandCategory) => (
-                          <tr key={category.id}>
-                            <th className="sticky-header-cell">
-                              <div className="sticky-header-content">{category.demandCategoryName}</div>
-                            </th>
-                            {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) => (
-                                <React.Fragment key={`${category.id}-${month.name}-${month.year}`}>
-                                  {month.weeks.map((week: number) => (
-                                      <td key={`${category.id}-${month.name}-${week}`} className="data-cell">
-                                        {editMode ? (
-                                            <input
-                                                className="table-data-input"
-                                                type="text"
-                                                defaultValue={
-                                                  demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
-                                                      ? demandValuesMap[category.id]?.[month.year]?.[week].toString()
-                                                      : ''
-                                                }
-                                                onChange={(event) => {
-                                                  const inputValue = event.target.value;
-                                                  const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+                .map((category: DemandCategory) => (
+                  <tr key={category.id}>
+                    <th className="sticky-header-cell">
+                      <div className="sticky-header-content">{category.demandCategoryName}</div>
+                    </th>
+                    {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) => (
+                      <React.Fragment key={`${category.id}-${month.name}-${month.year}`}>
+                        {month.weeks.map((week: number) => (
+                          <td key={`${category.id}-${month.name}-${week}`} className="data-cell">
+                            {editMode ? (
+                              <input
+                                className="table-data-input"
+                                type="text"
+                                defaultValue={
+                                  demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
+                                    ? demandValuesMap[category.id]?.[month.year]?.[week].toString()
+                                    : ''
+                                }
+                                onChange={(event) => {
+                                  const inputValue = event.target.value;
+                                  const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
 
-                                                  setDemandValuesMap((prevDemandValuesMap) => {
-                                                    const categoryMap = {
-                                                      ...(prevDemandValuesMap[category.id] || {}),
-                                                      [month.year]: {
-                                                        ...(prevDemandValuesMap[category.id]?.[month.year] || {}),
-                                                      },
-                                                    };
+                                  setDemandValuesMap((prevDemandValuesMap) => {
+                                    const categoryMap = {
+                                      ...(prevDemandValuesMap[category.id] || {}),
+                                      [month.year]: {
+                                        ...(prevDemandValuesMap[category.id]?.[month.year] || {}),
+                                      },
+                                    };
 
-                                                    if (inputValue === '' || numericValue === '0') {
-                                                      delete categoryMap[month.year]?.[week];
+                                    if (inputValue === '' || numericValue === '0') {
+                                      delete categoryMap[month.year]?.[week];
 
-                                                      if (Object.keys(categoryMap[month.year]).length === 0) {
-                                                        delete categoryMap[month.year];
-                                                      }
-                                                    } else if (/^[0-9]\d*$/.test(numericValue)) {
-                                                      categoryMap[month.year][week] = parseInt(numericValue, 10);
-                                                    }
+                                      if (Object.keys(categoryMap[month.year]).length === 0) {
+                                        delete categoryMap[month.year];
+                                      }
+                                    } else if (/^[0-9]\d*$/.test(numericValue)) {
+                                      categoryMap[month.year][week] = parseInt(numericValue, 10);
+                                    }
 
-                                                    return {
-                                                      ...prevDemandValuesMap,
-                                                      [category.id]: categoryMap,
-                                                    };
-                                                  });
-                                                }}
-                                            />
-                                        ) : (
-                                            <span>
-                                  {demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
-                                      ? demandValuesMap[category.id]?.[month.year]?.[week] === 0
-                                          ? '0'
-                                          : demandValuesMap[category.id]?.[month.year]?.[week]
-                                      : ''}
-                                </span>
-                                        )}
-                                      </td>
-                                  ))}
-                                </React.Fragment>
-                            ))}
-                          </tr>
-                      ))}
-              </thead>
-            </table>
-          </div>
+                                    return {
+                                      ...prevDemandValuesMap,
+                                      [category.id]: categoryMap,
+                                    };
+                                  });
+                                }}
+                              />
+                            ) : (
+                              <span>
+                                {demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
+                                  ? demandValuesMap[category.id]?.[month.year]?.[week] === 0
+                                    ? '0'
+                                    : demandValuesMap[category.id]?.[month.year]?.[week]
+                                  : ''}
+                              </span>
+                            )}
+                          </td>
+                        ))}
+                      </React.Fragment>
+                    ))}
+                  </tr>
+                ))}
+            </thead>
+          </table>
         </div>
       </div>
+    </div>
   );
 };
 

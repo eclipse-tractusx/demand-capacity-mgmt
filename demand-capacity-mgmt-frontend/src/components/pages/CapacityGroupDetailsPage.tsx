@@ -19,15 +19,15 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { useState, useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
-import CapacityGroupChronogram from '../../components/capacitygroup/CapacityGroupChronogram';
-import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
 import { useParams } from 'react-router-dom';
+import CapacityGroupChronogram from '../../components/capacitygroup/CapacityGroupChronogram';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
-import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
+import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList';
+import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
 import { LoadingMessage } from '../common/LoadingMessages';
 
 function CapacityGroupDetailsPage() {

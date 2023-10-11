@@ -19,19 +19,21 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
+import { useEffect, useRef, useState } from "react";
 import {
-    ComposedChart,
-    Line,
     Bar,
-    XAxis,
-    YAxis,
+    BarChart,
+    Brush,
     CartesianGrid,
-    Tooltip,
+    ComposedChart,
     Legend,
-    Brush, ReferenceArea, BarChart
+    Line,
+    ReferenceArea,
+    Tooltip,
+    XAxis,
+    YAxis
 } from "recharts";
-import {SingleCapacityGroup} from "../../interfaces/capacitygroup_interfaces";
-import {useEffect, useRef, useState} from "react";
+import { SingleCapacityGroup } from "../../interfaces/capacitygroup_interfaces";
 
 type CapacityGroupChronogramProps = {
     capacityGroup: SingleCapacityGroup | null | undefined;

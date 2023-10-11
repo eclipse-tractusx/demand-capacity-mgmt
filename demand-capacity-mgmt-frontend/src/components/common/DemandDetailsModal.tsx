@@ -19,12 +19,12 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { useState, useEffect } from 'react';
-import { Modal, Breadcrumb } from 'react-bootstrap';
-import WeeklyView from '../demands/DemandsOverview';
+import { useEffect, useState } from 'react';
+import { Breadcrumb, Modal } from 'react-bootstrap';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import { DemandProp } from '../../interfaces/demand_interfaces';
-import {LoadingGatheringDataMessage} from './LoadingMessages';
+import WeeklyView from '../demands/DemandsOverview';
+import { LoadingGatheringDataMessage } from './LoadingMessages';
 
 interface DemandDetailsModalProps {
   show: boolean;
@@ -85,7 +85,7 @@ function DemandDetailsModal({
           </Breadcrumb>
         </Modal.Header>
         <Modal.Body>
-          <LoadingGatheringDataMessage/>
+          <LoadingGatheringDataMessage />
         </Modal.Body>
       </Modal>
     );

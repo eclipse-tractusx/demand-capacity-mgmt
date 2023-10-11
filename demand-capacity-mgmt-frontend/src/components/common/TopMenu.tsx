@@ -23,11 +23,11 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { FiSettings,FiLogOut } from 'react-icons/fi';
+import { FiLogOut, FiSettings } from 'react-icons/fi';
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../../contexts/UserContext";
+import { logout } from "../../util/Auth";
 import InfoMenu from "../menu/InfoMenu";
-import {useUser} from "../../contexts/UserContext";
-import {useNavigate} from "react-router-dom";
-import {logout} from "../../util/Auth";
 
 function TopMenuLinks() {
 
@@ -35,7 +35,7 @@ function TopMenuLinks() {
   const navigate = useNavigate();
   const { setUser } = useUser();
 
-  const handleLogout = async () =>{
+  const handleLogout = async () => {
     try {
       await logout();
       setUser(null); // Clear user data stored in context
@@ -48,17 +48,17 @@ function TopMenuLinks() {
   return (
     <Navbar expand="lg" className="navbar navbar-expand-sm bg-dark navbar-dark">
       <Container>
-        <Navbar.Brand  ><img srcSet='/media/logos/cx-short.svg' alt="Logo" width="30" height="auto" className='d-inline-block align-text-top'/> Demand Capacity Management</Navbar.Brand>
+        <Navbar.Brand  ><img srcSet='/media/logos/cx-short.svg' alt="Logo" width="30" height="auto" className='d-inline-block align-text-top' /> Demand Capacity Management</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <InfoMenu/>
+          <InfoMenu />
         </Navbar.Collapse>
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
             Signed in as: <a href="/login"> {user?.username}</a>
           </Navbar.Text>
-          <Nav.Link href="#settings" className="p-3 navbar-nav nav-item"><FiSettings/></Nav.Link>
-          <Nav.Link onClick={handleLogout} className="p-2 navbar-nav nav-item"><FiLogOut/></Nav.Link>
+          <Nav.Link href="#settings" className="p-3 navbar-nav nav-item"><FiSettings /></Nav.Link>
+          <Nav.Link onClick={handleLogout} className="p-2 navbar-nav nav-item"><FiLogOut /></Nav.Link>
         </Navbar.Collapse>
       </Container>
     </Navbar>

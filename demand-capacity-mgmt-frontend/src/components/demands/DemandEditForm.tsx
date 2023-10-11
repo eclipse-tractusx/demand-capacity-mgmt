@@ -19,14 +19,14 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { useContext, useState, useEffect } from 'react';
-import { Form, Button, Col, Row } from 'react-bootstrap';
-import { DemandContext } from '../../contexts/DemandContextProvider';
-import { Demand, DemandSeriesValue, DemandProp, DemandSeries } from '../../interfaces/demand_interfaces';
-import CompanyOptions from '../common/CompanyOptions';
-import UnitsOfMeasureOptions from '../common/UnitsofMeasureOptions';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Col, Form, Row } from 'react-bootstrap';
 import Spinner from 'react-bootstrap/Spinner';
 import { FiSave } from 'react-icons/fi';
+import { DemandContext } from '../../contexts/DemandContextProvider';
+import { Demand, DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
+import CompanyOptions from '../common/CompanyOptions';
+import UnitsOfMeasureOptions from '../common/UnitsofMeasureOptions';
 
 function convertToDemand(demandProp: DemandProp): Demand {
   const {

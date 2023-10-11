@@ -20,23 +20,23 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useMemo, useCallback, useEffect } from 'react';
-import { Modal, Button, Form, Col, Row, Dropdown } from 'react-bootstrap';
-import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
-import Pagination from '../common/Pagination';
-import DemandsSearch from '../common/Search';
-import EditForm from './DemandEditForm';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Button, Col, Dropdown, Form, Modal, Row } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt } from 'react-icons/fa';
-import AddForm from './DemandAddForm';
+import CompanyContextProvider from '../../contexts/CompanyContextProvider';
+import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
-import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
-import CompanyContextProvider from '../../contexts/CompanyContextProvider';
+import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import DemandDetailsModal from '../common/DemandDetailsModal';
+import Pagination from '../common/Pagination';
+import DemandsSearch from '../common/Search';
+import AddForm from './DemandAddForm';
+import EditForm from './DemandEditForm';
 
-import DemandManagementTable from './DemandManagementTable';
-import { LoadingMessage } from '../common/LoadingMessages';
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
+import { LoadingMessage } from '../common/LoadingMessages';
+import DemandManagementTable from './DemandManagementTable';
 
 const DemandManagement: React.FC = () => {
   const [showEditModal, setIsEditModalOpen] = useState(false);
@@ -44,7 +44,7 @@ const DemandManagement: React.FC = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
-  const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction>(ConfirmationAction.Delete); 
+  const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction>(ConfirmationAction.Delete);
 
   const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
   const { deleteDemand } = useContext(DemandContext)!;

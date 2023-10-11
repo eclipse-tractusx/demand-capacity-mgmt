@@ -24,7 +24,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {BrowserRouter as Router} from "react-router-dom";
 import { isAuthenticated } from './util/Auth';
-import AuthenticationComponent from './components/auth/AuthenticationComponent';
+import AuthenticationComponent from './components/pages/AuthenticationPage';
 import AppComponent from './components/dcm/AppComponent';
 import './custom-bootstrap.scss';
 import'./index.css';

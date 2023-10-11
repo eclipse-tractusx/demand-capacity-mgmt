@@ -215,3 +215,4 @@ const CapacityGroupsList: React.FC = () => {
 };
 
 export default CapacityGroupsList;
+

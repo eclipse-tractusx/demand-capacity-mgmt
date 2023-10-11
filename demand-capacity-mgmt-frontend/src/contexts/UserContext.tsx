@@ -20,9 +20,8 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useContext, useState } from 'react';
-import {User} from "../interfaces/user_interface";
-
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { User } from "../interfaces/user_interface";
 
 interface UserContextProps {
     user: User | null;
@@ -36,7 +35,17 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const storedUser = localStorage.getItem('user');
+    const [user, setUser] = useState<User | null>(storedUser ? JSON.parse(storedUser) : null);
+
+    useEffect(() => {
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('user');
+        }
+    }, [user]);
+
     return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 }
 
