@@ -4,47 +4,42 @@
 // Theme 1 variables
 $theme1-primary: #94cb2d;
 $theme1-secondary: #ffa600;
-$theme1-primary-darker:#78A423  ;
-$theme1-secondary-darker:#FF7D00 ;
+$theme1-primary-darker: #78A423;
+$theme1-secondary-darker: #FF7D00;
 $theme1-info: #6c757d;
-
-// Theme 2 variables
-$theme2-primary: #ffa600;
-$theme2-secondary: #94cb2d;
-$theme2-info: #6c757d;
 
 // Define classes for Theme 1
 .theme1 {
-  --bs-primary: $theme1-primary; /* Override Bootstrap primary color */
-  --bs-secondary: $theme1-secondary; /* Override Bootstrap secondary color */
-  --bs-info: $theme1-info; /* Override Bootstrap info color */
-}
-
-// Define classes for Theme 2
-.theme2 {
-  --bs-primary: $theme2-primary; /* Override Bootstrap primary color */
-  --bs-secondary: $theme2-secondary; /* Override Bootstrap secondary color */
-  --bs-info: $theme2-info; /* Override Bootstrap info color */
+  --bs-primary: $theme1-primary;
+  --bs-primary-darker: $theme1-primar-darker;
+  /* Override Bootstrap primary color */
+  --bs-secondary: $theme1-secondary;
+  /* Override Bootstrap secondary color */
+  --bs-info: $theme1-info;
+  /* Override Bootstrap info color */
 }
 
 // Override Bootstrap variables with custom colors
 $theme-colors: (
   primary: $theme1-primary,
   secondary: $theme1-secondary,
-  info: $theme1-info
+  info: $theme1-info,
 );
 
+@import '~bootstrap/scss/functions';
 @import '~bootstrap/scss/mixins';
 @import '~bootstrap/scss/root';
 @import '~bootstrap/scss/reboot';
 @import '~bootstrap/scss/forms';
 @import '~bootstrap/scss/buttons';
 @import '~bootstrap/scss/dropdown';
+@import '~bootstrap/scss/badge';
 
 // Override button text color
 .btn {
   color: #ffffff; // White text color
 }
+
 .btn-light {
   color: black;
 }
@@ -77,6 +72,7 @@ $theme-colors: (
   background-color: var(--bs-primary); // Custom primary color
   border-color: var(--bs-primary); // Custom primary color
 }
+
 .pagination .page-link {
   color: #303030;
 }
@@ -88,6 +84,14 @@ $theme-colors: (
 .dropdown-item:hover,
 .dropdown-item:focus {
   background-color: var(--bs-primary);
+}
+
+.badge.bg-primary {
+  background-color: var(--bs-primary) !important;
+}
+
+.badge.text-white {
+  color: #fff;
 }
 
 @import '~bootstrap/scss/pagination';
