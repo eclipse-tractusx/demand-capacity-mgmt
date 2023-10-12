@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from "../interfaces/user_interface";
 
 interface UserContextProps {
@@ -42,10 +42,18 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const storedUser = localStorage.getItem('user');
     const [user, setUser] = useState<User | null>(storedUser ? JSON.parse(storedUser) : null);
 
-    // Initializing from sessionStorage
-    const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem('refreshToken'));
-    const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem('accessToken'));
-    const [expiresIn, setExpiresIn] = useState<number | null>(Number(localStorage.getItem('expiresIn')));
+    const [refreshToken, setRefreshToken] = useState<string | null>(() => localStorage.getItem('refreshToken') || null);
+    const [accessToken, setAccessToken] = useState<string | null>(() => localStorage.getItem('accessToken') || null);
+    const [expiresIn, setExpiresIn] = useState<number | null>(() => Number(localStorage.getItem('expiresIn')) || null);
+
+
+    useEffect(() => {
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('user');
+        }
+    }, [user]);
 
     // Storing to sessionStorage when the state changes
     useEffect(() => {
