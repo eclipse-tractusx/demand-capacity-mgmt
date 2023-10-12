@@ -102,7 +102,6 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const createDemand = async (newDemand: Demand) => {
     try {
       await api.post('/demand', newDemand);
-      fetchDemandProps();
     } catch (error) {
       console.error('Error creating demand:', error);
     }

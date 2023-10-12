@@ -67,9 +67,14 @@ const useHandleSubmit = (initialFormState: Demand) => {
       }));
       return values;
     };
-
     const startDateInput = document.querySelector<HTMLInputElement>('#startDate');
     const endDateInput = document.querySelector<HTMLInputElement>('#endDate');
+
+    if (!startDateInput?.value || !endDateInput?.value) {
+      // Validation check: start date and end date are required
+      console.error('Start date and end date are required.');
+      return;
+    }
 
     if (startDateInput && endDateInput) {
       const startDateObj = new Date(startDateInput.value);
@@ -138,10 +143,18 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
 
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    const startDateInput = document.querySelector<HTMLInputElement>('#startDate');
+    const endDateInput = document.querySelector<HTMLInputElement>('#endDate');
+
+    if (!startDateInput?.value || !endDateInput?.value) {
+      console.error('Start date and end date are required.');
+      return;
+    }
     await handleSubmit(formState);
     setShowSuccessMessage(true);
-    fetchDemandProps();
-  };
+  }
+
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -343,7 +356,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit" onClick={handleFormSubmit} disabled={submissionStatus === 'submitting'}>
+          <Button variant="primary" onClick={handleFormSubmit} disabled={submissionStatus === 'submitting'}>
             {submissionStatus === 'submitting' ? 'Adding...' : 'Add New Demand'}
           </Button>
         </Form>

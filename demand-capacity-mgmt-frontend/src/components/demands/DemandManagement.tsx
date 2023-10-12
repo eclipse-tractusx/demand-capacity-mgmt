@@ -100,7 +100,11 @@ const DemandManagement: React.FC = () => {
     setShowDetailsModal(true);
   };
 
-  const handleCloseAdd = () => setShowAddModal(false);
+  const handleCloseAdd = () => {
+    fetchDemandProps();
+    setShowAddModal(false);
+  };
+
   const handleCloseDetails = () => setShowDetailsModal(false);
 
   const handleDeleteButtonClick = (id: string) => {
