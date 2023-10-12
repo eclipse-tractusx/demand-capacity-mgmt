@@ -22,7 +22,7 @@
 
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Button, Col, Dropdown, Form, Modal, Row } from 'react-bootstrap';
-import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt } from 'react-icons/fa';
+import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaStar, FaTrashAlt } from 'react-icons/fa';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
@@ -178,6 +178,7 @@ const DemandManagement: React.FC = () => {
     () =>
       slicedDemands.map((demand) => (
         <tr key={demand.id}>
+          <td><FaStar className="text-muted" opacity='0.2' size={25} /></td>
           <td>
             <Button data-toggle="modal" onClick={() => handleDetails(demand)} variant="outline-primary" >
               <div style={{ display: "flex", justifyContent: "center" }}>
@@ -275,13 +276,14 @@ const DemandManagement: React.FC = () => {
         <LoadingMessage />
       ) : (
         <>
-          <DemandManagementTable
-            sortColumn={sortColumn}
-            sortOrder={sortOrder}
-            handleSort={(column: string | null) => handleSort(column)} // Pass the correct parameter type
-            demandItems={demandItems}
-          />
-
+          <div className='table-responsive'>
+            <DemandManagementTable
+              sortColumn={sortColumn}
+              sortOrder={sortOrder}
+              handleSort={(column: string | null) => handleSort(column)} // Pass the correct parameter type
+              demandItems={demandItems}
+            />
+          </div>
           <div className="container">
             <div className="row">
               <Pagination

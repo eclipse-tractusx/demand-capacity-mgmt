@@ -20,13 +20,15 @@
  *    ********************************************************************************
  */
 
-import axios from 'axios';
 
-const Api = axios.create({
-    baseURL: 'http://localhost:8080',
-    withCredentials: true,
-    timeout: 5000,
-});
-
-
-export default Api
+export interface EventProp {
+  id: string
+  userAccount: string
+  timeCreated: string
+  objectType: string
+  eventType: string
+  capacityGroupId: string
+  materialDemandId: string
+  eventDescription: string
+  isFavorited: boolean
+}

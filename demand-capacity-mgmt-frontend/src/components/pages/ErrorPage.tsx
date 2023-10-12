@@ -38,7 +38,7 @@ const ErrorPage: React.FC = () => {
             <Row className="justify-content-center align-items-center min-vh-100">
                 <Col xs={10} sm={8} md={6} lg={4}>
                     <div className='error-text'>
-                        <img src={`/media/error/error(${randomNumber}).png`} width="100" height="100" className='d-inline-block align-text-top' />
+                        <img src={`/media/error/error(${randomNumber}).png`} alt='erroricon' width="100" height="100" className='d-inline-block align-text-top' />
                         <h1>Oops! Something went wrong.</h1>
                         <p>Sorry, we encountered an error while processing your request.</p>
                     </div>

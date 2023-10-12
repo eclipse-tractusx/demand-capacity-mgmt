@@ -20,8 +20,8 @@
  *    ********************************************************************************
  */
 
-import {ReactNode, useEffect, useState} from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { ReactNode, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { isAuthenticated } from './Auth';
 
 interface AuthenticatedRouteProps {
@@ -55,7 +55,3 @@ const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ children }) => 
 
 
 export default AuthenticatedRoute;
-
-
-
-

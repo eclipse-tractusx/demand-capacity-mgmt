@@ -20,8 +20,8 @@
  *    ********************************************************************************
  */
 
+import { User } from "../interfaces/user_interface";
 import Api from '../util/Api';
-import {User} from "../interfaces/user_interface";
 
 export const isAuthenticated = async (): Promise<boolean> => {
     try {
@@ -51,7 +51,6 @@ export const login = async (username: string, password: string): Promise<User> =
         throw error;
     }
 }
-
 
 export const logout = async (): Promise<void> => {
     try {

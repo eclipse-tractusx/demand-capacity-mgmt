@@ -20,44 +20,38 @@
  * *******************************************************************************
  */
 
-import React, { useMemo, useState } from 'react';
-import { Col, Form, Row } from 'react-bootstrap';
-import Table from 'react-bootstrap/Table';
-import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import React, { useContext, useMemo, useState } from 'react';
+import { Button, Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { FaArchive, FaArrowDown, FaArrowUp, FaCopy, FaEnvelope, FaExclamation, FaExternalLinkAlt, FaStar, FaUnlink, FaWrench } from 'react-icons/fa';
+import { EventsContext } from '../../contexts/EventsContextProvider';
+import { EventProp } from '../../interfaces/event_interfaces';
 import Pagination from '../common/Pagination';
-// Example data
-const eventData = [
-    {
-        eventId: 'E001',
-        eventType: 'Login',
-        status: 'Success',
-        objectId: 'U001',
-        type: 'User',
-        name: 'Alice',
-        timestamp: '2023-10-04T10:00:00Z'
-    },
-    {
-        eventId: 'E002',
-        eventType: 'Logout',
-        status: 'Success',
-        objectId: 'U002',
-        type: 'User',
-        name: 'Bob',
-        timestamp: '2023-10-04T11:00:00Z'
-    },
-    // Add more event data as needed
-];
 
+interface EventsTableProps {
+    events: EventProp[];
+}
 
-const EventsTable: React.FC = () => {
+const EventsTable: React.FC<EventsTableProps> = ({ events }) => {
+    const eventsContext = useContext(EventsContext)!;
     const [sortField, setSortField] = useState<string>('timestamp');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [eventsPerPage, setEventsPerPage] = useState<number>(10);
+    const [eventsPerPage, setEventsPerPage] = useState<number>(20);
+
+    const eventTypeIcons: { [key: string]: React.ReactNode } = {
+        GENERAL_EVENT: <FaEnvelope className="text-primary" size={25} />,
+        TODO: <FaWrench className="text-warning" size={25} />,
+        ALERT: <FaExclamation className="text-danger" size={25} />,
+        STATUS_IMPROVEMENT: <FaArrowUp className="text-success" size={25} />,
+        STATUS_REDUCTION: <FaArrowDown className="text-danger" size={25} />,
+        LINKED: <FaExternalLinkAlt className="text-info" size={25} />,
+        UN_LINKED: <FaUnlink className="text-danger" size={25} />,
+    };
+
 
     const handleSort = (field: string) => {
         if (sortField === field) {
-            setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+            setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc') as 'asc' | 'desc');
         } else {
             setSortField(field);
             setSortOrder('desc');
@@ -65,17 +59,21 @@ const EventsTable: React.FC = () => {
     };
 
     const sortedData = useMemo(() => {
-        const sortedArray = [...eventData].sort((a, b) => {
+        const sortedArray = [...events].sort((a, b) => {
             let comparison = 0;
-            if ((a as any)[sortField] > (b as any)[sortField]) {
-                comparison = 1;
-            } else if ((a as any)[sortField] < (b as any)[sortField]) {
-                comparison = -1;
+            if (sortField === 'timestamp' && a.timeCreated && b.timeCreated) {
+                const dateA = new Date(a.timeCreated).getTime();
+                const dateB = new Date(b.timeCreated).getTime();
+                comparison = dateB - dateA; // Most recent events first
+            } else if (sortField !== 'timestamp' && a[sortField as keyof EventProp] && b[sortField as keyof EventProp]) {
+                const fieldA = a[sortField as keyof EventProp] as string;
+                const fieldB = b[sortField as keyof EventProp] as string;
+                comparison = fieldA.localeCompare(fieldB);
             }
             return sortOrder === 'asc' ? comparison : -comparison;
         });
         return sortedArray;
-    }, [eventData, sortField, sortOrder]);
+    }, [events, sortField, sortOrder]);
 
     const indexOfLastEvent = currentPage * eventsPerPage;
     const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
@@ -86,66 +84,121 @@ const EventsTable: React.FC = () => {
         setCurrentPage(pageNumber);
     };
 
+    const generateOverlay = (event: EventProp): React.ReactElement => {
+        const eventTypeIcon = eventTypeIcons[event.eventType];
+        if (eventTypeIcon) {
+            return (
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip id={`tooltip-event-type-${event.id}`}>{event.eventType}</Tooltip>}
+                >
+                    <span> {eventTypeIcon}</span>
+                </OverlayTrigger>
+            );
+        }
+        return <span>{event.eventType}</span>;
+    };
+
+
+
+
+    const handleArchiveClick = async (selectedEvent: EventProp) => {
+        eventsContext.archiveLog(selectedEvent);
+    };
+
+
     return (
         <>
-            <div className="table-title">
-                <div className="row">
-                    <div className="col-sm-6">
-                        Events
-                    </div>
-                    <div className="col-sm-6">
-                        Filters
-                    </div>
-                </div>
-            </div>
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th onClick={() => handleSort('timestamp')}>
-                            Timestamp {sortField === 'timestamp' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('eventId')}>
-                            Event ID {sortField === 'eventId' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('eventType')}>
-                            Event Type {sortField === 'eventType' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('status')}>
-                            Status {sortField === 'status' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('objectId')}>
-                            Object ID {sortField === 'objectId' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('type')}>
-                            Type {sortField === 'type' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('name')}>
-                            Name {sortField === 'name' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentEvents.map((event, index) => (
-                        <tr key={index}>
-                            <td>{new Date(event.timestamp).toLocaleString()}</td>
-                            <td>{event.eventId}</td>
-                            <td>{event.eventType}</td>
-                            <td>{event.status}</td>
-                            <td>{event.objectId}</td>
-                            <td>{event.type}</td>
-                            <td>{event.name}</td>
+            <div className='table-responsive table-overflow-control mt-2'>
+                <table className="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th onClick={() => handleSort('timestamp')}>
+                                Timestamp {sortField === 'timestamp' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('eventId')}>
+                                Event ID {sortField === 'eventId' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('eventId')}>
+                                Object ID {sortField === 'eventId' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('eventType')}>
+                                Type {sortField === 'eventType' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('objectType')}>
+                                Object Type {sortField === 'objectType' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('eventDescription')}>
+                                Description {sortField === 'eventDescription' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('userAccount')}>
+                                User {sortField === 'userAccount' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                            </th>
+                            <th></th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
+                    </thead>
+                    <tbody>
+                        {currentEvents.map((event, index) => (
+                            <tr key={index}>
+                                <td>{event.isFavorited ? <FaStar className="text-warning" size={25} /> : <FaStar className="text-muted" opacity='0.2' size={25} />}</td>
+                                <td>{new Date(event.timeCreated).toLocaleString()}</td>
+                                <td><OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip id={`tooltip-copy-${event.id}`}>{event.id}</Tooltip>}>
+                                    <Button
+                                        variant="outline-info"
+                                        onClick={() => {
+                                            // Function to copy the internalId to the clipboard
+                                            navigator.clipboard.writeText(event.id);
+                                        }}
+                                    ><FaCopy />
+                                    </Button></OverlayTrigger></td>
+                                <td>
+                                    {event.capacityGroupId !== "null" || event.materialDemandId !== "null" ? (
+                                        <OverlayTrigger
+                                            placement="top"
+                                            overlay={
+                                                <Tooltip id={`tooltip-copy-${event.id}`}>
+                                                    {event.capacityGroupId !== "null" ? event.capacityGroupId : event.materialDemandId}
+                                                </Tooltip>
+                                            }
+                                        >
+                                            <Button
+                                                variant="outline-info"
+                                                onClick={() => {
+                                                    // Function to copy the appropriate ID to the clipboard
+                                                    const idToCopy = event.capacityGroupId !== "null" ? event.capacityGroupId : event.materialDemandId;
+                                                    if (idToCopy !== "null") {
+                                                        navigator.clipboard.writeText(idToCopy);
+                                                    }
+                                                }}
+                                            >
+                                                <FaCopy />
+                                            </Button>
+                                        </OverlayTrigger>
+                                    ) : '-'}
+                                </td>
 
-            <div className="container">
+                                <td>{generateOverlay(event)}</td>
+                                <td>{event.objectType}</td>
+                                <td>{event.eventDescription}</td>
+                                <td>{event.userAccount}</td>
+                                <td><Button variant="primary" onClick={() => handleArchiveClick(event)}>
+                                    <FaArchive />
+                                </Button></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            <div className="mt-2">
                 <div className="row">
                     <Pagination
                         pages={totalPagesNum}
                         setCurrentPage={setCurrentPage}
                         currentItems={currentEvents}
-                        items={eventData}
+                        items={events}
                     />
                     <div className="col-sm">
                         <div className="float-end">

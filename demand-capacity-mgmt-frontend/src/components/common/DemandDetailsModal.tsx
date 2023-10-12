@@ -19,12 +19,10 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import { useEffect, useState } from 'react';
 import { Breadcrumb, Modal } from 'react-bootstrap';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import { DemandProp } from '../../interfaces/demand_interfaces';
 import WeeklyView from '../demands/DemandsOverview';
-import { LoadingGatheringDataMessage } from './LoadingMessages';
 
 interface DemandDetailsModalProps {
   show: boolean;
@@ -41,59 +39,10 @@ function DemandDetailsModal({
   fullscreen,
   selectedDemand,
 }: DemandDetailsModalProps) {
-  const [loading, setLoading] = useState(true);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalKey, setModalKey] = useState(0); // Add a key to force re-render
 
-  // Simulate a delay to demonstrate loading
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-      setModalVisible(true);
-    }, 2000); // Simulate 2 seconds of loading
-
-    const modalTimer = setTimeout(() => {
-      setModalKey(prevKey => prevKey + 1); // Change the key to force re-render
-    });
-
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(modalTimer);
-      setLoading(true);
-      setModalVisible(false);
-    };
-  }, [show]); // Re-run the effect when the 'show' prop changes
-
-  // Don't render the modal until loading is done
-  if (loading || !modalVisible) {
-    return (
-      <Modal
-        key={modalKey} // Use the 'key' prop to force re-render
-        show={show}
-        onHide={onHide}
-        backdrop="static"
-        keyboard={false}
-        dialogClassName={dialogClassName}
-        fullscreen={fullscreen}
-      >
-        <Modal.Header closeButton>
-          <Breadcrumb>
-            <Breadcrumb.Item href="#" onClick={onHide}>
-              Demand Management
-            </Breadcrumb.Item>
-            <Breadcrumb.Item active>Overview</Breadcrumb.Item>
-          </Breadcrumb>
-        </Modal.Header>
-        <Modal.Body>
-          <LoadingGatheringDataMessage />
-        </Modal.Body>
-      </Modal>
-    );
-  }
 
   return (
     <Modal
-      key={modalKey} // Use the 'key' prop to force re-render
       show={show}
       onHide={onHide}
       backdrop="static"
@@ -115,7 +64,7 @@ function DemandDetailsModal({
       <Modal.Body>
         {selectedDemand ? (
           <DemandCategoryContextProvider>
-            <WeeklyView demandData={selectedDemand} />
+            <WeeklyView demandId={selectedDemand.id} />
           </DemandCategoryContextProvider>
         ) : null}
       </Modal.Body>
