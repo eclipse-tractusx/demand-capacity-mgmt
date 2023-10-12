@@ -101,7 +101,8 @@ useEffect(() => {
   const linkToCapacityGroup = async (linkToCapacityGroup: CapacityGroupLink) => {
     try {
       const api = createAPIInstance(accessToken);
-      await api.post('/capacityGroup/link', linkToCapacityGroup);
+      const rest = await api.post('/capacityGroup/link', linkToCapacityGroup);
+      console.log(rest)
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
     }
