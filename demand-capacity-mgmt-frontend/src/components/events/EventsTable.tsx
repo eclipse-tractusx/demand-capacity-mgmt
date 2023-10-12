@@ -120,8 +120,8 @@ const EventsTable: React.FC<EventsTableProps> = ({ events }) => {
                             <th onClick={() => handleSort('eventId')}>
                                 Event ID {sortField === 'eventId' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
                             </th>
-                            <th onClick={() => handleSort('eventId')}>
-                                Object ID {sortField === 'eventId' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
+                            <th onClick={() => handleSort('objectId')}>
+                                Object ID {sortField === 'objectId' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}
                             </th>
                             <th onClick={() => handleSort('eventType')}>
                                 Type {sortField === 'eventType' ? (sortOrder === 'asc' ? <FaArrowUp /> : <FaArrowDown />) : '-'}

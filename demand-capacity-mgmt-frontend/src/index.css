@@ -229,9 +229,7 @@ code {
   /* Width of the indicator line when the step is active */
 }
 
-.spin-on-hover:hover {
-  animation: spin 0.7s ease-in-out;
-}
+
 
 @keyframes spin {
   0% {
@@ -241,4 +239,13 @@ code {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.spin-on-hover {
+  animation: spin 1s ease-in-out;
+  transform-origin: center;
+}
+
+.spin-on-hover:hover {
+  animation: spin 1s ease-in-out 1;
 }

@@ -56,7 +56,7 @@ function EventsPage() {
             <div className="container-xl">
                 <div style={{ display: "flex" }}>
                     <FcTimeline size={35} />
-                    <h3 className="icon-text-padding">Event Log</h3>
+                    <h3 className="icon-text-padding">Event History</h3>
                 </div>
                 <div className="events-tabs">
                     <Tabs
