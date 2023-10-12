@@ -20,6 +20,7 @@
  *    ********************************************************************************
  */
 
+import { useUser } from '../../contexts/UserContext';
 import React, { useContext, useState, useMemo } from 'react';
 import { Form, Col, Row, Button, OverlayTrigger, Tooltip,Dropdown  } from 'react-bootstrap';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
@@ -31,8 +32,8 @@ import { FaCopy, FaEllipsisV, FaEye } from 'react-icons/fa';
 import {LoadingMessage}  from '../common/LoadingMessages';
 
 const CapacityGroupsList: React.FC = () => {
-  // to do clean /const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);
 
+  const { user } = useUser();
   const { capacitygroups, isLoading} = useContext(CapacityGroupContext)!;
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -155,7 +156,7 @@ const CapacityGroupsList: React.FC = () => {
       <div className="table-title">
         <div className="row">
           <div className="col-sm-6">
-            <h2>Welcome USERID !</h2>
+            <h2>Welcome {user?.name} !</h2>
           </div>
           <div className="col-sm-6">
             <Search

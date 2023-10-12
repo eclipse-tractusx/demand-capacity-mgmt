@@ -43,8 +43,6 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
 
-    //TODO IMPLEMENT USER_ID IN OPERATIONS
-
     @Override
     public List<FavoriteResponse> getAllFavorites() {
         List<FavoriteEntity> favoriteEntities = favoriteRepository.findAll();
@@ -58,18 +56,23 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public FavoriteResponse createFavorite(FavoriteRequest favoriteRequest) {
-        FavoriteEntity entity = favoriteRepository.save(generateFavoriteEntity(favoriteRequest));
+    public FavoriteResponse createFavorite(FavoriteRequest favoriteRequest, String cookieUserID) {
+        FavoriteEntity entity = favoriteRepository.save(generateFavoriteEntity(favoriteRequest, cookieUserID));
         return convertFavoriteResponse(entity);
     }
 
     @Override
-    public FavoriteResponse updateFavorite(UUID id, FavoriteType type, FavoriteRequest favoriteRequest) {
+    public FavoriteResponse updateFavorite(
+        UUID id,
+        FavoriteType type,
+        FavoriteRequest favoriteRequest,
+        String cookieUserID
+    ) {
         FavoriteEntity entity = favoriteRepository.findByFavoriteIdAndTypeAndId(
             id,
             type,
-            UUID.fromString("8842f835-38e9-42b1-8c07-fb310b90ef3a")
-        ); //TODO FETCH USER ID TO UPDATE OPERATION
+            UUID.fromString(cookieUserID)
+        );
 
         if (entity != null) {
             entity.setFavoriteId(UUID.fromString(favoriteRequest.getFavoriteId()));
@@ -84,9 +87,8 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public void deleteFavorite(UUID id) {
-        //TODO PLACE USER ID IN HERE
-        favoriteRepository.deleteByFavoriteIdAndId(id, UUID.fromString("8842f835-38e9-42b1-8c07-fb310b90ef3a"));
+    public void deleteFavorite(UUID id, String cookieUserID) {
+        favoriteRepository.deleteByFavoriteIdAndId(id, UUID.fromString(cookieUserID));
     }
 
     private FavoriteResponse convertFavoriteResponse(FavoriteEntity request) {
@@ -96,10 +98,10 @@ public class FavoriteServiceImpl implements FavoriteService {
         return response;
     }
 
-    private FavoriteEntity generateFavoriteEntity(FavoriteRequest request) {
+    private FavoriteEntity generateFavoriteEntity(FavoriteRequest request, String cookieUserID) {
         return FavoriteEntity
             .builder()
-            .id(UUID.randomUUID()) //TODO USER ID HERE
+            .id(UUID.fromString(cookieUserID))
             .favoriteId(UUID.fromString(request.getFavoriteId()))
             .type(FavoriteType.valueOf(request.getfType()))
             .build();

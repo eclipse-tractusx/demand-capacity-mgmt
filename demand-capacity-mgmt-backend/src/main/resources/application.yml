@@ -18,8 +18,12 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
-
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8888/auth/realms/dcm
   jpa:
     hibernate:
       ddl-auto: update
@@ -34,14 +38,18 @@ spring:
     init:
       platform: postgres
 
-  flyway:
-   enabled: true
-   url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
-   user: ${DCM_DATASOURCE_USER:dcm}
-   password: ${DCM_DATASOURCE_PASS:dcm}
-   schemas: migrations
-   locations: classpath:db/migration/postgresql
+keycloak:
+  baseUrl: http://localhost:8888
+  realm: dcm
+  clientId: dcmauth
+  clientSecret: ${DCMSECR}
+  grant_type_token: password
+  grant_type_refresh_token : refresh_token
 
-management:
-  security:
-    enable:false
+flyway:
+  enabled: true
+  url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
+  user: ${DCM_DATASOURCE_USER:dcm}
+  password: ${DCM_DATASOURCE_PASS:dcm}
+  schemas: migrations
+  locations: classpath:db/migration/postgresql

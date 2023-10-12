@@ -22,10 +22,10 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
-import {BrowserRouter as Router, Route,Routes } from "react-router-dom";
-
-
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import { isAuthenticated } from './util/Auth';
+import AuthenticationComponent from './components/auth/AuthenticationComponent';
+import AppComponent from './components/dcm/AppComponent';
 
 //Import Default always visible components.
 import TopMenu from "./components/common/TopMenu";
@@ -37,36 +37,44 @@ import CapacityGroupsProvider from './contexts/CapacityGroupsContextProvider';
 //Pages
 import Home from "./components/pages/CapacityGroupPage";
 import CapacityGroupDetailsPage from "./components/pages/CapacityGroupDetailsPage";
+
 import TodoListPage from "./components/pages/TodoListPage";
 import DownStatusPage from "./components/pages/DownStatusPage";
 import UpStatusPage from "./components/pages/UpStatusPage";
 
 import './custom-bootstrap.scss';
 import'./index.css';
+import {UserProvider} from "./contexts/UserContext";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+function App() {
+    const authenticated = isAuthenticated();
+    return (
+        <UserProvider>
+            <Router>
+                {authenticated ? <AppComponent /> : <AuthenticationComponent />}
+            </Router>
+        </UserProvider>
+    );
+}
+
 root.render(
-<>
-    <InfoMenuProvider>
-    <TopMenu></TopMenu>
-    </InfoMenuProvider>
-    <Router>
-    <Routes>
-        <Route  path="/" element={<Home/>} />
-        <Route path="/details/:id" element={<CapacityGroupsProvider><CapacityGroupDetailsPage/></CapacityGroupsProvider>} />
-        <Route path="/up" element={<DemandContextProvider><UpStatusPage/></DemandContextProvider>} />
-        <Route path="/down" element={<DemandContextProvider><DownStatusPage/></DemandContextProvider>} />
-        <Route path="/todo" element={<DemandContextProvider><TodoListPage/></DemandContextProvider>} /> 
-    </Routes>
-</Router>
-<DemandContextProvider>
+    <App>
+        <InfoMenuProvider>
+            <TopMenu></TopMenu>
+        </InfoMenuProvider>
+        <Router>
+            <Routes>
+                <Route path="/" element={<Home/>} />
+                <Route path="/details/:id" element={<CapacityGroupsProvider><CapacityGroupDetailsPage/></CapacityGroupsProvider>} />
+                <Route path="/up" element={<DemandContextProvider><UpStatusPage/></DemandContextProvider>} />
+                <Route path="/down" element={<DemandContextProvider><DownStatusPage/></DemandContextProvider>} />
+                <Route path="/todo" element={<DemandContextProvider><TodoListPage/></DemandContextProvider>} /> 
+            </Routes>
+        </Router>
+        <DemandContextProvider>
             <QuickAcessItems></QuickAcessItems>
-</DemandContextProvider>
-</>
+        </DemandContextProvider>
+    </App>
 
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

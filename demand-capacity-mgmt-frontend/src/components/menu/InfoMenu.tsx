@@ -26,7 +26,6 @@ import { useInfoMenu } from "../../contexts/InfoMenuContextProvider";
 
 function InfoMenu() {
     const { data } = useInfoMenu();
-
     return (
         <>
             <Nav className="me-auto">
