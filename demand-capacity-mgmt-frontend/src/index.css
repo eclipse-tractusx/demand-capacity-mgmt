@@ -29,6 +29,56 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+/* TopMenu */
+.small-menu-text {
+  font-size: 0.8rem;
+}
+
+.logo-container {
+  display: flex;
+  margin-top: 0.5rem;
+  align-items: center;
+}
+
+.animation-container {
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.slide-out {
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+.slide-in {
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+
+/* Adjust the transition for other navbar elements */
+/*.navbar-collapse,
+.navbar-nav,
+.navbar-text {
+  transition: margin-left 0.7s ease-in-out;
+}
+
+.collapsed .navbar-collapse,
+.collapsed .navbar-nav,
+.collapsed .navbar-text {
+  margin-left: 10px;
+}*/
+
+/*Quick Acess Itmes*/
 .floating-fixed-buttons {
   color: black;
   position: absolute !important;
@@ -38,16 +88,13 @@ body {
   transform: translate(0%, -50%);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
+/*Demand Management Modal*/
 .custom-modal {
   max-width: 1500px !important;
   /* Adjust the width as needed */
 }
 
+/*Forms*/
 .required-field-label::after {
   content: "*";
   color: red;
@@ -247,5 +294,5 @@ code {
 }
 
 .spin-on-hover:hover {
-  animation: spin 1s ease-in-out 1;
+  animation: spin 1s ease-in-out infinite;
 }

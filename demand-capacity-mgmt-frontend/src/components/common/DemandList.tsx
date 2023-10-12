@@ -306,6 +306,7 @@ const DemandList: React.FC<{
               sortOrder={sortOrder}
               handleSort={(column: string | null) => handleSort(column)} // Pass the correct parameter type
               demandItems={demandItems}
+              hasfavorites={true}
             />
 
             <div className="container">

@@ -20,9 +20,9 @@
  *    ********************************************************************************
  */
 
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { Button, Col, Dropdown, Form, Modal, Row } from 'react-bootstrap';
-import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaStar, FaTrashAlt } from 'react-icons/fa';
+import { FaCopy, FaEllipsisV, FaInfoCircle, FaRedo, FaSearch, FaStar, FaTrashAlt } from 'react-icons/fa';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
@@ -59,9 +59,13 @@ const DemandManagement: React.FC = () => {
   const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
   const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     fetchDemandProps();
-  }, [fetchDemandProps]);
+  }, [fetchDemandProps]);*/
+
+  const handleRefreshClick = async () => {
+    await fetchDemandProps(); // Call your fetchEvents function to refresh the data
+  };
 
   const handleSort = (column: string | null) => {
     if (sortColumn === column) {
@@ -260,17 +264,18 @@ const DemandManagement: React.FC = () => {
       <div className="table-title">
         <div className="row">
           <div className="col-sm-6">
-            <DemandsSearch
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-            />
+            <DemandsSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           </div>
-          <div className="col-sm-6">
-            <Button className="btn btn-success float-end" data-toggle="modal" onClick={() => setShowAddModal(true)}>
-              <span> New Material Demand</span>
+          <div className="col-sm-6 d-flex justify-content-end align-items-center">
+            <Button className="btn btn-success me-1" data-toggle="modal" onClick={() => setShowAddModal(true)}>
+              <span>New Material Demand</span>
+            </Button>
+            <Button className='btn btn-primary' onClick={handleRefreshClick}>
+              <FaRedo className="spin-on-hover" />
             </Button>
           </div>
         </div>
+
       </div>
       {isLoading ? ( // Conditional rendering based on loading state
         <LoadingMessage />

@@ -45,6 +45,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const [isLoading, setIsLoading] = useState(false);
   const { accessToken } = useUser();
   const api = createAPIInstance(accessToken);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchDemandPropsWithRetry = async (maxRetries = 3) => {
     let retries = 0;

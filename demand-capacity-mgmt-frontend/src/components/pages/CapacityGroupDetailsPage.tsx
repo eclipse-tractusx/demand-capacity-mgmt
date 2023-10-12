@@ -52,12 +52,15 @@ function CapacityGroupDetailsPage() {
       (async () => {
         try {
           const fetchedCapacityGroup = await getCapacityGroupById(id);
+          setCapacityGroup(fetchedCapacityGroup || null);
           const filters = {
             capacity_group_id: id,
+            start_time: '',
+            end_time: '',
+            event: '',
+            material_demand_id: '',
           };
-          setCapacityGroup(fetchedCapacityGroup || null);
-          const events = await fetchFilteredEvents(filters);
-          setcapacityGroupEvents(events);
+          setcapacityGroupEvents(await fetchFilteredEvents(filters));
         } catch (error) {
           console.error('Failed to fetch capacity group:', error);
         }

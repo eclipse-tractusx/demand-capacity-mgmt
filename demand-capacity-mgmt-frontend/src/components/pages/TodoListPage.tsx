@@ -20,15 +20,17 @@
  *    ********************************************************************************
  */
 
+import { useContext, useState } from "react";
+import { Button } from "react-bootstrap";
+import { FaMagic, FaRedo } from "react-icons/fa";
 import { FcTodoList } from "react-icons/fc";
+import { DemandContext } from "../../contexts/DemandContextProvider";
 import DemandList from "../common/DemandList";
 import DemandsSearch from "../common/Search";
-import { Button } from "react-bootstrap";
-import { useState } from "react";
-import { FaMagic } from "react-icons/fa";
 
 function TodoListPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const { fetchDemandProps } = useContext(DemandContext)!;
   const [showWizard, setShowWizard] = useState(false);
   const [showAddToExisting, setShowAddToExisting] = useState(false);
   const toggleWizardModal = () => {
@@ -36,6 +38,10 @@ function TodoListPage() {
   };
   const toggleAddToExisting = () => {
     setShowAddToExisting(!showAddToExisting); // Toggle the state (true to false or false to true)
+  };
+
+  const handleRefreshClick = () => {
+    fetchDemandProps(); // Call your fetchEvents function to refresh the data
   };
 
   return (
@@ -57,6 +63,9 @@ function TodoListPage() {
                   />
                 </div>
                 <div className="col-sm-6">
+                  <Button className='btn btn-primary float-end ms-2' onClick={handleRefreshClick}>
+                    <FaRedo className="spin-on-hover" />
+                  </Button>
                   <Button
                     className="btn btn-success float-end ms-2"
                     onClick={() => setShowAddToExisting(true)}
@@ -69,6 +78,7 @@ function TodoListPage() {
                   >
                     <span><FaMagic /> Capacity Group Wizard</span>
                   </Button>
+
                 </div>
               </div>
             </div>

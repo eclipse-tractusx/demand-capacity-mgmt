@@ -86,7 +86,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   }): Promise<EventProp[]> => {
     try {
       const api = createAPIInstance(accessToken);
-      const response = await api.get('/loggingHistory/filterlogs', { params: filters });
+      const response = await api.get('/loggingHistory/filterLogs', { params: filters });
       const result: EventProp[] = response.data;
       return result; // Return the array of events
     } catch (error) {

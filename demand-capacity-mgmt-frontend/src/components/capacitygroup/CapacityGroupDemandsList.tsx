@@ -268,6 +268,7 @@ const CapacityGroupDemandsList: React.FC<{
               sortOrder={sortOrder}
               handleSort={(column: string | null) => handleSort(column)} // Pass the correct parameter type
               demandItems={demandItems}
+              hasfavorites={false}
             />
 
             <div className="container fade">

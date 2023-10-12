@@ -62,7 +62,11 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
 
     @Override
     public LoggingHistoryResponse createLog(LoggingHistoryRequest loggingHistoryRequest) {
-        loggingHistoryRequest.setUserAccount(CookieUtil.getUserName());
+        String userAccount = CookieUtil.getUserName();
+        if (userAccount == null || userAccount.isEmpty()) {
+            userAccount = "System";
+        }
+        loggingHistoryRequest.setUserAccount(userAccount);
         LocalDateTime currentLocalDateTime = LocalDateTime.now();
         loggingHistoryRequest.setTimeCreated(Timestamp.valueOf(currentLocalDateTime).toString());
         LoggingHistoryEntity loggingHistoryEntity = convertDtoToEntity(loggingHistoryRequest);
