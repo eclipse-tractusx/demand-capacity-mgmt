@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from "../interfaces/user_interface";
 
 interface UserContextProps {
@@ -35,17 +35,36 @@ interface UserContextProps {
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
-
 interface UserProviderProps {
     children: React.ReactNode;
 }
-
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const storedUser = localStorage.getItem('user');
     const [user, setUser] = useState<User | null>(storedUser ? JSON.parse(storedUser) : null);
-    const [refreshToken, setRefreshToken] = useState<string | null>(null);
-    const [accessToken, setAccessToken] = useState<string | null>(null);
-    const [expiresIn, setExpiresIn] = useState<number | null>(null);
+
+    // Initializing from sessionStorage
+    const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem('refreshToken'));
+    const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem('accessToken'));
+    const [expiresIn, setExpiresIn] = useState<number | null>(Number(localStorage.getItem('expiresIn')));
+
+    // Storing to sessionStorage when the state changes
+    useEffect(() => {
+        if (refreshToken) {
+            localStorage.setItem('refreshToken', refreshToken);
+        }
+    }, [refreshToken]);
+
+    useEffect(() => {
+        if (accessToken) {
+            localStorage.setItem('accessToken', accessToken);
+        }
+    }, [accessToken]);
+
+    useEffect(() => {
+        if (expiresIn) {
+            localStorage.setItem('expiresIn', expiresIn.toString());
+        }
+    }, [expiresIn]);
 
     return (
         <UserContext.Provider value={{ user, setUser, refreshToken, setRefreshToken, accessToken, setAccessToken, expiresIn, setExpiresIn }}>
