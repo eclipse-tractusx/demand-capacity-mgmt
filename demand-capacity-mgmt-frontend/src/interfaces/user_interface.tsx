@@ -27,4 +27,7 @@ export interface User {
     email: string;
     username: string;
     role: string;
+    accessToken: string;
+    refreshToken: string;
+    expiresIn: number;
 }

@@ -29,8 +29,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectToken
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.Role;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.TokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
@@ -38,12 +36,17 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.SecurityTokenService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.CookieUtil;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -53,14 +56,12 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     private final WebClient keycloakWebClient;
 
     private final UserRepository userRepository;
-    private static final String TOKEN = "auth_token";
     private static final String CLIENT_ID = "client_id";
     private static final String CLIENT_SECRET = "client_secret";
     private static final String REFRESH_TOKEN = "refresh_token";
     private static final String GRANT_TYPE = "grant_type";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
-    private static final String COOKIE = "Set-Cookie";
 
     @Value("${keycloak.baseUrl}")
     private String keycloakBaseUrl;
@@ -80,11 +81,11 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     @Value("${keycloak.grant_type_refresh_token}")
     private String grantType_refresh_token;
 
-    private void logoutToken(HttpServletRequest request) {
+    private void logoutToken(String refreshToken) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add(CLIENT_ID, clientId);
         formData.add(CLIENT_SECRET, clientSecret);
-        formData.add(REFRESH_TOKEN, "");
+        formData.add(REFRESH_TOKEN, refreshToken);
 
         keycloakWebClient
             .post()
@@ -157,8 +158,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     }
 
     @Override
-    public IntrospectTokenResponse introspectToken(HttpServletRequest request) {
-        String token = ""; //TODO
+    public IntrospectTokenResponse introspectToken(String token) {
         return keycloakWebClient
             .post()
             .uri(introspectTokenUrl())
@@ -180,22 +180,21 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     @Override
     public ResponseEntity<User> generateUserResponseEntity(
         String username,
-        String password,
-        HttpServletRequest request
+        String password
     ) {
         TokenResponse token = loginToken(username, password);
         return new ResponseEntity<>(fetchUser(token), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<User> generateUserRefreshedResponseEntity(String token, HttpServletRequest request) {
+    public ResponseEntity<User> generateUserRefreshedResponseEntity(String token) {
         TokenResponse refreshToken = refreshToken(token);
         return new ResponseEntity<>(fetchUser(refreshToken), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Void> generateLogoutResponseEntity(HttpServletRequest request) {
-        logoutToken(request);
+    public ResponseEntity<Void> generateLogoutResponseEntity(String refreshToken) {
+        logoutToken(refreshToken);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
