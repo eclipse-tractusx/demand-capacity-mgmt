@@ -55,7 +55,7 @@ function TopMenuLinks() {
         </Navbar.Collapse>
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
-            Signed in as: <a href="/login"> {user?.username}</a>
+            Signed in as: <a> {user?.username}</a>
           </Navbar.Text>
           <Nav.Link href="#settings" className="p-3 navbar-nav nav-item"><FiSettings /></Nav.Link>
           <Nav.Link onClick={handleLogout} className="p-2 navbar-nav nav-item"><FiLogOut /></Nav.Link>

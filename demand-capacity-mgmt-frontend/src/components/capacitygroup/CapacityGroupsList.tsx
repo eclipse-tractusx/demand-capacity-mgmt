@@ -22,7 +22,7 @@
 
 import React, { useContext, useMemo, useState } from 'react';
 import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { FaCopy, FaEllipsisV, FaEye } from 'react-icons/fa';
+import { FaCopy, FaEllipsisV, FaEye, FaStar } from 'react-icons/fa';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
 import { useUser } from "../../contexts/UserContext";
 import '../../index.css';
@@ -101,6 +101,7 @@ const CapacityGroupsList: React.FC = () => {
     () =>
       slicedcapacitygroups.map((capacitygroup) => (
         <tr key={capacitygroup.internalId}>
+          <td><FaStar className="text-muted" opacity='0.2' size={25} /></td>
           <td>
             <Button href={`/details/${capacitygroup.internalId}`} target='new-tab' variant="outline-primary" >
               <div style={{ display: "flex", justifyContent: "center" }}>
@@ -170,12 +171,14 @@ const CapacityGroupsList: React.FC = () => {
       {isLoading ? ( // Conditional rendering based on loading state
         <LoadingMessage />
       ) : (<>
-        <CapacityGroupsTable
-          sortColumn={sortColumn}
-          sortOrder={sortOrder}
-          handleSort={handleSort}
-          capacitygroupsItems={capacitygroupsItems}
-        />
+        <div className='table-responsive'>
+          <CapacityGroupsTable
+            sortColumn={sortColumn}
+            sortOrder={sortOrder}
+            handleSort={handleSort}
+            capacitygroupsItems={capacitygroupsItems}
+          />
+        </div>
         <div className="container">
           <div className="row">
             <Pagination

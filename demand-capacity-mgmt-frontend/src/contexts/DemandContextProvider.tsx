@@ -19,17 +19,17 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, {createContext, useCallback, useEffect, useState} from 'react';
-import {Demand, DemandProp} from '../interfaces/demand_interfaces';
+import React, { createContext, useCallback, useEffect, useState } from 'react';
+import { Demand, DemandProp } from '../interfaces/demand_interfaces';
 import Api from "../util/Api";
 
 
 interface DemandContextData {
   demandprops: DemandProp[];
   createDemand: (newDemand: Demand) => Promise<void>;
-  getDemandbyId: (id: string) =>Promise<DemandProp | undefined>;
+  getDemandbyId: (id: string) => Promise<DemandProp | undefined>;
   deleteDemand: (id: string) => Promise<void>;
-  unlinkDemand: (id: string,capacitygroupId: string) => Promise<void>;
+  unlinkDemand: (id: string, capacitygroupId: string) => Promise<void>;
   updateDemand: (updatedDemand: Demand) => Promise<void>;
   fetchDemandProps: () => void;
   isLoading: boolean;
@@ -115,7 +115,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       const response = await Api.put(`/demand/${updatedDemand.id}`, updatedDemand);
       const modifiedDemand: Demand = response.data;
       setDemands((prevDemands) =>
-          prevDemands.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
+        prevDemands.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
       );
       fetchDemandProps();
     } catch (error) {
@@ -124,8 +124,6 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   };
 
   const unlinkDemand = async (materialDemandID: string, capacityGroupID: string) => {
-
-    console.log('CALLED IT')
     try {
       const unlinkreq = {
         materialDemandID: materialDemandID,
@@ -139,9 +137,9 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   };
 
   return (
-      <DemandContext.Provider value={{ demandprops, deleteDemand,unlinkDemand, createDemand, updateDemand, getDemandbyId,fetchDemandProps,isLoading }}>
-        {props.children}
-      </DemandContext.Provider>
+    <DemandContext.Provider value={{ demandprops, deleteDemand, unlinkDemand, createDemand, updateDemand, getDemandbyId, fetchDemandProps, isLoading }}>
+      {props.children}
+    </DemandContext.Provider>
   );
 };
 

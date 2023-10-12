@@ -36,6 +36,7 @@ const DemandManagementTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOr
       <thead>
         <tr>
           <th></th>
+          <th></th>
           <th onClick={() => handleSort('customer.bpn')}>
             Company Id{' '}
             {sortColumn === 'customer.bpn' && sortOrder === 'asc' && <BiCaretUp />}

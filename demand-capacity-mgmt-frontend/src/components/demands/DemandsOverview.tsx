@@ -31,9 +31,10 @@ import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSe
 
 
 import { format, getISOWeek, } from 'date-fns';
+import { LoadingGatheringDataMessage } from '../common/LoadingMessages';
 
 interface WeeklyViewProps {
-  demandData: DemandProp;
+  demandId: string;
 }
 
 function getISOWeekMonday(year: number, isoWeek: number): moment.Moment {
@@ -80,12 +81,30 @@ function getWeeksInMonth(year: number, monthIndex: number, knownNextMonthWeeks?:
 
 
 
-const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
+const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
   const { updateDemand } = useContext(DemandContext)!;
   const { demandcategories } = useContext(DemandCategoryContext) ?? {};
   const currentYear = new Date().getFullYear();
-
   const [editMode, setEditMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { getDemandbyId } = useContext(DemandContext)!;
+  const [demandData, setDemandData] = useState<DemandProp>();
+
+  const fetchDemandData = async () => {
+    try {
+      const demand = await getDemandbyId(demandId); // Fetch demand data by ID
+      setDemandData(demand);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching demand data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDemandData();
+  }, [demandId, fetchDemandData]);
+
 
   const monthsPreviousYear = Array.from({ length: 1 }, (_, monthIndex) => {
     const monthStart = new Date(currentYear - 1, monthIndex + 11, 1);
@@ -158,7 +177,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
   useEffect(() => {
     const newDemandValuesMap: DemandValuesMap = {};
 
-    demandData.demandSeries?.forEach((series) => {
+    demandData?.demandSeries?.forEach((series) => {
       const categoryId = series.demandCategory.id;
 
       series.demandSeriesValues.forEach((value) => {
@@ -181,7 +200,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
   }, [demandData]);
 
   const handleSave = async () => {
-    if (!demandData.demandSeries) {
+    if (!demandData?.demandSeries) {
       return;
     }
 
@@ -229,7 +248,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
 
     const updatedDemand: Demand = {
       id: demandData.id,
-      customerId: demandData.customer.id,
+      customerId: demandData.customer.id, //NEEDS to be ID associated with logged in user if user is Customer
       supplierId: demandData.supplier.id,
       materialDemandSeries: filteredUpdatedDemandSeries,
       materialDescriptionCustomer: demandData.materialDescriptionCustomer,
@@ -239,25 +258,26 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
     };
 
     // Perform save operation with updatedDemandData
-
     if (filteredUpdatedDemandSeries.length > 0) {
       try {
         await updateDemand(updatedDemand);
+        fetchDemandData();
+        // Force data reload after successfully saving
       } catch (error) {
         console.error('Error updating demand:', error);
+        setIsLoading(false); // Set loading state to false in case of an error during reload
       }
+    } else {
+      setEditMode(false);
     }
-
-    setEditMode(false);
   };
-
 
   const handleRevert = () => {
     // Reload data from demandData
     // This can be done by updating the demandValuesMap with the original data from demandData
     const newDemandValuesMap: DemandValuesMap = {};
 
-    demandData.demandSeries?.forEach((series) => {
+    demandData?.demandSeries?.forEach((series) => {
       const categoryId = series.demandCategory.id;
 
       series.demandSeriesValues.forEach((value) => {
@@ -281,12 +301,16 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
     setEditMode(false);
   };
 
+  if (isLoading) {
+    return <LoadingGatheringDataMessage />;
+  }
+
   return (
     <div className='container'>
       <div className="row">
         <div className="col"></div>
         <div className="col-6 border d-flex align-items-center justify-content-center">
-          {demandData.id} - {demandData.materialDescriptionCustomer}
+          {demandData?.id} - {demandData?.materialDescriptionCustomer}
         </div>
         <div className="col d-flex justify-content-end">
           <br />

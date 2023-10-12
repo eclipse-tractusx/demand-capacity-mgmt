@@ -22,7 +22,7 @@
 
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Button, Col, Dropdown, Form, Row } from 'react-bootstrap';
-import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt } from 'react-icons/fa';
+import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaStar, FaTrashAlt } from 'react-icons/fa';
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
@@ -221,6 +221,7 @@ const DemandList: React.FC<{
                 checked={selectedDemands.includes(demand)} // Check if the demand is in the selectedDemands array
               />
             </td>
+            <td><FaStar className="text-muted" opacity='0.2' size={25} /></td>
             <td>
               <Button data-toggle="modal" onClick={() => handleDetails(demand)} variant="outline-primary" >
                 <div style={{ display: "flex", justifyContent: "center" }}>

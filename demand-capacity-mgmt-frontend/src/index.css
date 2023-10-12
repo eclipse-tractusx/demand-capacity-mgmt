@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
- body {
+body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -29,7 +29,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.floating-fixed-buttons{
+.floating-fixed-buttons {
   color: black;
   position: absolute !important;
   z-index: 1;
@@ -44,25 +44,32 @@ code {
 }
 
 .custom-modal {
-  max-width: 1500px !important; /* Adjust the width as needed */
+  max-width: 1500px !important;
+  /* Adjust the width as needed */
 }
 
 .required-field-label::after {
   content: "*";
   color: red;
-  margin-left: 4px; /* Add some spacing between the label text and the asterisk */
+  margin-left: 4px;
+  /* Add some spacing between the label text and the asterisk */
 }
 
 :root {
   --header-color: #f1f1f1;
   --label-margin: 8px;
   --border-color: #ccc;
-  --danger-red:#dc3545;
+  --danger-red: #dc3545;
 }
 
 .table-container {
   overflow-x: auto;
   max-width: 100%;
+}
+
+.table-overflow-control {
+  overflow-y: auto;
+  height: 38rem;
 }
 
 .vertical-table-container {
@@ -73,7 +80,7 @@ code {
 
 .vertical-table {
   border-collapse: collapse;
-  border: 1px solid  var(--border-color);
+  border: 1px solid var(--border-color);
   width: 80%;
   max-width: 800px;
   margin: 0 auto;
@@ -83,7 +90,7 @@ code {
   background-color: var(--header-color);
   text-align: center;
   padding: 8px;
-  border: 1px solid  var(--border-color);
+  border: 1px solid var(--border-color);
 }
 
 .table-data-input {
@@ -94,7 +101,7 @@ code {
   max-width: 20px !important;
 }
 
-.week-header-cell{
+.week-header-cell {
   min-width: 35px;
 }
 
@@ -115,8 +122,8 @@ code {
   align-items: center;
   box-sizing: border-box;
   border-left: 1px solid var(--border-color);
-  border-right: 1px solid  var(--border-color);
-  border-bottom: 1px solid  var(--border-color);
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   padding: var(--label-margin);
 }
 
@@ -125,32 +132,36 @@ code {
 
 }
 
-.table-header-nested-text-child{
+.table-header-nested-text-child {
   justify-content: flex-end;
 }
 
 .data-cell {
   text-align: center;
-  border: 1px solid  var(--border-color);
+  border: 1px solid var(--border-color);
 }
 
-.table-checkbox{
-  -ms-transform: scale(1.5); /* IE */
-  -moz-transform: scale(1.5); /* FF */
-  -webkit-transform: scale(1.5); /* Safari and Chrome */
-  -o-transform: scale(1.5); /* Opera */
+.table-checkbox {
+  -ms-transform: scale(1.5);
+  /* IE */
+  -moz-transform: scale(1.5);
+  /* FF */
+  -webkit-transform: scale(1.5);
+  /* Safari and Chrome */
+  -o-transform: scale(1.5);
+  /* Opera */
 }
 
 .red-delete-item {
-  color: var(--danger-red) !important; 
+  color: var(--danger-red) !important;
 }
 
 .red-delete-item:hover {
-  background-color: var(--danger-red)!important;
-  color: white !important; 
+  background-color: var(--danger-red) !important;
+  color: white !important;
 }
 
-.icon-text-padding{
+.icon-text-padding {
   padding-left: 0.5rem;
 }
 
@@ -166,11 +177,31 @@ code {
 }
 
 @keyframes shake {
-  0% { transform: translateX(0); }
-  10%, 20% { transform: translateX(-5px); }
-  30%, 40% { transform: translateX(5px); }
-  50%, 60%, 70%, 80% { transform: translateX(-5px); }
-  90%, 100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+
+  10%,
+  20% {
+    transform: translateX(-5px);
+  }
+
+  30%,
+  40% {
+    transform: translateX(5px);
+  }
+
+  50%,
+  60%,
+  70%,
+  80% {
+    transform: translateX(-5px);
+  }
+
+  90%,
+  100% {
+    transform: translateX(0);
+  }
 }
 
 /*Breadcrumbs animation*/
@@ -181,16 +212,33 @@ code {
 .active-step:after {
   content: '';
   position: absolute;
-  bottom: -5px; /* Adjust the position based on your design */
+  bottom: -5px;
+  /* Adjust the position based on your design */
   left: 50%;
   transform: translateX(-50%);
   width: 0;
-  height: 2px; /* The height of the indicator line */
-  background-color: #007bff; /* Color of the indicator line */
+  height: 2px;
+  /* The height of the indicator line */
+  background-color: #007bff;
+  /* Color of the indicator line */
   transition: width 0.3s ease;
 }
 
 .active-step.active:after {
-  width: 100%; /* Width of the indicator line when the step is active */
+  width: 100%;
+  /* Width of the indicator line when the step is active */
 }
 
+.spin-on-hover:hover {
+  animation: spin 0.7s ease-in-out;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -312,7 +312,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
   const calculateDelta = (week: number, demandSumsByWeek: Record<number, number>, actualCapacityMap: Record<number, number>) => {
     const demandSum = demandSumsByWeek[week] || 0;
     const actualCapacity = actualCapacityMap[week] || 0;
-    return actualCapacity - demandSum ;
+    return actualCapacity - demandSum;
   };
 
   const actualCapacityMap: Record<number, number> = {};
@@ -454,7 +454,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
                 {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
                   month.weeks.map((week) => (
                     <td key={`demandTotal-${week}`} className="data-cell ">
-                     <strong> {demandSums[week] || '-'}</strong>
+                      <strong> {demandSums[week] || '-'}</strong>
                     </td>
                   ))
                 )}

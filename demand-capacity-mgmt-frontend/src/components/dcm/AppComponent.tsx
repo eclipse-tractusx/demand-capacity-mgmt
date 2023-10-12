@@ -24,6 +24,7 @@ import React from 'react';
 import { Route, Routes } from "react-router-dom";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
+import EventsContextProvider from '../../contexts/EventsContextProvider';
 import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
 import { UserProvider } from '../../contexts/UserContext';
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
@@ -97,7 +98,8 @@ const AppComponent: React.FC = () => {
                             <InfoMenuProvider>
                                 <TopMenu />
                             </InfoMenuProvider>
-                            <EventsPage />
+                            <EventsContextProvider><EventsPage /></EventsContextProvider>
+
                             <DemandContextProvider><QuickAcessItems /></DemandContextProvider>
                         </AuthenticatedRoute>
                     } />

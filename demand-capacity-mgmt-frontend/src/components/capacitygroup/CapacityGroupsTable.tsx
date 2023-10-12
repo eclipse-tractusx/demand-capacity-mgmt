@@ -36,6 +36,7 @@ const CapacityGroupsTable: React.FC<CapacityGroupsTableProps> = ({ sortColumn, s
       <thead>
         <tr>
           <th></th>
+          <th></th>
           <th onClick={() => handleSort('internalId')}>
             Internal ID
             {sortColumn === 'internalId' && sortOrder === 'asc' && <BiCaretUp />}
