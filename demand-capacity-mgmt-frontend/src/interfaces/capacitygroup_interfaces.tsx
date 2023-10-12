@@ -51,20 +51,18 @@ interface UnitOfMeasure {
 }
 
 interface Capacities{
-  actualCapacity: bigint,
-  maximumCapacity: bigint;
+  capacityId: string,
+  actualCapacity: number,
+  maximumCapacity: number;
   calendarWeek: string
 }
 
 export interface SingleCapacityGroup {
   capacities: Capacities[];
-  supplierLocations: Address[];
   customer: Address;
   supplier: Address;
   capacityGroupId: string;
   linkMaterialDemandIds: string[];
-  unitOfMeasure: UnitOfMeasure;
-  changeAt: string;
   capacitygroupname: string;
 }
 

@@ -41,7 +41,6 @@ public class StatusesEntity {
     @Id
     private String id;
 
-
     private int todosCount;
 
     private int statusImprovementCount;

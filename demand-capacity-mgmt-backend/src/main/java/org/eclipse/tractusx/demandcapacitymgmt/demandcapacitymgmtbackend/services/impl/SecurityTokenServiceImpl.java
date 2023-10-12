@@ -29,6 +29,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectToken
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.Role;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.TokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
@@ -45,8 +46,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
-import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -178,10 +177,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     }
 
     @Override
-    public ResponseEntity<User> generateUserResponseEntity(
-        String username,
-        String password
-    ) {
+    public ResponseEntity<User> generateUserResponseEntity(String username, String password) {
         TokenResponse token = loginToken(username, password);
         return new ResponseEntity<>(fetchUser(token), HttpStatus.OK);
     }
@@ -211,7 +207,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
                     return newUserEntity;
                 }
             );
-        return convertUserEntity(entity,token.getAccessToken(),token.getRefreshToken(),token.getExpiresIn());
+        return convertUserEntity(entity, token.getAccessToken(), token.getRefreshToken(), token.getExpiresIn());
     }
 
     private UserEntity generateUser(String userID, DecodedJWT decodedJWT) {
