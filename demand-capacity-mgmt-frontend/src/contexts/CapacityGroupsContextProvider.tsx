@@ -21,6 +21,7 @@
  */
 
 import React, { createContext, useState, useEffect } from 'react';
+import api from '../util/Api';
 import axios from 'axios';
 import {CapacityGroupProp, CapacityGroupCreate, CapacityGroupLink, SingleCapacityGroup} from '../interfaces/capacitygroup_interfaces';
 
@@ -79,7 +80,7 @@ useEffect(() => {
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {
     try {
-      const response = await axios.get(`/capacityGroup/${id}`);
+      const response = await api.get(`/capacityGroup/${id}`);
       const fetchedCapacityGroup: SingleCapacityGroup = response.data;
       return fetchedCapacityGroup;
     } catch (error) {

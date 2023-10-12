@@ -20,17 +20,30 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities;
+import React, { createContext, useContext, useState } from 'react';
+import {User} from "../interfaces/UserInterface";
 
-import lombok.Builder;
-import lombok.Data;
 
-@Data
-@Builder
-public class LikedDemandSeries {
+interface UserContextProps {
+    user: User | null;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
+}
 
-    private String materialNumberCustomer;
-    private String materialNumberSupplier;
-    private String customerLocation;
-    private DemandCategory demandCategory; //
+const UserContext = createContext<UserContextProps | undefined>(undefined);
+
+interface UserProviderProps {
+    children: React.ReactNode;
+}
+
+export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
+    const [user, setUser] = useState<User | null>(null);
+    return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+}
+
+export const useUser = (): UserContextProps => {
+    const context = useContext(UserContext);
+    if (!context) {
+        throw new Error('useUser must be used within a UserProvider');
+    }
+    return context;
 }

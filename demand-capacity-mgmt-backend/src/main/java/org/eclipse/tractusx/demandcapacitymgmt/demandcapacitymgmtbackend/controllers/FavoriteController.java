@@ -25,11 +25,13 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.FavoriteApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.CookieUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,37 +41,42 @@ public class FavoriteController implements FavoriteApi {
 
     private final FavoriteService favoriteService;
 
+    private HttpServletRequest request;
+
     @Override
-    public ResponseEntity<FavoriteResponse> createFavorite(FavoriteRequest favoriteRequest) throws Exception {
-        FavoriteResponse response = favoriteService.createFavorite(favoriteRequest);
+    public ResponseEntity<FavoriteResponse> createFavorite(FavoriteRequest favoriteRequest) {
+        FavoriteResponse response = favoriteService.createFavorite(
+            favoriteRequest,
+            CookieUtil.getCookieUserID(request)
+        );
         return ResponseEntity.status(200).body(response);
     }
 
     @Override
-    public ResponseEntity<Void> deleteFavoriteById(String id) throws Exception {
-        favoriteService.deleteFavorite(UUID.fromString(id));
+    public ResponseEntity<Void> deleteFavoriteById(String id) {
+        favoriteService.deleteFavorite(UUID.fromString(id), CookieUtil.getCookieUserID(request));
         return ResponseEntity.status(200).build();
     }
 
     @Override
-    public ResponseEntity<List<FavoriteResponse>> getFavorite() throws Exception {
+    public ResponseEntity<List<FavoriteResponse>> getFavorite() {
         List<FavoriteResponse> responseList = favoriteService.getAllFavorites();
         return ResponseEntity.status(200).body(responseList);
     }
 
     @Override
-    public ResponseEntity<List<FavoriteResponse>> getFavoriteByType(String type) throws Exception {
+    public ResponseEntity<List<FavoriteResponse>> getFavoriteByType(String type) {
         List<FavoriteResponse> responseList = favoriteService.getAllFavoritesByType(type);
         return ResponseEntity.status(200).body(responseList);
     }
 
     @Override
-    public ResponseEntity<FavoriteResponse> updateFavorite(String id, String type, FavoriteRequest favoriteRequest)
-        throws Exception {
+    public ResponseEntity<FavoriteResponse> updateFavorite(String id, String type, FavoriteRequest favoriteRequest) {
         FavoriteResponse response = favoriteService.updateFavorite(
             UUID.fromString(id),
             FavoriteType.valueOf(type),
-            favoriteRequest
+            favoriteRequest,
+            CookieUtil.getCookieUserID(request)
         );
         return ResponseEntity.status(200).body(response);
     }

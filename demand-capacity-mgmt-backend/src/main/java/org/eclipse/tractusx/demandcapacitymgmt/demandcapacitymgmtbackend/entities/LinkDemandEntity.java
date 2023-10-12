@@ -22,8 +22,8 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
+import jakarta.persistence.*;
 import java.util.UUID;
-import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

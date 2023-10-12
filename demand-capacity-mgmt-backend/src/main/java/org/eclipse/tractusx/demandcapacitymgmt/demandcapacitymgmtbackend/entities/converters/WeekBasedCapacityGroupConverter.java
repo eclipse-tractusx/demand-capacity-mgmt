@@ -24,9 +24,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 
 import com.google.gson.Gson;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.jsonEntities.WeekBasedCapacityGroup;
+import jakarta.persistence.*;
 
 @Converter(autoApply = true)
 public class WeekBasedCapacityGroupConverter implements AttributeConverter<WeekBasedCapacityGroupRequest, String> {

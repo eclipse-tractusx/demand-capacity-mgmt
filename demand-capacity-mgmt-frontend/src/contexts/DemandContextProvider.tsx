@@ -20,8 +20,8 @@
  *    ********************************************************************************
  */
 import React, { createContext, useState, useEffect,useCallback} from 'react';
-import axios from 'axios';
 import { Demand, DemandProp } from '../interfaces/demand_interfaces';
+import api from "../util/Api";
 
 
 interface DemandContextData {
@@ -51,7 +51,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
     while (retries < maxRetries) {
       try {
         setIsLoading(true);
-        const response = await axios.get('/demand', {
+        const response = await api.get('/demand', {
           params: {
             project_id: 1, // Adjust the project ID parameter as needed
           },
@@ -84,7 +84,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const getDemandbyId = async (id: string): Promise<DemandProp | undefined> => {
     try {
-      const response = await axios.get(`/demand/${id}`);
+      const response = await api.get(`/demand/${id}`);
       const fetchedDemand: DemandProp = response.data;
       return fetchedDemand;
     } catch (error) {
@@ -94,8 +94,8 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const deleteDemand = async (id: string) => {
     try {
-      await axios.delete(`/demand/${id}`);
-      fetchDemandProps();
+      await api.delete(`/demand/${id}`);
+      setDemandProps((prevDemands) => prevDemands.filter((demand) => demand.id !== id));
     } catch (error) {
       console.error('Error deleting demand:', error);
     }
@@ -104,7 +104,8 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const createDemand = async (newDemand: Demand) => {
     try {
       console.log(newDemand);
-      await axios.post('/demand', newDemand);
+      const response = await api.post('/demand', newDemand);
+      console.log(response) //TODO clean
       fetchDemandProps();
     } catch (error) {
       console.error('Error creating demand:', error);
@@ -113,7 +114,8 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const updateDemand = async (updatedDemand: Demand) => {
     try {
-      const response = await axios.put(`/demand/${updatedDemand.id}`, updatedDemand);
+      console.log(updatedDemand);
+      const response = await api.put(`/demand/${updatedDemand.id}`, updatedDemand);
       const modifiedDemand: Demand = response.data;
       setDemands((prevDemands) =>
           prevDemands.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
@@ -133,7 +135,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
         capacityGroupID: capacityGroupID,
       };
 
-      await axios.post('/demand/series/unlink', unlinkreq);
+      await api.post('/demand/series/unlink', unlinkreq);
     } catch (error) {
       console.error('Error unlinking demand:', error);
       throw error;
