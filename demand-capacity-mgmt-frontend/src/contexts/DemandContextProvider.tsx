@@ -100,7 +100,6 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const createDemand = async (newDemand: Demand) => {
     try {
-      console.log(newDemand);
       await api.post('/demand', newDemand);
       fetchDemandProps();
     } catch (error) {
@@ -123,7 +122,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const unlinkDemand = async (materialDemandID: string, capacityGroupID: string) => {
     const api = createAPIInstance(accessToken);
-    console.log('CALLED IT')
+
     try {
       const unlinkreq = {
         materialDemandID: materialDemandID,

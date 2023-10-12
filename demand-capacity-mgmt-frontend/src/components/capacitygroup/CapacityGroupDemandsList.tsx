@@ -105,10 +105,8 @@ const CapacityGroupDemandsList: React.FC<{
     const handleConfirmationWrapper = () => {
       if (selectedItemId && capacityGroupId) {
         if (confirmationAction === ConfirmationAction.Delete) {
-          console.log('NOO')
           handleDeleteDemand(selectedItemId)
         } else if (confirmationAction === ConfirmationAction.Unlink) {
-          console.log('YES')
           handleUnlinkDemand(selectedItemId, capacityGroupId) // Call unlinkDemand function with materialDemandID and capacityGroupID
             .then(() => {
               fetchDemandProps();
@@ -122,9 +120,7 @@ const CapacityGroupDemandsList: React.FC<{
               setSelectedItemId(null);
             });
         }
-        console.log('WTH')
       }
-      console.log('WTF')
     };
 
     const handleCloseDetails = () => setShowDetailsModal(false);

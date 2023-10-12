@@ -165,7 +165,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandData }) => {
         const date = moment(value.calendarWeek);
         const year = moment().year();
         const week = date.week();
-        console.log(week);
 
         if (!newDemandValuesMap[categoryId]) {
           newDemandValuesMap[categoryId] = {};
