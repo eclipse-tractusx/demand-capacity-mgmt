@@ -22,7 +22,9 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 import {CapacityGroupProp, CapacityGroupCreate, CapacityGroupLink, SingleCapacityGroup} from '../interfaces/capacitygroup_interfaces';
-import Api from "../util/Api";
+
+import { useUser } from './UserContext';
+import createAPIInstance from "../util/Api";
 
 
 interface CapacityGroupContextData {
@@ -37,20 +39,19 @@ export const CapacityGroupContext = createContext<CapacityGroupContextData | und
 
 
 const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-  
-
+  const { accessToken } = useUser();
   const [capacitygroups, setCapacityGroups] = useState<CapacityGroupProp[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
 useEffect(() => {
   const maxRetries = 3;
-
+  const api = createAPIInstance(accessToken);
   const fetchCapacityGroupsWithRetry = async () => {
     setIsLoading(true);
 
       try {
-        const response = await Api.get('/capacityGroup', {});
+        const response = await api.get('/capacityGroup', {});
         const result: CapacityGroupProp[] = response.data;
         setCapacityGroups(result);
         setIsLoading(false); // Set isLoading to false on success
@@ -73,12 +74,13 @@ useEffect(() => {
   };
 
   fetchCapacityGroupsWithRetry();
-}, [retryCount]);
+}, [retryCount,accessToken]);
   
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {
+    const api = createAPIInstance(accessToken);
     try {
-      const response = await Api.get(`/capacityGroup/${id}`);
+      const response = await api.get(`/capacityGroup/${id}`);
       const fetchedCapacityGroup: SingleCapacityGroup = response.data;
       return fetchedCapacityGroup;
     } catch (error) {
@@ -89,9 +91,8 @@ useEffect(() => {
 
   const createCapacityGroup = async (newCapacityGroup: CapacityGroupCreate) => {
     try {
-      console.log(newCapacityGroup);
-      const response = await Api.post('/capacityGroup', newCapacityGroup);
-      console.log(response)
+      const api = createAPIInstance(accessToken);
+      const response = await api.post('/capacityGroup', newCapacityGroup);
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
     }
@@ -99,7 +100,8 @@ useEffect(() => {
 
   const linkToCapacityGroup = async (linkToCapacityGroup: CapacityGroupLink) => {
     try {
-      await Api.post('/capacityGroup/link', linkToCapacityGroup); 
+      const api = createAPIInstance(accessToken);
+      await api.post('/capacityGroup/link', linkToCapacityGroup);
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
     }

@@ -21,7 +21,8 @@
  */
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { Demand, DemandProp } from '../interfaces/demand_interfaces';
-import Api from "../util/Api";
+import createAPIInstance from "../util/Api";
+import { useUser } from "./UserContext";
 
 
 interface DemandContextData {
@@ -38,12 +39,12 @@ interface DemandContextData {
 export const DemandContext = createContext<DemandContextData | undefined>(undefined);
 
 const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [demands, setDemands] = useState<Demand[]>([]);
   const [demandprops, setDemandProps] = useState<DemandProp[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { accessToken } = useUser();
+  const api = createAPIInstance(accessToken);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchDemandPropsWithRetry = async (maxRetries = 3) => {
     let retries = 0;
@@ -51,10 +52,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
     while (retries < maxRetries) {
       try {
         setIsLoading(true);
-        const response = await Api.get('/demand', {
-          params: {
-            project_id: 1, // Adjust the project ID parameter as needed
-          },
+        const response = await api.get('/demand', {
         });
         const result: DemandProp[] = response.data;
         setDemandProps(result);
@@ -75,16 +73,16 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const fetchDemandProps = useCallback(() => {
     fetchDemandPropsWithRetry();
-  }, []);
+  }, [accessToken]);
 
   useEffect(() => {
     fetchDemandProps();
-  }, [fetchDemandProps]);
+  }, [fetchDemandProps, accessToken]);
 
 
   const getDemandbyId = async (id: string): Promise<DemandProp | undefined> => {
     try {
-      const response = await Api.get(`/demand/${id}`);
+      const response = await api.get(`/demand/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching demand by id:', error);
@@ -93,7 +91,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const deleteDemand = async (id: string) => {
     try {
-      await Api.delete(`/demand/${id}`);
+      await api.delete(`/demand/${id}`);
       fetchDemandProps();
     } catch (error) {
       console.error('Error deleting demand:', error);
@@ -102,8 +100,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const createDemand = async (newDemand: Demand) => {
     try {
-      console.log(newDemand);
-      await Api.post('/demand', newDemand);
+      await api.post('/demand', newDemand);
       fetchDemandProps();
     } catch (error) {
       console.error('Error creating demand:', error);
@@ -112,7 +109,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const updateDemand = async (updatedDemand: Demand) => {
     try {
-      const response = await Api.put(`/demand/${updatedDemand.id}`, updatedDemand);
+      const response = await api.put(`/demand/${updatedDemand.id}`, updatedDemand);
       const modifiedDemand: Demand = response.data;
       setDemands((prevDemands) =>
         prevDemands.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
@@ -124,12 +121,14 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   };
 
   const unlinkDemand = async (materialDemandID: string, capacityGroupID: string) => {
+    const api = createAPIInstance(accessToken);
+
     try {
       const unlinkreq = {
         materialDemandID: materialDemandID,
         capacityGroupID: capacityGroupID,
       };
-      await Api.post('/demand/series/unlink', unlinkreq);
+      await api.post('/demand/series/unlink', unlinkreq);
     } catch (error) {
       console.error('Error unlinking demand:', error);
       throw error;

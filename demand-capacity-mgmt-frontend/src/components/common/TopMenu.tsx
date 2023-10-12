@@ -30,14 +30,17 @@ import { logout } from "../../util/Auth";
 import InfoMenu from "../menu/InfoMenu";
 
 function TopMenuLinks() {
-
+  const { refreshToken } = useUser();
   const { user } = useUser();
   const navigate = useNavigate();
   const { setUser } = useUser();
 
   const handleLogout = async () => {
     try {
-      await logout();
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('expiresIn');
+      await logout(refreshToken);
       setUser(null); // Clear user data stored in context
       navigate('/login'); // Redirect the user to the login page
     } catch (error) {

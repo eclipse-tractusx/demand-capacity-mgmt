@@ -26,27 +26,51 @@ import { User } from "../interfaces/user_interface";
 interface UserContextProps {
     user: User | null;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
+    refreshToken: string | null;
+    accessToken: string | null;
+    expiresIn: number | null;
+    setRefreshToken: React.Dispatch<React.SetStateAction<string | null>>;
+    setAccessToken: React.Dispatch<React.SetStateAction<string | null>>;
+    setExpiresIn: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
-
 interface UserProviderProps {
     children: React.ReactNode;
 }
-
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const storedUser = localStorage.getItem('user');
     const [user, setUser] = useState<User | null>(storedUser ? JSON.parse(storedUser) : null);
 
-    useEffect(() => {
-        if (user) {
-            localStorage.setItem('user', JSON.stringify(user));
-        } else {
-            localStorage.removeItem('user');
-        }
-    }, [user]);
+    // Initializing from sessionStorage
+    const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem('refreshToken'));
+    const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem('accessToken'));
+    const [expiresIn, setExpiresIn] = useState<number | null>(Number(localStorage.getItem('expiresIn')));
 
-    return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+    // Storing to sessionStorage when the state changes
+    useEffect(() => {
+        if (refreshToken) {
+            localStorage.setItem('refreshToken', refreshToken);
+        }
+    }, [refreshToken]);
+
+    useEffect(() => {
+        if (accessToken) {
+            localStorage.setItem('accessToken', accessToken);
+        }
+    }, [accessToken]);
+
+    useEffect(() => {
+        if (expiresIn) {
+            localStorage.setItem('expiresIn', expiresIn.toString());
+        }
+    }, [expiresIn]);
+
+    return (
+        <UserContext.Provider value={{ user, setUser, refreshToken, setRefreshToken, accessToken, setAccessToken, expiresIn, setExpiresIn }}>
+            {children}
+        </UserContext.Provider>
+    );
 }
 
 export const useUser = (): UserContextProps => {

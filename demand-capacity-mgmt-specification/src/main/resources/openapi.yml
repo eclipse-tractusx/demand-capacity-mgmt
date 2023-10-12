@@ -86,9 +86,45 @@ paths:
         - Keycloak
       summary: Logout (Token)
       operationId: logoutToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+              required:
+                - refresh_token
       responses:
         200:
           description: Successfully logged out
+
+  /token/introspect:
+    post:
+      tags:
+        - Keycloak
+      summary: Introspect token
+      operationId: introspectToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+              required:
+                - refresh_token
+      responses:
+        200:
+          description: Token introspection result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntrospectTokenResponse'
 
   /loggingHistory:
     post:
@@ -297,26 +333,7 @@ paths:
           description: loggingHistory not found
 
 
-  /token/introspect:
-    post:
-      tags:
-        - Keycloak
-      summary: Introspect token
-      operationId: introspectToken
-      parameters:
-        - in: cookie
-          name: auth_token
-          schema:
-            type: string
-          required: true
-          description: Authentication token
-      responses:
-        200:
-          description: Token introspection result
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IntrospectTokenResponse'
+
 
   /statuses:
     post:
@@ -877,6 +894,12 @@ components:
           type: string
         role:
           $ref: '#/components/schemas/Role'
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
     Role:
       type: string
       enum:

@@ -21,8 +21,8 @@
  */
 
 import React, { createContext, useState, useEffect } from 'react';
-import Api from "../util/Api";
-
+import {useUser} from "./UserContext";
+import createAPIInstance from "../util/Api";
 
 export interface UnitMeasure {
   id: string
@@ -41,13 +41,14 @@ interface UnitsOfMeasureContextData {
 export const UnitsofMeasureContext = createContext<UnitsOfMeasureContextData | undefined>(undefined);
 
 const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-
+  const { accessToken } = useUser();
   const [unitsofmeasure, setUnitsofMeasure] = useState<UnitMeasure[]>([]);
 
   useEffect(() => {
+    const api = createAPIInstance(accessToken);
     const fetchUnitsofMeasure = async () => {
       try {
-        const response = await Api.get('/unitmeasure');
+        const response = await api.get('/unitmeasure');
         const result: UnitMeasure[] = response.data;
         setUnitsofMeasure(result);
       } catch (error) {
@@ -56,7 +57,7 @@ const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>
     };
   
     fetchUnitsofMeasure();
-  }, []);
+  }, [accessToken]);
   
   
 
