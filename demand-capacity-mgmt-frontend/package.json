@@ -63,6 +63,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-transform-flow-strip-types": "^7.22.5",
     "@babel/template": "^7.22.5",
     "@types/react-datepicker": "^4.11.2",
     "@types/react-native": "^0.72.2",
