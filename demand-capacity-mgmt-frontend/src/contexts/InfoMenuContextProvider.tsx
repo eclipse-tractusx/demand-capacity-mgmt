@@ -50,11 +50,11 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
         } catch (error) {
             console.error("Error fetching data: ", error);
         }
-    }, []);
+    }, [accessToken]);
 
     useEffect(() => {
         fetchData();
-    }, [fetchData]);
+    }, [fetchData,accessToken]);
 
     return (
         <InfoMenuContext.Provider value={{ data, fetchData }}>

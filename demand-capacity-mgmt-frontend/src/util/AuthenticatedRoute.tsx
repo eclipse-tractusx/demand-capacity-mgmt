@@ -48,9 +48,11 @@ const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ children }) => 
         checkAuthentication();
     }, [refreshToken]);
 
-    if (isAuthed === false) {
-        navigate('/login', { replace: true, state: { from: location } });
-    }
+    useEffect(() => {
+        if (isAuthed === false) {
+            navigate('/login', { replace: true, state: { from: location } });
+        }
+    }, [isAuthed, navigate, location]);
 
     if (isAuthed === null) return null;  // Still determining authentication status
 
