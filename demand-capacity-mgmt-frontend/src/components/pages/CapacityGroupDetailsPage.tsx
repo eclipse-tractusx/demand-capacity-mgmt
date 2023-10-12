@@ -25,10 +25,13 @@ import { useParams } from 'react-router-dom';
 import CapacityGroupChronogram from '../../components/capacitygroup/CapacityGroupChronogram';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
+import { EventsContext } from '../../contexts/EventsContextProvider';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
+import { EventProp } from '../../interfaces/event_interfaces';
 import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList';
 import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
 import { LoadingMessage } from '../common/LoadingMessages';
+import EventsTable from '../events/EventsTable';
 
 function CapacityGroupDetailsPage() {
   const { id } = useParams();
@@ -41,19 +44,28 @@ function CapacityGroupDetailsPage() {
   const { getCapacityGroupById } = context;
   const [activeTab, setActiveTab] = useState('overview');
   const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
+  const { fetchFilteredEvents } = useContext(EventsContext)!;
+  const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
 
   useEffect(() => {
     if (id) {
       (async () => {
         try {
           const fetchedCapacityGroup = await getCapacityGroupById(id);
+          const filters = {
+            capacity_group_id: id,
+          };
           setCapacityGroup(fetchedCapacityGroup || null);
+          const events = await fetchFilteredEvents(filters);
+          setcapacityGroupEvents(events);
         } catch (error) {
           console.error('Failed to fetch capacity group:', error);
         }
       })();
     }
   }, [id, getCapacityGroupById]);
+
+
 
   const memoizedComponent = useMemo(() => {
     if (!capacityGroup) {
@@ -94,8 +106,9 @@ function CapacityGroupDetailsPage() {
               </DemandContextProvider>
             </Tab>
             <Tab eventKey="events" title="Events">
-              Pre filtered event list here
+              <EventsTable events={capacityGroupEvents} />
             </Tab>
+
           </Tabs>
         </div>
       </>

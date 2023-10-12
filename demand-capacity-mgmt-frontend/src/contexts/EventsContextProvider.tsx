@@ -22,7 +22,8 @@
 
 import React, { createContext, useEffect, useState } from 'react';
 import { EventProp } from '../interfaces/event_interfaces';
-import Api from "../util/Api";
+import createAPIInstance from "../util/Api";
+import { useUser } from './UserContext';
 
 interface EventsContextData {
   events: EventProp[];
@@ -34,7 +35,7 @@ interface EventsContextData {
     event?: string;
     material_demand_id?: string;
     capacity_group_id?: string;
-  }) => Promise<void>;
+  }) => Promise<EventProp[]>;
   archiveLog: (event: EventProp) => Promise<void>;
   deleteAllEvents: () => Promise<void>;
   deleteAllArchivedLogs: () => Promise<void>;
@@ -44,13 +45,14 @@ interface EventsContextData {
 export const EventsContext = createContext<EventsContextData | undefined>(undefined);
 
 const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-
+  const { accessToken } = useUser();
   const [events, setEvents] = useState<EventProp[]>([]);
   const [archiveEvents, setArchiveEvents] = useState<EventProp[]>([]);
 
   const fetchEvents = async () => {
     try {
-      const response = await Api.get('/loggingHistory');
+      const api = createAPIInstance(accessToken);
+      const response = await api.get('/loggingHistory');
       const result: EventProp[] = response.data;
       setEvents(result);
     } catch (error) {
@@ -60,7 +62,8 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const fetchArchiveEvents = async () => {
     try {
-      const response = await Api.get('/loggingHistory/archivedLog');
+      const api = createAPIInstance(accessToken);
+      const response = await api.get('/loggingHistory/archivedLog');
       const result: EventProp[] = response.data;
       setArchiveEvents(result); // Set archiveEvents, not events
     } catch (error) {
@@ -72,28 +75,32 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   useEffect(() => {
     fetchEvents();
     fetchArchiveEvents();
-  }, []);
+  }, [accessToken]);
 
   const fetchFilteredEvents = async (filters: {
-    start_time?: string,
-    end_time?: string,
-    event?: string,
-    material_demand_id?: string,
-    capacity_group_id?: string
-  }) => {
+    start_time?: string;
+    end_time?: string;
+    event?: string;
+    material_demand_id?: string;
+    capacity_group_id?: string;
+  }): Promise<EventProp[]> => {
     try {
-      const response = await Api.get('/loggingHistory/filterlogs', { params: filters });
+      const api = createAPIInstance(accessToken);
+      const response = await api.get('/loggingHistory/filterlogs', { params: filters });
       const result: EventProp[] = response.data;
-      setEvents(result);
+      return result; // Return the array of events
     } catch (error) {
       console.error('Error fetching event history:', error);
+      throw error; // Throw the error to handle it in the calling code if necessary
     }
   };
+
 
   const archiveLog = async (event: EventProp) => {
     try {
       console.log(event)
-      await Api.post('/loggingHistory/archivedLog', event);
+      const api = createAPIInstance(accessToken);
+      await api.post('/loggingHistory/archivedLog', event);
     } catch (error) {
       console.error('Error archiving event:', error);
       throw error;
@@ -102,7 +109,8 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const deleteAllEvents = async () => {
     try {
-      await Api.delete(`/loggingHistory`);
+      const api = createAPIInstance(accessToken);
+      await api.delete(`/loggingHistory`);
       fetchEvents();
     } catch (error) {
       console.error('Error deleting demand:', error);
@@ -111,7 +119,8 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const deleteAllArchivedLogs = async () => {
     try {
-      await Api.delete(`/loggingHistory/archivedLog`);
+      const api = createAPIInstance(accessToken);
+      await api.delete(`/loggingHistory/archivedLog`);
       fetchEvents();
     } catch (error) {
       console.error('Error deleting demand:', error);
