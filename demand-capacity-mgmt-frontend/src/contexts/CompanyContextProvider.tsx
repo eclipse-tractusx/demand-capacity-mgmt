@@ -21,7 +21,8 @@
  */
 
 import React, { createContext, useState, useEffect } from 'react';
-import Api from "../util/Api";
+import {useUser} from "./UserContext";
+import createAPIInstance from "../util/Api";
 
 export interface Company {
   id: string,
@@ -42,14 +43,14 @@ interface CompanyContextData {
 export const CompanyContext = createContext<CompanyContextData | undefined>(undefined);
 
 const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-
+  const { accessToken } = useUser();
   const [companies, setCompanies] = useState<Company[]>([]);
 
   useEffect(() => {
+    const api = createAPIInstance(accessToken);
     const fetchCompanies = async () => {
       try {
-        const response = await Api.get('/company', {
-         
+        const response = await api.get('/company', {
         });
         const result: Company[] = response.data;
         setCompanies(result);
