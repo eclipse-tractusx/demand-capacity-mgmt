@@ -20,31 +20,17 @@
  *    ********************************************************************************
  */
 
-export interface User {
-    userID: string;
-    name: string;
-    lastName: string;
-    email: string;
-    username: string;
-    role: string;
-    accessToken: string;
-    refreshToken: string;
-    expiresIn: number;
+function parseNullableString(value: string): string | null {
+    if (value === 'null') {
+        return null;
+    }
+    return value;
 }
 
-export function getUserGreeting(user: User | null): string {
-    const currentTime = new Date();
-    const hours = currentTime.getHours();
-    if (user) {
-        if (hours < 12) {
-            return `Good morning, ${user.username}`;
-        } else if (hours < 18) {
-            return `Good afternoon, ${user.username}`;
-        } else {
-            return `Good evening, ${user.username}`;
-        }
-    } else {
-        // Handle the case when user is null
-        return 'Welcome!';
+// Utility function to convert "null" string to boolean or null
+function parseNullableBoolean(value: string): boolean | null {
+    if (value === 'null') {
+        return null;
     }
+    return value === 'true';
 }

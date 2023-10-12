@@ -27,15 +27,17 @@ type DemandsTableProps = {
   sortOrder: string;
   handleSort: (column: string | null) => void;
   demandItems: React.ReactNode;
+  hasfavorites: boolean
 };
 
-const DemandListTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, handleSort, demandItems }) => {
+const DemandListTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, handleSort, demandItems, hasfavorites }) => {
 
   return (
     <table className="table table-striped table-hover">
       <thead>
         <tr>
-          <th></th>
+          {hasfavorites && <th></th>}
+          {hasfavorites && <th></th>}
           <th></th>
           <th onClick={() => handleSort('customer.bpn')}>
             Company Id{' '}

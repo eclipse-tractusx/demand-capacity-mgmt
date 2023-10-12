@@ -20,6 +20,7 @@
  *    ********************************************************************************
  */
 
+import { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -34,6 +35,15 @@ function TopMenuLinks() {
   const { user } = useUser();
   const navigate = useNavigate();
   const { setUser } = useUser();
+  const [collapsed, setCollapsed] = useState(() => {
+    // Load the state from local storage, defaulting to false if it doesn't exist
+    return localStorage.getItem('navbarCollapsed') === 'true' ? true : false;
+  });
+
+  useEffect(() => {
+    // Save the state to local storage whenever it changes
+    localStorage.setItem('navbarCollapsed', JSON.stringify(collapsed));
+  }, [collapsed]);
 
   const handleLogout = async () => {
     try {
@@ -48,17 +58,36 @@ function TopMenuLinks() {
     }
   }
 
+  const handleNavbarClick = () => {
+    setCollapsed(!collapsed);
+  };
+
   return (
-    <Navbar expand="lg" className="navbar navbar-expand-sm bg-dark navbar-dark">
+
+    <Navbar
+      expand="lg"
+      className={`navbar navbar-expand-sm bg-dark navbar-dark`}
+    >
       <Container>
-        <Navbar.Brand  ><img srcSet='/media/logos/cx-short.svg' alt="Logo" width="30" height="auto" className='d-inline-block align-text-top' /> Demand Capacity Management</Navbar.Brand>
+
+
+        <Navbar.Brand onClick={handleNavbarClick} >
+          <div className="logo-container">
+            <img srcSet="/media/logos/cx-short.svg" alt="Logo" width="30" height="auto" className='mx-2' />
+            <h6 className={collapsed ? 'slide-out' : 'slide-in'}>
+              Demand Capacity Management
+            </h6>
+          </div>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <InfoMenu />
         </Navbar.Collapse>
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
-            Signed in as: <a> {user?.username}</a>
+            Signed in as:  <span className='text-capitalize'>{user?.username}</span>
+            <br />
+            <span className='font-weight-light small-menu-text'>Role: <span className='text-capitalize'>{user?.role.toLowerCase()}</span></span>
           </Navbar.Text>
           <Nav.Link href="#settings" className="p-3 navbar-nav nav-item"><FiSettings /></Nav.Link>
           <Nav.Link onClick={handleLogout} className="p-2 navbar-nav nav-item"><FiLogOut /></Nav.Link>

@@ -179,7 +179,6 @@ const EventsTable: React.FC<EventsTableProps> = ({ events }) => {
                                         </OverlayTrigger>
                                     ) : '-'}
                                 </td>
-
                                 <td>{generateOverlay(event)}</td>
                                 <td>{event.objectType}</td>
                                 <td>{event.eventDescription}</td>

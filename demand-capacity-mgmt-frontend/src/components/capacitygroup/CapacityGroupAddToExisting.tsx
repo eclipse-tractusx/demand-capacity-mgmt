@@ -106,7 +106,7 @@ const CapacityGroupAddToExisting: React.FC<CapacityGroupAddToExistingProps> = ({
       capacityGroupContext?.linkToCapacityGroup(capacityGroupLink);
 
       onHide();
-      resetModalValues(); 
+      resetModalValues();
     }
   };
 

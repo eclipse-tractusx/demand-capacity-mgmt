@@ -22,20 +22,20 @@
 
 import React, { useContext, useMemo, useState } from 'react';
 import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { FaCopy, FaEllipsisV, FaEye, FaStar } from 'react-icons/fa';
+import { FaCopy, FaEllipsisV, FaEye, FaRedo, FaStar } from 'react-icons/fa';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
 import { useUser } from "../../contexts/UserContext";
 import '../../index.css';
+import { getUserGreeting } from '../../interfaces/user_interface';
 import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
 import Search from '../common/Search';
 import CapacityGroupsTable from './CapacityGroupsTable';
 
+
 const CapacityGroupsList: React.FC = () => {
   const { user } = useUser();
-  // to do clean /const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);
-
-  const { capacitygroups, isLoading } = useContext(CapacityGroupContext)!;
+  const { capacitygroups, isLoading, fetchCapacityGroupsWithRetry } = useContext(CapacityGroupContext)!;
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState('');
@@ -51,6 +51,10 @@ const CapacityGroupsList: React.FC = () => {
       setSortColumn(column);
       setSortOrder('asc');
     }
+  };
+
+  const handleRefreshClick = async () => {
+    await fetchCapacityGroupsWithRetry();
   };
 
   const filteredcapacitygroups = useMemo(() => {
@@ -71,8 +75,8 @@ const CapacityGroupsList: React.FC = () => {
 
     if (sortColumn !== '') {
       sortedcapacitygroups.sort((a, b) => {
-        const aValue = String(a[sortColumn]); // Convert to string
-        const bValue = String(b[sortColumn]); // Convert to string
+        const aValue = String(a[sortColumn]);
+        const bValue = String(b[sortColumn]);
 
         return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
       });
@@ -158,20 +162,26 @@ const CapacityGroupsList: React.FC = () => {
       <div className="table-title">
         <div className="row">
           <div className="col-sm-6">
-            <h2>Welcome {user?.username} !</h2>
+            <h3>{getUserGreeting(user)}!</h3>
           </div>
           <div className="col-sm-6">
-            <Search
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-            />
+            <div className="row">
+              <div className="col-sm-11">
+                <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+              </div>
+              <div className="col-sm-1">
+                <Button className='float-end' variant="primary" onClick={handleRefreshClick}>
+                  <FaRedo className="spin-on-hover" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       {isLoading ? ( // Conditional rendering based on loading state
         <LoadingMessage />
       ) : (<>
-        <div className='table-responsive'>
+        <div className='table'>
           <CapacityGroupsTable
             sortColumn={sortColumn}
             sortOrder={sortOrder}
