@@ -92,9 +92,7 @@ useEffect(() => {
   const createCapacityGroup = async (newCapacityGroup: CapacityGroupCreate) => {
     try {
       const api = createAPIInstance(accessToken);
-      console.log(newCapacityGroup);
       const response = await api.post('/capacityGroup', newCapacityGroup);
-      console.log(response)
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
     }

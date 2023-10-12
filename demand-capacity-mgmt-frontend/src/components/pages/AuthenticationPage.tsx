@@ -46,7 +46,6 @@ const AuthenticationComponent: React.FC = () => {
             setLoading(true);
             const user: User = await login(username, password, setRefreshToken, setAccessToken, setExpiresIn);
             setUser(user);
-            console.log(user)
             navigate('/');
         } catch (error) {
             console.error("Failed login", error);

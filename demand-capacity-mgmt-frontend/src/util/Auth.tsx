@@ -66,9 +66,21 @@ export const login = async (username: string,
     }
 }
 
-export const logout = async (): Promise<void> => {
+export const logout = async (refreshToken: string | null): Promise<String> => {
     try {
-        await AuthApi.post('/token/logout');
+        const requestData = new URLSearchParams();
+        if (refreshToken) {
+            requestData.append('refresh_token', refreshToken);
+            const response = await AuthApi.post('/token/logout',requestData,{
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            });
+
+            return response.data;
+        } else {
+            throw new Error('Refresh token is missing.');
+        }
     } catch (error) {
         throw error;
     }
