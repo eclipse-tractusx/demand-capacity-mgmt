@@ -1622,6 +1622,40 @@ components:
             type: string
             format: uuid
 
+    SingleCapacityGroup:
+      type: object
+      properties:
+        customer:
+          $ref: '#/components/schemas/CompanyDto'
+        supplier:
+          $ref: '#/components/schemas/CompanyDto'
+        capacities:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapacityBody'
+        linkMaterialDemandIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        capacityGroupId:
+          type: string
+        capacityGroupName:
+          type: string
+
+    CapacityBody:
+      type: object
+      properties:
+        capacityId:
+          type: string
+        actualCapacity:
+          type: number
+        maximumCapacity:
+          type: number
+        calendarWeek:
+          type: string
+
+
     FavoriteRequest:
       type: object
       properties:
