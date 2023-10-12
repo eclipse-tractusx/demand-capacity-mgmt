@@ -57,7 +57,7 @@ const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>
     };
   
     fetchUnitsofMeasure();
-  }, []);
+  }, [accessToken]);
   
   
 

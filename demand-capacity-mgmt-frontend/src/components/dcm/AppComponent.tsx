@@ -25,7 +25,6 @@ import { Route, Routes } from "react-router-dom";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
 import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
-import { UserProvider } from '../../contexts/UserContext';
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
 import QuickAcessItems from '../common/QuickAcessItems';
 import TopMenu from "../common/TopMenu";
@@ -41,10 +40,8 @@ import UpStatusPage from '../pages/UpStatusPage';
 
 const AppComponent: React.FC = () => {
     return (
-        <UserProvider>
             <div>
                 <Routes>
-
                     <Route path="/" element={
                         <AuthenticatedRoute>
                             <InfoMenuProvider>
@@ -106,7 +103,6 @@ const AppComponent: React.FC = () => {
                     <Route path="*" element={<ErrorPage />} />
                 </Routes>
             </div>
-        </UserProvider>
     );
 }
 

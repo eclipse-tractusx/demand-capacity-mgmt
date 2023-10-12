@@ -60,7 +60,7 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     };
   
     fetchCompanies();
-  }, []);
+  }, [accessToken]);
   
 
 

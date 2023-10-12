@@ -74,7 +74,7 @@ useEffect(() => {
   };
 
   fetchCapacityGroupsWithRetry();
-}, [retryCount]);
+}, [retryCount,accessToken]);
   
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {

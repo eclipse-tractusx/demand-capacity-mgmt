@@ -73,11 +73,11 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const fetchDemandProps = useCallback(() => {
     fetchDemandPropsWithRetry();
-  }, []);
+  }, [accessToken]);
 
   useEffect(() => {
     fetchDemandProps();
-  }, [fetchDemandProps]);
+  }, [fetchDemandProps,accessToken]);
 
 
   const getDemandbyId = async (id: string): Promise<DemandProp | undefined> => {

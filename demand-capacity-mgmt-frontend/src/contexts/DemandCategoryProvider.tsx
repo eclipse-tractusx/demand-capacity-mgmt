@@ -54,7 +54,7 @@ const DemandCategoryContextProvider: React.FC<React.PropsWithChildren<{}>> = (pr
     };
   
     fetchDemandCategories();
-  }, []);
+  }, [accessToken]);
   
 
 
