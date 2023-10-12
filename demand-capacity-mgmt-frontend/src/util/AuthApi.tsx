@@ -22,16 +22,10 @@
 
 import axios from 'axios';
 
-const createAPIInstance = (token: string | null) => {
-    const instance = axios.create({
-        baseURL: 'http://localhost:8080',
-    });
+const AuthApi = axios.create({
+    baseURL: 'http://localhost:8080',
+    withCredentials: false
+})
 
-    if (token) {
-        instance.defaults.headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    return instance;
-}
-
-export default createAPIInstance;
+export default AuthApi

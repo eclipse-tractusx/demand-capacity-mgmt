@@ -33,18 +33,18 @@ import { login } from '../../util/Auth';
 const AuthenticationComponent: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const { setUser } = useUser();
     const navigate = useNavigate();
     const [showRegister, setShowRegister] = useState(false);
     const [loading, setLoading] = useState(false); // State to manage loading state
     const [showErrorToast, setShowErrorToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const { setUser, setRefreshToken, setAccessToken, setExpiresIn } = useUser();
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
             setLoading(true);
-            const user: User = await login(username, password);
+            const user: User = await login(username, password, setRefreshToken, setAccessToken, setExpiresIn);
             setUser(user);
             navigate('/');
         } catch (error) {

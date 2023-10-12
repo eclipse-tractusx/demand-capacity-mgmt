@@ -29,9 +29,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectToken
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.Role;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.TokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
@@ -39,12 +36,17 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.SecurityTokenService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.CookieUtil;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -54,14 +56,12 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     private final WebClient keycloakWebClient;
 
     private final UserRepository userRepository;
-    private static final String TOKEN = "auth_token";
     private static final String CLIENT_ID = "client_id";
     private static final String CLIENT_SECRET = "client_secret";
     private static final String REFRESH_TOKEN = "refresh_token";
     private static final String GRANT_TYPE = "grant_type";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
-    private static final String COOKIE = "Set-Cookie";
 
     @Value("${keycloak.baseUrl}")
     private String keycloakBaseUrl;
@@ -81,11 +81,11 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     @Value("${keycloak.grant_type_refresh_token}")
     private String grantType_refresh_token;
 
-    private void logoutToken(HttpServletRequest request) {
+    private void logoutToken(String refreshToken) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add(CLIENT_ID, clientId);
         formData.add(CLIENT_SECRET, clientSecret);
-        formData.add(REFRESH_TOKEN, getTokenFromCookie(request, true));
+        formData.add(REFRESH_TOKEN, refreshToken);
 
         keycloakWebClient
             .post()
@@ -158,8 +158,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     }
 
     @Override
-    public IntrospectTokenResponse introspectToken(HttpServletRequest request) {
-        String token = getTokenFromCookie(request, false);
+    public IntrospectTokenResponse introspectToken(String token) {
         return keycloakWebClient
             .post()
             .uri(introspectTokenUrl())
@@ -178,96 +177,25 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
             .block();
     }
 
-    private String getTokenFromCookie(HttpServletRequest request, boolean logout) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (!logout) {
-                    if (cookie.getName().equalsIgnoreCase(TOKEN)) {
-                        return cookie.getValue();
-                    }
-                } else {
-                    if (cookie.getName().equalsIgnoreCase(REFRESH_TOKEN)) {
-                        return cookie.getValue();
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private HttpHeaders setHeaders(TokenResponse tokenResponse) {
-        Cookie authCookie = new Cookie(TOKEN, tokenResponse.getAccessToken());
-        authCookie.setMaxAge(tokenResponse.getExpiresIn());
-        authCookie.setHttpOnly(true);
-        authCookie.setSecure(true);
-        authCookie.setPath("/");
-
-        Cookie refreshCookie = new Cookie(REFRESH_TOKEN, tokenResponse.getRefreshToken());
-        refreshCookie.setMaxAge(500);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(true);
-        refreshCookie.setPath("/");
-
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.add(COOKIE, getCookieString(authCookie));
-        responseHeaders.add(COOKIE, getCookieString(refreshCookie));
-
-        return responseHeaders;
-    }
-
-    private String getCookieString(Cookie cookie) {
-        StringBuilder cookieValue = new StringBuilder();
-        cookieValue.append(cookie.getName()).append("=").append(cookie.getValue()).append(";");
-        cookieValue.append(" Max-Age=").append(cookie.getMaxAge()).append(";");
-        if (cookie.isHttpOnly()) {
-            cookieValue.append(" HttpOnly;");
-        }
-        if (cookie.getSecure()) {
-            cookieValue.append(" Secure;");
-        }
-        cookieValue.append(" Path=").append(cookie.getPath()).append(";");
-        return cookieValue.toString();
-    }
-
     @Override
     public ResponseEntity<User> generateUserResponseEntity(
         String username,
-        String password,
-        HttpServletRequest request
+        String password
     ) {
         TokenResponse token = loginToken(username, password);
-        return new ResponseEntity<>(fetchUser(token), setHeaders(token), HttpStatus.OK);
+        return new ResponseEntity<>(fetchUser(token), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<User> generateUserRefreshedResponseEntity(String token, HttpServletRequest request) {
+    public ResponseEntity<User> generateUserRefreshedResponseEntity(String token) {
         TokenResponse refreshToken = refreshToken(token);
-        return new ResponseEntity<>(fetchUser(refreshToken), setHeaders(refreshToken), HttpStatus.OK);
+        return new ResponseEntity<>(fetchUser(refreshToken), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Void> generateLogoutResponseEntity(HttpServletRequest request) {
-        logoutToken(request);
-        // Expire auth_token cookie
-        Cookie authCookie = new Cookie(TOKEN, null);
-        authCookie.setMaxAge(0);
-        authCookie.setHttpOnly(true);
-        authCookie.setSecure(true);
-        authCookie.setPath("/");
-
-        // Expire refresh_token cookie
-        Cookie refreshCookie = new Cookie(REFRESH_TOKEN, null);
-        refreshCookie.setMaxAge(0);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(true);
-        refreshCookie.setPath("/");
-
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.add(COOKIE, getCookieString(authCookie));
-        responseHeaders.add(COOKIE, getCookieString(refreshCookie));
-
-        return new ResponseEntity<>(responseHeaders, HttpStatus.NO_CONTENT);
+    public ResponseEntity<Void> generateLogoutResponseEntity(String refreshToken) {
+        logoutToken(refreshToken);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     private User fetchUser(TokenResponse token) {
@@ -283,7 +211,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
                     return newUserEntity;
                 }
             );
-        return convertUserEntity(entity);
+        return convertUserEntity(entity,token.getAccessToken(),token.getRefreshToken(),token.getExpiresIn());
     }
 
     private UserEntity generateUser(String userID, DecodedJWT decodedJWT) {
@@ -326,7 +254,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         return newUserEntity;
     }
 
-    private User convertUserEntity(UserEntity userEntity) {
+    private User convertUserEntity(UserEntity userEntity, String accessToken, String refreshToken, Integer expiresIn) {
         User user = new User();
         user.setUserID(userEntity.getId().toString());
         user.setEmail(userEntity.getEmail());
@@ -334,6 +262,9 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         user.setLastName(userEntity.getLastName());
         user.setUsername(userEntity.getUsername());
         user.setRole(Role.valueOf(userEntity.getRole().name()));
+        user.setAccessToken(accessToken);
+        user.setRefreshToken(refreshToken);
+        user.setExpiresIn(expiresIn);
         return user;
     }
 

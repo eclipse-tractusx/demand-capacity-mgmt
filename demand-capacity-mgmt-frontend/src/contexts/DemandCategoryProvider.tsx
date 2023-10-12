@@ -21,7 +21,8 @@
  */
 
 import React, { createContext, useState, useEffect } from 'react';
-import Api from "../util/Api";
+import createAPIInstance from "../util/Api";
+import {useUser} from "./UserContext";
 
 export interface DemandCategory {
   id: string
@@ -36,16 +37,14 @@ interface DemandContextData {
 export const DemandCategoryContext = createContext<DemandContextData | undefined>(undefined);
 
 const DemandCategoryContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-
+  const { accessToken } = useUser();
   const [demandcategories, setDemandCategory] = useState<DemandCategory[]>([]);
 
   useEffect(() => {
+    const api = createAPIInstance(accessToken);
     const fetchDemandCategories = async () => {
       try {
-        const response = await Api.get('/demandcategory', {
-          params: {
-            project_id: 1, // Adjust the project ID parameter as needed
-          },
+        const response = await api.get('/demandcategory', {
         });
         const result: DemandCategory[] = response.data;
         setDemandCategory(result);
@@ -55,7 +54,7 @@ const DemandCategoryContextProvider: React.FC<React.PropsWithChildren<{}>> = (pr
     };
   
     fetchDemandCategories();
-  }, []);
+  }, [accessToken]);
   
 
 

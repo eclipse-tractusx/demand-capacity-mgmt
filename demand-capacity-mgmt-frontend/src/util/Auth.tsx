@@ -21,12 +21,20 @@
  */
 
 import { User } from "../interfaces/user_interface";
-import Api from '../util/Api';
+import AuthApi from '../util/AuthApi';
 
-export const isAuthenticated = async (): Promise<boolean> => {
+export const isAuthenticated = async (refreshToken: string | null): Promise<boolean> => {
+    if (!refreshToken) {
+        return false;
+    }
+
     try {
-        // No need for data or headers, since the cookie will be sent automatically
-        const response = await Api.post('http://localhost:8080/token/introspect', {
+        const requestData = new URLSearchParams();
+        requestData.append('refresh_token', refreshToken);
+        const response = await AuthApi.post('http://localhost:8080/token/introspect', requestData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
         });
         return response.data.active;
     } catch (error) {
@@ -34,27 +42,45 @@ export const isAuthenticated = async (): Promise<boolean> => {
     }
 }
 
-export const login = async (username: string, password: string): Promise<User> => {
+export const login = async (username: string,
+    password: string,
+    setRefreshToken: React.Dispatch<React.SetStateAction<string | null>>,
+    setAccessToken: React.Dispatch<React.SetStateAction<string | null>>,
+    setExpiresIn: React.Dispatch<React.SetStateAction<number | null>>): Promise<User> => {
     try {
         const requestData = new URLSearchParams();
         requestData.append('username', username);
         requestData.append('password', password);
 
-        const response = await Api.post('/token/login', requestData, {
+        const response = await AuthApi.post('/token/login', requestData, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
         });
-
-        return response.data; // returning user object
+        setRefreshToken(response.data.refreshToken);
+        setAccessToken(response.data.accessToken);
+        setExpiresIn(response.data.expiresIn);
+        return response.data;
     } catch (error) {
         throw error;
     }
 }
 
-export const logout = async (): Promise<void> => {
+export const logout = async (refreshToken: string | null): Promise<String> => {
     try {
-        await Api.post('/token/logout');
+        const requestData = new URLSearchParams();
+        if (refreshToken) {
+            requestData.append('refresh_token', refreshToken);
+            const response = await AuthApi.post('/token/logout', requestData, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            });
+
+            return response.data;
+        } else {
+            throw new Error('Refresh token is missing.');
+        }
     } catch (error) {
         throw error;
     }
