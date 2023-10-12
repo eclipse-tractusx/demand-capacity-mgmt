@@ -22,7 +22,7 @@
 
 import moment from 'moment';
 import 'moment-weekday-calc';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Button, ButtonGroup, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
@@ -31,6 +31,7 @@ import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSe
 
 
 import { format, getISOWeek, } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 import { LoadingGatheringDataMessage } from '../common/LoadingMessages';
 
 interface WeeklyViewProps {
@@ -91,19 +92,26 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
   const { getDemandbyId } = useContext(DemandContext)!;
   const [demandData, setDemandData] = useState<DemandProp>();
 
-  const fetchDemandData = async () => {
+  const navigate = useNavigate();
+
+  const fetchDemandData = useCallback(async () => {
     try {
-      const demand = await getDemandbyId(demandId); // Fetch demand data by ID
+      const demand = await getDemandbyId(demandId);
+      if (!demand) {
+        navigate('/error');
+        return;
+      }
       setDemandData(demand);
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching demand data:', error);
+      navigate('/error');
     }
-  };
+  }, [demandId, getDemandbyId, setDemandData, navigate]);
 
   useEffect(() => {
     fetchDemandData();
-  }, [demandId, fetchDemandData]);
+  }, [fetchDemandData]);
 
 
   const monthsPreviousYear = Array.from({ length: 1 }, (_, monthIndex) => {
