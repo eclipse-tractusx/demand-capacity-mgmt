@@ -46,12 +46,6 @@ code {
   align-items: center;
 }
 
-.animation-container {
-  display: flex;
-  align-items: center;
-  transition: transform 0.3s ease;
-}
-
 .slide-out {
   transform: translateX(-100%);
   opacity: 0;
@@ -64,19 +58,15 @@ code {
   transition: transform 0.3s ease, opacity 0.2s ease;
 }
 
-
-/* Adjust the transition for other navbar elements */
-/*.navbar-collapse,
-.navbar-nav,
-.navbar-text {
-  transition: margin-left 0.7s ease-in-out;
+.move-out {
+  transform: translateX(-35%);
+  transition: transform 0.3s ease;
 }
 
-.collapsed .navbar-collapse,
-.collapsed .navbar-nav,
-.collapsed .navbar-text {
-  margin-left: 10px;
-}*/
+.move-in {
+  transform: translateX(0%);
+  transition: transform 0.3s ease;
+}
 
 /*Quick Acess Itmes*/
 .floating-fixed-buttons {

@@ -80,8 +80,11 @@ function TopMenuLinks() {
           </div>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <InfoMenu />
+        <Navbar.Collapse id="basic-navbar-nav" >
+          <div className={`info-menu ${collapsed ? 'move-out' : 'move-in'}`}>
+            <InfoMenu />
+          </div>
+
         </Navbar.Collapse>
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
