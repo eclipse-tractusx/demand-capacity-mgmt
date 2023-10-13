@@ -20,23 +20,31 @@
  * *******************************************************************************
  */
 
-import React, { useContext, useMemo, useState } from 'react';
-import { Button, Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { FaArchive, FaArrowDown, FaArrowUp, FaCopy, FaEnvelope, FaExclamation, FaExternalLinkAlt, FaStar, FaUnlink, FaWrench } from 'react-icons/fa';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
+import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { FaArchive, FaArrowDown, FaArrowUp, FaCopy, FaEllipsisV, FaEnvelope, FaExclamation, FaExternalLinkAlt, FaStar, FaTrashAlt, FaUnlink, FaWrench } from 'react-icons/fa';
 import { EventsContext } from '../../contexts/EventsContextProvider';
 import { EventProp } from '../../interfaces/event_interfaces';
+import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import Pagination from '../common/Pagination';
 
 interface EventsTableProps {
     events: EventProp[];
+    isArchive: boolean
 }
 
-const EventsTable: React.FC<EventsTableProps> = ({ events }) => {
+const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
     const eventsContext = useContext(EventsContext)!;
     const [sortField, setSortField] = useState<string>('timestamp');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [eventsPerPage, setEventsPerPage] = useState<number>(20);
+
+    const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction>(ConfirmationAction.Delete);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+    const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+    const { deleteEventId, deleteArchivedEventId } = useContext(EventsContext)!;
 
     const eventTypeIcons: { [key: string]: React.ReactNode } = {
         GENERAL_EVENT: <FaEnvelope className="text-primary" size={25} />,
@@ -80,10 +88,6 @@ const EventsTable: React.FC<EventsTableProps> = ({ events }) => {
     const currentEvents = sortedData.slice(indexOfFirstEvent, indexOfLastEvent);
     const totalPagesNum = Math.ceil(sortedData.length / eventsPerPage);
 
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
-
     const generateOverlay = (event: EventProp): React.ReactElement => {
         const eventTypeIcon = eventTypeIcons[event.eventType];
         if (eventTypeIcon) {
@@ -99,8 +103,42 @@ const EventsTable: React.FC<EventsTableProps> = ({ events }) => {
         return <span>{event.eventType}</span>;
     };
 
+    const handleDeleteEvent = useCallback(
+        async (id: string) => {
+            try {
+                if (isArchive) {
+                    await deleteArchivedEventId(id);
+                    eventsContext.fetchArchiveEvents();
+                } else {
+                    await deleteEventId(id);
+                    eventsContext.fetchEvents();
+                }
 
 
+            } catch (error) {
+                console.error('Error deleting event:', error);
+            }
+        },
+        [deleteArchivedEventId, deleteEventId, eventsContext]
+    );
+
+    const handleDeleteButtonClick = (id: string) => {
+        setDeleteItemId(id);
+        setConfirmationAction(ConfirmationAction.Delete); // Set the confirmation action type
+        setShowDeleteConfirmation(true);
+    };
+
+
+    const handleDeleteEventWrapper = () => {
+        if (deleteItemId) {
+            handleDeleteEvent(deleteItemId)
+                .finally(() => {
+                    // Close the delete confirmation modal
+                    setShowDeleteConfirmation(false);
+                    setDeleteItemId(null);
+                });
+        }
+    };
 
     const handleArchiveClick = async (selectedEvent: EventProp) => {
         eventsContext.archiveLog(selectedEvent);
@@ -186,6 +224,17 @@ const EventsTable: React.FC<EventsTableProps> = ({ events }) => {
                                 <td><Button variant="primary" onClick={() => handleArchiveClick(event)}>
                                     <FaArchive />
                                 </Button></td>
+                                <td>
+                                    <Dropdown>
+                                        <Dropdown.Toggle variant="light" id={`dropdown-menu-${event.id}`}>
+                                            <span ><FaEllipsisV /></span>
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item onClick={() => { navigator.clipboard.writeText(event.id) }}><FaCopy /> Copy ID</Dropdown.Item>
+                                            <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteButtonClick(event.id)}><FaTrashAlt /> Delete</Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -223,6 +272,15 @@ const EventsTable: React.FC<EventsTableProps> = ({ events }) => {
                     </div>
                 </div>
             </div>
+            <DangerConfirmationModal
+                show={showDeleteConfirmation}
+                onCancel={() => {
+                    setShowDeleteConfirmation(false);
+                    setDeleteItemId(null);
+                }}
+                onConfirm={handleDeleteEventWrapper}
+                action={confirmationAction}
+            />
         </>
     );
 };
