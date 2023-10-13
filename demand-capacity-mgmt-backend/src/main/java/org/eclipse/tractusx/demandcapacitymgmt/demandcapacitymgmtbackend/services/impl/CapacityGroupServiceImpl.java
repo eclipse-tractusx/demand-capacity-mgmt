@@ -25,6 +25,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,13 +56,12 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     private final MaterialDemandRepository materialDemandRepository;
 
-    private final CompanyRepository companyRepository;
+
     private final CompanyService companyService;
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
     private final CapacityGroupRepository capacityGroupRepository;
 
     private final DemandSeriesRepository demandSeriesRepository;
-    private UnitMeasure unitMeasure;
 
     private final LoggingHistoryService loggingHistoryService;
 
@@ -160,13 +160,38 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         capacityGroupEntity.setEndDate(LocalDate.parse(request.getEndDate()));
         capacityGroupEntity.setCustomer(customer);
         capacityGroupEntity.setSupplier(supplier);
+
+        List<CapacityTimeSeries> capacityTimeSeriesList = new ArrayList<>();
+        capacityGroupEntity.setCapacityTimeSeriesList(capacityTimeSeriesList);
+
+        List<String> mondays = getMondaysBetween(request.getStartDate(), request.getEndDate()); //tem que ser inclusivo
+
+        createCapacityTimeSeries(
+                mondays,
+                capacityGroupEntity.getDefaultActualCapacity(),
+                capacityGroupEntity.getDefaultMaximumCapacity(),
+                capacityGroupEntity
+        );
+
+
         return capacityGroupEntity;
     }
 
     @Override
-    public CapacityGroupResponse getCapacityGroupById(String capacityGroupId) {
+    public SingleCapacityGroup getCapacityGroupById(String capacityGroupId) {
         CapacityGroupEntity capacityGroupEntity = getCapacityGroupEntity(capacityGroupId);
-        return convertCapacityGroupDto(capacityGroupEntity);
+        CapacityGroupResponse response = convertCapacityGroupDto(capacityGroupEntity);
+        SingleCapacityGroup singleCapacityGroup = new SingleCapacityGroup();
+
+        singleCapacityGroup.setCapacityGroupId(response.getCapacityGroupId());
+        singleCapacityGroup.setCapacityGroupName(response.getCapacitygroupname());
+        singleCapacityGroup.setCustomer(response.getCustomer());
+        singleCapacityGroup.setSupplier(response.getSupplier());
+        singleCapacityGroup.setLinkMaterialDemandIds(response.getLinkMaterialDemandIds());
+
+        singleCapacityGroup.setCapacities(convertToCapacityBody(capacityGroupEntity.getCapacityTimeSeriesList()));
+
+        return singleCapacityGroup;
     }
 
     @Override
@@ -229,41 +254,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         return responseDto;
     }
 
-    private UnitMeasure enrichUnitMeasure(UnitMeasureEntity unitMeasureEntity) {
-        UnitMeasure unitMeasure = new UnitMeasure();
-
-        unitMeasure.setId(unitMeasureEntity.getId().toString());
-        unitMeasure.setUnCode(unitMeasureEntity.getUnCode());
-        unitMeasure.setCxSymbol(unitMeasureEntity.getCxSymbol());
-
-        return unitMeasure;
-    }
-
-    private CapacityRequest convertCapacityTimeSeries(CapacityTimeSeries capacityTimeSeries) {
-        CapacityRequest capacityRequest = new CapacityRequest();
-
-        capacityRequest.setActualCapacity(BigDecimal.valueOf(capacityTimeSeries.getActualCapacity()));
-        capacityRequest.setMaximumCapacity(BigDecimal.valueOf(capacityTimeSeries.getMaximumCapacity()));
-        capacityRequest.setCalendarWeek(capacityTimeSeries.getCalendarWeek().toString());
-
-        return capacityRequest;
-    }
-
-    private LinkedDemandSeriesResponse convertLinkedDemandSeries(LinkedDemandSeries linkedDemandSeries) {
-        LinkedDemandSeriesResponse linkedDemandSeriesResponse = new LinkedDemandSeriesResponse();
-
-        linkedDemandSeriesResponse.setMaterialNumberCustomer(linkedDemandSeries.getMaterialNumberCustomer());
-        linkedDemandSeriesResponse.setMaterialNumberSupplier(linkedDemandSeries.getMaterialNumberSupplier());
-
-        CompanyDto customer = companyService.convertEntityToDto(linkedDemandSeries.getCustomerId());
-        linkedDemandSeriesResponse.setCustomerLocation(customer);
-
-        DemandCategoryResponse demand = convertDemandCategoryEntity(linkedDemandSeries.getDemandCategory());
-        linkedDemandSeriesResponse.setDemandCategory(demand);
-
-        return linkedDemandSeriesResponse;
-    }
-
     private DemandCategoryResponse convertDemandCategoryEntity(DemandCategoryEntity demandCategoryEntity) {
         DemandCategoryResponse response = new DemandCategoryResponse();
 
@@ -299,5 +289,54 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             capacityGroupList.add(response);
         }
         return capacityGroupList;
+    }
+
+    private List<String> getMondaysBetween(String startDate, String endDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate startLocalDate = LocalDate.parse(startDate, formatter).plusDays(7);
+        LocalDate endLocalDate = LocalDate.parse(endDate, formatter);
+
+        List<String> mondays = new ArrayList<>();
+        mondays.add(startDate);
+
+        while (startLocalDate.isBefore(endLocalDate)) {
+            mondays.add(startLocalDate.format(formatter));
+            startLocalDate = startLocalDate.plusDays(7);
+        }
+        mondays.add(endDate);
+
+        return mondays;
+    }
+
+    private void createCapacityTimeSeries(
+        List<String> mondays,
+        float actualCapacity,
+        float maximumCapacity,
+        CapacityGroupEntity capacityGroupId
+    ) {
+
+        for (String monday : mondays) {
+            CapacityTimeSeries timeSeries = new CapacityTimeSeries();
+            timeSeries.setCalendarWeek(monday);
+            timeSeries.setActualCapacity((double) actualCapacity);
+            timeSeries.setMaximumCapacity((double) maximumCapacity);
+            capacityGroupId.getCapacityTimeSeriesList().add(timeSeries);
+            timeSeries.setCapacityGroupEntity(capacityGroupId);
+        }
+    }
+
+    private List<CapacityBody> convertToCapacityBody(List<CapacityTimeSeries> capacityTimeSeries) {
+        List<CapacityBody> bodys = new ArrayList<>();
+
+        for (CapacityTimeSeries capacityTimeSerie : capacityTimeSeries) {
+            CapacityBody capacityBody = new CapacityBody();
+            capacityBody.setCalendarWeek(capacityTimeSerie.getCalendarWeek());
+            capacityBody.setActualCapacity(BigDecimal.valueOf(capacityTimeSerie.getActualCapacity()));
+            capacityBody.setMaximumCapacity(BigDecimal.valueOf(capacityTimeSerie.getMaximumCapacity()));
+            capacityBody.setCapacityId(capacityTimeSerie.getCapacityGroupEntity().getId().toString());
+
+            bodys.add(capacityBody);
+        }
+        return bodys;
     }
 }
