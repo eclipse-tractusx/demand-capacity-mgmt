@@ -34,17 +34,12 @@ import {
     YAxis
 } from "recharts";
 import { SingleCapacityGroup } from "../../interfaces/capacitygroup_interfaces";
+import {DemandProp} from "../../interfaces/demand_interfaces";
 
-type CapacityGroupChronogramProps = {
+interface CapacityGroupChronogramProps {
     capacityGroup: SingleCapacityGroup | null | undefined;
-};
-
-const computeLinkedDemandSum = (capacityGroup: SingleCapacityGroup | null | undefined) => {
-    if (!capacityGroup || !capacityGroup.linkMaterialDemandIds) return 0;
-
-
-    return capacityGroup.linkMaterialDemandIds.length;
-};
+    materialDemands: DemandProp[] | null;
+}
 
 function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
@@ -55,12 +50,13 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
 
     const { capacityGroup } = props;
+    const { materialDemands } = props;
 
 
     const rawCapacities = capacityGroup?.capacities || [];
 
 
-    const linkedDemandSum = computeLinkedDemandSum(capacityGroup);
+    const linkedDemandSum = materialDemands?.length;
 
 
     // Sorted data by date

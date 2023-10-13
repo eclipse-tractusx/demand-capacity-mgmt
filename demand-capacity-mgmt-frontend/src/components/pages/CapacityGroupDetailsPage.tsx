@@ -24,7 +24,7 @@ import { Tab, Tabs } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import CapacityGroupChronogram from '../../components/capacitygroup/CapacityGroupChronogram';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
-import DemandContextProvider from '../../contexts/DemandContextProvider';
+import DemandContextProvider, {DemandContext} from '../../contexts/DemandContextProvider';
 import { EventsContext } from '../../contexts/EventsContextProvider';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import { EventProp } from '../../interfaces/event_interfaces';
@@ -32,6 +32,7 @@ import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList'
 import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
 import { LoadingMessage } from '../common/LoadingMessages';
 import EventsTable from '../events/EventsTable';
+import {DemandProp} from "../../interfaces/demand_interfaces";
 
 function CapacityGroupDetailsPage() {
   const { id } = useParams();
@@ -44,7 +45,9 @@ function CapacityGroupDetailsPage() {
   const { getCapacityGroupById } = context;
   const [activeTab, setActiveTab] = useState('overview');
   const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
+  const [materialDemands, setMaterialDemands] = useState<DemandProp[] | null>([]);
   const { fetchFilteredEvents } = useContext(EventsContext)!;
+  const {getDemandbyId} = useContext(DemandContext)!;
   const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
   const navigate = useNavigate()
   useEffect(() => {
@@ -53,10 +56,24 @@ function CapacityGroupDetailsPage() {
         try {
           const fetchedCapacityGroup = await getCapacityGroupById(id);
           if (!fetchedCapacityGroup) {
+
             navigate('/invalid');
             return;
           }
           setCapacityGroup(fetchedCapacityGroup || null);
+
+          // Fetching material demands for the capacity group
+          if (fetchedCapacityGroup.linkMaterialDemandIds && fetchedCapacityGroup.linkMaterialDemandIds.length > 0) {
+            const demandPromises = fetchedCapacityGroup.linkMaterialDemandIds.map(demandId => getDemandbyId(demandId));
+            const demands = await Promise.all(demandPromises);
+
+            // Filter out any potential undefined values before setting the state.
+            const validDemands = demands.filter(Boolean) as DemandProp[];
+
+            setMaterialDemands(validDemands);
+
+          }
+
           const filters = {
             capacity_group_id: id,
             start_time: '',
@@ -71,7 +88,7 @@ function CapacityGroupDetailsPage() {
         }
       })();
     }
-  }, [id, getCapacityGroupById]);
+  }, [id, getCapacityGroupById, , getDemandbyId]);
 
 
 
@@ -104,8 +121,8 @@ function CapacityGroupDetailsPage() {
             }}
           >
             <Tab eventKey="overview" title="Overview">
-              <CapacityGroupSumView capacityGroup={capacityGroup} />
-              <CapacityGroupChronogram capacityGroup={capacityGroup} />
+              <CapacityGroupSumView capacityGroup={capacityGroup} materialDemands={materialDemands} />
+              <CapacityGroupChronogram capacityGroup={capacityGroup} materialDemands={materialDemands} />
             </Tab>
             <Tab eventKey="materials" title="Materials">
               <DemandContextProvider>

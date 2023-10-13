@@ -83,7 +83,6 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     try {
       const response = await api.get(`/capacityGroup/${id}`);
       const fetchedCapacityGroup: SingleCapacityGroup = response.data;
-      console.log(fetchedCapacityGroup)
       return fetchedCapacityGroup;
     } catch (error) {
       console.error('Error fetching CapacityGroup by id:', error);

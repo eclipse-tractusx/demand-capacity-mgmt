@@ -27,9 +27,11 @@ import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 
 import { addDays, addMonths, addWeeks, format, getISOWeek, startOfMonth } from 'date-fns';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
+import {DemandProp} from "../../interfaces/demand_interfaces";
 
 interface WeeklyViewProps {
   capacityGroup: SingleCapacityGroup | null | undefined;
+  materialDemands: DemandProp[] | null;
 }
 
 function getISOWeekMonday(year: number, isoWeek: number): Date {
@@ -53,146 +55,9 @@ function getWeeksInMonth(year: number, monthIndex: number): number[] {
   return weeks;
 }
 
-const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
+const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materialDemands }) => {
 
-  const capacityGroup = {
-    "capacityGroupId": "50bce75c-6ca9-4c98-ba20-c23ce5d3d632",
-    "capacities": [
-      {
-        "actualCapacity": 10,
-        "maximumCapacity": 11,
-        "calendarWeek": "2023-06-19"
-      }
-    ],
-    "customer": {
-      "id": "5fe734b9-e7e0-4a84-a9f9-5c08dc5ad29d",
-      "bpn": "BPN09",
-      "companyName": "GM",
-      "street": "Test",
-      "number": "Test",
-      "zipCode": "Test",
-      "country": "Test",
-      "myCompany": "Test"
-    },
-    "supplier": {
-      "id": "5fe734b9-e7e0-4a84-a9f9-5c08dc5ad29d",
-      "bpn": "BPN09",
-      "companyName": "GM",
-      "street": "Test",
-      "number": "Test",
-      "zipCode": "Test",
-      "country": "Test",
-      "myCompany": "Test"
-    },
-    "weekBasedCapacityGroupId": "98458dc9-6dc8-4457-92e7-80e68605dd25",
-    "linkedDemandSeries": [
-      {
-        "id": "5c1d0f5f-e21c-4915-9b0c-c7d8f0adc19c",
-        "materialDescriptionCustomer": " Demand001",
-        "materialNumberCustomer": "CapacityGroup",
-        "materialNumberSupplier": "Test",
-        "customer": {
-          "id": "5d210fb8-260d-4190-9578-f62f9c459703",
-          "bpn": "BPN01",
-          "companyName": "CGI",
-          "street": "Test",
-          "number": "Test",
-          "zipCode": "Test",
-          "country": "Test",
-          "myCompany": "Test"
-        },
-        "supplier": {
-          "id": "5d210fb8-260d-4190-9578-f62f9c459703",
-          "bpn": "BPN01",
-          "companyName": "CGI",
-          "street": "Test",
-          "number": "Test",
-          "zipCode": "Test",
-          "country": "Test",
-          "myCompany": "Test"
-        },
-        "unitMeasureId": {
-          "id": "a8ebe2f8-2af8-4573-9dd4-d7f33e682792",
-          "codeValue": "un",
-          "displayValue": "Unit"
-        },
-        "changedAt": "2023-09-18T08:55:57.700319",
-        "demandSeries": [
-          {
-            "customerLocation": {
-              "id": "5d210fb8-260d-4190-9578-f62f9c459703",
-              "bpn": "BPN01",
-              "companyName": "CGI",
-              "street": "Test",
-              "number": "Test",
-              "zipCode": "Test",
-              "country": "Test",
-              "myCompany": "Test"
-            },
-            "expectedSupplierLocation": [
-              {
-                "id": "5d210fb8-260d-4190-9578-f62f9c459703",
-                "bpn": "BPN01",
-                "companyName": "CGI",
-                "street": "Test",
-                "number": "Test",
-                "zipCode": "Test",
-                "country": "Test",
-                "myCompany": "Test"
-              }
-            ],
-            "demandCategory": {
-              "id": "1d185139-0d50-4bb6-9780-b1587da8e7f5",
-              "demandCategoryCode": "DC002",
-              "demandCategoryName": "Series"
-            },
-            "demandSeriesValues": [
-              {
-                "calendarWeek": "2023-06-19T08:55:57.699320",
-                "demand": 10.0
-              }
-            ]
-          },
-          {
-            "customerLocation": {
-              "id": "5d210fb8-260d-4190-9578-f62f9c459703",
-              "bpn": "BPN01",
-              "companyName": "CGI",
-              "street": "Test",
-              "number": "Test",
-              "zipCode": "Test",
-              "country": "Test",
-              "myCompany": "Test"
-            },
-            "expectedSupplierLocation": [
-              {
-                "id": "5d210fb8-260d-4190-9578-f62f9c459703",
-                "bpn": "BPN01",
-                "companyName": "CGI",
-                "street": "Test",
-                "number": "Test",
-                "zipCode": "Test",
-                "country": "Test",
-                "myCompany": "Test"
-              }
-            ],
-            "demandCategory": {
-              "id": "1622ea81-f454-4800-a15f-16253ae1c93d",
-              "demandCategoryCode": "DC006",
-              "demandCategoryName": "Default"
-            },
-            "demandSeriesValues": [
-              {
-                "calendarWeek": "2023-06-19T08:55:57.699320",
-                "demand": 80.0
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "name": "TEST CAPACITY GROUP"
-  };
+
 
   const { demandcategories } = useContext(DemandCategoryContext) || {};
   const currentYear = new Date().getFullYear();
@@ -201,6 +66,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
     const monthStart = new Date(currentYear, monthIndex, 1);
     const monthName = format(monthStart, 'MMM');
     const weeks = getWeeksInMonth(currentYear, monthIndex);
+
 
     return {
       name: monthName,
@@ -269,9 +135,9 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
 
 
   // Track the sum of the Demands.demand for each Demand.description row
-  if (capacityGroup && capacityGroup.linkedDemandSeries) {
-    capacityGroup.linkedDemandSeries.forEach((demand) => {
-      demand.demandSeries.forEach((demandSeries) => {
+  if (capacityGroup && materialDemands) {
+    materialDemands.forEach((demand) => {
+      demand.demandSeries?.forEach((demandSeries) => {
         demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
           const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
           demandSums[week] = (demandSums[week] || 0) + demandSeriesValue.demand;
@@ -280,9 +146,9 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
     });
   }
 
-  if (capacityGroup && capacityGroup.linkedDemandSeries) {
-    capacityGroup.linkedDemandSeries.forEach((demand) => {
-      demand.demandSeries.forEach((demandSeries) => {
+  if (capacityGroup && materialDemands) {
+    materialDemands.forEach((demand) => {
+      demand.demandSeries?.forEach((demandSeries) => {
         demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
           const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
           demandSumsByWeek[week] = (demandSumsByWeek[week] || 0) + demandSeriesValue.demand;
@@ -444,8 +310,8 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
               {expandedDemandRows['total'] && (
                 <>
                   {capacityGroup &&
-                    capacityGroup.linkedDemandSeries &&
-                    capacityGroup.linkedDemandSeries.map((demand) => (
+                      materialDemands &&
+                      materialDemands.map((demand) => (
                       <React.Fragment key={`demand-row-${demand.id}`}>
                         <tr>
                           <th className="sticky-header-cell">
@@ -466,7 +332,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
                         </tr>
                         {expandedDemandRows[demand.id] && (
                           <>
-                            {demand.demandSeries.map((demandSeries) => (
+                            {demand.demandSeries?.map((demandSeries) => (
                               <React.Fragment key={`demandSeries-row-${demandSeries.demandCategory.id}`}>
                                 <tr>
                                   <th className="sticky-header-cell">
