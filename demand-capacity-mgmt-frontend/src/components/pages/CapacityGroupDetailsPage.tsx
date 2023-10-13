@@ -90,7 +90,6 @@ function CapacityGroupDetailsPage() {
               {capacityGroup?.capacityGroupId} - {capacityGroup?.capacitygroupname}
             </div>
             <div className="col d-flex justify-content-end">
-              <br />
             </div>
           </div>
           <Tabs
