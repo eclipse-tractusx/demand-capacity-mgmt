@@ -59,9 +59,9 @@ const AppComponent: React.FC = () => {
 
                     <Route path="/details/:id" element={
                         <AuthenticatedRoute>
-                            <CapacityGroupsProvider><EventsContextProvider>
+                            <CapacityGroupsProvider><EventsContextProvider><DemandContextProvider>
                                 <CapacityGroupDetailsPage />
-                            </EventsContextProvider></CapacityGroupsProvider>
+                            </DemandContextProvider></EventsContextProvider></CapacityGroupsProvider>
                             <QuickAcessItems />
                         </AuthenticatedRoute>
                     } />
