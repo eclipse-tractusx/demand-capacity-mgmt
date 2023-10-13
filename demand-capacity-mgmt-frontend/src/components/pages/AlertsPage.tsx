@@ -21,14 +21,13 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import { FcBearish } from "react-icons/fc";
+import { FcHighPriority } from "react-icons/fc";
 import { EventsContext } from "../../contexts/EventsContextProvider";
 import { EventProp, EventType } from "../../interfaces/event_interfaces";
 import EventsTable from "../events/EventsTable";
 
-function DownStatusPage() {
 
-
+function AlertsPage() {
     const { fetchFilteredEvents } = useContext(EventsContext)!;
     const [filteredEvents, setFilteredEvents] = useState<EventProp[]>([]);
     const [loading, setLoading] = useState(false);
@@ -39,7 +38,7 @@ function DownStatusPage() {
             try {
                 // Fetch events based on the selected event type
                 const filteredEvents = await fetchFilteredEvents({
-                    event: EventType.STATUS_REDUCTION,
+                    event: EventType.ALERT,
                 });
                 setFilteredEvents(filteredEvents);
             } catch (error) {
@@ -57,7 +56,7 @@ function DownStatusPage() {
             <br />
             <div className="container-xl">
                 <div style={{ display: "flex", }}>
-                    <FcBearish size={35} /><h3 className="icon-text-padding">Negative</h3>
+                    <FcHighPriority size={35} /><h3 className="icon-text-padding">Alerts</h3>
                 </div>
                 <div className="table">
                     <div className="table-wrapper">
@@ -70,4 +69,4 @@ function DownStatusPage() {
     );
 }
 
-export default DownStatusPage;
+export default AlertsPage;

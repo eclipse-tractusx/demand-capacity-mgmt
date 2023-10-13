@@ -25,11 +25,10 @@ import { Route, Routes } from "react-router-dom";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
 import EventsContextProvider from '../../contexts/EventsContextProvider';
-import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
 import QuickAcessItems from '../common/QuickAcessItems';
-import TopMenu from "../common/TopMenu";
-import AuthenticationComponent from "../pages/AuthenticationPage";
+import AlertsPage from '../pages/AlertsPage';
+import AuthenticationComponent from '../pages/AuthenticationPage';
 import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
 import Home from "../pages/CapacityGroupPage";
 import DownStatusPage from '../pages/DownStatusPage';
@@ -37,65 +36,93 @@ import ErrorPage from '../pages/ErrorPage';
 import EventsPage from "../pages/EventsPage";
 import TodoListPage from '../pages/TodoListPage';
 import UpStatusPage from '../pages/UpStatusPage';
+import Layout from './Layout';
 
 
 const AppComponent: React.FC = () => {
     return (
-        <div className='root-container'>
-            <AuthenticatedRoute>
-                <InfoMenuProvider>
-                    <TopMenu />
-                </InfoMenuProvider>
-            </AuthenticatedRoute>
-            <div className='overflow-control-container'>
-                <Routes>
+        <Routes>
+            <Route path="/login" element={<AuthenticationComponent />} />
+            <Route path="*" element={<ErrorPage />} />
 
-                    <Route path="/" element={
-                        <AuthenticatedRoute>
-                            <Home />
-                            <DemandContextProvider><QuickAcessItems /></DemandContextProvider>
-                        </AuthenticatedRoute>
-                    } />
+            <Route path="/" element={
+                <AuthenticatedRoute><DemandContextProvider>
+                    <Layout>
+                        <Home />
+                        <QuickAcessItems />
+                    </Layout></DemandContextProvider>
+                </AuthenticatedRoute>
+            } />
 
-                    <Route path="/details/:id" element={
-                        <AuthenticatedRoute>
-                            <CapacityGroupsProvider><EventsContextProvider><DemandContextProvider>
-                                <CapacityGroupDetailsPage />
-                            </DemandContextProvider></EventsContextProvider></CapacityGroupsProvider>
-                            <QuickAcessItems />
-                        </AuthenticatedRoute>
-                    } />
-                    <Route path="/up" element={
-                        <AuthenticatedRoute>
-                            <DemandContextProvider>  <UpStatusPage />
-                                <QuickAcessItems /></DemandContextProvider>
-                        </AuthenticatedRoute>
-                    } />
-                    <Route path="/down" element={
-                        <AuthenticatedRoute>
-                            <DemandContextProvider><DownStatusPage />
-                                <QuickAcessItems /></DemandContextProvider>
-                        </AuthenticatedRoute>
-                    } />
-                    <Route path="/todo" element={
-                        <AuthenticatedRoute>
-                            <DemandContextProvider><TodoListPage />
-                                <QuickAcessItems /></DemandContextProvider>
-                        </AuthenticatedRoute>
-                    } />
+            <Route path="/details/:id" element={
+                <AuthenticatedRoute>
+                    <DemandContextProvider>
+                        <Layout>
+                            <CapacityGroupsProvider>
+                                <EventsContextProvider>
+                                    <CapacityGroupDetailsPage />
+                                </EventsContextProvider>
+                            </CapacityGroupsProvider>
+                        </Layout></DemandContextProvider>
+                </AuthenticatedRoute>
+            } />
+            <Route path="/alerts" element={
+                <AuthenticatedRoute>
+                    <DemandContextProvider>
+                        <Layout>
+                            <EventsContextProvider>
+                                <AlertsPage />
+                            </EventsContextProvider>
+                        </Layout>
+                    </DemandContextProvider>
+                </AuthenticatedRoute>
+            } />
+            <Route path="/up" element={
+                <AuthenticatedRoute>
+                    <DemandContextProvider>
+                        <Layout>
+                            <EventsContextProvider>
+                                <UpStatusPage />
+                            </EventsContextProvider>
+                        </Layout>
+                    </DemandContextProvider>
+                </AuthenticatedRoute>
+            } />
+            <Route path="/down" element={
+                <AuthenticatedRoute>
+                    <DemandContextProvider>
+                        <Layout>
+                            <EventsContextProvider>
+                                <DownStatusPage />
+                            </EventsContextProvider>
+                        </Layout>
+                    </DemandContextProvider>
+                </AuthenticatedRoute>
+            } />
+            <Route path="/todo" element={
+                <AuthenticatedRoute>
+                    <DemandContextProvider>
+                        <Layout>
+                            <EventsContextProvider>
+                                <TodoListPage />
+                            </EventsContextProvider>
+                        </Layout>
+                    </DemandContextProvider>
+                </AuthenticatedRoute>
+            } />
 
-                    <Route path="/events" element={
-                        <AuthenticatedRoute>
-                            <EventsContextProvider><EventsPage /></EventsContextProvider>
-                            <DemandContextProvider><QuickAcessItems /></DemandContextProvider>
-                        </AuthenticatedRoute>
-                    } />
-
-                    <Route path="/login" element={<AuthenticationComponent />} />
-                    <Route path="*" element={<ErrorPage />} />
-                </Routes>
-            </div>
-        </div>
+            <Route path="/events" element={
+                <AuthenticatedRoute>
+                    <DemandContextProvider>
+                        <Layout>
+                            <EventsContextProvider>
+                                <EventsPage />
+                            </EventsContextProvider>
+                        </Layout>
+                    </DemandContextProvider>
+                </AuthenticatedRoute>
+            } />
+        </Routes >
     );
 }
 
