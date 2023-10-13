@@ -66,7 +66,7 @@ const AuthenticationComponent: React.FC = () => {
                 </Toast.Header>
                 <Toast.Body>{errorMessage}</Toast.Body>
             </Toast>
-            <Row className="justify-content-center align-items-center min-vh-100">
+            <Row className="justify-content-center align-items-center min-vh-100 ">
                 <Col xs={12} sm={8} md={6} lg={4}>
                     <div className="form">
                         <div className="d-flex flex-column align-items-center mb-4">
