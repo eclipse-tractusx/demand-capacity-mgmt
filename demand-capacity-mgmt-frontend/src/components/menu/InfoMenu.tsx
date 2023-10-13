@@ -44,7 +44,7 @@ function InfoMenu() {
                 <Nav.Link href="../#favorites"><FaStar /> Favorites <span className="ms-1 badge rounded-pill text-bg-primary"
                     id="favorites-count">-</span></Nav.Link>
 
-                <Nav.Link href="../#alerts">Alerts
+                <Nav.Link href="../alerts">Alerts
                     <span className="ms-1 badge rounded-pill text-bg-danger" id="alerts-count">
                         {formatData(data?.general)}
                     </span>
