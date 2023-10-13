@@ -24,11 +24,10 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 
 @Entity
@@ -66,6 +65,12 @@ public class CapacityGroupEntity {
     @OneToOne
     @JoinColumn(name = "supplier", referencedColumnName = "ID")
     private CompanyEntity supplier;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "capacity_group_id")
+    private List<CapacityTimeSeries> capacityTimeSeriesList;
 
     @Column(name = "link_status")
     private EventType linkStatus;

@@ -63,7 +63,7 @@ export interface SingleCapacityGroup {
   supplier: Address;
   capacityGroupId: string;
   linkMaterialDemandIds: string[];
-  capacitygroupname: string;
+  capacityGroupName: string;
 }
 
 export interface CapacityGroupCreate {

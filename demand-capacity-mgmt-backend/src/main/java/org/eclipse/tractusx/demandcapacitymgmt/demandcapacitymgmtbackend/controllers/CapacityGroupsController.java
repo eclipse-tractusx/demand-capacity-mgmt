@@ -44,8 +44,8 @@ public class CapacityGroupsController implements CapacityGroupApi {
     }
 
     @Override
-    public ResponseEntity<CapacityGroupResponse> getCapacityGroupById(String capacityGroupId) {
-        CapacityGroupResponse capacityGroupResponse = service.getCapacityGroupById(capacityGroupId);
+    public ResponseEntity<SingleCapacityGroup> getCapacityGroupById(String capacityGroupId) {
+        SingleCapacityGroup capacityGroupResponse = service.getCapacityGroupById(capacityGroupId);
         return ResponseEntity.status(HttpStatus.OK).body(capacityGroupResponse);
     }
 
