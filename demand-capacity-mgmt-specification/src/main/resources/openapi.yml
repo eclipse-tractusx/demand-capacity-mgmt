@@ -894,9 +894,9 @@ components:
           type: string
         role:
           $ref: '#/components/schemas/Role'
-        accessToken:
+        access_token:
           type: string
-        refreshToken:
+        refresh_token:
           type: string
         expiresIn:
           type: integer
