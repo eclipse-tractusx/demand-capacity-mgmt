@@ -41,71 +41,60 @@ import UpStatusPage from '../pages/UpStatusPage';
 
 const AppComponent: React.FC = () => {
     return (
-        <div>
-            <Routes>
-                <Route path="/" element={
-                    <AuthenticatedRoute>
-                        <InfoMenuProvider>
-                            <TopMenu />
-                        </InfoMenuProvider>
-                        <Home />
-                        <DemandContextProvider><QuickAcessItems /></DemandContextProvider>
-                    </AuthenticatedRoute>
-                } />
+        <div className='root-container'>
+            <AuthenticatedRoute>
+                <InfoMenuProvider>
+                    <TopMenu />
+                </InfoMenuProvider>
+            </AuthenticatedRoute>
+            <div className='overflow-control-container'>
+                <Routes>
 
-                <Route path="/details/:id" element={
-                    <AuthenticatedRoute>
-                        <InfoMenuProvider>
-                            <TopMenu />
-                        </InfoMenuProvider>
-                        <CapacityGroupsProvider><EventsContextProvider>
-                            <CapacityGroupDetailsPage />
-                        </EventsContextProvider></CapacityGroupsProvider>
-                        <QuickAcessItems />
-                    </AuthenticatedRoute>
-                } />
-                <Route path="/up" element={
-                    <AuthenticatedRoute>
-                        <InfoMenuProvider>
-                            <TopMenu />
-                        </InfoMenuProvider>
-                        <DemandContextProvider>  <UpStatusPage />
-                            <QuickAcessItems /></DemandContextProvider>
-                    </AuthenticatedRoute>
-                } />
-                <Route path="/down" element={
-                    <AuthenticatedRoute>
-                        <InfoMenuProvider>
-                            <TopMenu />
-                        </InfoMenuProvider>
-                        <DemandContextProvider><DownStatusPage />
-                            <QuickAcessItems /></DemandContextProvider>
-                    </AuthenticatedRoute>
-                } />
-                <Route path="/todo" element={
-                    <AuthenticatedRoute>
-                        <InfoMenuProvider>
-                            <TopMenu />
-                        </InfoMenuProvider>
-                        <DemandContextProvider><TodoListPage />
-                            <QuickAcessItems /></DemandContextProvider>
-                    </AuthenticatedRoute>
-                } />
+                    <Route path="/" element={
+                        <AuthenticatedRoute>
+                            <Home />
+                            <DemandContextProvider><QuickAcessItems /></DemandContextProvider>
+                        </AuthenticatedRoute>
+                    } />
 
-                <Route path="/events" element={
-                    <AuthenticatedRoute>
-                        <InfoMenuProvider>
-                            <TopMenu />
-                        </InfoMenuProvider>
-                        <EventsContextProvider><EventsPage /></EventsContextProvider>
+                    <Route path="/details/:id" element={
+                        <AuthenticatedRoute>
+                            <CapacityGroupsProvider><EventsContextProvider>
+                                <CapacityGroupDetailsPage />
+                            </EventsContextProvider></CapacityGroupsProvider>
+                            <QuickAcessItems />
+                        </AuthenticatedRoute>
+                    } />
+                    <Route path="/up" element={
+                        <AuthenticatedRoute>
+                            <DemandContextProvider>  <UpStatusPage />
+                                <QuickAcessItems /></DemandContextProvider>
+                        </AuthenticatedRoute>
+                    } />
+                    <Route path="/down" element={
+                        <AuthenticatedRoute>
+                            <DemandContextProvider><DownStatusPage />
+                                <QuickAcessItems /></DemandContextProvider>
+                        </AuthenticatedRoute>
+                    } />
+                    <Route path="/todo" element={
+                        <AuthenticatedRoute>
+                            <DemandContextProvider><TodoListPage />
+                                <QuickAcessItems /></DemandContextProvider>
+                        </AuthenticatedRoute>
+                    } />
 
-                        <DemandContextProvider><QuickAcessItems /></DemandContextProvider>
-                    </AuthenticatedRoute>
-                } />
+                    <Route path="/events" element={
+                        <AuthenticatedRoute>
+                            <EventsContextProvider><EventsPage /></EventsContextProvider>
+                            <DemandContextProvider><QuickAcessItems /></DemandContextProvider>
+                        </AuthenticatedRoute>
+                    } />
 
-                <Route path="/login" element={<AuthenticationComponent />} />
-                <Route path="*" element={<ErrorPage />} />
-            </Routes>
+                    <Route path="/login" element={<AuthenticationComponent />} />
+                    <Route path="*" element={<ErrorPage />} />
+                </Routes>
+            </div>
         </div>
     );
 }
