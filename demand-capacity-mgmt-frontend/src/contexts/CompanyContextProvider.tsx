@@ -43,11 +43,11 @@ interface CompanyContextData {
 export const CompanyContext = createContext<CompanyContextData | undefined>(undefined);
 
 const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-  const { accessToken } = useUser();
+  const { access_token } = useUser();
   const [companies, setCompanies] = useState<Company[]>([]);
 
   useEffect(() => {
-    const api = createAPIInstance(accessToken);
+    const api = createAPIInstance(access_token);
     const fetchCompanies = async () => {
       try {
         const response = await api.get('/company', {
@@ -60,7 +60,7 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     };
   
     fetchCompanies();
-  }, [accessToken]);
+  }, [access_token]);
   
 
 
