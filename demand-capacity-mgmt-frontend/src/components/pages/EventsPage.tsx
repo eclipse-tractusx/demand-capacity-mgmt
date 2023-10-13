@@ -1,37 +1,29 @@
-/*
- * ******************************************************************************
- * Copyright (c) 2023 BMW AG
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
- *
- * SPDX-License-Identifier: Apache-2.0
- * *******************************************************************************
- */
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Tab, Tabs } from "react-bootstrap";
-import { FaRedo } from "react-icons/fa";
+import { FaFilter, FaRedo } from "react-icons/fa";
 import { FcTimeline } from "react-icons/fc";
+import Creatable from 'react-select/creatable';
 import { EventsContext } from "../../contexts/EventsContextProvider";
+import { EventProp } from "../../interfaces/event_interfaces";
 import DangerConfirmationModal, { ConfirmationAction } from "../common/DangerConfirmationModal";
+import { LoadingMessage } from "../common/LoadingMessages";
 import EventsTable from "../events/EventsTable";
-
 
 function EventsPage() {
     const [activeTab, setActiveTab] = useState("Events");
-    const { events, archiveEvents, fetchEvents, deleteAllEvents } = useContext(EventsContext)!;
+    const [userInput, setUserInput] = useState('');
+    const { events, archiveEvents, fetchEvents, fetchFilteredEvents, deleteAllEvents } = useContext(EventsContext)!;
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [filteredEvents, setFilteredEvents] = useState<EventProp[]>(events);
+
+    const handleUserInputChange = (newValue: string | undefined) => {
+        console.log('New Value:', newValue);
+        console.log('Events:', events);
+        setUserInput(newValue || '');
+        setFilteredEvents(newValue === undefined ? events : []);
+    };
+
 
     const handleRefreshClick = () => {
         fetchEvents(); // Call your fetchEvents function to refresh the data
@@ -50,7 +42,33 @@ function EventsPage() {
         setShowConfirmationModal(false);
     };
 
-    return (<>
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                let filteredEvents: EventProp[] = [];
+                if (userInput !== '') {
+                    filteredEvents = await fetchFilteredEvents({
+                        material_demand_id: userInput,
+                        capacity_group_id: userInput,
+                        event: userInput,
+                    });
+                } else {
+                    filteredEvents = events; // Show all events if userInput is empty
+                }
+                setFilteredEvents(filteredEvents);
+            } catch (error) {
+                console.error('Error fetching events:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [userInput, events]);
+
+
+    return (
         <div className="events-page">
             <br />
             <div className="container-xl">
@@ -74,38 +92,49 @@ function EventsPage() {
                             <div className="table-title">
                                 <div className="row">
                                     <div className="col-sm-6">
-                                        <Button className='mx-1' variant="primary" onClick={handleRefreshClick}>
-                                            <FaRedo className="spin-on-hover" />
-                                        </Button>
-                                        <Button variant="danger" onClick={handleNukeClick}>
-                                            Clear all
-                                        </Button>
+                                        <Creatable
+                                            isClearable
+                                            formatCreateLabel={(userInput) => `Search for ${userInput}`}
+                                            placeholder={
+                                                <div>
+                                                    <FaFilter size={12} className="" /> Filter
+                                                </div>
+                                            }
+                                            // Handle user input changes and call the filtering function
+                                            onChange={(selectedOption) => handleUserInputChange(selectedOption?.value)}
+                                        />
                                     </div>
                                     <div className="col-sm-6">
-
+                                        <div className="float-end ms-3">
+                                            <Button className='mx-1' variant="primary" onClick={handleRefreshClick}>
+                                                <FaRedo className="spin-on-hover" />
+                                            </Button>
+                                            <Button variant="danger" onClick={handleNukeClick}>
+                                                Clear all
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div className="tab-content">
-                                <EventsTable events={events} />
+                                {loading ? <LoadingMessage /> : <EventsTable events={filteredEvents} isArchive={false} />}
                             </div>
                         </Tab>
                         <Tab eventKey="Archive" title="Archive">
                             <div className="tab-content">
-                                <EventsTable events={archiveEvents} />
+                                <EventsTable events={archiveEvents} isArchive={true} />
                             </div>
                         </Tab>
                     </Tabs>
                 </div>
             </div>
+            <DangerConfirmationModal
+                show={showConfirmationModal}
+                onCancel={handleConfirmationCancel}
+                onConfirm={handleConfirmationConfirm}
+                action={ConfirmationAction.Delete}
+            />
         </div>
-        <DangerConfirmationModal
-            show={showConfirmationModal}
-            onCancel={handleConfirmationCancel}
-            onConfirm={handleConfirmationConfirm}
-            action={ConfirmationAction.Delete}
-        />
-    </>
     );
 }
 
