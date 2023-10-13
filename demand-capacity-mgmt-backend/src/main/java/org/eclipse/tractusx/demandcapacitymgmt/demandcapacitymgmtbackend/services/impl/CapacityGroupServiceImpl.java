@@ -56,7 +56,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     private final MaterialDemandRepository materialDemandRepository;
 
-
     private final CompanyService companyService;
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
     private final CapacityGroupRepository capacityGroupRepository;
@@ -167,12 +166,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         List<String> mondays = getMondaysBetween(request.getStartDate(), request.getEndDate()); //tem que ser inclusivo
 
         createCapacityTimeSeries(
-                mondays,
-                capacityGroupEntity.getDefaultActualCapacity(),
-                capacityGroupEntity.getDefaultMaximumCapacity(),
-                capacityGroupEntity
+            mondays,
+            capacityGroupEntity.getDefaultActualCapacity(),
+            capacityGroupEntity.getDefaultMaximumCapacity(),
+            capacityGroupEntity
         );
-
 
         return capacityGroupEntity;
     }
@@ -314,7 +312,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         float maximumCapacity,
         CapacityGroupEntity capacityGroupId
     ) {
-
         for (String monday : mondays) {
             CapacityTimeSeries timeSeries = new CapacityTimeSeries();
             timeSeries.setCalendarWeek(monday);
