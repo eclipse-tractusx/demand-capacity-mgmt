@@ -39,21 +39,21 @@ interface InfoMenuProviderProps {
 
 export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ children }) => {
     const [data, setData] = useState<InfoMenuData | null>(null);
-    const { accessToken } = useUser();
+    const { access_token } = useUser();
     const fetchData = useCallback(async () => {
         try {
-            const api = createAPIInstance(accessToken);
+            const api = createAPIInstance(access_token);
             const response = await api.get('/statuses');
             const result: InfoMenuData = response.data;
             setData(result);
         } catch (error) {
             console.error("Error fetching data: ", error);
         }
-    }, [accessToken]);
+    }, [access_token]);
 
     useEffect(() => {
         fetchData();
-    }, [fetchData,accessToken]);
+    }, [fetchData,access_token]);
 
     return (
         <InfoMenuContext.Provider value={{ data, fetchData }}>

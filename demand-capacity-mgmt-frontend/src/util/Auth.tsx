@@ -23,14 +23,14 @@
 import { User } from "../interfaces/user_interface";
 import AuthApi from '../util/AuthApi';
 
-export const isAuthenticated = async (refreshToken: string | null): Promise<boolean> => {
-    if (!refreshToken) {
+export const isAuthenticated = async (refresh_token: string | null): Promise<boolean> => {
+    if (!refresh_token) {
         return false;
     }
 
     try {
         const requestData = new URLSearchParams();
-        requestData.append('refresh_token', refreshToken);
+        requestData.append('refresh_token', refresh_token);
         const response = await AuthApi.post('http://localhost:8080/token/introspect', requestData, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -57,8 +57,8 @@ export const login = async (username: string,
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
         });
-        setRefreshToken(response.data.refreshToken);
-        setAccessToken(response.data.accessToken);
+        setRefreshToken(response.data.refresh_token);
+        setAccessToken(response.data.access_token);
         setExpiresIn(response.data.expiresIn);
         return response.data;
     } catch (error) {
@@ -66,11 +66,11 @@ export const login = async (username: string,
     }
 }
 
-export const logout = async (refreshToken: string | null): Promise<String> => {
+export const logout = async (refresh_token: string | null): Promise<String> => {
     try {
         const requestData = new URLSearchParams();
-        if (refreshToken) {
-            requestData.append('refresh_token', refreshToken);
+        if (refresh_token) {
+            requestData.append('refresh_token', refresh_token);
             const response = await AuthApi.post('/token/logout', requestData, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

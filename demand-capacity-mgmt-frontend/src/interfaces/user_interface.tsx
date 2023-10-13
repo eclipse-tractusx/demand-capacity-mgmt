@@ -27,8 +27,8 @@ export interface User {
     email: string;
     username: string;
     role: string;
-    accessToken: string;
-    refreshToken: string;
+    access_token: string;
+    refresh_token: string;
     expiresIn: number;
 }
 

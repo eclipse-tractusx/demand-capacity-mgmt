@@ -45,13 +45,13 @@ interface EventsContextData {
 export const EventsContext = createContext<EventsContextData | undefined>(undefined);
 
 const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-  const { accessToken } = useUser();
+  const { access_token } = useUser();
   const [events, setEvents] = useState<EventProp[]>([]);
   const [archiveEvents, setArchiveEvents] = useState<EventProp[]>([]);
 
   const fetchEvents = async () => {
     try {
-      const api = createAPIInstance(accessToken);
+      const api = createAPIInstance(access_token);
       const response = await api.get('/loggingHistory');
       const result: EventProp[] = response.data;
       setEvents(result);
@@ -62,7 +62,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const fetchArchiveEvents = async () => {
     try {
-      const api = createAPIInstance(accessToken);
+      const api = createAPIInstance(access_token);
       const response = await api.get('/loggingHistory/archivedLog');
       const result: EventProp[] = response.data;
       setArchiveEvents(result); // Set archiveEvents, not events
@@ -75,7 +75,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   useEffect(() => {
     fetchEvents();
     fetchArchiveEvents();
-  }, [accessToken]);
+  }, [access_token]);
 
   const fetchFilteredEvents = async (filters: {
     start_time?: string;
@@ -85,7 +85,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
     capacity_group_id?: string;
   }): Promise<EventProp[]> => {
     try {
-      const api = createAPIInstance(accessToken);
+      const api = createAPIInstance(access_token);
       const response = await api.get('/loggingHistory/filterLogs', { params: filters });
       const result: EventProp[] = response.data;
       return result; // Return the array of events
@@ -99,7 +99,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const archiveLog = async (event: EventProp) => {
     try {
       console.log(event)
-      const api = createAPIInstance(accessToken);
+      const api = createAPIInstance(access_token);
       await api.post('/loggingHistory/archivedLog', event);
     } catch (error) {
       console.error('Error archiving event:', error);
@@ -109,7 +109,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const deleteAllEvents = async () => {
     try {
-      const api = createAPIInstance(accessToken);
+      const api = createAPIInstance(access_token);
       await api.delete(`/loggingHistory`);
       fetchEvents();
     } catch (error) {
@@ -119,7 +119,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const deleteAllArchivedLogs = async () => {
     try {
-      const api = createAPIInstance(accessToken);
+      const api = createAPIInstance(access_token);
       await api.delete(`/loggingHistory/archivedLog`);
       fetchEvents();
     } catch (error) {

@@ -41,11 +41,11 @@ interface UnitsOfMeasureContextData {
 export const UnitsofMeasureContext = createContext<UnitsOfMeasureContextData | undefined>(undefined);
 
 const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-  const { accessToken } = useUser();
+  const { access_token } = useUser();
   const [unitsofmeasure, setUnitsofMeasure] = useState<UnitMeasure[]>([]);
 
   useEffect(() => {
-    const api = createAPIInstance(accessToken);
+    const api = createAPIInstance(access_token);
     const fetchUnitsofMeasure = async () => {
       try {
         const response = await api.get('/unitmeasure');
@@ -57,7 +57,7 @@ const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>
     };
   
     fetchUnitsofMeasure();
-  }, [accessToken]);
+  }, [access_token]);
   
   
 

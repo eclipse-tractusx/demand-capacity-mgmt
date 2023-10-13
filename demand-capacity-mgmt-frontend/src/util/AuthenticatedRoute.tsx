@@ -31,14 +31,14 @@ interface AuthenticatedRouteProps {
 
 const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ children }) => {
     const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
-    const { refreshToken } = useUser();
+    const { refresh_token } = useUser();
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
         const checkAuthentication = async () => {
-            if (refreshToken) {
-                const authenticated = await isAuthenticated(refreshToken);
+            if (refresh_token) {
+                const authenticated = await isAuthenticated(refresh_token);
                 setIsAuthed(authenticated);
             } else {
                 setIsAuthed(false);
@@ -46,7 +46,7 @@ const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ children }) => 
         };
 
         checkAuthentication();
-    }, [refreshToken]);
+    }, [refresh_token]);
 
     useEffect(() => {
         if (isAuthed === false) {
