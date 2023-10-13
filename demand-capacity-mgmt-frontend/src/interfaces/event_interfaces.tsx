@@ -32,3 +32,14 @@ export interface EventProp {
   eventDescription: string
   isFavorited: boolean
 }
+
+
+export enum EventType {
+  GENERAL_EVENT = 'GENERAL_EVENT',
+  TODO = 'TODO',
+  ALERT = 'ALERT',
+  STATUS_IMPROVEMENT = 'STATUS_IMPROVEMENT',
+  STATUS_REDUCTION = 'STATUS_REDUCTION',
+  LINKED = 'LINKED',
+  UN_LINKED = 'UN_LINKED'
+}

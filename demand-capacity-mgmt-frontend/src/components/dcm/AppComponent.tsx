@@ -29,6 +29,7 @@ import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
 import QuickAcessItems from '../common/QuickAcessItems';
 import TopMenu from "../common/TopMenu";
+import AlertsPage from '../pages/AlertsPage';
 import AuthenticationComponent from "../pages/AuthenticationPage";
 import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
 import Home from "../pages/CapacityGroupPage";
@@ -65,21 +66,28 @@ const AppComponent: React.FC = () => {
                             <QuickAcessItems />
                         </AuthenticatedRoute>
                     } />
+                    <Route path="/alerts" element={
+                        <AuthenticatedRoute>
+                            <EventsContextProvider>  <AlertsPage />
+                                <QuickAcessItems /></EventsContextProvider>
+                        </AuthenticatedRoute>
+                    } />
                     <Route path="/up" element={
                         <AuthenticatedRoute>
-                            <DemandContextProvider>  <UpStatusPage />
-                                <QuickAcessItems /></DemandContextProvider>
+                            <EventsContextProvider>  <UpStatusPage />
+                                <QuickAcessItems /></EventsContextProvider>
                         </AuthenticatedRoute>
                     } />
                     <Route path="/down" element={
                         <AuthenticatedRoute>
-                            <DemandContextProvider><DownStatusPage />
-                                <QuickAcessItems /></DemandContextProvider>
+                            <EventsContextProvider><DownStatusPage />
+                                <QuickAcessItems /></EventsContextProvider>
                         </AuthenticatedRoute>
                     } />
                     <Route path="/todo" element={
                         <AuthenticatedRoute>
-                            <DemandContextProvider><TodoListPage />
+                            <DemandContextProvider><EventsContextProvider><TodoListPage />
+                            </EventsContextProvider>
                                 <QuickAcessItems /></DemandContextProvider>
                         </AuthenticatedRoute>
                     } />
