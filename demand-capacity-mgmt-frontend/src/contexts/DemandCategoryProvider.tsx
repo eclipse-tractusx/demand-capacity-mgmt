@@ -37,11 +37,11 @@ interface DemandContextData {
 export const DemandCategoryContext = createContext<DemandContextData | undefined>(undefined);
 
 const DemandCategoryContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-  const { accessToken } = useUser();
+  const { access_token } = useUser();
   const [demandcategories, setDemandCategory] = useState<DemandCategory[]>([]);
 
   useEffect(() => {
-    const api = createAPIInstance(accessToken);
+    const api = createAPIInstance(access_token);
     const fetchDemandCategories = async () => {
       try {
         const response = await api.get('/demandcategory', {
@@ -54,7 +54,7 @@ const DemandCategoryContextProvider: React.FC<React.PropsWithChildren<{}>> = (pr
     };
   
     fetchDemandCategories();
-  }, [accessToken]);
+  }, [access_token]);
   
 
 
