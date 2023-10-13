@@ -21,7 +21,7 @@
  */
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CapacityGroupChronogram from '../../components/capacitygroup/CapacityGroupChronogram';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
@@ -46,12 +46,16 @@ function CapacityGroupDetailsPage() {
   const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
   const { fetchFilteredEvents } = useContext(EventsContext)!;
   const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
-
+  const navigate = useNavigate()
   useEffect(() => {
     if (id) {
       (async () => {
         try {
           const fetchedCapacityGroup = await getCapacityGroupById(id);
+          if (!fetchedCapacityGroup) {
+            navigate('/invalid');
+            return;
+          }
           setCapacityGroup(fetchedCapacityGroup || null);
           const filters = {
             capacity_group_id: id,
@@ -63,6 +67,7 @@ function CapacityGroupDetailsPage() {
           setcapacityGroupEvents(await fetchFilteredEvents(filters));
         } catch (error) {
           console.error('Failed to fetch capacity group:', error);
+          navigate('/error');
         }
       })();
     }
