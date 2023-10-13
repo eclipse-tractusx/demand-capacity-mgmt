@@ -44,10 +44,10 @@ const DemandManagement: React.FC = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+  const { deleteDemand } = useContext(DemandContext)!;
   const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction>(ConfirmationAction.Delete);
 
   const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
-  const { deleteDemand } = useContext(DemandContext)!;
   const { demandprops, fetchDemandProps, isLoading } = useContext(DemandContext)!; // Make sure to get the fetchDemands function from the context.
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -285,7 +285,7 @@ const DemandManagement: React.FC = () => {
         <LoadingMessage />
       ) : (
         <>
-          <div className='table-responsive'>
+          <div className='table'>
             <DemandManagementTable
               sortColumn={sortColumn}
               sortOrder={sortOrder}

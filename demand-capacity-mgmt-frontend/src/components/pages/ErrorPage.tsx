@@ -19,14 +19,15 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
 import React, { useEffect, useState } from 'react';
-import { Col, Row } from "react-bootstrap";
+import { Col, Row } from 'react-bootstrap';
+import { FaArrowLeft } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 import '../../Auth.css';
 
 const ErrorPage: React.FC = () => {
-
     const [randomNumber, setRandomNumber] = useState<number>(1);
+    const navigate = useNavigate(); // Use useNavigate hook
 
     useEffect(() => {
         const randomNum = Math.floor(Math.random() * 9) + 1;
@@ -41,6 +42,7 @@ const ErrorPage: React.FC = () => {
                         <img src={`/media/error/error(${randomNumber}).png`} alt='erroricon' width="100" height="100" className='d-inline-block align-text-top' />
                         <h1>Oops! Something went wrong.</h1>
                         <p>Sorry, we encountered an error while processing your request.</p>
+                        <a onClick={() => navigate(-4)} className="ms-2 text-muted" style={{ cursor: 'pointer' }}><FaArrowLeft className='me-1' />Go Back</a>
                     </div>
                 </Col>
             </Row>
@@ -61,6 +63,6 @@ const ErrorPage: React.FC = () => {
             </div>
         </div>
     );
-}
+};
 
 export default ErrorPage;

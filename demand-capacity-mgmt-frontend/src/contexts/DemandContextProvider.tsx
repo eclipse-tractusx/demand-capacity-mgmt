@@ -43,8 +43,8 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const [demands, setDemands] = useState<Demand[]>([]);
   const [demandprops, setDemandProps] = useState<DemandProp[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { accessToken } = useUser();
-  const api = createAPIInstance(accessToken);
+  const { access_token } = useUser();
+  const api = createAPIInstance(access_token);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchDemandPropsWithRetry = async (maxRetries = 3) => {
@@ -74,11 +74,11 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const fetchDemandProps = useCallback(() => {
     fetchDemandPropsWithRetry();
-  }, [accessToken]);
+  }, [access_token]);
 
   useEffect(() => {
     fetchDemandProps();
-  }, [fetchDemandProps, accessToken]);
+  }, [fetchDemandProps, access_token]);
 
 
   const getDemandbyId = async (id: string): Promise<DemandProp | undefined> => {
@@ -121,7 +121,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   };
 
   const unlinkDemand = async (materialDemandID: string, capacityGroupID: string) => {
-    const api = createAPIInstance(accessToken);
+    const api = createAPIInstance(access_token);
 
     try {
       const unlinkreq = {

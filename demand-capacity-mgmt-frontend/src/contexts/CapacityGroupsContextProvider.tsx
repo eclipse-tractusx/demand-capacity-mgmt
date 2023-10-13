@@ -40,12 +40,12 @@ export const CapacityGroupContext = createContext<CapacityGroupContextData | und
 
 
 const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-  const { accessToken } = useUser();
+  const { access_token } = useUser();
   const [capacitygroups, setCapacityGroups] = useState<CapacityGroupProp[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 3;
-  const api = createAPIInstance(accessToken);
+  const api = createAPIInstance(access_token);
 
 
   const fetchCapacityGroupsWithRetry = async () => {
@@ -75,11 +75,11 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   };
   useEffect(() => {
     fetchCapacityGroupsWithRetry();
-  }, [retryCount, accessToken]);
+  }, [retryCount, access_token]);
 
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {
-    const api = createAPIInstance(accessToken);
+    const api = createAPIInstance(access_token);
     try {
       const response = await api.get(`/capacityGroup/${id}`);
       const fetchedCapacityGroup: SingleCapacityGroup = response.data;
@@ -93,7 +93,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
   const createCapacityGroup = async (newCapacityGroup: CapacityGroupCreate) => {
     try {
-      const api = createAPIInstance(accessToken);
+      const api = createAPIInstance(access_token);
       const response = await api.post('/capacityGroup', newCapacityGroup);
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
@@ -102,7 +102,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
   const linkToCapacityGroup = async (linkToCapacityGroup: CapacityGroupLink) => {
     try {
-      const api = createAPIInstance(accessToken);
+      const api = createAPIInstance(access_token);
       const rest = await api.post('/capacityGroup/link', linkToCapacityGroup);
       console.log(rest)
     } catch (error) {
