@@ -20,19 +20,46 @@
  *    ********************************************************************************
  */
 
-import { useContext, useState } from "react";
-import { Button } from "react-bootstrap";
+import { useContext, useEffect, useState } from "react";
+import { Button, Tab, Tabs } from "react-bootstrap";
 import { FaMagic, FaRedo } from "react-icons/fa";
 import { FcTodoList } from "react-icons/fc";
 import { DemandContext } from "../../contexts/DemandContextProvider";
+import { EventsContext } from "../../contexts/EventsContextProvider";
+import { EventProp, EventType } from "../../interfaces/event_interfaces";
 import DemandList from "../common/DemandList";
 import DemandsSearch from "../common/Search";
+import EventsTable from "../events/EventsTable";
 
 function TodoListPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const { fetchDemandProps } = useContext(DemandContext)!;
   const [showWizard, setShowWizard] = useState(false);
   const [showAddToExisting, setShowAddToExisting] = useState(false);
+  const [activeTab, setActiveTab] = useState("Events");
+  const { fetchFilteredEvents } = useContext(EventsContext)!;
+  const [filteredEvents, setFilteredEvents] = useState<EventProp[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch events based on the selected event type
+        const filteredEvents = await fetchFilteredEvents({
+          event: EventType.TODO,
+        });
+        setFilteredEvents(filteredEvents);
+      } catch (error) {
+        console.error('Error fetching filtered events:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData(); // Call the fetchData function when the component mounts
+  }, []);
+
   const toggleWizardModal = () => {
     setShowWizard(!showWizard); // Toggle the state (true to false or false to true)
   };
@@ -52,45 +79,63 @@ function TodoListPage() {
           <FcTodoList size={35} />
           <h3 className="icon-text-padding">Todo Items</h3>
         </div>
-        <div className="table">
-          <div className="table-wrapper">
-            <div className="table-title">
-              <div className="row">
-                <div className="col-sm-6">
-                  <DemandsSearch
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                  />
-                </div>
-                <div className="col-sm-6">
-                  <Button className='btn btn-primary float-end ms-2' onClick={handleRefreshClick}>
-                    <FaRedo className="spin-on-hover" />
-                  </Button>
-                  <Button
-                    className="btn btn-success float-end ms-2"
-                    onClick={() => setShowAddToExisting(true)}
-                  >
-                    <span>Add to existing</span>
-                  </Button>
-                  <Button
-                    className="btn btn-success float-end"
-                    onClick={() => setShowWizard(true)}
-                  >
-                    <span><FaMagic /> Capacity Group Wizard</span>
-                  </Button>
+        <Tabs
+          defaultActiveKey="Events"
+          id="events"
+          className="mb-3"
+          activeKey={activeTab}
+          onSelect={(tabKey) => {
+            if (typeof tabKey === "string") {
+              setActiveTab(tabKey);
+            }
+          }}
+        >
+          <Tab eventKey="Events" title="Events">
+            <div className="table">
+              <div className="table-wrapper">
+                <div className="table-title">
+                  <div className="row">
+                    <div className="col-sm-6">
+                      <DemandsSearch
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                      />
+                    </div>
+                    <div className="col-sm-6">
+                      <Button className='btn btn-primary float-end ms-2' onClick={handleRefreshClick}>
+                        <FaRedo className="spin-on-hover" />
+                      </Button>
+                      <Button
+                        className="btn btn-success float-end ms-2"
+                        onClick={() => setShowAddToExisting(true)}
+                      >
+                        <span>Add to existing</span>
+                      </Button>
+                      <Button
+                        className="btn btn-success float-end"
+                        onClick={() => setShowWizard(true)}
+                      >
+                        <span><FaMagic /> Capacity Group Wizard</span>
+                      </Button>
 
+                    </div>
+                  </div>
                 </div>
+                <DemandList
+                  searchQuery={searchQuery}
+                  showWizard={showWizard}
+                  toggleWizardModal={toggleWizardModal}
+                  showAddToExisting={showAddToExisting}
+                  toggleAddToExisting={toggleAddToExisting}
+                />
               </div>
             </div>
-            <DemandList
-              searchQuery={searchQuery}
-              showWizard={showWizard}
-              toggleWizardModal={toggleWizardModal}
-              showAddToExisting={showAddToExisting}
-              toggleAddToExisting={toggleAddToExisting}
-            />
-          </div>
-        </div>
+          </Tab>
+          <Tab eventKey="Log" title="Events">
+            <EventsTable events={filteredEvents} isArchive={false} />
+          </Tab>
+        </Tabs>
+
       </div>
 
 
