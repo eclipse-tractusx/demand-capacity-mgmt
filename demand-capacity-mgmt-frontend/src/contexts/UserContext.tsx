@@ -22,8 +22,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from "../interfaces/user_interface";
-import AuthApi from "../util/AuthApi"  // Adjust this import to the correct path
-
+import { refreshToken as fetchNewToken } from "../util/RefreshToken"
 
 interface UserContextProps {
     user: User | null;
@@ -37,6 +36,7 @@ interface UserContextProps {
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
+
 interface UserProviderProps {
     children: React.ReactNode;
 }
@@ -48,6 +48,19 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [access_token, setAccessToken] = useState<string | null>(() => localStorage.getItem('access_token') || null);
     const [expiresIn, setExpiresIn] = useState<number | null>(() => Number(localStorage.getItem('expiresIn')) || null);
 
+    const refreshToken = async () => {
+        if (refresh_token) {
+            try {
+                const response = await fetchNewToken(refresh_token);
+                const newTokenData = response.data;
+                setAccessToken(newTokenData.access_token);
+                setExpiresIn(newTokenData.expiresIn);
+                setRefreshToken(newTokenData.refresh_token);
+            } catch (error) {
+                console.error("Failed to refresh token", error);
+            }
+        }
+    }
 
     useEffect(() => {
         if (user) {
@@ -75,6 +88,23 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             localStorage.setItem('expiresIn', expiresIn.toString());
         }
     }, [expiresIn]);
+
+    useEffect(() => {
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+        if (expiresIn) {
+            // Set the timeout to call the refreshToken function just before the token expires
+            // We subtract a few seconds to ensure the token is refreshed before it actually expires
+            timeoutId = setTimeout(refreshToken, (expiresIn - 10) * 1000);  // expiresIn is in seconds, so we convert it to milliseconds
+        }
+
+        // Clear the timeout when the component is unmounted or if expiresIn changes
+        return () => {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+        };
+    }, [expiresIn, refresh_token]);
 
     return (
         <UserContext.Provider value={{ user, setUser, refresh_token, setRefreshToken, access_token, setAccessToken, expiresIn, setExpiresIn }}>
