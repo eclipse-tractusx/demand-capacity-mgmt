@@ -64,18 +64,6 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
         "calendarWeek": "2023-06-19"
       }
     ],
-    "supplierLocations": [
-      {
-        "id": "5fe734b9-e7e0-4a84-a9f9-5c08dc5ad29d",
-        "bpn": "BPN09",
-        "companyName": "GM",
-        "street": "Test",
-        "number": "Test",
-        "zipCode": "Test",
-        "country": "Test",
-        "myCompany": "Test"
-      }
-    ],
     "customer": {
       "id": "5fe734b9-e7e0-4a84-a9f9-5c08dc5ad29d",
       "bpn": "BPN09",
@@ -203,12 +191,6 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = () => {
         ]
       }
     ],
-    "unitOfMeasure": {
-      "id": "a8ebe2f8-2af8-4573-9dd4-d7f33e682792",
-      "codeValue": "un",
-      "displayValue": "Unit"
-    },
-    "changeAt": "2023-09-12T11:07:30.232298",
     "name": "TEST CAPACITY GROUP"
   };
 
