@@ -82,7 +82,7 @@ function CapacityGroupDetailsPage() {
           <div className="row">
             <div className="col"></div>
             <div className="col-6 border d-flex align-items-center justify-content-center" style={{ padding: '10px' }}>
-              {capacityGroup?.capacityGroupId} - {capacityGroup?.capacitygroupname}
+              {capacityGroup?.capacityGroupId} - {capacityGroup?.capacityGroupName}
             </div>
             <div className="col d-flex justify-content-end">
               <br />

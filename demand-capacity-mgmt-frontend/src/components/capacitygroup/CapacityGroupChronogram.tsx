@@ -56,7 +56,6 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
     const { capacityGroup } = props;
 
-    console.log(props)
 
     const rawCapacities = capacityGroup?.capacities || [];
 

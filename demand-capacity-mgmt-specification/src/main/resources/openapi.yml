@@ -593,7 +593,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CapacityGroupResponse'
+                $ref: '#/components/schemas/SingleCapacityGroup'
 
 
   /weekbasedcapacitygroup:
