@@ -109,14 +109,14 @@ function CapacityGroupDetailsPage() {
               </DemandContextProvider>
             </Tab>
             <Tab eventKey="events" title="Events">
-              <EventsTable events={capacityGroupEvents} />
+              <EventsTable events={capacityGroupEvents} isArchive={false} />
             </Tab>
 
           </Tabs>
         </div>
       </>
     );
-  }, [capacityGroup, activeTab]); // Add any other dependencies if necessary
+  }, [capacityGroup, activeTab]);
 
   return memoizedComponent;
 }
