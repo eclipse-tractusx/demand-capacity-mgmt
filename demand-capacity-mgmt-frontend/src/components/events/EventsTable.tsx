@@ -221,15 +221,13 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
                                 <td>{event.objectType}</td>
                                 <td>{event.eventDescription}</td>
                                 <td>{event.userAccount}</td>
-                                <td><Button variant="primary" onClick={() => handleArchiveClick(event)}>
-                                    <FaArchive />
-                                </Button></td>
                                 <td>
                                     <Dropdown>
                                         <Dropdown.Toggle variant="light" id={`dropdown-menu-${event.id}`}>
                                             <span ><FaEllipsisV /></span>
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu>
+                                            <Dropdown.Item onClick={() => handleArchiveClick(event)}><FaArchive className='text-muted' /> Archive</Dropdown.Item>
                                             <Dropdown.Item onClick={() => { navigator.clipboard.writeText(event.id) }}><FaCopy /> Copy ID</Dropdown.Item>
                                             <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteButtonClick(event.id)}><FaTrashAlt /> Delete</Dropdown.Item>
                                         </Dropdown.Menu>
