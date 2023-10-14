@@ -36,6 +36,14 @@ code {
     monospace;
 }
 
+:root {
+  --header-color: #f1f1f1;
+  --label-margin: 8px;
+  --border-color: #ccc;
+  --danger-red: #dc3545;
+}
+
+/*Layout Containers*/
 .root-container {
   width: 100%;
   min-height: 100vh;
@@ -103,13 +111,8 @@ code {
   /* Add some spacing between the label text and the asterisk */
 }
 
-:root {
-  --header-color: #f1f1f1;
-  --label-margin: 8px;
-  --border-color: #ccc;
-  --danger-red: #dc3545;
-}
 
+/*Sum View Tables*/
 .table-container {
   overflow-x: auto;
   max-width: 100%;
@@ -189,6 +192,21 @@ code {
   border: 1px solid var(--border-color);
 }
 
+.bg-light-green {
+  background-color: #94cb2d94;
+  /* Pastel green */
+  color: black;
+  /* Inset box shadow */
+}
+
+.bg-light-red {
+  background-color: #ff837a;
+  /* Pastel red */
+  color: black;
+}
+
+
+/*Something else*/
 .table-checkbox {
   -ms-transform: scale(1.5);
   /* IE */

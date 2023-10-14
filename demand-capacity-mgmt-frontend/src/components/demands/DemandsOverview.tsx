@@ -22,7 +22,7 @@
 
 import moment from 'moment';
 import 'moment-weekday-calc';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Button, ButtonGroup, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
@@ -206,6 +206,47 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
     setDemandValuesMap(newDemandValuesMap);
   }, [demandData]);
 
+
+  const tableRef = useRef<HTMLTableElement | null>(null);
+  const [shouldScroll, setShouldScroll] = useState(false);
+
+  useEffect(() => {
+    if (shouldScroll && tableRef.current && Object.keys(demandValuesMap).length > 0) {
+      for (const categoryId in demandValuesMap) {
+        const categoryData: Record<string, Record<string, number>> = demandValuesMap[categoryId];
+        const years = Object.keys(categoryData);
+        for (const year of years) {
+          const weeksWithData = Object.keys(categoryData[year]);
+          if (weeksWithData.length > 0) {
+            const firstWeekWithData = parseInt(weeksWithData[0], 10);
+            const weekHeaderCell = tableRef.current!.querySelector(`#week-${firstWeekWithData}`);
+
+            console.log(weekHeaderCell)
+            if (weekHeaderCell) {
+              weekHeaderCell.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'center',
+              });
+              break;
+            }
+          }
+        }
+      }
+      // Reset the shouldScroll state to prevent continuous scrolling
+      setShouldScroll(false);
+    }
+  }, [demandValuesMap, shouldScroll]);
+
+  // Use another useEffect to listen for changes in the tableRef
+  useEffect(() => {
+    if (tableRef.current) {
+      console.log('Without this console log is not scrolling automatically.. god knows why.')
+      setShouldScroll(true);
+    }
+  }, [tableRef]);
+
+
   const handleSave = async () => {
     if (!demandData?.demandSeries) {
       return;
@@ -344,7 +385,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
       <br />
       <div className="table-container">
         <div className="container">
-          <table className="vertical-table">
+          <table className="vertical-table" ref={tableRef}>
             <thead>
               <tr>
                 <th className="empty-header-cell"></th>
@@ -393,7 +434,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
                           </Tooltip>
                         }
                       >
-                        <span>{week}</span>
+                        <span id={`week-${week}`} className=''>{week}</span>
                       </OverlayTrigger>
                     </th>
                   ))
