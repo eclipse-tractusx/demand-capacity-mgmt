@@ -31,7 +31,7 @@ export interface CapacityGroupProp {
   favoritedBy: string
   status: string
   [key: string]: string | number;
-  }
+}
 
 interface Address {
   id: string;
@@ -50,7 +50,7 @@ interface UnitOfMeasure {
   displayValue: string;
 }
 
-interface Capacities{
+interface Capacities {
   capacityId: string,
   actualCapacity: number,
   maximumCapacity: number;
@@ -80,4 +80,13 @@ export interface CapacityGroupCreate {
 export interface CapacityGroupLink {
   capacityGroupID: string
   linkedMaterialDemandID: string[]
+}
+
+/*This is used for the Chronogram */
+export interface CapacityGroupData {
+  calendarWeek: string;
+  actualCapacity: number;
+  maximumCapacity: number;
+  Demand: number;
+  dateEpoch: number;
 }

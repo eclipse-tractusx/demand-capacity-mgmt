@@ -24,15 +24,15 @@ import { Tab, Tabs } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import CapacityGroupChronogram from '../../components/capacitygroup/CapacityGroupChronogram';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
-import DemandContextProvider, {DemandContext} from '../../contexts/DemandContextProvider';
+import DemandContextProvider, { DemandContext } from '../../contexts/DemandContextProvider';
 import { EventsContext } from '../../contexts/EventsContextProvider';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
+import { DemandProp } from "../../interfaces/demand_interfaces";
 import { EventProp } from '../../interfaces/event_interfaces';
 import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList';
 import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
 import { LoadingMessage } from '../common/LoadingMessages';
 import EventsTable from '../events/EventsTable';
-import {DemandProp} from "../../interfaces/demand_interfaces";
 
 function CapacityGroupDetailsPage() {
   const { id } = useParams();
@@ -47,7 +47,7 @@ function CapacityGroupDetailsPage() {
   const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
   const [materialDemands, setMaterialDemands] = useState<DemandProp[] | null>([]);
   const { fetchFilteredEvents } = useContext(EventsContext)!;
-  const {getDemandbyId} = useContext(DemandContext)!;
+  const { getDemandbyId } = useContext(DemandContext)!;
   const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
   const navigate = useNavigate()
   useEffect(() => {
@@ -71,7 +71,6 @@ function CapacityGroupDetailsPage() {
             const validDemands = demands.filter(Boolean) as DemandProp[];
 
             setMaterialDemands(validDemands);
-
           }
 
           const filters = {

@@ -291,17 +291,16 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     private List<String> getMondaysBetween(String startDate, String endDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate startLocalDate = LocalDate.parse(startDate, formatter).plusDays(7);
+        LocalDate startLocalDate = LocalDate.parse(startDate, formatter);
         LocalDate endLocalDate = LocalDate.parse(endDate, formatter);
 
         List<String> mondays = new ArrayList<>();
         mondays.add(startDate);
 
-        while (startLocalDate.isBefore(endLocalDate)) {
-            mondays.add(startLocalDate.format(formatter));
+        while (startLocalDate.plusDays(7).isBefore(endLocalDate) || startLocalDate.plusDays(7).isEqual(endLocalDate)) {
             startLocalDate = startLocalDate.plusDays(7);
+            mondays.add(startLocalDate.format(formatter));
         }
-        mondays.add(endDate);
 
         return mondays;
     }
