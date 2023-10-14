@@ -53,15 +53,12 @@ const DemandManagement: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
+  const [sortColumn, setSortColumn] = useState<keyof DemandProp>('changedAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
   const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
 
-  /*useEffect(() => {
-    fetchDemandProps();
-  }, [fetchDemandProps]);*/
 
   const handleRefreshClick = async () => {
     await fetchDemandProps(); // Call your fetchEvents function to refresh the data
@@ -73,8 +70,8 @@ const DemandManagement: React.FC = () => {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       // If a different column is clicked, set it as the new sort column and default to ascending order
-      setSortColumn(column as keyof DemandProp | null);
-      setSortOrder('asc');
+      setSortColumn(column as keyof DemandProp); // Update sortColumn to the clicked column
+      setSortOrder('asc'); // Default to ascending order
     }
   };
 
@@ -147,18 +144,25 @@ const DemandManagement: React.FC = () => {
         const aValue = a[sortColumn];
         const bValue = b[sortColumn];
 
-        if (typeof aValue === 'string' && typeof bValue === 'string') {
-          // Sort strings alphabetically
-          return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
-        } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-          // Sort numbers numerically
-          return aValue - bValue;
+        if (sortColumn === 'changedAt') {
+          const timestampA = aValue instanceof Date ? aValue.getTime() : typeof aValue === 'string' ? new Date(aValue).getTime() : 0;
+          const timestampB = bValue instanceof Date ? bValue.getTime() : typeof bValue === 'string' ? new Date(bValue).getTime() : 0;
+
+          return sortOrder === 'asc' ? timestampB - timestampA : timestampA - timestampB;
+        } else {
+          // For other columns, perform string or numeric comparison
+          if (typeof aValue === 'string' && typeof bValue === 'string') {
+            // Sort strings alphabetically
+            return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
+          } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+            // Sort numbers numerically
+            return aValue - bValue;
+          }
+
+          // If the types are not string or number, return 0 (no sorting)
+          return 0;
         }
-
-        // If the types are not string or number, return 0 (no sorting)
-        return 0;
       });
-
 
       if (sortOrder === 'desc') {
         // Reverse the array if the sort order is descending
@@ -166,9 +170,9 @@ const DemandManagement: React.FC = () => {
       }
     }
 
-
     setFilteredDemands(sortedDemands);
   }, [demandprops, searchQuery, sortColumn, sortOrder]);
+
 
   const slicedDemands = useMemo(() => {
     const indexOfLastDemand = currentPage * demandsPerPage;
