@@ -20,14 +20,14 @@
  *    ********************************************************************************
  */
 import { useContext, useEffect, useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
+import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
-import { DemandProp } from '../../interfaces/demand_interfaces';
-import { Button, Container, Row, Col, Alert } from 'react-bootstrap';
-import StepBreadcrumbs from './../common/StepsBreadCrumbs';
-import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import Modal from 'react-bootstrap/Modal';
 import { FaSearch } from 'react-icons/fa';
 import Select from 'react-select';
+import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import { DemandProp } from '../../interfaces/demand_interfaces';
+import StepBreadcrumbs from './../common/StepsBreadCrumbs';
 
 interface CapacityGroupWizardModalProps {
   show: boolean;
@@ -47,7 +47,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   const context = useContext(CapacityGroupContext);
 
   const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
-  
+
 
   useEffect(() => {
     if (checkedDemands) {
@@ -90,20 +90,19 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
     updatedDemands.splice(index, 1);
     setSelectedDemands(updatedDemands);
   };
-
   const calculateEarliestAndLatestDates = (selectedDemands: DemandProp[]) => {
-    let earliestDate = new Date();
-    let latestDate = new Date();
+    let earliestDate: string = '';
+    let latestDate: string = '';
 
     selectedDemands.forEach((demand) => {
       demand.demandSeries?.forEach((series) => {
         series.demandSeriesValues?.forEach((value) => {
-          const date = new Date(value?.calendarWeek || '');
-          if (date < earliestDate) {
-            earliestDate = date;
+          const dateStr: string = value?.calendarWeek || '';
+          if (!earliestDate || dateStr < earliestDate) {
+            earliestDate = dateStr;
           }
-          if (date > latestDate) {
-            latestDate = date;
+          if (!latestDate || dateStr > latestDate) {
+            latestDate = dateStr;
           }
         });
       });
@@ -135,12 +134,14 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
       capacitygroupname: groupName,
       defaultActualCapacity: parseInt(defaultActualCapacity),
       defaultMaximumCapacity: parseInt(defaultMaximumCapacity),
-      startDate: earliestDate.toISOString().split('T')[0],
-      endDate: latestDate.toISOString().split('T')[0],
+      startDate: earliestDate,
+      endDate: latestDate,
       customer: selectedDemands.length > 0 ? selectedDemands[0].customer.id : '', // Prefill with the customer ID of the first demand
       supplier: selectedDemands.length > 0 ? selectedDemands[0].supplier.id : '', // Prefill with the supplier ID of the first demand
       linkMaterialDemandIds: selectedDemands.map((demand) => demand.id), // IDs of linked demands
     };
+
+    console.log(newCapacityGroup)
 
     // Call the createCapacityGroup function
     try {

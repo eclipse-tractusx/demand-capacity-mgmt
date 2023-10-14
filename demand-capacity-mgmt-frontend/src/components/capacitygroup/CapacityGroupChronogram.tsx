@@ -33,11 +33,12 @@ import {
     XAxis,
     YAxis
 } from "recharts";
-import { SingleCapacityGroup } from "../../interfaces/capacitygroup_interfaces";
-import {DemandProp} from "../../interfaces/demand_interfaces";
+import { CapacityGroupData, SingleCapacityGroup } from "../../interfaces/capacitygroup_interfaces";
+import { DemandProp } from "../../interfaces/demand_interfaces";
+
 
 interface CapacityGroupChronogramProps {
-    capacityGroup: SingleCapacityGroup | null | undefined;
+    capacityGroup: SingleCapacityGroup | null;
     materialDemands: DemandProp[] | null;
 }
 
@@ -49,27 +50,47 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
     };
 
 
-    const { capacityGroup } = props;
-    const { materialDemands } = props;
+    const [capacityGroup] = useState<SingleCapacityGroup | null>(props.capacityGroup);
+    const [demands, setDemands] = useState<DemandProp[] | null>(props.materialDemands);
+
+    useEffect(() => {
+        // Update the component's state when materialDemands prop changes
+        setDemands(props.materialDemands);
+    }, [props.materialDemands]);
 
 
     const rawCapacities = capacityGroup?.capacities || [];
+    // Calculate demand sums by week
+    const demandSumsByWeek: { [key: string]: number } = {};
+    if (demands) {
+        demands.forEach((demand) => {
+            demand.demandSeries?.forEach((demandSeries) => {
+                demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+                    const week = demandSeriesValue.calendarWeek;
+                    demandSumsByWeek[week] = (demandSumsByWeek[week] || 0) + demandSeriesValue.demand;
+                });
+            });
+        });
+    }
 
+    // Create a mapping of demand sums by calendarWeek
+    const demandSumsMap: { [key: string]: number } = {};
+    Object.keys(demandSumsByWeek).forEach((week) => {
+        const simplifiedDate = new Date(week).toISOString().split('T')[0];
+        demandSumsMap[simplifiedDate] = demandSumsByWeek[week];
+    });
+    console.log(demands)
+    console.log(demandSumsMap)
+    console.log(rawCapacities)
 
-    const linkedDemandSum = materialDemands?.length;
-
-
-    // Sorted data by date
-// Sorted data by date
-    const data = rawCapacities.map(d => {
-        // Convert to Date and back to simplified string format
+    // Create data for the chart by matching calendarWeek with demand sums
+    const data: CapacityGroupData[] = rawCapacities.map((d) => {
         const simplifiedDate = new Date(d.calendarWeek).toISOString().split('T')[0];
-
         return {
             ...d,
-            Demand: linkedDemandSum,
+            Demand: demandSumsMap[simplifiedDate] || 0,
             dateEpoch: new Date(simplifiedDate).getTime(),
-            calendarWeek: simplifiedDate
+            calendarWeek: simplifiedDate,
         };
     }).sort((a, b) => a.dateEpoch - b.dateEpoch);
 
@@ -125,7 +146,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
     const [selectedRange, setSelectedRange] = useState<SelectedRangeType>({ start: null, end: null });
     type BrushStartEndIndex = {
         startIndex?: number;
-        endIndex?:number;
+        endIndex?: number;
     };
 
     const timer = useRef(2000);
@@ -153,57 +174,57 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
     return (
         <div>
-        <ComposedChart
-            width={1300}
-            height={500}
-            data={data}
+            <ComposedChart
+                width={1300}
+                height={500}
+                data={data}
 
-            margin={{
-                top: 20,
-                right: 80,
-                bottom: 20,
-                left: 20
-            }}
+                margin={{
+                    top: 20,
+                    right: 80,
+                    bottom: 20,
+                    left: 20
+                }}
 
-        >
+            >
 
-            <CartesianGrid stroke="#f5f5f5"/>
-            <XAxis
-                dataKey="calendarWeek"
-                tickFormatter={weekTickFormatter}
-                tick={{ fontSize: '12px' }}  // Adjust font size here
-            />
-            <XAxis
-                dataKey="calendarWeek"
-                axisLine={false}
-                tickLine={false}
-                interval={0}
-                tick={renderMonthTick}
-                height={1}
-                scale="band"
-                xAxisId="month"
-            />
-            <YAxis label={{value: "Amount", angle: -90, position: "insideLeft"}}/>
+                <CartesianGrid stroke="#f5f5f5" />
+                <XAxis
+                    dataKey="calendarWeek"
+                    tickFormatter={weekTickFormatter}
+                    tick={{ fontSize: '12px' }}  // Adjust font size here
+                />
+                <XAxis
+                    dataKey="calendarWeek"
+                    axisLine={false}
+                    tickLine={false}
+                    interval={0}
+                    tick={renderMonthTick}
+                    height={1}
+                    scale="band"
+                    xAxisId="month"
+                />
+                <YAxis label={{ value: "Amount", angle: -90, position: "insideLeft" }} />
 
-            <Tooltip/>
-            <Legend verticalAlign="bottom" height={36} wrapperStyle={{ bottom: -10 }}/>
-
-
-            <Bar dataKey="Demand" barSize={20} fill="#413ea0"/>
-            <Line type="monotone" dataKey="actualCapacity" stroke="#ff7300"/>
-            <Line type="monotone" dataKey="maximumCapacity"  stroke="#8884d8"/>
-            <Brush
-                y={450}
-                dataKey="calendarWeek"
-                height={20}
-                stroke="#8884d8"
-                onChange={handleBrushChange}
-                startIndex={brushIndexesRef.current?.startIndex}
-                endIndex={brushIndexesRef.current?.endIndex}
-            />
+                <Tooltip />
+                <Legend verticalAlign="bottom" height={36} wrapperStyle={{ bottom: -10 }} />
 
 
-        </ComposedChart>
+                <Bar dataKey="Demand" barSize={20} fill="#413ea0" />
+                <Line type="monotone" dataKey="actualCapacity" stroke="#ff7300" />
+                <Line type="monotone" dataKey="maximumCapacity" stroke="#8884d8" />
+                <Brush
+                    y={450}
+                    dataKey="calendarWeek"
+                    height={20}
+                    stroke="#8884d8"
+                    onChange={handleBrushChange}
+                    startIndex={brushIndexesRef.current?.startIndex}
+                    endIndex={brushIndexesRef.current?.endIndex}
+                />
+
+
+            </ComposedChart>
 
             {/* Mini preview AreaChart */}
             <BarChart
