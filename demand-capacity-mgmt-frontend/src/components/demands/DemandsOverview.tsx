@@ -220,15 +220,12 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
           if (weeksWithData.length > 0) {
             const firstWeekWithData = parseInt(weeksWithData[0], 10);
             const weekHeaderCell = tableRef.current!.querySelector(`#week-${firstWeekWithData}`);
-
-            console.log(weekHeaderCell)
             if (weekHeaderCell) {
               weekHeaderCell.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center',
                 inline: 'center',
               });
-              break;
             }
           }
         }
@@ -241,10 +238,10 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
   // Use another useEffect to listen for changes in the tableRef
   useEffect(() => {
     if (tableRef.current) {
-      console.log('Without this console log is not scrolling automatically.. god knows why.')
+      console.log('Without this console log is not scrolling automatically.. god knows why.');
       setShouldScroll(true);
     }
-  }, [tableRef]);
+  }, [demandValuesMap, tableRef]);
 
 
   const handleSave = async () => {
