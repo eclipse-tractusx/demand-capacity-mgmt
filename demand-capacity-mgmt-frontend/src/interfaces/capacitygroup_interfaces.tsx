@@ -20,6 +20,8 @@
  *    ********************************************************************************
  */
 
+import { EventType } from "./event_interfaces"
+
 export interface CapacityGroupProp {
   internalId: string
   catXUuid: string
@@ -30,6 +32,7 @@ export interface CapacityGroupProp {
   numberOfMaterials: number
   favoritedBy: string
   status: string
+  linkStatus: EventType
   [key: string]: string | number;
 }
 

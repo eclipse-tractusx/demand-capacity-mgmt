@@ -21,71 +21,73 @@
  */
 
 import { Customer, CustomerLocation } from "./customer_interfaces";
+import { EventType } from "./event_interfaces";
 import { ExpectedSupplierLocation, Supplier } from "./supplier_interfaces";
 
 
 export interface Demand {
-    id: string;
-    materialDescriptionCustomer: string
-    materialNumberCustomer: string
-    materialNumberSupplier: string
-    customerId: string
-    supplierId: string
-    unitMeasureId: string
-    materialDemandSeries: MaterialDemandSery[]
-  }
-  
-  export interface MaterialDemandSery {
-    customerLocationId: string
-    expectedSupplierLocationId: string[]
-    demandCategoryId: string
-    demandSeriesValues: DemandSeriesValue[]
-  }
-  
-  export interface DemandSeriesValue {
-    calendarWeek: string
-    demand: number
-  }
+  id: string;
+  materialDescriptionCustomer: string
+  materialNumberCustomer: string
+  materialNumberSupplier: string
+  customerId: string
+  supplierId: string
+  unitMeasureId: string
+  materialDemandSeries: MaterialDemandSery[]
+}
 
-  /* Demand List */
-  export interface DemandProp {
-    id: string
-    materialDescriptionCustomer: string
-    materialNumberCustomer: string
-    materialNumberSupplier: string
-    customer: Customer
-    supplier: Supplier
-    unitMeasureId: UnitMeasureId
-    changedAt: string
-    demandSeries?: DemandSeries[] | undefined; 
-  }
- 
-  export interface DemandSeries {
-    customerLocation: CustomerLocation
-    expectedSupplierLocation: ExpectedSupplierLocation[]
-    demandCategory: DemandCategory
-    demandSeriesValues: DemandSeriesValue[];
-  }
-    
-  export interface DemandSeriesValue {
-    calendarWeek: string
-    demand: number
-  }
+export interface MaterialDemandSery {
+  customerLocationId: string
+  expectedSupplierLocationId: string[]
+  demandCategoryId: string
+  demandSeriesValues: DemandSeriesValue[]
+}
 
-  export interface DemandCategory {
-    id: string
-    demandCategoryCode: string
-    demandCategoryName: string
-  }
+export interface DemandSeriesValue {
+  calendarWeek: string
+  demand: number
+}
 
-  export interface UnitMeasureId {
-    id: string
-    codeValue: string
-    displayValue: string
-  }
+/* Demand List */
+export interface DemandProp {
+  id: string
+  materialDescriptionCustomer: string
+  materialNumberCustomer: string
+  materialNumberSupplier: string
+  customer: Customer
+  supplier: Supplier
+  unitMeasureId: UnitMeasureId
+  changedAt: string
+  demandSeries?: DemandSeries[] | undefined;
+  linkStatus: EventType
+}
 
-  //Demand Unlink
-  export interface DemandUnlink {
-    materialDemandID: string
-    capacityGroupID: string
-  }
+export interface DemandSeries {
+  customerLocation: CustomerLocation
+  expectedSupplierLocation: ExpectedSupplierLocation[]
+  demandCategory: DemandCategory
+  demandSeriesValues: DemandSeriesValue[];
+}
+
+export interface DemandSeriesValue {
+  calendarWeek: string
+  demand: number
+}
+
+export interface DemandCategory {
+  id: string
+  demandCategoryCode: string
+  demandCategoryName: string
+}
+
+export interface UnitMeasureId {
+  id: string
+  codeValue: string
+  displayValue: string
+}
+
+//Demand Unlink
+export interface DemandUnlink {
+  materialDemandID: string
+  capacityGroupID: string
+}

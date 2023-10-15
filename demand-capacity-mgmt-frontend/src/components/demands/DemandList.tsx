@@ -26,13 +26,14 @@ import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaStar, FaTrashAlt } from 
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
-import DemandListTable from '../demands/DemandListTable';
-import CapacityGroupAddToExisting from './../capacitygroup/CapacityGroupAddToExisting';
-import CapacityGroupWizardModal from './../capacitygroup/CapacityGroupWizardModal';
-import DangerConfirmationModal, { ConfirmationAction } from './DangerConfirmationModal';
+import { EventType } from '../../interfaces/event_interfaces';
+import CapacityGroupAddToExisting from '../capacitygroup/CapacityGroupAddToExisting';
+import CapacityGroupWizardModal from '../capacitygroup/CapacityGroupWizardModal';
+import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
+import { LoadingMessage } from '../common/LoadingMessages';
+import Pagination from '../common/Pagination';
 import DemandDetailsModal from './DemandDetailsModal';
-import { LoadingMessage } from './LoadingMessages';
-import Pagination from './Pagination';
+import DemandListTable from './DemandListTable';
 
 
 const DemandList: React.FC<{
@@ -273,10 +274,23 @@ const DemandList: React.FC<{
               ) : 'N/A'}
             </td>
             <td>
-              <span className="badge rounded-pill bg-primary text-white" id="tag-ok">Linked</span>
-              <span className="badge rounded-pill bg-warning text-black" id="tag-warning">TODO</span>
-              <span className="badge rounded-pill bg-danger text-white" id="tag-danger">Unlinked</span>
+              {demand.linkStatus === EventType.LINKED ? (
+                <span className="badge rounded-pill bg-primary text-white" id="tag-ok">
+                  Linked
+                </span>
+              ) : demand.linkStatus === EventType.TODO ? (
+                <span className="badge rounded-pill bg-warning text-black" id="tag-warning">
+                  TODO
+                </span>
+              ) : demand.linkStatus === EventType.UN_LINKED ? (
+                <span className="badge rounded-pill bg-danger text-white" id="tag-danger">
+                  Unlinked
+                </span>
+              ) : (
+                <span className="badge rounded-pill bg-secondary text-white">N/A</span>
+              )}
             </td>
+
             <td>
               <Dropdown>
                 <Dropdown.Toggle variant="light" id={`dropdown-menu-${demand.id}`}>

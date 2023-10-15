@@ -26,6 +26,7 @@ import { FaCopy, FaEllipsisV, FaEye, FaRedo, FaStar } from 'react-icons/fa';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
 import { useUser } from "../../contexts/UserContext";
 import '../../index.css';
+import { EventType } from '../../interfaces/event_interfaces';
 import { getUserGreeting } from '../../interfaces/user_interface';
 import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
@@ -136,10 +137,21 @@ const CapacityGroupsList: React.FC = () => {
           <td>{capacitygroup.numberOfMaterials}</td>
           <td>{capacitygroup.favoritedBy}</td>
           <td>
-            {/* TODO Depending on status, this should be a different span*/}
-            <span className="badge rounded-pill text-bg-success" id="tag-ok">Up</span>
-            <span className="badge rounded-pill text-bg-warning" id="tag-warning">Todo</span>
-            <span className="badge rounded-pill text-bg-danger" id="tag-danger">Down</span>
+            {capacitygroup.linkStatus === EventType.TODO ? (
+              <span className="badge rounded-pill text-bg-warning" id="tag-warning">
+                Todo
+              </span>
+            ) : capacitygroup.linkStatus === EventType.STATUS_IMPROVEMENT ? (
+              <span className="badge rounded-pill text-bg-success" id="tag-ok">
+                Up
+              </span>
+            ) : capacitygroup.linkStatus === EventType.STATUS_REDUCTION ? (
+              <span className="badge rounded-pill text-bg-danger" id="tag-danger">
+                Down
+              </span>
+            ) : (
+              <span className="badge rounded-pill text-bg-secondary">N/A</span>
+            )}
           </td>
           <td>
             <Dropdown>

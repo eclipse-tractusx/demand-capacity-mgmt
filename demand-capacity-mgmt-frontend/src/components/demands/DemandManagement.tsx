@@ -28,12 +28,13 @@ import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
-import DemandDetailsModal from '../common/DemandDetailsModal';
 import Pagination from '../common/Pagination';
 import DemandsSearch from '../common/Search';
 import AddForm from './DemandAddForm';
+import DemandDetailsModal from './DemandDetailsModal';
 import EditForm from './DemandEditForm';
 
+import { EventType } from '../../interfaces/event_interfaces';
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import { LoadingMessage } from '../common/LoadingMessages';
 import DemandManagementTable from './DemandManagementTable';
@@ -241,11 +242,22 @@ const DemandManagement: React.FC = () => {
               }, null)?.split('T')[0] ?? 'N/A'
             ) : 'N/A'}
           </td>
-
           <td>
-            <span className="badge rounded-pill bg-primary text-white" id="tag-ok">Linked</span>
-            <span className="badge rounded-pill bg-warning text-black" id="tag-warning">TODO</span>
-            <span className="badge rounded-pill bg-danger text-white" id="tag-danger">Unlinked</span>
+            {demand.linkStatus === EventType.LINKED ? (
+              <span className="badge rounded-pill bg-primary text-white" id="tag-ok">
+                Linked
+              </span>
+            ) : demand.linkStatus === EventType.TODO ? (
+              <span className="badge rounded-pill bg-warning text-black" id="tag-warning">
+                TODO
+              </span>
+            ) : demand.linkStatus === EventType.UN_LINKED ? (
+              <span className="badge rounded-pill bg-danger text-white" id="tag-danger">
+                Unlinked
+              </span>
+            ) : (
+              <span className="badge rounded-pill bg-secondary text-white">N/A</span>
+            )}
           </td>
           <td>
             <Button onClick={() => handleEdit(demand)} variant="outline-secondary">Edit</Button>

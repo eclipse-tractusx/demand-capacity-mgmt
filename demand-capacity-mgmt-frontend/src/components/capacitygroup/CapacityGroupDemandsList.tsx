@@ -26,8 +26,8 @@ import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt, FaUnlink } fro
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
+import DemandDetailsModal from '../demands/DemandDetailsModal';
 import DemandListTable from '../demands/DemandListTable';
-import DemandDetailsModal from './../common/DemandDetailsModal';
 import { LoadingMessage } from './../common/LoadingMessages';
 import Pagination from './../common/Pagination';
 
