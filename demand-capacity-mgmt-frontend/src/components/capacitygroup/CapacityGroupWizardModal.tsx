@@ -26,7 +26,9 @@ import Modal from 'react-bootstrap/Modal';
 import { FaSearch } from 'react-icons/fa';
 import Select from 'react-select';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import { UnitsofMeasureContext } from '../../contexts/UnitsOfMeasureContextProvider';
 import { DemandProp } from '../../interfaces/demand_interfaces';
+import { LoadingCustomMessage } from '../common/LoadingMessages';
 import StepBreadcrumbs from './../common/StepsBreadCrumbs';
 
 interface CapacityGroupWizardModalProps {
@@ -44,10 +46,21 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   const [isNameInputShaking, setIsNameInputShaking] = useState(false);
   const [isActualCapacityInputShaking, setIsActualCapacityInputShaking] = useState(false);
   const [isMaximumCapacityShaking, setIsMaximumCapacityShaking] = useState(false);
-  const context = useContext(CapacityGroupContext);
-
   const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const context = useContext(CapacityGroupContext);
+  const [createdgroupid, setCreatedgroupid] = useState('');
 
+
+  // Get the unitsofmeasure context
+  const unitsofmeasureContext = useContext(UnitsofMeasureContext);
+
+  // Function to get the unit measure description based on id
+  const getUnitMeasureDescription = (unitMeasureId: string) => {
+    const unitMeasure = unitsofmeasureContext?.unitsofmeasure.find(unit => unit.id === unitMeasureId);
+    return unitMeasure ? `${unitMeasure.dimension} - ${unitMeasure.description} (${unitMeasure.unSymbol})` : 'N/A';
+  };
 
   useEffect(() => {
     if (checkedDemands) {
@@ -122,10 +135,13 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
 
 
   const handleSubmit = async () => {
+    setIsLoading(true);
 
     if (!context) {
+      setIsLoading(false);
       return;
     }
+
     // Calculate earliest and latest dates
     const { earliestDate, latestDate } = calculateEarliestAndLatestDates(selectedDemands);
 
@@ -136,29 +152,25 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
       defaultMaximumCapacity: parseInt(defaultMaximumCapacity),
       startDate: earliestDate,
       endDate: latestDate,
-      customer: selectedDemands.length > 0 ? selectedDemands[0].customer.id : '', // Prefill with the customer ID of the first demand
-      supplier: selectedDemands.length > 0 ? selectedDemands[0].supplier.id : '', // Prefill with the supplier ID of the first demand
-      linkMaterialDemandIds: selectedDemands.map((demand) => demand.id), // IDs of linked demands
+      customer: selectedDemands.length > 0 ? selectedDemands[0].customer.id : '',
+      supplier: selectedDemands.length > 0 ? selectedDemands[0].supplier.id : '',
+      linkMaterialDemandIds: selectedDemands.map((demand) => demand.id),
     };
 
-    console.log(newCapacityGroup)
-
-    // Call the createCapacityGroup function
     try {
-      await context.createCapacityGroup(newCapacityGroup);
-
+      const response = await context.createCapacityGroup(newCapacityGroup);
+      setIsSuccess(true);
+      setCreatedgroupid(response?.capacityGroupId || '');
+      // Reset form and close modal after a successful submission
+      setGroupName('');
+      setDefaultActualCapacity('');
+      setDefaultMaximumCapacity('');
     } catch (error) {
       console.error('Error creating capacity group:', error);
+    } finally {
+      setIsLoading(false);
     }
-
-    // Reset form and close modal
-    setGroupName('');
-    setDefaultActualCapacity('');
-    setDefaultMaximumCapacity('');
-    setStep(0); // Reset to Step 0 after submission
-    onHide(); // Call the onHide function to close the modal
   };
-
 
   const handleDefaultMaximumCapacityChange = (newValue: string) => {
     // Use a regular expression to allow only numbers
@@ -187,202 +199,245 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
           <Modal.Title>Capacity Group Wizard</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {step === 0 && (
-            <div>
-              <StepBreadcrumbs currentStep={step} />
-              <br />
-              <p>Welcome to the Capacity Group Wizard, this intuitive interface will simplify this task. <br />
-                Here, you'll effortlessly create capacity groups and seamlessly link them with demands step-by-step.</p>
+          {isLoading && <> <LoadingCustomMessage message='Creating..' /></>}
+          {isSuccess ? (
+            <div className="alert alert-success" role="alert">
+              Capacity group created.
+              It can now be found on the <a href='/'>Capacity group</a> list.
             </div>
-          )}
-          {step === 1 && (
-            <Form>
-              <Form.Group>
-                <StepBreadcrumbs currentStep={step} />
-                <center><h5>Group Details</h5></center>
-
-                <Form.Label className="control-label required-field-label">Capacity Group Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Group Name"
-                  value={groupName}
-                  onChange={(e) => setGroupName(e.target.value)}
-                  required
-                  className={isNameInputShaking ? 'shake-input' : ''}
-                />
-              </Form.Group>
-              <br />
-
-              <Row>
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label className="control-label required-field-label">Default Maximum Capacity</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter Default Maximum Capacity"
-                      value={defaultMaximumCapacity}
-                      onChange={(e) => handleDefaultMaximumCapacityChange(e.target.value)}
-                      required
-                      className={isMaximumCapacityShaking ? 'shake-input' : ''}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label className="control-label required-field-label">Default Actual Capacity</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter Default Maximum Capacity"
-                      value={defaultActualCapacity}
-                      onChange={(e) => handleDefaultActualCapacityChange(e.target.value)}
-                      required
-                      className={isActualCapacityInputShaking ? 'shake-input' : ''}
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-
-
-            </Form>
-          )}
-          {step === 2 && (
-            <div>
-              <StepBreadcrumbs currentStep={step} />
-              <center><h5>Demand Linkage</h5></center>
-              {areUnitMeasureIdsEqual(selectedDemands) ? (
-                // No warning if unit measure IDs are equal
-                null
-              ) : (
-                // Display a warning alert if unit measure IDs are not equal
-                <Alert variant="warning">
-                  Units of measure of selected demands are not equal.
-                </Alert>
+          ) : (
+            <>
+              {step === 0 && (
+                <div>
+                  <StepBreadcrumbs currentStep={step} />
+                  <br />
+                  <p>
+                    Welcome to the Capacity Group Wizard, this intuitive interface will simplify this task. <br />
+                    Here, you'll effortlessly create capacity groups and seamlessly link them with demands step-by-step.
+                  </p>
+                </div>
               )}
-              <Container className="mt-4">
-                <Select
-                  options={demands?.filter(demand => {
-                    // Filter out demands that are in checkedDemands or selectedDemands
-                    return (
-                      !checkedDemands?.some(checkedDemand => checkedDemand.id === demand.id) &&
-                      !selectedDemands.some(selectedDemand => selectedDemand.id === demand.id)
-                    );
-                  }).map(demand => ({
-                    value: demand,
-                    label: `${demand.id} - ${demand.materialDescriptionCustomer} - ${demand.materialNumberCustomer}`
-                  }))}
-                  value={null} //Just so that we dont get stuck on the data that was selected
-                  onChange={selectedOption => {
-                    if (selectedOption) {
-                      setSelectedDemands([...selectedDemands, selectedOption.value]);
-                    }
-                  }}
-                  isSearchable
-                  placeholder={<><FaSearch /> Search for demands...</>}
-                />
-                {selectedDemands.length > 0 && (
+              {step === 1 && (
+                <Form>
+                  <Form.Group>
+                    <StepBreadcrumbs currentStep={step} />
+                    <center><h5>Group Details</h5></center>
+
+                    <Form.Label className="control-label required-field-label">Capacity Group Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter Group Name"
+                      value={groupName}
+                      onChange={(e) => setGroupName(e.target.value)}
+                      required
+                      className={isNameInputShaking ? 'shake-input' : ''}
+                    />
+                  </Form.Group>
+                  <br />
+
                   <Row>
-                    <Col>
-                      <h3 className="mt-4">Selected Demands:</h3>
-                      {selectedDemands.map((demand, index) => (
-                        <div key={index} className="d-flex mt-1 border rounded border-opacity-10 align-items-center">
-                          {demand && (
-                            <Button variant="danger" className="ms-3" size="sm" onClick={() => handleRemoveDemand(index)}>
-                              Remove
-                            </Button>
-                          )}
-                          <div className='ms-3 mt-2'>
-                            <p key={index}>
-                              <strong>Description:</strong> {demand ? demand.materialDescriptionCustomer : 'Not selected'}
-                              <br />
-                              <strong>Customer:</strong> {demand ? demand.customer.companyName : 'Not selected'}
-                              <br />
-                              <strong>Material Number Customer:</strong> {demand ? demand.materialNumberCustomer : 'Not selected'}
-                              <br />
-                              <strong>Unit of Measure:</strong> {demand ? demand.unitMeasureId.id : 'Not selected'}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </Col>
-                  </Row>
-                )}
-              </Container>
-            </div>
-          )}
-          {step === 3 && (
-            <div>
-              <StepBreadcrumbs currentStep={step} />
-              <center><h5>Review and Submit</h5></center>
-              <br />
-              <div className="row mb-2">
-                <div className="col-sm-3">
-                  <h6 className="text-end">Capacity Group Name:</h6>
-                </div>
-                <div className="col-sm-9">
-                  <span>{groupName}</span>
-                </div>
-              </div>
-              <div className="row mb-2">
-                <div className="col-sm-3">
-                  <h6 className="text-end">Maximum Capacity:</h6>
-                </div>
-                <div className="col-sm-9">
-                  <span>{defaultMaximumCapacity}</span>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-sm-3">
-                  <h6 className="text-end">Actual Capacity:</h6>
-                </div>
-                <div className="col-sm-9">
-                  <span>{defaultActualCapacity}</span>
-                </div>
-              </div>
-              <br />
-              <h5>Selected Demands:</h5>
-              <Container className="mt-4">
-                {selectedDemands.map((demand, index) => (
-                  <Row key={index}>
                     <Col md={6}>
-                      {demand && (
-                        <div className="d-flex justify-content-between align-items-center">
-                          <div>
-                            <p>
-                              <strong>Description:</strong> {demand ? demand.materialDescriptionCustomer : 'Not selected'}
-                              <br />
-                              <strong>Customer:</strong> {demand ? demand.customer.companyName : 'Not selected'}
-                              <br />
-                              <strong>Material Number Customer:</strong> {demand ? demand.materialNumberCustomer : 'Not selected'}
-                            </p>
-                          </div>
-                        </div>
-                      )}
+                      <Form.Group>
+                        <Form.Label className="control-label required-field-label">Default Maximum Capacity</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter Default Maximum Capacity"
+                          value={defaultMaximumCapacity}
+                          onChange={(e) => handleDefaultMaximumCapacityChange(e.target.value)}
+                          required
+                          className={isMaximumCapacityShaking ? 'shake-input' : ''}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label className="control-label required-field-label">Default Actual Capacity</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter Default Maximum Capacity"
+                          value={defaultActualCapacity}
+                          onChange={(e) => handleDefaultActualCapacityChange(e.target.value)}
+                          required
+                          className={isActualCapacityInputShaking ? 'shake-input' : ''}
+                        />
+                      </Form.Group>
                     </Col>
                   </Row>
-                ))}
-              </Container>
-            </div>
-          )}
+
+
+                </Form>
+              )}
+              {step === 2 && (
+                <div>
+                  <StepBreadcrumbs currentStep={step} />
+                  <center><h5>Demand Linkage</h5></center>
+                  {areUnitMeasureIdsEqual(selectedDemands) ? (
+                    // No warning if unit measure IDs are equal
+                    null
+                  ) : (
+                    // Display a warning alert if unit measure IDs are not equal
+                    <Alert variant="warning">
+                      Units of measure of selected demands are not equal.
+                    </Alert>
+                  )}
+                  <Container className="mt-4">
+                    <Select
+                      options={demands?.filter(demand => {
+                        // Filter out demands that are in checkedDemands or selectedDemands
+                        return (
+                          !checkedDemands?.some(checkedDemand => checkedDemand.id === demand.id) &&
+                          !selectedDemands.some(selectedDemand => selectedDemand.id === demand.id)
+                        );
+                      }).map(demand => ({
+                        value: demand,
+                        label: `${demand.id} - ${demand.materialDescriptionCustomer} - ${demand.materialNumberCustomer}`
+                      }))}
+                      value={null} //Just so that we dont get stuck on the data that was selected
+                      onChange={selectedOption => {
+                        if (selectedOption) {
+                          setSelectedDemands([...selectedDemands, selectedOption.value]);
+                        }
+                      }}
+                      isSearchable
+                      placeholder={<><FaSearch /> Search for demands...</>}
+                    />
+                    {selectedDemands.length > 0 && (
+                      <Row>
+                        <Col>
+                          <h3 className="mt-4">Selected Demands:</h3>
+                          {selectedDemands.map((demand, index) => (
+                            <div key={index} className="d-flex mt-1 border rounded border-opacity-10 align-items-center">
+                              {demand && (
+                                <Button variant="danger" className="ms-3" size="sm" onClick={() => handleRemoveDemand(index)}>
+                                  Remove
+                                </Button>
+                              )}
+                              <div className='ms-3 mt-2'>
+                                <p key={index}>
+                                  <strong>Description:</strong> {demand ? demand.materialDescriptionCustomer : 'Not selected'}
+                                  <br />
+                                  <strong>Customer:</strong> {demand ? demand.customer.companyName : 'Not selected'}
+                                  <br />
+                                  <strong>Material Number Customer:</strong> {demand ? demand.materialNumberCustomer : 'Not selected'}
+                                  <br />
+                                  <strong>Unit of Measure:</strong> <span>{getUnitMeasureDescription(demand.unitMeasureId.id)}</span>
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </Col>
+                      </Row>
+                    )}
+                  </Container>
+                </div>
+              )}
+              {step === 3 && (
+                <div>
+                  <StepBreadcrumbs currentStep={step} />
+                  <center><h5>Review and Submit</h5></center>
+                  <br />
+                  <div className="row mb-2">
+                    <div className="col-sm-3">
+                      <h6 className="text-end">Capacity Group Name:</h6>
+                    </div>
+                    <div className="col-sm-9">
+                      <span>{groupName}</span>
+                    </div>
+                  </div>
+                  <div className="row mb-2">
+                    <div className="col-sm-3">
+                      <h6 className="text-end">Maximum Capacity:</h6>
+                    </div>
+                    <div className="col-sm-9">
+                      <span>{defaultMaximumCapacity}</span>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-sm-3">
+                      <h6 className="text-end">Actual Capacity:</h6>
+                    </div>
+                    <div className="col-sm-9">
+                      <span>{defaultActualCapacity}</span>
+                    </div>
+                  </div>
+                  <br />
+                  <h5>Selected Demands:</h5>
+                  <Container className="mt-4">
+                    {selectedDemands.map((demand, index) => (
+                      <Row key={index}>
+                        <Col md={6}>
+                          {demand && (
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div>
+                                <p>
+                                  <strong>Description:</strong> {demand ? demand.materialDescriptionCustomer : 'Not selected'}
+                                  <br />
+                                  <strong>Customer:</strong> {demand ? demand.customer.companyName : 'Not selected'}
+                                  <br />
+                                  <strong>Material Number Customer:</strong> {demand ? demand.materialNumberCustomer : 'Not selected'}
+                                  <br />
+                                  <strong>Unit of Measure:</strong> {getUnitMeasureDescription(demand.unitMeasureId.id)}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </Col>
+                      </Row>
+                    ))}
+                  </Container>
+                </div>
+              )}</>)}
         </Modal.Body>
         <Modal.Footer>
-          {step > 0 && (
-            <Button variant="secondary" onClick={prevStep}>
-              Previous
-            </Button>
-          )}
-          {step < 3 && (
+          {step === 0 && (
             <Button variant="primary" onClick={nextStep}>
               Next
             </Button>
           )}
-          {step === 3 && (
-            <Button variant="primary" onClick={handleSubmit}>
-              Submit
-            </Button>
+          {step === 1 && (
+            <>
+              <Button variant="secondary" onClick={prevStep}>
+                Previous
+              </Button>
+              <Button variant="primary" onClick={nextStep}>
+                Next
+              </Button>
+            </>
+          )}
+          {step === 2 && (
+            <>
+              <Button variant="secondary" onClick={prevStep}>
+                Previous
+              </Button>
+              <Button variant="primary" onClick={nextStep}>
+                Next
+              </Button>
+            </>
+          )}
+          {step === 3 && !isSuccess && (
+            <>
+              <Button variant="secondary" onClick={prevStep}>
+                Previous
+              </Button>
+              <Button variant="primary" onClick={handleSubmit}>
+                Submit
+              </Button>
+            </>
+          )}
+          {isSuccess && (
+            <>
+              <Button variant="primary" onClick={() => window.open(`/details/${createdgroupid}`, '_blank')}>
+                Go to Capacity Group
+              </Button>
+              <Button variant="secondary" onClick={onHide}>
+                Close
+              </Button>
+            </>
           )}
         </Modal.Footer>
 
-      </Modal>
+
+      </Modal >
     </>
   );
 }
