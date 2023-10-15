@@ -25,6 +25,7 @@ import { Button, Col, Dropdown, Form, Row } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaStar, FaTrashAlt } from 'react-icons/fa';
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
+import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import { EventType } from '../../interfaces/event_interfaces';
 import CapacityGroupAddToExisting from '../capacitygroup/CapacityGroupAddToExisting';
@@ -374,12 +375,17 @@ const DemandList: React.FC<{
               selectedDemand={selectedDemand} />
 
             <CapacityGroupsProvider>
-              <CapacityGroupWizardModal
-                show={showWizardModal}
-                onHide={handleCloseWizardModal}
-                checkedDemands={selectedDemands}
-                demands={filteredDemands}
-              />
+
+              <UnitsofMeasureContextContextProvider>
+
+                <CapacityGroupWizardModal
+                  show={showWizardModal}
+                  onHide={handleCloseWizardModal}
+                  checkedDemands={selectedDemands}
+                  demands={filteredDemands}
+                />
+              </UnitsofMeasureContextContextProvider >
+
               <CapacityGroupAddToExisting
                 show={showAddToExisting}
                 onHide={handleCloseAddToExistingModal}

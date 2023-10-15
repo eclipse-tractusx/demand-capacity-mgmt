@@ -20,9 +20,9 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useState, useEffect } from 'react';
-import {useUser} from "./UserContext";
+import React, { createContext, useEffect, useState } from 'react';
 import createAPIInstance from "../util/Api";
+import { useUser } from "./UserContext";
 
 export interface UnitMeasure {
   id: string
@@ -55,15 +55,15 @@ const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>
         console.error('Error fetching units of measure:', error);
       }
     };
-  
+
     fetchUnitsofMeasure();
   }, [access_token]);
-  
-  
+
+
 
 
   return (
-    <UnitsofMeasureContext.Provider value={{ unitsofmeasure}}>
+    <UnitsofMeasureContext.Provider value={{ unitsofmeasure }}>
       {props.children}
     </UnitsofMeasureContext.Provider>
   );

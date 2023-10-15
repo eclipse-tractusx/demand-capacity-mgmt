@@ -32,7 +32,7 @@ interface CapacityGroupContextData {
   fetchCapacityGroupsWithRetry: () => Promise<void>;
   getCapacityGroupById: (id: string) => Promise<SingleCapacityGroup | undefined>;
   isLoading: boolean;
-  createCapacityGroup: (newCapacityGroup: CapacityGroupCreate) => Promise<void>;
+  createCapacityGroup: (newCapacityGroup: CapacityGroupCreate) => Promise<SingleCapacityGroup | undefined>;
   linkToCapacityGroup: (linkToCapacityGroup: CapacityGroupLink) => Promise<void>;
 }
 
@@ -90,10 +90,12 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     }
   };
 
-  const createCapacityGroup = async (newCapacityGroup: CapacityGroupCreate) => {
+  const createCapacityGroup = async (newCapacityGroup: CapacityGroupCreate): Promise<SingleCapacityGroup | undefined> => {
     try {
       const api = createAPIInstance(access_token);
       const response = await api.post('/capacityGroup', newCapacityGroup);
+      const fetchedCapacityGroup: SingleCapacityGroup = response.data;
+      return fetchedCapacityGroup;
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
     }
@@ -103,7 +105,6 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     try {
       const api = createAPIInstance(access_token);
       const rest = await api.post('/capacityGroup/link', linkToCapacityGroup);
-      console.log(rest)
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
     }
