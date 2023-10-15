@@ -22,7 +22,7 @@
 import { Breadcrumb, Modal } from 'react-bootstrap';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import { DemandProp } from '../../interfaces/demand_interfaces';
-import WeeklyView from '../demands/DemandsOverview';
+import WeeklyView from './DemandsOverview';
 
 interface DemandDetailsModalProps {
   show: boolean;

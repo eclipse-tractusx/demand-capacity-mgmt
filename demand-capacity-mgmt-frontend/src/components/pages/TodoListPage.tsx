@@ -27,8 +27,8 @@ import { FcTodoList } from "react-icons/fc";
 import { DemandContext } from "../../contexts/DemandContextProvider";
 import { EventsContext } from "../../contexts/EventsContextProvider";
 import { EventProp, EventType } from "../../interfaces/event_interfaces";
-import DemandList from "../common/DemandList";
 import DemandsSearch from "../common/Search";
+import DemandList from "../demands/DemandList";
 import EventsTable from "../events/EventsTable";
 
 function TodoListPage() {

@@ -26,6 +26,7 @@ import '../../../src/index.css';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 
 import { addDays, addMonths, addWeeks, format, getISOWeek, startOfMonth } from 'date-fns';
+import { FaArrowDown, FaArrowRight } from 'react-icons/fa';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import { DemandProp } from "../../interfaces/demand_interfaces";
 
@@ -116,7 +117,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     });
   }
 
-
+  console.log(materialDemands)
   // Track which Demand.description rows are expanded
   const [expandedDemandRows, setExpandedDemandRows] = useState<Record<string, boolean>>({});
 
@@ -155,7 +156,25 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
       });
     });
   }
-  /*To focus on the first value on the table*/
+
+  // Calculate demand sums for each demand name
+  const demandSumsByDemandAndWeek: Record<string, Record<number, number>> = {};
+
+  if (capacityGroup && materialDemands) {
+    materialDemands.forEach((demand) => {
+      const demandName = demand.materialDescriptionCustomer;
+      demandSumsByDemandAndWeek[demandName] = {};
+
+      demand.demandSeries?.forEach((demandSeries) => {
+        demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+          const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
+          const demandSum = demandSeriesValue.demand;
+          demandSumsByDemandAndWeek[demandName][week] = (demandSumsByDemandAndWeek[demandName][week] || 0) + demandSum;
+        });
+      });
+    });
+  }
+
   /*To focus on the first value on the table*/
   const firstNonZeroDemandRef = useRef<HTMLTableDataCellElement>(null);
 
@@ -177,7 +196,6 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
       // Check if the element exists before focusing
       if (cellElement && firstNonZeroDemandRef.current) {
         // Focus on the first non-zero demand sum cell
-        console.log('focus trigger')
         cellElement.focus();
         cellElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
       }
@@ -323,7 +341,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
               <tr>
                 <th className="sticky-header-cell">
                   <div className="sticky-header-content" onClick={() => toggleDemandRowExpansion('total')}>
-                    {expandedDemandRows['total'] ? '▼' : '▶'} Demands (Sum)
+                    {expandedDemandRows['total'] ? <FaArrowDown /> : <FaArrowRight />} Demands (Sum)
                   </div>
                 </th>
                 {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
@@ -336,7 +354,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                       // Use the created ref directly without the need for a ternary operator
                       ref={demandSums[week] !== 0 ? firstNonZeroDemandRef : undefined}
                     >
-                      {demandSums[week] !== 0 ? demandSums[week] : '-'}
+                      {demandSums[week] !== 0 ? demandSums[week] : '-'} {/*Todo Stylize */}
                     </td>
                   ))
                 )}
@@ -353,15 +371,19 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                               className="sticky-header-content table-header-nested-text "
                               onClick={() => toggleDemandRowExpansion(demand.id)}
                             >
-                              {expandedDemandRows[demand.id] ? '▼' : '▶'} {demand.materialDescriptionCustomer}
+                              {expandedDemandRows[demand.id] ? <FaArrowDown /> : <FaArrowRight />} {demand.materialDescriptionCustomer}
                             </div>
                           </th>
                           {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                            month.weeks.map((week) => (
-                              <td key={`demandSeries-${week}-${demand.id}`} className="data-cell">
-                                <strong>{demandSumsByWeek[week] || ' '}</strong>
-                              </td>
-                            ))
+                            month.weeks.map((week) => {
+                              const demandSum =
+                                demandSumsByDemandAndWeek[demand.materialDescriptionCustomer]?.[week] || null;
+                              return (
+                                <td key={`demandSeries-${week}-${demand.id}`} className="data-cell">
+                                  <strong>{demandSum !== null ? (demandSum || 0) : '-'}</strong>
+                                </td>
+                              );
+                            })
                           )}
                         </tr>
                         {expandedDemandRows[demand.id] && (
@@ -375,13 +397,17 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                                     </div>
                                   </th>
                                   {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                                    month.weeks.map((week) => (
-                                      <td key={`demandSeries-${week}-${demandSeries.demandCategory.id}`} className="data-cell">
-                                        {demandSeries.demandSeriesValues.find(
-                                          (demandValue) => getISOWeek(new Date(demandValue.calendarWeek)) === week
-                                        )?.demand || ' '}
-                                      </td>
-                                    ))
+                                    month.weeks.map((week) => {
+                                      const demandValue = demandSeries.demandSeriesValues.find(
+                                        (demandValue) => getISOWeek(new Date(demandValue.calendarWeek)) === week
+                                      );
+                                      const demandSum = demandValue?.demand || null;
+                                      return (
+                                        <td key={`demandSeries-${week}-${demandSeries.demandCategory.id}`} className="data-cell">
+                                          {demandSum !== null ? (demandSum || 0) : '-'}
+                                        </td>
+                                      );
+                                    })
                                   )}
                                 </tr>
                               </React.Fragment>
@@ -392,7 +418,6 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                     ))}
                 </>
               )}
-
               <tr>
                 <th className="sticky-header-cell">
                   <div className="sticky-header-content">-</div>
