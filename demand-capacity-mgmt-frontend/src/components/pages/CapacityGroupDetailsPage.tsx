@@ -19,14 +19,16 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
-import React, {useState, useContext, useEffect} from 'react';
-import { Tab, Tabs} from 'react-bootstrap';
-import CapacityGroupChronogram from "../../components/capacitygroup/CapacityGroupChronogram";
-import CapacityGroupSumView from "../capacitygroup/CapacityGroupSumView";
-import {useParams} from "react-router-dom";
-import {CapacityGroupContext} from "../../contexts/CapacityGroupsContextProvider";
-import {SingleCapacityGroup} from "../../interfaces/capacitygroup_interfaces";
+import React, { useState, useContext, useEffect, useMemo } from 'react';
+import { Tab, Tabs } from 'react-bootstrap';
+import CapacityGroupChronogram from '../../components/capacitygroup/CapacityGroupChronogram';
+import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
+import { useParams } from 'react-router-dom';
+import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
+import DemandContextProvider from '../../contexts/DemandContextProvider';
+import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList';
+import { LoadingMessage } from '../common/LoadingMessages';
 
 function CapacityGroupDetailsPage() {
   const { id } = useParams();
@@ -37,60 +39,70 @@ function CapacityGroupDetailsPage() {
   }
 
   const { getCapacityGroupById } = context;
-
   const [activeTab, setActiveTab] = useState('overview');
   const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const fetchedCapacityGroup = await getCapacityGroupById(id!);
-        setCapacityGroup(fetchedCapacityGroup || null);
-      } catch (error) {
-        console.error('Failed to fetch capacity group:', error);
-      }
-    })();
+    if (id) {
+      (async () => {
+        try {
+          const fetchedCapacityGroup = await getCapacityGroupById(id);
+          setCapacityGroup(fetchedCapacityGroup || null);
+        } catch (error) {
+          console.error('Failed to fetch capacity group:', error);
+        }
+      })();
+    }
   }, [id, getCapacityGroupById]);
 
+  const memoizedComponent = useMemo(() => {
+    if (!capacityGroup) {
+      return <LoadingMessage />;
+    }
 
-  return (
-    <>
-      <div className="container-xl">
-        <br />
-        <div className="row">
-          <div className="col"></div>
-          <div className="col-6 border d-flex align-items-center justify-content-center" style={{ padding: '10px' }}>
-            {capacityGroup?.capacityGroupId} - {capacityGroup?.name}
-          </div>
+    return (
+      <>
+        <div className="container-xl">
+          <br />
+          <div className="row">
+            <div className="col"></div>
+            <div className="col-6 border d-flex align-items-center justify-content-center" style={{ padding: '10px' }}>
+              {capacityGroup?.capacityGroupId} - {capacityGroup?.capacitygroupname}
+            </div>
             <div className="col d-flex justify-content-end">
               <br />
             </div>
+          </div>
+          <Tabs
+            defaultActiveKey="overview"
+            id="uncontrolled-tab-example"
+            className="mb-3"
+            activeKey={activeTab}
+            onSelect={(tabKey) => {
+              if (typeof tabKey === 'string') {
+                setActiveTab(tabKey);
+              }
+            }}
+          >
+            <Tab eventKey="overview" title="Overview">
+              <CapacityGroupSumView capacityGroup={capacityGroup} />
+              <CapacityGroupChronogram capacityGroup={capacityGroup} />
+            </Tab>
+            <Tab eventKey="materials" title="Materials">
+              <DemandContextProvider>
+                <CapacityGroupDemandsList capacityGroupDemands={capacityGroup?.linkMaterialDemandIds} capacityGroupId={capacityGroup?.capacityGroupId} />
+              </DemandContextProvider>
+            </Tab>
+            <Tab eventKey="events" title="Events">
+              Pre filtered event list here
+            </Tab>
+          </Tabs>
         </div>
-        <Tabs
-          defaultActiveKey="overview"
-          id="uncontrolled-tab-example"
-          className="mb-3"
-          activeKey={activeTab}
-          onSelect={(tabKey) => {
-            if (typeof tabKey === 'string') {
-              setActiveTab(tabKey);
-            }
-          }}
-        >
-          <Tab eventKey="overview" title="Overview">
-            <CapacityGroupSumView capacityGroup={capacityGroup}/>
-            <CapacityGroupChronogram capacityGroup={capacityGroup} />
-          </Tab>
-          <Tab eventKey="materials" title="Materials">
-            Materials Table here
-          </Tab>
-          <Tab eventKey="events" title="Events">
-            Pre filtered event list here
-          </Tab>
-        </Tabs>
-      </div>
-    </>
-  );
+      </>
+    );
+  }, [capacityGroup, activeTab]); // Add any other dependencies if necessary
+
+  return memoizedComponent;
 }
 
 export default CapacityGroupDetailsPage;

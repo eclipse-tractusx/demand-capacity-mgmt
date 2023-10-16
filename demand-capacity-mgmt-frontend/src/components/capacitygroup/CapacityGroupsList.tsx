@@ -20,6 +20,7 @@
  *    ********************************************************************************
  */
 
+import { useUser } from '../../contexts/UserContext';
 import React, { useContext, useState, useMemo } from 'react';
 import { Form, Col, Row, Button, OverlayTrigger, Tooltip,Dropdown  } from 'react-bootstrap';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
@@ -27,12 +28,13 @@ import Pagination from '../common/Pagination';
 import CapacityGroupsTable from './CapacityGroupsTable';
 import Search from '../common/Search';
 import '../../index.css';
-import { FaCopy, FaEllipsisV, FaSearch } from 'react-icons/fa';
+import { FaCopy, FaEllipsisV, FaEye } from 'react-icons/fa';
+import {LoadingMessage}  from '../common/LoadingMessages';
 
 const CapacityGroupsList: React.FC = () => {
-  // to do clean /const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<CapacityGroup | null>(null);
 
-  const { capacitygroups } = useContext(CapacityGroupContext)!;
+  const { user } = useUser();
+  const { capacitygroups, isLoading} = useContext(CapacityGroupContext)!;
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState('');
@@ -40,7 +42,6 @@ const CapacityGroupsList: React.FC = () => {
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
 
   const handleSort = (column: string) => {
-    console.log('Sorting column:', column);
     if (sortColumn === column) {
       // If the same column is clicked again, toggle the sort order
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -102,7 +103,7 @@ const CapacityGroupsList: React.FC = () => {
           <td>
             <Button href={`/details/${capacitygroup.internalId}`} target='new-tab' variant="outline-primary" >
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <FaSearch size={20} />
+                <FaEye size={20} />
               </div>
             </Button>
           </td>
@@ -112,7 +113,7 @@ const CapacityGroupsList: React.FC = () => {
               overlay={<Tooltip id={`tooltip-copy-${capacitygroup.internalId}`}>{capacitygroup.internalId}</Tooltip>}
             >
               <Button
-                variant="outline-secondary"
+                variant="outline-info"
                 onClick={() => {
                   // Function to copy the internalId to the clipboard
                   navigator.clipboard.writeText(capacitygroup.internalId);
@@ -155,7 +156,7 @@ const CapacityGroupsList: React.FC = () => {
       <div className="table-title">
         <div className="row">
           <div className="col-sm-6">
-            <h2>Welcome USERID !</h2>
+            <h2>Welcome {user?.name} !</h2>
           </div>
           <div className="col-sm-6">
             <Search
@@ -165,7 +166,9 @@ const CapacityGroupsList: React.FC = () => {
           </div>
         </div>
       </div>
-
+      {isLoading ? ( // Conditional rendering based on loading state
+      <LoadingMessage />
+      ) : (<>
       <CapacityGroupsTable
         sortColumn={sortColumn}
         sortOrder={sortOrder}
@@ -204,6 +207,8 @@ const CapacityGroupsList: React.FC = () => {
           </div>
         </div>
       </div>
+      </>
+      )}
     </>
   );
 };

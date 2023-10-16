@@ -25,13 +25,16 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { FiSettings,FiLogOut } from 'react-icons/fi';
 import InfoMenu from "../menu/InfoMenu";
+import {useUser} from "../../contexts/UserContext";
+import {useNavigate} from "react-router-dom";
+import { logout } from "../../util/Auth";
 
 
 function TopMenuLinks() {
   return (
     <Navbar expand="lg" className="navbar navbar-expand-sm bg-dark navbar-dark">
       <Container>
-        <Navbar.Brand href="#home"><img srcSet='/media/logo.png' alt="Logo" width="30" height="24" className='d-inline-block align-text-top'/> - CompanyName</Navbar.Brand>
+        <Navbar.Brand  ><img srcSet='/media/logo.png' alt="Logo" width="30" height="24" className='d-inline-block align-text-top'/> - CompanyName</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <InfoMenu/>

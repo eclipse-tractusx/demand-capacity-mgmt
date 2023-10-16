@@ -22,13 +22,17 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupDtoResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandResponseDto;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.List;
-import lombok.experimental.UtilityClass;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
 
 public class DataConverterUtil {
 
@@ -64,5 +68,53 @@ public class DataConverterUtil {
             }
         }
         return isSequentialWeeks;
+    }
+
+    public static List<WeekBasedMaterialDemandResponseDto> convertToWeekBasedMaterialDemandDtoList(
+        List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities
+    ) {
+        List<WeekBasedMaterialDemandResponseDto> weekBasedMaterialDemandResponseList = new ArrayList<>();
+
+        for (WeekBasedMaterialDemandEntity entity : weekBasedMaterialDemandEntities) {
+            WeekBasedMaterialDemandResponseDto responseDto = new WeekBasedMaterialDemandResponseDto();
+            responseDto = convertToWeekBasedCapacityGroupDto(entity);
+            weekBasedMaterialDemandResponseList.add(responseDto);
+        }
+        return weekBasedMaterialDemandResponseList;
+    }
+
+    private static WeekBasedMaterialDemandResponseDto convertToWeekBasedCapacityGroupDto(
+        WeekBasedMaterialDemandEntity weekBasedMaterialDemandEntity
+    ) {
+        WeekBasedMaterialDemandResponseDto responseDto = new WeekBasedMaterialDemandResponseDto();
+        responseDto.setId(weekBasedMaterialDemandEntity.getId().toString());
+        responseDto.setViewed(weekBasedMaterialDemandEntity.getViewed());
+        responseDto.setWeekBasedMaterialDemandRequest(weekBasedMaterialDemandEntity.getWeekBasedMaterialDemand());
+
+        return responseDto;
+    }
+
+    public static List<WeekBasedCapacityGroupDtoResponse> convertToWeekBasedCapacityGroupDtoList(
+        List<WeekBasedCapacityGroupEntity> weekBasedMaterialDemandEntities
+    ) {
+        List<WeekBasedCapacityGroupDtoResponse> weekBasedCapacityGroupList = new ArrayList<>();
+
+        for (WeekBasedCapacityGroupEntity entity : weekBasedMaterialDemandEntities) {
+            WeekBasedCapacityGroupDtoResponse responseDto = new WeekBasedCapacityGroupDtoResponse();
+            responseDto = convertToWeekBasedCapacityGroupDto(entity);
+            weekBasedCapacityGroupList.add(responseDto);
+        }
+        return weekBasedCapacityGroupList;
+    }
+
+    private static WeekBasedCapacityGroupDtoResponse convertToWeekBasedCapacityGroupDto(
+        WeekBasedCapacityGroupEntity weekBasedMaterialDemandEntity
+    ) {
+        WeekBasedCapacityGroupDtoResponse responseDto = new WeekBasedCapacityGroupDtoResponse();
+        responseDto.setId(weekBasedMaterialDemandEntity.getId().toString());
+        responseDto.setViewed(weekBasedMaterialDemandEntity.getViewed());
+        responseDto.setWeekBasedCapacityGroupRequest(weekBasedMaterialDemandEntity.getWeekBasedCapacityGroup());
+
+        return responseDto;
     }
 }
