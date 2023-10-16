@@ -71,8 +71,8 @@ public class FavoriteServiceImpl implements FavoriteService {
         FavoriteEntity entity = favoriteRepository.findByFavoriteIdAndTypeAndId(
             id,
             type,
-            UUID.fromString("8842f835-38e9-42b1-8c07-fb310b90ef3a")
-        ); //TODO FETCH USER ID TO UPDATE OPERATION
+            UUID.fromString(cookieUserID)
+        );
 
         if (entity != null) {
             entity.setFavoriteId(UUID.fromString(favoriteRequest.getFavoriteId()));
@@ -95,16 +95,14 @@ public class FavoriteServiceImpl implements FavoriteService {
         FavoriteResponse response = new FavoriteResponse();
         response.setFavoriteId(request.getId().toString());
         response.setfType(request.getType().name());
-        response.setfTypeId(request.getFavoriteTypeId().toString());
         return response;
     }
 
     private FavoriteEntity generateFavoriteEntity(FavoriteRequest request, String cookieUserID) {
         return FavoriteEntity
             .builder()
-            .id(UUID.randomUUID()) //TODO USER ID HERE
+            .id(UUID.fromString(cookieUserID))
             .favoriteId(UUID.fromString(request.getFavoriteId()))
-            .favoriteTypeId(UUID.fromString(request.getfTypeId()))
             .type(FavoriteType.valueOf(request.getfType()))
             .build();
     }

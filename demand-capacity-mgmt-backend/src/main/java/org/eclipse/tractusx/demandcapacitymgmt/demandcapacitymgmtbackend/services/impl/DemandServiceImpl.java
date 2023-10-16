@@ -30,16 +30,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.DemandSeriesRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
@@ -59,40 +57,19 @@ public class DemandServiceImpl implements DemandService {
 
     private final DemandCategoryService demandCategoryService;
 
-    private final FavoriteService favoriteService;
+    private final DemandSeriesRepository demandSeriesRepository;
 
-    private final LoggingHistoryService loggingHistoryService;
+    private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
 
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest) {
         validateMaterialDemandRequestFields(materialDemandRequest);
+
         MaterialDemandEntity materialDemandEntity = convertDtoToEntity(materialDemandRequest);
+
         materialDemandEntity = materialDemandRepository.save(materialDemandEntity);
-        postLogs(materialDemandEntity.getId().toString(), "MATERIAL DEMAND Created");
+
         return convertDemandResponseDto(materialDemandEntity);
-    }
-
-    private void postLogs(String materialDemandId, String eventDescription) {
-        AtomicBoolean isFavorited = new AtomicBoolean(false);
-        favoriteService
-            .getAllFavoritesByType(FavoriteType.MATERIAL_DEMAND.toString())
-            .forEach(
-                favoriteResponse -> {
-                    if (favoriteResponse.getfTypeId().equals(materialDemandId)) {
-                        isFavorited.set(true);
-                    }
-                }
-            );
-        LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
-        loggingHistoryRequest.setObjectType(EventObjectType.MATERIAL_DEMAND.name());
-        loggingHistoryRequest.setMaterialDemandId(materialDemandId);
-        loggingHistoryRequest.setIsFavorited(isFavorited.get());
-        loggingHistoryRequest.setEventDescription(eventDescription);
-
-        // TODO : Add EventType
-        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
-
-        loggingHistoryService.createLog(loggingHistoryRequest);
     }
 
     @Override
@@ -114,25 +91,87 @@ public class DemandServiceImpl implements DemandService {
         demand.setId(UUID.fromString(demandId));
 
         demand = materialDemandRepository.save(demand);
-        postLogs(demandId, "MATERIAL DEMAND Updated");
         return convertDemandResponseDto(demand);
-    }
-
-    @Override
-    public MaterialDemandEntity getDemandEntityById(String demandId) {
-        return getDemandEntity(demandId);
     }
 
     @Override
     public void deleteDemandById(String demandId) {
         MaterialDemandEntity demand = getDemandEntity(demandId);
-        postLogs(demandId, "MATERIAL DEMAND Deleted");
+
         materialDemandRepository.delete(demand);
     }
 
     @Override
     public List<MaterialDemandEntity> getAllByStatus(MaterialDemandStatus status) {
         return materialDemandRepository.findAllByStatus(status);
+    }
+
+    @Override
+    public DemandSeriesCompositeResponse getAllDemandsByCompositeKey(
+        DemandSeriesCompositeRequest demandSeriesCompositeRequest
+    ) {
+        List<DemandSeries> demandSeriesEntities = demandSeriesRepository.ByCategoryIDCustomerIDMaterialNrCustomer(
+            UUID.fromString(demandSeriesCompositeRequest.getCustomerID()),
+            UUID.fromString(demandSeriesCompositeRequest.getDemandCategoryCodeID()),
+            demandSeriesCompositeRequest.getMaterialNumberCustomer()
+        );
+
+        DemandSeriesCompositeResponse demandSeriesCompositeResponse = new DemandSeriesCompositeResponse();
+        List<LinkedDemandMaterialCompositeResponse> linkedDemandMaterialCompositeResponses = new ArrayList<>();
+
+        for (DemandSeries demandSeries : demandSeriesEntities) {
+            LinkedDemandMaterialCompositeResponse compositeResponse = new LinkedDemandMaterialCompositeResponse();
+
+            DemandCategoryResponse demandCategory = demandCategoryService.convertEntityToDto(
+                demandCategoryService.findById(demandSeries.getDemandCategory().getId())
+            );
+            compositeResponse.setDemandCategory(demandCategory);
+
+            Optional<MaterialDemandEntity> materialDemand = materialDemandRepository.findById(
+                demandSeries.getMaterialDemand().getId()
+            );
+            if (materialDemand.isPresent()) {
+                MaterialDemandResponse materialDemandResponse = convertDemandResponseDto(materialDemand.get());
+                compositeResponse.setMaterialDemandID(materialDemandResponse.getId());
+                compositeResponse.setCustomerLocation(materialDemandResponse.getCustomer());
+                List<CompanyDto> supplierLocations = new ArrayList<>();
+                for (String locations : demandSeries.getExpectedSupplierLocation()) {
+                    CompanyEntity entity = companyService.getCompanyById(UUID.fromString(locations));
+                    CompanyDto companyDto = new CompanyDto();
+                    companyDto.setBpn(entity.getBpn());
+                    companyDto.setCompanyName(entity.getCompanyName());
+                    companyDto.setId(entity.getId().toString());
+                    companyDto.setMyCompany(entity.getMyCompany());
+                    companyDto.setCountry(entity.getCountry());
+                    companyDto.setNumber(entity.getNumber());
+                    companyDto.setStreet(entity.getStreet());
+                    companyDto.setZipCode(entity.getZipCode());
+                    supplierLocations.add(companyDto);
+                }
+                compositeResponse.setExpectedSupplierLocation(supplierLocations);
+            }
+
+            List<MaterialDemandSeriesValue> materialDemandSeriesValues = new ArrayList<>();
+
+            for (DemandSeriesValues values : demandSeries.getDemandSeriesValues()) {
+                MaterialDemandSeriesValue demandSeriesValue = new MaterialDemandSeriesValue();
+                demandSeriesValue.setDemand(BigDecimal.valueOf(values.getDemand()));
+                demandSeriesValue.setCalendarWeek(values.getCalendarWeek().toString());
+                materialDemandSeriesValues.add(demandSeriesValue);
+            }
+            compositeResponse.setDemandSeriesValues(materialDemandSeriesValues);
+            compositeResponse.setDemandSeriesID(demandSeries.getId().toString());
+            linkedDemandMaterialCompositeResponses.add(compositeResponse);
+        }
+        demandSeriesCompositeResponse.setDemandSeries(linkedDemandMaterialCompositeResponses);
+        return demandSeriesCompositeResponse;
+    }
+
+    @Override
+    public void unlinkComposites(DemandSeriesUnlinkRequest demandSeriesUnlinkRequest) {
+        UUID cgID = UUID.fromString(demandSeriesUnlinkRequest.getCapacityGroupID());
+        UUID mdID = UUID.fromString(demandSeriesUnlinkRequest.getMaterialDemandID());
+        linkedCapacityGroupMaterialDemandRepository.deleteByCapacityGroupIDAndMaterialDemandID(cgID, mdID);
     }
 
     private MaterialDemandEntity getDemandEntity(String demandId) {
@@ -154,8 +193,15 @@ public class DemandServiceImpl implements DemandService {
     private MaterialDemandResponse convertDemandResponseDto(MaterialDemandEntity materialDemandEntity) {
         MaterialDemandResponse responseDto = new MaterialDemandResponse();
 
-        CompanyDto customer = companyService.convertEntityToDto(materialDemandEntity.getCustomerId());
-        CompanyDto supplier = companyService.convertEntityToDto(materialDemandEntity.getSupplierId());
+        CompanyDto customer = null;
+        if (materialDemandEntity.getCustomerId() != null) {
+            customer = companyService.convertEntityToDto(materialDemandEntity.getCustomerId());
+        }
+
+        CompanyDto supplier = null;
+        if (materialDemandEntity.getSupplierId() != null) {
+            supplier = companyService.convertEntityToDto(materialDemandEntity.getSupplierId());
+        }
 
         responseDto.setMaterialDescriptionCustomer(materialDemandEntity.getMaterialDescriptionCustomer());
         responseDto.setMaterialNumberCustomer(materialDemandEntity.getMaterialNumberCustomer());
@@ -388,8 +434,12 @@ public class DemandServiceImpl implements DemandService {
         UnitMeasure unitMeasure = new UnitMeasure();
 
         unitMeasure.setId(unitMeasureEntity.getId().toString());
-        unitMeasure.setCodeValue(unitMeasureEntity.getCodeValue());
-        unitMeasure.setDisplayValue(unitMeasureEntity.getDisplayValue());
+        unitMeasure.setDimension(unitMeasureEntity.getDimension());
+        unitMeasure.setUnCode(unitMeasureEntity.getUnCode());
+        unitMeasure.setDescription(unitMeasureEntity.getDescription());
+        unitMeasure.setDescriptionGerman(unitMeasureEntity.getDescriptionGerman());
+        unitMeasure.setUnSymbol(unitMeasureEntity.getUnSymbol());
+        unitMeasure.setCxSymbol(unitMeasureEntity.getCxSymbol());
 
         return unitMeasure;
     }

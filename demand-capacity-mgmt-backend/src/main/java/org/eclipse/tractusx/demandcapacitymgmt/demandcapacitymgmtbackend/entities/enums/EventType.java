@@ -22,10 +22,11 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
 
-//TODO:  add EventType (create, delete update, defalult.....)
 public enum EventType {
     GENERAL_EVENT,
     TODO,
     STATUS_IMPROVEMENT,
     STATUS_REDUCTION,
+    LINKED,
+    NOT_LINKED,
 }

@@ -317,6 +317,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IntrospectTokenResponse'
+  /statuses:
+    post:
+      tags:
+        - statuses
+      summary: create a status
+      operationId: postStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusesResponse'
+
+    get:
+      tags:
+        - statuses
+      summary: get statuses object
+      operationId: getStatuses
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                #               type: object
+                #               items:
+                $ref: '#/components/schemas/StatusesResponse'
+
+    put:
+      tags:
+        - statuses
+      summary: update statuses by Id
+      operationId: updateStatusesById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusRequest'
+      parameters:
+        - in: 'path'
+          name: 'status_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Update of statuses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusesResponse'
+
 
   /demand:
     post:
@@ -351,6 +411,43 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/MaterialDemandResponse'
+
+  /demand/series:
+    post:
+      tags:
+        - Demand
+      summary: get the list of demand series by composite key
+      operationId: getLinkedDemandSeriesByCompositeKeyID
+      requestBody:
+        description: Demand series composite request object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandSeriesCompositeRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemandSeriesCompositeResponse'
+  /demand/series/unlink:
+    post:
+      tags:
+        - Demand
+      summary: unlink material demands and demand series
+      operationId: unlinkedDemandSeriesComposites
+      requestBody:
+        description: Demand series composite request object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandSeriesUnlinkRequest'
+      responses:
+        204:
+          description: no content
 
   /demand/{demand_id}:
     get:
@@ -411,12 +508,27 @@ paths:
         200:
           description: Delete demand with id
 
+  /capacityGroup/link:
+    post:
+      tags:
+        - capacityGroup
+      summary: create a link to capacityGroup and linkedDemand
+      operationId: postLinkedCapacityGroupDemand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkCGDSRequest'
+      responses:
+        204:
+          description: no content
   /capacityGroup:
     get:
       tags:
         - capacityGroup
       summary: capacityGroup
-      operationId: getCapacityGroup
+      operationId: getCapacityGroups
       responses:
         200:
           description: CapacityGroupResponse
@@ -426,7 +538,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CapacityGroupDefaultViewResponse'
-
     post:
       tags:
         - capacityGroup
@@ -460,19 +571,34 @@ paths:
           required: true
       responses:
         200:
-          description: General greeting
+          description: Get capacity group representation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CapacityGroupResponse'
 
 
-
   /weekbasedcapacitygroup:
+    get:
+      tags:
+        - weekBasedCapacityGroup
+      summary: get weekBasedCapacityGroup
+      operationId: getWeekBasedCapacityGroup
+      responses:
+        200:
+          description: WeekBasedCapacityGroupResponse
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WeekBasedCapacityGroupDtoResponse'
+
+
     post:
       tags:
         - weekBasedCapacityGroup
-      summary: weekBasedCapacityGroup
+      summary: post weekBasedCapacityGroup
       operationId: postWeekBasedCapacityGroup
       requestBody:
         required: true
@@ -481,16 +607,90 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/WeekBasedCapacityGroupRequest'
+                $ref: '#/components/schemas/WeekBasedCapacityGroupDtoRequest'
       responses:
         200:
           description: weekBasedCapacityGroup endpoint
 
+
+  /weekbasedcapacitygroup/{weekBasedCapacity_id}:
+
+    put:
+      tags:
+        - weekBasedCapacityGroup
+      summary: update weekBasedCapacityGroup by id
+      operationId: updateWeekBasedCapacityGroupById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WeekBasedCapacityGroupDtoRequest'
+      parameters:
+        - in: 'path'
+          name: 'weekBasedCapacity_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Update of weekBasedCapacityGroup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeekBasedCapacityGroupDtoResponse'
+
+
+
+  /weekbasedmaterialdemand/{weekBasedMaterialDemand_id}:
+
+    put:
+      tags:
+        - weekBasedMaterialDemand
+      summary: update weekBasedMaterialDemand
+      operationId: updateWeekBasedMaterialDemandById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WeekBasedMaterialDemandRequestDto'
+      parameters:
+        - in: 'path'
+          name: 'weekBasedMaterialDemand_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Update of weekBasedMaterialDemand
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeekBasedMaterialDemandResponseDto'
+
+
   /weekbasedmaterialdemand:
+    get:
+      tags:
+        - weekBasedMaterialDemand
+      summary: get weekBasedMaterialDemand
+      operationId: getWeekBasedMaterialDemand
+      responses:
+        200:
+          description: WeekBasedMaterialDemandResponse
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WeekBasedMaterialDemandResponseDto'
+
+
     post:
       tags:
         - weekBasedMaterialDemand
-      summary: weekBasedCapacityGroup
+      summary: post weekBasedMaterialDemand
       operationId: postWeekBasedMaterialDemand
       requestBody:
         required: true
@@ -697,6 +897,54 @@ components:
       properties:
         active:
           type: boolean
+
+    StatusesResponse:
+      type: object
+      properties:
+        general:
+          $ref: '#/components/schemas/StatusDto'
+        todos:
+          $ref: '#/components/schemas/StatusDto'
+        statusImprovement:
+          $ref: '#/components/schemas/StatusDto'
+        statusDegredation:
+          $ref: '#/components/schemas/StatusDto'
+        overall_general:
+          $ref: '#/components/schemas/StatusDto'
+        overall_todos:
+          $ref: '#/components/schemas/StatusDto'
+        overall_statusImprovement:
+          $ref: '#/components/schemas/StatusDto'
+        overall_statusDegredation:
+          $ref: '#/components/schemas/StatusDto'
+
+
+    StatusRequest:
+      type: object
+      properties:
+        general:
+          $ref: '#/components/schemas/StatusDto'
+        todos:
+          $ref: '#/components/schemas/StatusDto'
+        statusImprovement:
+          $ref: '#/components/schemas/StatusDto'
+        statusDegredation:
+          $ref: '#/components/schemas/StatusDto'
+        overall_general:
+          $ref: '#/components/schemas/StatusDto'
+        overall_todos:
+          $ref: '#/components/schemas/StatusDto'
+        overall_statusImprovement:
+          $ref: '#/components/schemas/StatusDto'
+        overall_statusDegredation:
+          $ref: '#/components/schemas/StatusDto'
+
+    StatusDto:
+      type: object
+      properties:
+        count:
+          type: integer
+
     DemandRequestDto:
       type: object
       properties:
@@ -720,6 +968,36 @@ components:
           type: string
         description:
           type: string
+
+    CapacityGroupResponse:
+      type: object
+      properties:
+        capacityGroupId:
+          type: string
+        capacitygroupname:
+          type: string
+        defaultActualCapacity:
+          type: number
+          format: float
+        defaultMaximumCapacity:
+          type: number
+          format: float
+        startDate:
+          type: string
+        endDate:
+          type: string
+        customer:
+          $ref: '#/components/schemas/CompanyDto'
+        supplier:
+          $ref: '#/components/schemas/CompanyDto'
+        linkMaterialDemandIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: 'Array of UUIDs representing linked material demand IDs.'
+
+
     DemandResponseDto:
       type: object
       properties:
@@ -878,6 +1156,42 @@ components:
         maximumCapacity:
           type: string
 
+
+
+    WeekBasedCapacityGroupDtoRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        viewed:
+          type: boolean
+        WeekBasedCapacityGroupRequest:
+          $ref: '#/components/schemas/WeekBasedCapacityGroupRequest'
+
+
+    WeekBasedMaterialDemandResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+        viewed:
+          type: boolean
+        WeekBasedMaterialDemandRequest:
+          $ref: '#/components/schemas/WeekBasedMaterialDemandRequest'
+
+
+    WeekBasedCapacityGroupDtoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        viewed:
+          type: boolean
+        WeekBasedCapacityGroupRequest:
+          $ref: '#/components/schemas/WeekBasedCapacityGroupRequest'
+
+
+
     WeekBasedCapacityGroupRequest:
       type: object
       properties:
@@ -902,6 +1216,54 @@ components:
         changedAt:
           type: string
         capacityGroupId:
+          type: string
+        customer:
+          type: string
+
+    WeekBasedMaterialDemandRequest:
+      type: object
+      properties:
+        unityOfMeasure:
+          type: string
+        materialDescriptionCustomer:
+          type: string
+        materialDemandId:
+          type: string
+        materialNumberSupplier:
+          type: string
+        supplier:
+          type: string
+        changedAt:
+          type: string
+        demandSeries:
+          type: array
+          items:
+            $ref: '#/components/schemas/DemandWeekSeriesDto'
+        materialNumberCustomer:
+          type: string
+        customer:
+          type: string
+
+    WeekBasedMaterialDemandResponse:
+      type: object
+      properties:
+        unityOfMeasure:
+          type: string
+        materialDescriptionCustomer:
+          type: string
+        materialDemandId:
+          type: string
+        materialNumberSupplier:
+          type: string
+        supplier:
+          type: string
+        changedAt:
+          type: string
+        demandSeries:
+          type: array
+          items:
+            $ref: '#/components/schemas/DemandWeekSeriesDto'
+        materialNumberCustomer:
           type: string
         customer:
           type: string
@@ -937,26 +1299,13 @@ components:
     WeekBasedMaterialDemandRequestDto:
       type: object
       properties:
-        unityOfMeasure:
+        id:
           type: string
-        materialDescriptionCustomer:
-          type: string
-        materialDemandId:
-          type: string
-        materialNumberSupplier:
-          type: string
-        supplier:
-          type: string
-        changedAt:
-          type: string
-        demandSeries:
-          type: array
-          items:
-            $ref: '#/components/schemas/DemandWeekSeriesDto'
-        materialNumberCustomer:
-          type: string
-        customer:
-          type: string
+        viewed:
+          type: boolean
+        WeekBasedMaterialDemandRequest:
+          $ref: '#/components/schemas/WeekBasedMaterialDemandRequest'
+
 
     MaterialDemandRequest:
       type: object
@@ -1051,9 +1400,17 @@ components:
       properties:
         id:
           type: string
-        codeValue:
+        dimension:
           type: string
-        displayValue:
+        unCode:
+          type: string
+        description:
+          type: string
+        descriptionGerman:
+          type: string
+        unSymbol:
+          type: string
+        cxSymbol:
           type: string
 
     MaterialDemandSeriesResponse:
@@ -1067,11 +1424,56 @@ components:
             $ref: '#/components/schemas/CompanyDto'
         demandCategory:
           $ref: '#/components/schemas/DemandCategoryResponse'
-
         demandSeriesValues:
           type: array
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesValue'
+
+    DemandSeriesCompositeResponse:
+      type: object
+      properties:
+        demandSeries:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedDemandMaterialCompositeResponse'
+
+    LinkedDemandMaterialCompositeResponse:
+      type: object
+      properties:
+        demandSeriesID:
+          type: string
+        materialDemandID:
+          type: string
+        customerLocation:
+          $ref: '#/components/schemas/CompanyDto'
+        expectedSupplierLocation:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyDto'
+        demandCategory:
+          $ref: '#/components/schemas/DemandCategoryResponse'
+        demandSeriesValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialDemandSeriesValue'
+
+    DemandSeriesCompositeRequest:
+      type: object
+      properties:
+        demandCategoryCodeID:
+          type: string
+        customerID:
+          type: string
+        materialNumberCustomer:
+          type: string
+    DemandSeriesUnlinkRequest:
+      type: object
+      properties:
+        materialDemandID:
+          type: string
+        capacityGroupID:
+          type: string
+
 
     DemandCategoryResponse:
       type: object
@@ -1115,7 +1517,7 @@ components:
         materialNumberCustomer:
           type: string
 
-    CapacityGroupResponse:
+    DeprecatedCapacityGroupResponse:
       type: object
       properties:
         capacityGroupId:
@@ -1167,31 +1569,41 @@ components:
         status:
           type: string
 
+    LinkCGDSRequest:
+      type: object
+      properties:
+        capacityGroupID:
+          type: string
+        linkedMaterialDemandID:
+          type: array
+          items:
+            type: string
+            format: uuid
+
     CapacityGroupRequest:
       type: object
       properties:
-        capacities:
-          type: array
-          items:
-            $ref: '#/components/schemas/CapacityRequest'
-        linkedDemandSeries:
-          type: array
-          items:
-            type: string
-        supplierLocations:
-          type: array
-          items:
-            type: string
+        capacitygroupname:
+          type: string
+        defaultActualCapacity:
+          type: number
+          format: float
+        defaultMaximumCapacity:
+          type: number
+          format: float
+        startDate:
+          type: string
+        endDate:
+          type: string
         customer:
           type: string
         supplier:
           type: string
-        unitOfMeasure:
-          type: string
-        changeAt:
-          type: string
-        name:
-          type: string
+        linkDemandSeriesID:
+          type: array
+          items:
+            type: string
+            format: uuid
 
     FavoriteRequest:
       type: object

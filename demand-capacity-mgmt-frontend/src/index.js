@@ -26,6 +26,10 @@ import reportWebVitals from './reportWebVitals';
 import {BrowserRouter as Router, Route,Routes } from "react-router-dom";
 
 
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import { isAuthenticated } from './util/Auth';
+import AuthenticationComponent from './components/auth/AuthenticationComponent';
+import AppComponent from './components/dcm/AppComponent';
 
 //Import Default always visible components.
 import TopMenu from "./components/common/TopMenu";
@@ -33,29 +37,49 @@ import { InfoMenuProvider } from './contexts/InfoMenuContextProvider';
 import QuickAcessItems from "./components/common/QuickAcessItems";
 //Import Context Providers
 import DemandContextProvider from "../src/contexts/DemandContextProvider";
-// Import your components for different routes
+import CapacityGroupsProvider from './contexts/CapacityGroupsContextProvider';
+//Pages
 import Home from "./components/pages/CapacityGroupPage";
 import CapacityGroupDetailsPage from "./components/pages/CapacityGroupDetailsPage";
-import CapacityGroupsProvider from './contexts/CapacityGroupsContextProvider';
+
+import TodoListPage from "./components/pages/TodoListPage";
+import DownStatusPage from "./components/pages/DownStatusPage";
+import UpStatusPage from "./components/pages/UpStatusPage";
+
+import './custom-bootstrap.scss';
+import'./index.css';
+import {UserProvider} from "./contexts/UserContext";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-<>
-    <InfoMenuProvider>
-    <TopMenu></TopMenu>
-    </InfoMenuProvider>
+function App() {
+    const authenticated = isAuthenticated();
+    return (
+        <UserProvider>
+            <Router>
+                {authenticated ? <AppComponent /> : <AuthenticationComponent />}
+            </Router>
+        </UserProvider>
+    );
+}
 
-    <Router>
-    <Routes>
-        <Route  path="/" element={<Home/>} />
-        <Route path="/details/:id" element={<CapacityGroupsProvider><CapacityGroupDetailsPage/></CapacityGroupsProvider>} />
-        <Route path="/contact" />
-    </Routes>
-</Router>
-<DemandContextProvider>
+root.render(
+    <App>
+        <InfoMenuProvider>
+            <TopMenu></TopMenu>
+        </InfoMenuProvider>
+        <Router>
+            <Routes>
+                <Route path="/" element={<Home/>} />
+                <Route path="/details/:id" element={<CapacityGroupsProvider><CapacityGroupDetailsPage/></CapacityGroupsProvider>} />
+                <Route path="/up" element={<DemandContextProvider><UpStatusPage/></DemandContextProvider>} />
+                <Route path="/down" element={<DemandContextProvider><DownStatusPage/></DemandContextProvider>} />
+                <Route path="/todo" element={<DemandContextProvider><TodoListPage/></DemandContextProvider>} /> 
+            </Routes>
+        </Router>
+        <DemandContextProvider>
             <QuickAcessItems></QuickAcessItems>
-</DemandContextProvider>
-</>
+        </DemandContextProvider>
+    </App>
 
 );
 

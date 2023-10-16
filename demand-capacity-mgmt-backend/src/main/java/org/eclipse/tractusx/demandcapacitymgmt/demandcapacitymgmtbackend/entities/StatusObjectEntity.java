@@ -20,26 +20,27 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsList from "../capacitygroup/CapacityGroupsView";
-import CapacityGroupContext from "../../contexts/CapacityGroupsContextProvider";
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
-function CapacityGroupDetails() {
+import jakarta.persistence.*;
+import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    return (
-        <>
-        <div className="container-xl">
-            <br />
-            <div className="table">
-                <div className="table-wrapper">
-                    <CapacityGroupContext>
-                        <CapacityGroupsList />
-                    </CapacityGroupContext>
-                </div>
-            </div>
-        </div>
-        </>
+@Entity
+@Table(name = "status_object")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class StatusObjectEntity {
 
-    );
+    @Id
+    @Column(columnDefinition = "uuid")
+    private UUID id;
+
+    @Column(name = "count")
+    private int count;
 }
-
-export default CapacityGroupDetails;
