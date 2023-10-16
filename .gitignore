@@ -39,3 +39,5 @@ target/
 .idea/*
 
 demand-capacity-mgmt-backend/.mvn/wrapper/maven-wrapper.jar
+.env
+keycloak/

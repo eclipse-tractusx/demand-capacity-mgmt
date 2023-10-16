@@ -32,6 +32,8 @@ To install the images we need to run this command on the root folder:
 
 Now that you have the application running let's work on the MIW.
 
+-------------------------------------------------------------------------------
+
 For that we will need a version of MIW running that you can now open a terminal and paste:
 
     git clone https://github.com/eclipse-tractusx/managed-identity-wallet
@@ -110,7 +112,7 @@ then on the terminal:
 
     cd charts/tractusx-connector-memory
     helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-    helm install my-release tractusx-edc/tractusx-connector-memory --version 0.5.1 -f . --set vault.secrets="client-secret:$YOUR_CLIENT_SECRET"
+    helm install edc . --set vault.secrets="client-secret:$YOUR_CLIENT_SECRET"
 
 Now just wait a little bit, and you have your instance of EDC up and Running
 
