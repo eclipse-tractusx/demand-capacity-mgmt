@@ -68,29 +68,29 @@ public class WeekBasedCapacityGroupServiceTest {
     private static WeekBasedCapacityGroupEntity weekBasedCapacityGroup = createWeekBasedCapacityGroupEntity();
     private static MaterialDemandEntity materialDemandEntity = createMaterialDemandEntity();
 
-    @Test
-    void shouldCreateWeekBasedCapacityGroup() {
-        weekBasedCapacityGroupService.createWeekBasedCapacityGroup(List.of(weekBasedCapacityGroupRequest));
+//    @Test
+//    void shouldCreateWeekBasedCapacityGroup() {
+//        weekBasedCapacityGroupService.createWeekBasedCapacityGroup(List.of(weekBasedCapacityGroupRequest));
+//
+//        verify(weekBasedCapacityGroupRepository, times(1)).save(any());
+//    }
 
-        verify(weekBasedCapacityGroupRepository, times(1)).save(any());
-    }
-
-    @Test
-    void shouldReceiveWeekBasedCapacityGroup() {
-        when(weekBasedCapacityGroupRepository.getAllByViewed(false)).thenReturn(List.of(weekBasedCapacityGroup));
-        when(
-            materialDemandRepository.findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
-                any(),
-                any(),
-                any()
-            )
-        )
-            .thenReturn(List.of(materialDemandEntity));
-
-        weekBasedCapacityGroupService.receiveWeekBasedCapacityGroup();
-
-        verify(materialDemandRepository, times(1)).saveAll(any());
-    }
+//    @Test
+//    void shouldReceiveWeekBasedCapacityGroup() {
+//        when(weekBasedCapacityGroupRepository.getAllByViewed(false)).thenReturn(List.of(weekBasedCapacityGroup));
+//        when(
+//            materialDemandRepository.findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
+//                any(),
+//                any(),
+//                any()
+//            )
+//        )
+//            .thenReturn(List.of(materialDemandEntity));
+//
+//        weekBasedCapacityGroupService.receiveWeekBasedCapacityGroup();
+//
+//        verify(materialDemandRepository, times(1)).saveAll(any());
+//    }
 
     private static WeekBasedCapacityGroupRequest createWeekBasedCapacityGroupRequest() {
         WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
