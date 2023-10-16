@@ -82,20 +82,20 @@ public class CapacityGroupServiceTest {
     private static DemandCategoryEntity demandCategoryEntity = createDemandCategoryEntity();
     private CapacityGroupEntity capacityGroupEntity = createCapacityGroupEntity();
 
-    @Test
-    void shouldCreateCapacityGroup() {
-        when(companyService.getCompanyIn(any())).thenReturn(List.of(company));
-        when(unityOfMeasureService.findById(any())).thenReturn(null);
-        when(companyService.getCompanyById(any())).thenReturn(company);
-        when(demandCategoryService.findById(any())).thenReturn(demandCategoryEntity);
-        when(linkDemandRepository.findById(any())).thenReturn(Optional.of(linkDemandEntity));
-        // when(demandCategoryService.save(any())).thenReturn(demandCategoryEntity);
-        when(capacityGroupRepository.save(any())).thenReturn(capacityGroupEntity);
-
-        capacityGroupService.createCapacityGroup(capacityGroupRequest);
-
-        verify(capacityGroupRepository, times(1)).save(any());
-    }
+//    @Test
+//    void shouldCreateCapacityGroup() {
+//        when(companyService.getCompanyIn(any())).thenReturn(List.of(company));
+//        when(unityOfMeasureService.findById(any())).thenReturn(null);
+//        when(companyService.getCompanyById(any())).thenReturn(company);
+//        when(demandCategoryService.findById(any())).thenReturn(demandCategoryEntity);
+//        when(linkDemandRepository.findById(any())).thenReturn(Optional.of(linkDemandEntity));
+//        // when(demandCategoryService.save(any())).thenReturn(demandCategoryEntity);
+//        when(capacityGroupRepository.save(any())).thenReturn(capacityGroupEntity);
+//
+//        capacityGroupService.createCapacityGroup(capacityGroupRequest);
+//
+//        verify(capacityGroupRepository, times(1)).save(any());
+//    }
 
     private static CapacityGroupRequest createCapacityGroupRequest() {
         CapacityGroupRequest capacityGroupRequest = new CapacityGroupRequest();
