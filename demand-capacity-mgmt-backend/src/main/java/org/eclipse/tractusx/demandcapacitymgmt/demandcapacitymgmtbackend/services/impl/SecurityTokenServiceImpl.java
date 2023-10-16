@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UserRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.SecurityTokenService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.CookieUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -111,6 +112,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         formData.add(GRANT_TYPE, grantType_password);
         formData.add(USERNAME, username);
         formData.add(PASSWORD, password);
+        CookieUtil.setUserName(username);
 
         return keycloakWebClient
             .post()
