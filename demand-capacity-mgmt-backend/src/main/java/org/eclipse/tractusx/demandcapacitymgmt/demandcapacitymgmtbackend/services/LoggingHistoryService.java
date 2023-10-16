@@ -23,28 +23,29 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.sql.Timestamp;
 import java.util.List;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventStatus;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 
-public interface DemandService {
-    MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest);
+public interface LoggingHistoryService {
+    List<LoggingHistoryResponse> getAllLoggingHistory();
+    LoggingHistoryResponse createLog(LoggingHistoryRequest logEntity);
+    void deleteLogById(String logId);
+    void deleteAllLogs();
+    void archiveLog(LoggingHistoryRequest loggingHistoryRequest);
+    List<ArchivedLoggingHistoryResponse> getAllArchivedLogs();
+    void deleteAllArchivedLogs();
+    void deleteArchivedLogById(String logId);
+    List<LoggingHistoryResponse> filterByFavoriteMaterialDemand();
+    List<LoggingHistoryResponse> filterByFavoriteCapacityGroup();
 
-    List<MaterialDemandResponse> getAllDemandsByProjectId();
-
-    MaterialDemandEntity getDemandEntityById(String demandId);
-
-    MaterialDemandResponse getDemandById(String demandId);
-
-    MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest);
-
-    void deleteDemandById(String demandId);
-
-    List<MaterialDemandEntity> getAllByStatus(MaterialDemandStatus status);
-
-    DemandSeriesCompositeResponse getAllDemandsByCompositeKey(
-        DemandSeriesCompositeRequest demandSeriesCompositeRequest
+    List<LoggingHistoryResponse> filterLog(
+        String capacityGroupId,
+        String materialDemandId,
+        String filterText,
+        String startTime,
+        String endTime
     );
-
-    void unlinkComposites(DemandSeriesUnlinkRequest demandSeriesUnlinkRequest);
+    List<LoggingHistoryResponse> getLogsManagedByMe();
 }

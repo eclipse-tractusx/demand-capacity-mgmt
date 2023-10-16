@@ -80,6 +80,11 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
+    public MaterialDemandEntity getDemandEntityById(String demandId) {
+        return null;
+    }
+
+    @Override
     public MaterialDemandResponse getDemandById(String demandId) {
         MaterialDemandEntity demand = getDemandEntity(demandId);
         return convertDemandResponseDto(demand);

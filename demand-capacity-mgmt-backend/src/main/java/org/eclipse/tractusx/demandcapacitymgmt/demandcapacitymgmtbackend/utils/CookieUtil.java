@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 
 public class CookieUtil {
 
+    private static String currentLoggedInUser;
+
     public static String getCookieUserID(HttpServletRequest request) {
         try {
             DecodedJWT decodedJWT = JWT.decode(Objects.requireNonNull(getTokenFromHeader(request)));
@@ -17,6 +19,14 @@ public class CookieUtil {
         } catch (Exception e) {
             return "empty token? maybe user is not logged in yet";
         }
+    }
+
+    public static String getUserName() {
+        return currentLoggedInUser;
+    }
+
+    public static void setUserName(String loggedInUser) {
+        currentLoggedInUser = loggedInUser;
     }
 
     private static String getTokenFromHeader(HttpServletRequest request) {
