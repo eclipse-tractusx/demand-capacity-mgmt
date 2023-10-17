@@ -74,6 +74,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
                 WeekBasedCapacityGroupEntity weekBasedCapacityGroup = convertEntity(
                     weekBasedCapacityGroupRequest.getWeekBasedCapacityGroupRequest()
                 );
+                postLogs(weekBasedCapacityGroup.getId().toString());
                 weekBasedCapacityGroupRepository.save(weekBasedCapacityGroup);
             }
         );
@@ -97,7 +98,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
                 oldWeekBasedCapacityGroups,
                 newWeekBasedCapacityGroups
             );
-            statusesService.updateStatus();
+            statusesService.updateWeeklyBasedStatus();
         }
     }
 
@@ -225,16 +226,6 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         weekBasedCapacityGroupEntity.setViewed(weekBasedCapacityGroupResponses.getViewed());
 
         return weekBasedCapacityGroupEntity;
-    }
-
-    @Override
-    public List<WeekBasedCapacityGroupDtoResponse> getOldWeekBasedCapacityGroups() {
-        return oldWeekBasedCapacityGroups;
-    }
-
-    @Override
-    public List<WeekBasedCapacityGroupDtoResponse> getUpdatedWeekBasedCapacityGroups() {
-        return newWeekBasedCapacityGroups;
     }
 
     private WeekBasedCapacityGroupDtoResponse convertToWeekBasedCapacityGroupDto(

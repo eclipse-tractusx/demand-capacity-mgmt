@@ -31,6 +31,8 @@ public interface DemandService {
     MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest);
 
     List<MaterialDemandResponse> getAllDemandsByProjectId();
+    List<MaterialDemandSeriesResponse> getDemandSeries();
+    List<MaterialDemandSeriesResponse> getDemandSeriesByMaterialDemand(String materialDemandId);
 
     MaterialDemandEntity getDemandEntityById(String demandId);
 

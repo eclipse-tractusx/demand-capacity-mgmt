@@ -29,78 +29,89 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityDeviation;
+import jdk.jfr.Event;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeriesValues;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LinkedCapacityGroupMaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.StatusColor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.models.MaterialCapacityQuantity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
+import org.springframework.stereotype.Service;
 
+@Service
+@Slf4j
 public class StatusManager {
 
     int materialDemandOrder = 0;
+    public EventType eventType;
 
-    public static StatusColor getStatusColor(double demand, double maxCapacity, double actualCapacity) {
-        CapacityDeviation capacityDeviation = CapacityDeviation.ZERO;
-        if (demand > maxCapacity) {
-            capacityDeviation = CapacityDeviation.BOTTLENECK;
-        } else if (demand > actualCapacity && demand < maxCapacity) {
-            capacityDeviation = CapacityDeviation.BOTTLENECK;
-        } else if (demand < actualCapacity) {
-            capacityDeviation = CapacityDeviation.SURPLUS;
-        }
-        return capacityDeviation.getStatusColor();
+    private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
+
+    public StatusManager(LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository) {
+        this.linkedCapacityGroupMaterialDemandRepository = linkedCapacityGroupMaterialDemandRepository;
     }
 
-    public static EventType getEventType(
-        boolean isMaterialDemandLinkedToCG,
-        boolean isCustomer,
-        StatusColor oldStatusColor,
-        StatusColor newStatusColor
-    ) {
-        if (!isMaterialDemandLinkedToCG) {
-            if (!isCustomer) {
-                return EventType.TODO;
-            }
-            return EventType.UN_LINKED;
-        }
-        if (newStatusColor == oldStatusColor) {
-            return EventType.GENERAL_EVENT;
-        }
-        if (
-            newStatusColor == StatusColor.GREEN ||
-            (oldStatusColor == StatusColor.RED && newStatusColor == StatusColor.YELLOW)
-        ) {
-            return EventType.STATUS_IMPROVEMENT;
-        }
-        if (
-            newStatusColor == StatusColor.RED ||
-            (oldStatusColor == StatusColor.GREEN && newStatusColor == StatusColor.YELLOW)
-        ) {
-            return EventType.STATUS_REDUCTION;
-        }
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
 
-        return EventType.GENERAL_EVENT;
+    private void populateEventType(
+        StatusesResponse currentStatuses,
+        int overAllTodoCount,
+        int overAllStatusImprovementCount,
+        int overAllStatusReductionCount
+    ) {
+        if (currentStatuses == null) {
+            if (overAllTodoCount != 0) {
+                if (!CookieUtil.getUser().getRole().equals(Role.CUSTOMER)) {
+                    setEventType(EventType.TODO);
+                }
+                setEventType(EventType.UN_LINKED);
+            } else if (overAllStatusImprovementCount != 0) {
+                setEventType(EventType.STATUS_IMPROVEMENT);
+            } else if (overAllStatusReductionCount != 0) {
+                setEventType(EventType.STATUS_REDUCTION);
+            } else {
+                setEventType(EventType.GENERAL_EVENT);
+            }
+        } else {
+            // if to-do increased, then the latest status is todo
+            if (currentStatuses.getOverallTodos() != overAllTodoCount && overAllTodoCount != 0) {
+                if (!CookieUtil.getUser().getRole().equals(Role.CUSTOMER)) {
+                    setEventType(EventType.TODO);
+                }
+                setEventType(EventType.UN_LINKED);
+            } else if (
+                currentStatuses.getOverallStatusImprovement() != overAllStatusImprovementCount &&
+                overAllStatusImprovementCount != 0
+            ) {
+                setEventType(EventType.STATUS_IMPROVEMENT);
+            } else if (
+                currentStatuses.getOverallStatusDegredation() != overAllStatusReductionCount &&
+                overAllStatusReductionCount != 0
+            ) {
+                setEventType(EventType.STATUS_REDUCTION);
+            } else {
+                setEventType(EventType.GENERAL_EVENT);
+            }
+        }
+    }
+
+    public EventType getEventType() {
+        return this.eventType;
     }
 
     public StatusRequest retrieveUpdatedStatusRequest(
-        List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroupResponse,
-        List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroupResponse,
-        List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse,
-        List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemandResponse
+        StatusesResponse currentStatuses,
+        List<CapacityGroupEntity> oldCapacityGroup,
+        List<CapacityGroupEntity> newCapacityGroup,
+        List<MaterialDemandEntity> oldMaterialDemand,
+        List<MaterialDemandEntity> newMaterialDemand
     ) {
-        Map<CompositeKey, List<CapacitiesDto>> oldMaterialNumberCapacitiesMapList = createMaterialNumberCapacitiesMapList(
-            oldWeekBasedCapacityGroupResponse
-        );
-        Map<CompositeKey, List<CapacitiesDto>> newMaterialNumberCapacitiesMapList = createMaterialNumberCapacitiesMapList(
-            newWeekBasedCapacityGroupResponse
-        );
-
-        Map<CompositeKey, List<DemandSeriesDto>> oldMaterialNumberDemandsMapList = createMaterialNumberDemandsMapList(
-            oldWeekBasedMaterialDemandResponse
-        );
-        Map<CompositeKey, List<DemandSeriesDto>> newMaterialNumberDemandsMapList = createMaterialNumberDemandsMapList(
-            newWeekBasedMaterialDemandResponse
-        );
-
         List<MaterialCapacityQuantity> oldCapacityQuantities = new ArrayList<>();
         List<MaterialCapacityQuantity> newCapacityQuantities = new ArrayList<>();
 
@@ -114,23 +125,9 @@ public class StatusManager {
         AtomicInteger overAllStatusReductionCount = new AtomicInteger();
         AtomicInteger overAllTodoCount = new AtomicInteger();
 
-        processMaterialDemands(
-            todoCount,
-            overAllTodoCount,
-            true,
-            newCapacityQuantities,
-            newMaterialNumberDemandsMapList,
-            newMaterialNumberCapacitiesMapList
-        );
+        processMaterialDemands(todoCount, overAllTodoCount, newCapacityGroup, newMaterialDemand, newCapacityQuantities);
 
-        processMaterialDemands(
-            todoCount,
-            overAllTodoCount,
-            false,
-            oldCapacityQuantities,
-            oldMaterialNumberDemandsMapList,
-            oldMaterialNumberCapacitiesMapList
-        );
+        processMaterialDemands(todoCount, overAllTodoCount, oldCapacityGroup, oldMaterialDemand, oldCapacityQuantities);
 
         processCapacityQuantities(
             oldCapacityQuantities,
@@ -141,17 +138,17 @@ public class StatusManager {
             overAllStatusImprovementCount
         );
 
-        setAllDemandsCountCount(allDemandsCount, newMaterialNumberDemandsMapList);
-
-        // set the general count
-        generalCount.set(
-            allDemandsCount.get() - (todoCount.get() + statusImprovementCount.get() + statusReductionCount.get())
-        );
-
-        overAllGeneralCount.set(
-            newMaterialNumberDemandsMapList.size() -
-            (overAllTodoCount.get() + overAllStatusImprovementCount.get() + overAllStatusReductionCount.get())
-        );
+        //       setAllDemandsCountCount(allDemandsCount, newMaterialNumberDemandsMapList);
+        //
+        //                // set the general count
+        //      generalCount.set(
+        //                        allDemandsCount.get() - (todoCount.get() + statusImprovementCount.get() + statusReductionCount.get())
+        //                );
+        //
+        //                overAllGeneralCount.set(
+        //                        newMaterialNumberDemandsMapList.size() -
+        //                                (overAllTodoCount.get() + overAllStatusImprovementCount.get() + overAllStatusReductionCount.get())
+        //                );
 
         StatusRequest statusRequest = new StatusRequest();
         // Set DTOs in StatusRequest
@@ -164,157 +161,115 @@ public class StatusManager {
         statusRequest.setOverallStatusImprovement(overAllStatusImprovementCount.get());
         statusRequest.setOverallStatusDegradation(overAllStatusReductionCount.get());
 
+        populateEventType(
+            currentStatuses,
+            overAllTodoCount.intValue(),
+            overAllStatusImprovementCount.intValue(),
+            overAllStatusReductionCount.intValue()
+        );
+
         // Post the StatusRequest
         return statusRequest;
     }
 
-    private Map<CompositeKey, List<DemandSeriesDto>> createMaterialNumberDemandsMapList(
-        List<WeekBasedMaterialDemandResponseDto> weekBasedMaterialDemandEntities
+    private Map<MaterialDemandEntity, CapacityGroupEntity> processMaterialDemands(
+        AtomicInteger todoCount,
+        AtomicInteger overAllTodoCount,
+        List<CapacityGroupEntity> CapacityGroupEntities,
+        List<MaterialDemandEntity> materialDemandEntities,
+        List<MaterialCapacityQuantity> materialCapacityQuantities
     ) {
-        Map<CompositeKey, List<DemandSeriesDto>> materialNumberDemandsMapList = new HashMap<>();
+        Map<MaterialDemandEntity, CapacityGroupEntity> capacitiesLinkedDemandsMap = new HashMap<>();
+        AtomicBoolean isLinked = new AtomicBoolean(false);
+        List<LinkedCapacityGroupMaterialDemandEntity> linkedCGMD = linkedCapacityGroupMaterialDemandRepository.findAll();
 
-        weekBasedMaterialDemandEntities.forEach(
-            weekBasedMaterialDemand -> {
-                String materialNumberCustomer = weekBasedMaterialDemand
-                    .getWeekBasedMaterialDemandRequest()
-                    .getMaterialNumberCustomer();
+        materialDemandEntities.forEach(
+            materialDemandEntity -> {
+                isLinked.set(
+                    !(
+                        linkedCGMD
+                            .stream()
+                            .filter(li -> li.getMaterialDemandID().equals(materialDemandEntity.getId()))
+                            .toList()
+                            .isEmpty()
+                    )
+                );
 
-                weekBasedMaterialDemand
-                    .getWeekBasedMaterialDemandRequest()
-                    .getDemandSeries()
-                    .forEach(
-                        demandWeekSeriesDto -> {
-                            CompositeKey compositeKey = new CompositeKey();
-                            compositeKey.setCustomerLocation(demandWeekSeriesDto.getCustomerLocation());
-                            compositeKey.setMaterialNumberCustomer(materialNumberCustomer);
-                            compositeKey.setDemandCategory(demandWeekSeriesDto.getDemandCategory().getId());
-                            materialNumberDemandsMapList.put(compositeKey, demandWeekSeriesDto.getDemands());
-                        }
-                    );
+                if (!isLinked.get()) {
+                    overAllTodoCount.incrementAndGet();
+                    materialDemandEntity
+                        .getDemandSeries()
+                        .forEach(
+                            demandSeries -> {
+                                todoCount.set(todoCount.get() + demandSeries.getDemandSeriesValues().size());
+                            }
+                        );
+                }
             }
         );
-        return materialNumberDemandsMapList;
+
+        CapacityGroupEntities.forEach(
+            capacityGroup -> {
+                linkedCGMD.forEach(
+                    linkedCapacityGroupMaterialDemandEntity -> {
+                        MaterialDemandEntity materialDemand = getMaterialDemandById(
+                            materialDemandEntities,
+                            linkedCapacityGroupMaterialDemandEntity.getMaterialDemandID().toString()
+                        );
+                        if (materialDemand != null) {
+                            materialDemand
+                                .getDemandSeries()
+                                .forEach(
+                                    materialDemandSeriesResponse -> {
+                                        materialDemandSeriesResponse
+                                            .getDemandSeriesValues()
+                                            .forEach(
+                                                materialDemandSeriesValue -> {
+                                                    materialCapacityQuantities.add(
+                                                        new MaterialCapacityQuantity(
+                                                            Double.parseDouble(
+                                                                capacityGroup.getDefaultMaximumCapacity() + ""
+                                                            ),
+                                                            Double.parseDouble(
+                                                                capacityGroup.getDefaultActualCapacity() + ""
+                                                            ),
+                                                            null,
+                                                            materialDemandSeriesValue.getDemand().doubleValue(),
+                                                            materialDemandOrder
+                                                        )
+                                                    );
+                                                }
+                                            );
+                                    }
+                                );
+                        }
+                    }
+                );
+            }
+        );
+        return capacitiesLinkedDemandsMap;
     }
 
-    private Map<CompositeKey, List<CapacitiesDto>> createMaterialNumberCapacitiesMapList(
-        List<WeekBasedCapacityGroupDtoResponse> weekBasedCapacityGroupEntities
-    ) {
-        Map<CompositeKey, List<CapacitiesDto>> materialNumberCapacitiesMap = new HashMap<>();
-
-        weekBasedCapacityGroupEntities.forEach(
-            weekBasedCapacityGroup -> {
-                List<CapacitiesDto> capacitiesDtos = weekBasedCapacityGroup
-                    .getWeekBasedCapacityGroupRequest()
-                    .getCapacities();
-
-                weekBasedCapacityGroup
-                    .getWeekBasedCapacityGroupRequest()
-                    .getLinkedDemandSeries()
-                    .forEach(
-                        linkedDemandSeriesRequest -> {
-                            CompositeKey compositeKey = new CompositeKey();
-
-                            compositeKey.setCustomerLocation(linkedDemandSeriesRequest.getCustomerLocation());
-                            compositeKey.setMaterialNumberCustomer(
-                                linkedDemandSeriesRequest.getMaterialNumberCustomer()
-                            );
-                            compositeKey.setDemandCategory(
-                                linkedDemandSeriesRequest.getDemandCategory().getDemandCategory()
-                            );
-                            materialNumberCapacitiesMap.put(compositeKey, capacitiesDtos);
-                        }
-                    );
-            }
-        );
-        return materialNumberCapacitiesMap;
+    MaterialDemandEntity getMaterialDemandById(List<MaterialDemandEntity> materialDemandEntities, String id) {
+        List<MaterialDemandEntity> materialDemands = materialDemandEntities
+            .stream()
+            .filter(materialDemandEntity -> materialDemandEntity.getId().toString().equals(id))
+            .toList();
+        if (!materialDemands.isEmpty()) return materialDemands.get(0);
+        return null;
     }
 
     private void setAllDemandsCountCount(
         AtomicInteger allDemandsCount,
-        Map<CompositeKey, List<DemandSeriesDto>> materialNumberDemandsMap
+        Map<CompositeKey, List<DemandSeriesValues>> materialNumberDemandsMap
     ) {
-        for (Map.Entry<CompositeKey, List<DemandSeriesDto>> materialNumberDemandsMapEntry : materialNumberDemandsMap.entrySet()) {
+        for (Map.Entry<CompositeKey, List<DemandSeriesValues>> materialNumberDemandsMapEntry : materialNumberDemandsMap.entrySet()) {
             allDemandsCount.set(allDemandsCount.get() + materialNumberDemandsMapEntry.getValue().size());
         }
     }
 
-    private void processMaterialDemands(
-        AtomicInteger todoCount,
-        AtomicInteger overAllTodoCount,
-        boolean isNewMaterialDemands,
-        List<MaterialCapacityQuantity> capacityQuantities,
-        Map<CompositeKey, List<DemandSeriesDto>> materialNumberDemandsMap,
-        Map<CompositeKey, List<CapacitiesDto>> materialNumberCapacitiesMap
-    ) {
-        AtomicBoolean isOverAllTodo = new AtomicBoolean(false);
-        for (Map.Entry<CompositeKey, List<DemandSeriesDto>> materialNumberDemandsMapEntry : materialNumberDemandsMap.entrySet()) {
-            //            if (!materialNumberCapacitiesMap.containsKey(materialNumberDemandsMapEntry.getKey().materialNumberCustomer) && isNewMaterialDemands) {
-            //                overAllTodoCount.incrementAndGet();
-            //            }
-            AtomicBoolean isTodo = new AtomicBoolean(false);
-            materialDemandOrder++;
-            materialNumberDemandsMapEntry
-                .getValue()
-                .forEach(
-                    demandSeriesDto -> {
-                        for (Map.Entry<CompositeKey, List<CapacitiesDto>> materialNumberCapacitiesMapEntry : materialNumberCapacitiesMap.entrySet()) {
-                            if (
-                                !(
-                                    materialNumberCapacitiesMapEntry
-                                        .getKey()
-                                        .materialNumberCustomer.equals(
-                                            materialNumberDemandsMapEntry.getKey().materialNumberCustomer
-                                        )
-                                ) &&
-                                isNewMaterialDemands
-                            ) {
-                                //todoCount.incrementAndGet();
-                                isTodo.set(true);
-                            }
-                            if (
-                                isCompositeKeysMatches(materialNumberDemandsMapEntry, materialNumberCapacitiesMapEntry)
-                            ) {
-                                materialNumberCapacitiesMapEntry
-                                    .getValue()
-                                    .forEach(
-                                        capacitiesDto -> {
-                                            if (
-                                                capacitiesDto
-                                                    .getCalendarWeek()
-                                                    .equals(demandSeriesDto.getCalendarWeek())
-                                            ) {
-                                                capacityQuantities.add(
-                                                    new MaterialCapacityQuantity(
-                                                        Double.parseDouble(capacitiesDto.getMaximumCapacity()),
-                                                        Double.parseDouble(capacitiesDto.getActualCapacity()),
-                                                        DataConverterUtil.convertFromString(
-                                                            capacitiesDto.getCalendarWeek()
-                                                        ),
-                                                        Double.parseDouble(demandSeriesDto.getDemand()),
-                                                        materialDemandOrder
-                                                    )
-                                                );
-                                            }
-                                        }
-                                    );
-                            }
-                        }
-                        if (isTodo.get() && isNewMaterialDemands) {
-                            todoCount.incrementAndGet();
-                            isOverAllTodo.set(true);
-                            isTodo.set(false);
-                        }
-                    }
-                );
-            if (isOverAllTodo.get() && isNewMaterialDemands) {
-                overAllTodoCount.incrementAndGet();
-                isOverAllTodo.set(false);
-            }
-        }
-    }
-
     private static boolean isCompositeKeysMatches(
-        Map.Entry<CompositeKey, List<DemandSeriesDto>> materialNumberDemandsMapEntry,
+        Map.Entry<CompositeKey, List<DemandSeriesValues>> materialNumberDemandsMapEntry,
         Map.Entry<CompositeKey, List<CapacitiesDto>> materialNumberCapacitiesMapEntry
     ) {
         return (
@@ -344,33 +299,26 @@ public class StatusManager {
             oldCapacityQuantity ->
                 newMaterialCapacityQuantities.forEach(
                     newCapacityQuantity -> {
-                        if (
-                            oldCapacityQuantity.getCalendarWeek().getDayOfYear() ==
-                            newCapacityQuantity.getCalendarWeek().getDayOfYear() &&
-                            oldCapacityQuantity.getCalendarWeek().getYear() ==
-                            newCapacityQuantity.getCalendarWeek().getYear()
-                        ) {
-                            EventType eventType = getEventType(oldCapacityQuantity, newCapacityQuantity);
+                        EventType eventType = getEventType(oldCapacityQuantity, newCapacityQuantity);
 
-                            if (eventType == EventType.STATUS_REDUCTION) {
-                                if (
-                                    previousDemand.get() == -1 ||
-                                    previousDemand.get() != newCapacityQuantity.getMaterialDemandOrder()
-                                ) {
-                                    overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
-                                }
-                                statusReductionCount.set(statusReductionCount.get() + 1);
-                            } else if (eventType == EventType.STATUS_IMPROVEMENT) {
-                                if (
-                                    previousDemand.get() != -1 ||
-                                    previousDemand.get() != newCapacityQuantity.getMaterialDemandOrder()
-                                ) {
-                                    overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
-                                }
-                                statusImprovementCount.set(statusImprovementCount.get() + 1);
+                        if (eventType == EventType.STATUS_REDUCTION) {
+                            if (
+                                previousDemand.get() == -1 ||
+                                previousDemand.get() != newCapacityQuantity.getMaterialDemandOrder()
+                            ) {
+                                overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
                             }
-                            previousDemand.set(newCapacityQuantity.getMaterialDemandOrder());
+                            statusReductionCount.set(statusReductionCount.get() + 1);
+                        } else if (eventType == EventType.STATUS_IMPROVEMENT) {
+                            if (
+                                previousDemand.get() != -1 ||
+                                previousDemand.get() != newCapacityQuantity.getMaterialDemandOrder()
+                            ) {
+                                overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
+                            }
+                            statusImprovementCount.set(statusImprovementCount.get() + 1);
                         }
+                        previousDemand.set(newCapacityQuantity.getMaterialDemandOrder());
                     }
                 )
         );
@@ -380,49 +328,22 @@ public class StatusManager {
         MaterialCapacityQuantity oldCapacityQuantity,
         MaterialCapacityQuantity newCapacityQuantity
     ) {
-        StatusColor oldStatusColor = StatusManager.getStatusColor(
+        StatusColor oldStatusColor = WeekBasedStatusManager.getStatusColor(
             oldCapacityQuantity.getDemand(),
             oldCapacityQuantity.getMaximumCapacity(),
             oldCapacityQuantity.getActualCapacity()
         );
-        StatusColor newStatusColor = StatusManager.getStatusColor(
+        StatusColor newStatusColor = WeekBasedStatusManager.getStatusColor(
             newCapacityQuantity.getDemand(),
             newCapacityQuantity.getMaximumCapacity(),
             newCapacityQuantity.getActualCapacity()
         );
 
-        return StatusManager.getEventType(true, false, oldStatusColor, newStatusColor);
+        return WeekBasedStatusManager.getEventType(
+            true,
+            CookieUtil.getUser().getRole().equals(Role.CUSTOMER),
+            oldStatusColor,
+            newStatusColor
+        );
     }
-}
-
-class CompositeKey {
-
-    String customerLocation;
-    String demandCategory;
-
-    public void setCustomerLocation(String customerLocation) {
-        this.customerLocation = customerLocation;
-    }
-
-    public void setDemandCategory(String demandCategory) {
-        this.demandCategory = demandCategory;
-    }
-
-    public void setMaterialNumberCustomer(String materialNumberCustomer) {
-        this.materialNumberCustomer = materialNumberCustomer;
-    }
-
-    public String getCustomerLocation() {
-        return customerLocation;
-    }
-
-    public String getDemandCategory() {
-        return demandCategory;
-    }
-
-    public String getMaterialNumberCustomer() {
-        return materialNumberCustomer;
-    }
-
-    String materialNumberCustomer;
 }

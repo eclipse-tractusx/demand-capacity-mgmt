@@ -34,10 +34,6 @@ public interface WeekBasedCapacityGroupService {
 
     void sendWeekBasedCapacityGroup();
 
-    List<WeekBasedCapacityGroupDtoResponse> getOldWeekBasedCapacityGroups();
-
-    List<WeekBasedCapacityGroupDtoResponse> getUpdatedWeekBasedCapacityGroups();
-
     List<WeekBasedCapacityGroupDtoResponse> getWeekBasedCapacityGroups();
 
     void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity);
