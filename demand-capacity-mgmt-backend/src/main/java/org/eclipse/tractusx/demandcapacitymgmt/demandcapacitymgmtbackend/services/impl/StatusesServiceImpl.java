@@ -31,6 +31,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UserRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.StatusManager;
@@ -46,6 +47,7 @@ import org.springframework.stereotype.Service;
 public class StatusesServiceImpl implements StatusesService {
 
     private final StatusesRepository statusesRepository;
+    private final UserRepository userRepository;
     private LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
 
     List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroupResponse;
@@ -64,13 +66,15 @@ public class StatusesServiceImpl implements StatusesService {
         List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse,
         List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemandResponse,
         List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroupResponse,
-        List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroupResponse
+        List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroupResponse,
+        UserRepository userRepository
     ) {
         this.statusesRepository = statusesRepository;
         this.oldWeekBasedMaterialDemandResponse = oldWeekBasedMaterialDemandResponse;
         this.newWeekBasedMaterialDemandResponse = newWeekBasedMaterialDemandResponse;
         this.oldWeekBasedCapacityGroupResponse = oldWeekBasedCapacityGroupResponse;
         this.newWeekBasedCapacityGroupResponse = newWeekBasedCapacityGroupResponse;
+        this.userRepository = userRepository;
     }
 
     public StatusesServiceImpl(
@@ -79,7 +83,8 @@ public class StatusesServiceImpl implements StatusesService {
         List<MaterialDemandEntity> oldMaterialDemand,
         List<MaterialDemandEntity> newMaterialDemand,
         StatusesRepository statusesRepository,
-        LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository
+        LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository,
+        UserRepository userRepository
     ) {
         this.statusesRepository = statusesRepository;
         this.oldCapacityGroup = oldCapacityGroup;
@@ -87,6 +92,7 @@ public class StatusesServiceImpl implements StatusesService {
         this.oldMaterialDemand = oldMaterialDemand;
         this.newMaterialDemand = newMaterialDemand;
         this.linkedCapacityGroupMaterialDemandRepository = linkedCapacityGroupMaterialDemandRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -145,15 +151,16 @@ public class StatusesServiceImpl implements StatusesService {
         );
     }
 
-    public EventType updateStatus(boolean isMaterialDemand) {
-        StatusManager statusManager = new StatusManager(linkedCapacityGroupMaterialDemandRepository);
+    public EventType updateStatus(boolean isMaterialDemand,String userID) {
+        StatusManager statusManager = new StatusManager(linkedCapacityGroupMaterialDemandRepository,userRepository);
         postStatuses(
             statusManager.retrieveUpdatedStatusRequest(
                 getAllStatuses(),
                 oldCapacityGroup,
                 newCapacityGroup,
                 oldMaterialDemand,
-                newMaterialDemand
+                newMaterialDemand,
+                userID
             )
         );
         EventType eventType = statusManager.getEventType();

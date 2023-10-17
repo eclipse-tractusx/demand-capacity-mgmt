@@ -31,7 +31,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.CookieUtil;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,14 +47,14 @@ public class FavoriteController implements FavoriteApi {
     public ResponseEntity<FavoriteResponse> createFavorite(FavoriteRequest favoriteRequest) {
         FavoriteResponse response = favoriteService.createFavorite(
             favoriteRequest,
-            CookieUtil.getCookieUserID(request)
+            UserUtil.getUserID(request)
         );
         return ResponseEntity.status(200).body(response);
     }
 
     @Override
     public ResponseEntity<Void> deleteFavoriteById(String id) {
-        favoriteService.deleteFavorite(UUID.fromString(id), CookieUtil.getCookieUserID(request));
+        favoriteService.deleteFavorite(UUID.fromString(id), UserUtil.getUserID(request));
         return ResponseEntity.status(200).build();
     }
 
@@ -76,7 +76,7 @@ public class FavoriteController implements FavoriteApi {
             UUID.fromString(id),
             FavoriteType.valueOf(type),
             favoriteRequest,
-            CookieUtil.getCookieUserID(request)
+            UserUtil.getUserID(request)
         );
         return ResponseEntity.status(200).body(response);
     }

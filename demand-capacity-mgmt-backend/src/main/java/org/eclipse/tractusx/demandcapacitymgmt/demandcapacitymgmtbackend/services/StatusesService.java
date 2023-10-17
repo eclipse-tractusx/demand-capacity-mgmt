@@ -34,6 +34,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 public interface StatusesService {
     StatusesResponse postStatuses(StatusRequest statusRequest);
     StatusesResponse getAllStatuses();
-    EventType updateStatus(boolean isMaterialDemand);
+    EventType updateStatus(boolean isMaterialDemand,String userID);
     void updateWeeklyBasedStatus();
 }

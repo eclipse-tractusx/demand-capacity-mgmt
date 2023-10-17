@@ -34,10 +34,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
@@ -65,6 +62,8 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     private static List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroups;
 
     private final WeekBasedMaterialDemandRepository weekBasedMaterialDemandRepository;
+
+    private final UserRepository userRepository;
 
     @Override
     public void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupDtoRequest> weekBasedCapacityGroupRequestList) {
@@ -96,7 +95,8 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
                 oldWeekBasedMaterialDemands,
                 oldWeekBasedMaterialDemands,
                 oldWeekBasedCapacityGroups,
-                newWeekBasedCapacityGroups
+                newWeekBasedCapacityGroups,
+                    userRepository
             );
             statusesService.updateWeeklyBasedStatus();
         }

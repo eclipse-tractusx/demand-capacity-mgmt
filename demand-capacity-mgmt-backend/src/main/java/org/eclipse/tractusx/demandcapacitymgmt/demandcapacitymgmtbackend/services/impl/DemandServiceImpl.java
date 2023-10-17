@@ -56,7 +56,7 @@ import org.springframework.stereotype.Service;
 public class DemandServiceImpl implements DemandService {
 
     private final CompanyService companyService;
-
+    private final UserRepository userRepository;
     private final UnityOfMeasureService unityOfMeasureService;
 
     private final MaterialDemandRepository materialDemandRepository;
@@ -75,7 +75,7 @@ public class DemandServiceImpl implements DemandService {
 
 
     @Override
-    public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest) {
+    public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest,String userID) {
         validateMaterialDemandRequestFields(materialDemandRequest);
         MaterialDemandEntity materialDemandEntity = convertDtoToEntity(
             materialDemandRequest,
@@ -83,7 +83,7 @@ public class DemandServiceImpl implements DemandService {
         );
         List<MaterialDemandEntity> oldMaterialDemands = getAllDemands();
         oldMaterialDemands.add(materialDemandEntity);
-        EventType eventType = updateStatus(oldMaterialDemands,null);
+        EventType eventType = updateStatus(oldMaterialDemands,null,userID);
         materialDemandEntity.setLinkStatus(eventType);
         materialDemandEntity = materialDemandRepository.save(materialDemandEntity);
         postLogs(materialDemandEntity.getId().toString(), "MATERIAL DEMAND Created", eventType);
@@ -92,7 +92,8 @@ public class DemandServiceImpl implements DemandService {
 
     public EventType updateStatus(
             List<MaterialDemandEntity> newMaterialDemands,
-            List<MaterialDemandEntity> oldMaterialDemands
+            List<MaterialDemandEntity> oldMaterialDemands,
+            String userID
     ) {
         if (newMaterialDemands == null) {
             newMaterialDemands = List.of();
@@ -105,9 +106,10 @@ public class DemandServiceImpl implements DemandService {
                 oldMaterialDemands,
                 newMaterialDemands,
                 statusesRepository,
-                linkedCapacityGroupMaterialDemandRepository
+                linkedCapacityGroupMaterialDemandRepository,
+                    userRepository
             );
-            return statusesService.updateStatus(true);
+            return statusesService.updateStatus(true,userID);
         }
         return null;
     }
@@ -149,14 +151,14 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
-    public MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest) {
+    public MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest,String userID) {
         MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest, demandId);
         List<MaterialDemandEntity> oldMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
         demand.setId(UUID.fromString(demandId));
         demand = materialDemandRepository.save(demand);
         List<MaterialDemandEntity> newMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
         postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT);
-        updateStatus(newMaterialDemands,oldMaterialDemands);
+        updateStatus(newMaterialDemands,oldMaterialDemands,userID);
         return convertDemandResponseDto(demand);
     }
 
