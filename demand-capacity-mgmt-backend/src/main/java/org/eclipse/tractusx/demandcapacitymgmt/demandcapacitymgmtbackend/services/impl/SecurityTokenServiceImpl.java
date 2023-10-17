@@ -205,9 +205,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
                     return newUserEntity;
                 }
             );
-        User user = convertUserEntity(entity, token.getAccessToken(), token.getRefreshToken(), token.getExpiresIn());
-        CookieUtil.setUser(user);
-        return user;
+        return convertUserEntity(entity, token.getAccessToken(), token.getRefreshToken(), token.getExpiresIn());
     }
 
     private UserEntity generateUser(String userID, DecodedJWT decodedJWT) {

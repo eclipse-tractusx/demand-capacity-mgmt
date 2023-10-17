@@ -62,7 +62,7 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
 
     @Override
     public LoggingHistoryResponse createLog(LoggingHistoryRequest loggingHistoryRequest) {
-        String userAccount = CookieUtil.getUserName();
+        String userAccount = "test";
         if (userAccount == null || userAccount.isEmpty()) {
             userAccount = "System";
         }
