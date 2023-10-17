@@ -25,10 +25,10 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from "react-router-dom";
 import AppComponent from './components/dcm/AppComponent';
 import AuthenticationComponent from './components/pages/AuthenticationPage';
+import { UserProvider } from "./contexts/UserContext";
 import './custom-bootstrap.scss';
 import './index.css';
 import { isAuthenticated } from './util/Auth';
-import {UserProvider} from "./contexts/UserContext";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 function App() {
