@@ -60,6 +60,7 @@ public class CompanyServiceImpl implements CompanyService {
         loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
         loggingHistoryRequest.setEventDescription("Company Created");
         loggingHistoryService.createLog(loggingHistoryRequest);
+        //updateCapacityMaterialDemansStatus
     }
 
     @Override

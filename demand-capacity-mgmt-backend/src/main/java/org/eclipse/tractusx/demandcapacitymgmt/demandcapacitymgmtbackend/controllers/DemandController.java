@@ -48,6 +48,21 @@ public class DemandController implements DemandApi {
     }
 
     @Override
+    public ResponseEntity<List<MaterialDemandSeriesResponse>> getDemandSeries() throws Exception {
+        List<MaterialDemandSeriesResponse> demandSeriesResponses = demandService.getDemandSeries();
+        return ResponseEntity.status(HttpStatus.OK).body(demandSeriesResponses);
+    }
+
+    @Override
+    public ResponseEntity<List<MaterialDemandSeriesResponse>> getDemandSeriesByMaterialDemand(String materialDemandId)
+        throws Exception {
+        List<MaterialDemandSeriesResponse> demandSeriesResponses = demandService.getDemandSeriesByMaterialDemand(
+            materialDemandId
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(demandSeriesResponses);
+    }
+
+    @Override
     public ResponseEntity<MaterialDemandResponse> getDemandsById(String demandId) {
         MaterialDemandResponse responseDto = demandService.getDemandById(demandId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);

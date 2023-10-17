@@ -413,7 +413,44 @@ paths:
                 items:
                   $ref: '#/components/schemas/MaterialDemandResponse'
 
+  /demand/series/{material_demand_id}:
+    get:
+      tags:
+        - Demand
+      summary: get list of demand series by material demand id
+      operationId: getDemandSeriesByMaterialDemand
+      parameters:
+        - in: 'path'
+          name: 'material_demand_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaterialDemandSeriesResponse'
+
   /demand/series:
+    get:
+      tags:
+        - Demand
+      summary: get list of demand series
+      operationId: getDemandSeries
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaterialDemandSeriesResponse'
+
     post:
       tags:
         - Demand
@@ -433,6 +470,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DemandSeriesCompositeResponse'
+
   /demand/series/unlink:
     post:
       tags:
@@ -1304,6 +1342,8 @@ components:
     MaterialDemandRequest:
       type: object
       properties:
+        id:
+          type: string
         materialDescriptionCustomer:
           type: string
         materialNumberCustomer:
@@ -1324,6 +1364,8 @@ components:
     MaterialDemandSeries:
       type: object
       properties:
+        id:
+          type: string
         customerLocationId:
           type: string
         expectedSupplierLocationId:
@@ -1336,6 +1378,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesValue'
+        capacityGroupId:
+          type: string
+        materialDemand:
+          type: string
+
+
 
     MaterialDemandSeriesValue:
       type: object
@@ -1368,6 +1416,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesResponse'
+        link_status:
+          type: string
+
 
     CompanyDto:
       type: object
@@ -1410,6 +1461,8 @@ components:
     MaterialDemandSeriesResponse:
       type: object
       properties:
+        id:
+          type: string
         customerLocation:
           $ref: '#/components/schemas/CompanyDto'
         expectedSupplierLocation:
@@ -1422,6 +1475,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesValue'
+        materialDemandId:
+          type: string
 
     DemandSeriesCompositeResponse:
       type: object
@@ -1562,6 +1617,8 @@ components:
           type: string
         status:
           type: string
+        link_status:
+          type: string
 
     LinkCGDSRequest:
       type: object
@@ -1598,6 +1655,8 @@ components:
           items:
             type: string
             format: uuid
+        link_status:
+          type: string
 
     FavoriteRequest:
       type: object

@@ -112,7 +112,6 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         formData.add(GRANT_TYPE, grantType_password);
         formData.add(USERNAME, username);
         formData.add(PASSWORD, password);
-        CookieUtil.setUserName(username);
 
         return keycloakWebClient
             .post()
@@ -273,7 +272,6 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     private User fetchUser(TokenResponse token) {
         DecodedJWT decodedJWT = JWT.decode(token.getAccessToken());
         String userID = decodedJWT.getSubject();
-
         UserEntity entity = userRepository
             .findById(UUID.fromString(userID))
             .orElseGet(
@@ -283,7 +281,9 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
                     return newUserEntity;
                 }
             );
-        return convertUserEntity(entity);
+        User user = convertUserEntity(entity);
+        CookieUtil.setUser(user);
+        return user;
     }
 
     private UserEntity generateUser(String userID, DecodedJWT decodedJWT) {
