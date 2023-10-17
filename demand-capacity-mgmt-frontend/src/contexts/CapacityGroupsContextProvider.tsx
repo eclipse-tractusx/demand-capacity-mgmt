@@ -20,11 +20,15 @@
  *    ********************************************************************************
  */
 
-
-import React, { createContext, useEffect, useState } from 'react';
-import { CapacityGroupCreate, CapacityGroupLink, CapacityGroupProp, SingleCapacityGroup } from '../interfaces/capacitygroup_interfaces';
+import React, {createContext, useEffect, useState} from 'react';
+import {
+  CapacityGroupCreate,
+  CapacityGroupLink,
+  CapacityGroupProp,
+  SingleCapacityGroup
+} from '../interfaces/capacitygroup_interfaces';
 import createAPIInstance from "../util/Api";
-import { useUser } from './UserContext';
+import {useUser} from './UserContext';
 
 
 interface CapacityGroupContextData {
@@ -82,8 +86,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     const api = createAPIInstance(access_token);
     try {
       const response = await api.get(`/capacityGroup/${id}`);
-      const fetchedCapacityGroup: SingleCapacityGroup = response.data;
-      return fetchedCapacityGroup;
+      return response.data;
     } catch (error) {
       console.error('Error fetching CapacityGroup by id:', error);
       return undefined;
@@ -94,8 +97,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     try {
       const api = createAPIInstance(access_token);
       const response = await api.post('/capacityGroup', newCapacityGroup);
-      const fetchedCapacityGroup: SingleCapacityGroup = response.data;
-      return fetchedCapacityGroup;
+      return response.data;
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
     }
