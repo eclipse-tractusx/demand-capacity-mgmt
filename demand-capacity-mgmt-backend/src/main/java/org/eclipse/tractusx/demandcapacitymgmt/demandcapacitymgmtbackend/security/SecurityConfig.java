@@ -23,33 +23,35 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(List.of("Cache-Control", "Content-Type", "x-auth-token", "Authorization"));
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://localhost:8080"));
+        configuration.setAllowedHeaders(List.of("Cache-Control", "Content-Type","x-auth-token","Authorization"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000","http://localhost:8080"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setExposedHeaders(List.of("Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> corsConfigurationSource());
         http.csrf(AbstractHttpConfigurer::disable);
-        http.sessionManagement(sessionMgmt -> sessionMgmt.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.sessionManagement(
+                sessionMgmt -> sessionMgmt.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
         http.authorizeHttpRequests(
-            authorize ->
-                authorize
-                    .requestMatchers(
-                        HttpMethod.POST,
-                        "/token/login",
-                        "/token/refresh",
-                        "/token/logout",
-                        "/token/introspect"
-                    )
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated()
+                authorize ->
+                        authorize
+                                .requestMatchers(
+                                        HttpMethod.POST,
+                                        "/token/login",
+                                        "/token/refresh",
+                                        "/token/logout",
+                                        "/token/introspect"
+                                )
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated()
         );
         http.oauth2ResourceServer(t -> t.jwt(Customizer.withDefaults()));
         return http.build();

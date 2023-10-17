@@ -67,7 +67,7 @@ public class StatusManager {
     ) {
         if (currentStatuses == null) {
             if (overAllTodoCount != 0) {
-                if (!CookieUtil.getUser().getRole().equals(Role.CUSTOMER)) {
+                if (true) {
                     setEventType(EventType.TODO);
                 }
                 setEventType(EventType.UN_LINKED);
@@ -81,7 +81,7 @@ public class StatusManager {
         } else {
             // if to-do increased, then the latest status is todo
             if (currentStatuses.getOverallTodos() != overAllTodoCount && overAllTodoCount != 0) {
-                if (!CookieUtil.getUser().getRole().equals(Role.CUSTOMER)) {
+                if (true) {
                     setEventType(EventType.TODO);
                 }
                 setEventType(EventType.UN_LINKED);
@@ -341,7 +341,7 @@ public class StatusManager {
 
         return WeekBasedStatusManager.getEventType(
             true,
-            CookieUtil.getUser().getRole().equals(Role.CUSTOMER),
+            true,
             oldStatusColor,
             newStatusColor
         );

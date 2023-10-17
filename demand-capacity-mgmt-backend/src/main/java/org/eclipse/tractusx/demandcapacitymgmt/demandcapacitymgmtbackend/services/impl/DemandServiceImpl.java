@@ -70,8 +70,6 @@ public class DemandServiceImpl implements DemandService {
     private final DemandSeriesRepository demandSeriesRepository;
 
     private final StatusesRepository statusesRepository;
-    private List<MaterialDemandEntity> oldMaterialDemands;
-    private List<MaterialDemandEntity> newMaterialDemands;
     private final CapacityGroupRepository capacityGroupRepository;
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
 
@@ -83,22 +81,24 @@ public class DemandServiceImpl implements DemandService {
             materialDemandRequest,
             materialDemandRequest.getId()
         );
-        oldMaterialDemands = getAllDemands();
+        List<MaterialDemandEntity> oldMaterialDemands = getAllDemands();
         oldMaterialDemands.add(materialDemandEntity);
-        EventType eventType = updateStatus();
+        EventType eventType = updateStatus(oldMaterialDemands,null);
         materialDemandEntity.setLinkStatus(eventType);
         materialDemandEntity = materialDemandRepository.save(materialDemandEntity);
         postLogs(materialDemandEntity.getId().toString(), "MATERIAL DEMAND Created", eventType);
         return convertDemandResponseDto(materialDemandEntity);
     }
 
-    public EventType updateStatus() {
+    public EventType updateStatus(
+            List<MaterialDemandEntity> newMaterialDemands,
+            List<MaterialDemandEntity> oldMaterialDemands
+    ) {
+        if (newMaterialDemands == null) {
+            newMaterialDemands = List.of();
+        }
         if (statusesRepository != null) {
             List<CapacityGroupEntity> oldCapacityGroups = capacityGroupRepository.findAll();
-
-            if (newMaterialDemands == null) {
-                newMaterialDemands = List.of();
-            }
             final StatusesService statusesService = new StatusesServiceImpl(
                 oldCapacityGroups,
                 oldCapacityGroups,
@@ -150,17 +150,13 @@ public class DemandServiceImpl implements DemandService {
 
     @Override
     public MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest) {
-        //TODO : here update the status param
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("your-persistence-unit-name");
-        EntityManager entityManager = emf.createEntityManager();
         MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest, demandId);
-        oldMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
+        List<MaterialDemandEntity> oldMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
         demand.setId(UUID.fromString(demandId));
         demand = materialDemandRepository.save(demand);
-        entityManager.flush();
-        newMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
+        List<MaterialDemandEntity> newMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
         postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT);
-        updateStatus();
+        updateStatus(newMaterialDemands,oldMaterialDemands);
         return convertDemandResponseDto(demand);
     }
 
