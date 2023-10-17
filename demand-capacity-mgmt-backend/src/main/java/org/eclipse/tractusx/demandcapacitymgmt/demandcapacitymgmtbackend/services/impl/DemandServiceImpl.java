@@ -23,6 +23,9 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -40,9 +44,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.DemandSeriesRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
@@ -67,18 +69,50 @@ public class DemandServiceImpl implements DemandService {
 
     private final DemandSeriesRepository demandSeriesRepository;
 
+    private final StatusesRepository statusesRepository;
+    private List<MaterialDemandEntity> oldMaterialDemands;
+    private List<MaterialDemandEntity> newMaterialDemands;
+    private final CapacityGroupRepository capacityGroupRepository;
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
+
 
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest) {
         validateMaterialDemandRequestFields(materialDemandRequest);
-        MaterialDemandEntity materialDemandEntity = convertDtoToEntity(materialDemandRequest);
+        MaterialDemandEntity materialDemandEntity = convertDtoToEntity(
+            materialDemandRequest,
+            materialDemandRequest.getId()
+        );
+        oldMaterialDemands = getAllDemands();
+        oldMaterialDemands.add(materialDemandEntity);
+        EventType eventType = updateStatus();
+        materialDemandEntity.setLinkStatus(eventType);
         materialDemandEntity = materialDemandRepository.save(materialDemandEntity);
-        postLogs(materialDemandEntity.getId().toString(), "MATERIAL DEMAND Created");
+        postLogs(materialDemandEntity.getId().toString(), "MATERIAL DEMAND Created", eventType);
         return convertDemandResponseDto(materialDemandEntity);
     }
 
-    private void postLogs(String materialDemandId, String eventDescription) {
+    public EventType updateStatus() {
+        if (statusesRepository != null) {
+            List<CapacityGroupEntity> oldCapacityGroups = capacityGroupRepository.findAll();
+
+            if (newMaterialDemands == null) {
+                newMaterialDemands = List.of();
+            }
+            final StatusesService statusesService = new StatusesServiceImpl(
+                oldCapacityGroups,
+                oldCapacityGroups,
+                oldMaterialDemands,
+                newMaterialDemands,
+                statusesRepository,
+                linkedCapacityGroupMaterialDemandRepository
+            );
+            return statusesService.updateStatus(true);
+        }
+        return null;
+    }
+
+    private void postLogs(String materialDemandId, String eventDescription, EventType eventType) {
         AtomicBoolean isFavorited = new AtomicBoolean(false);
         favoriteService
             .getAllFavoritesByType(FavoriteType.MATERIAL_DEMAND.toString())
@@ -96,14 +130,14 @@ public class DemandServiceImpl implements DemandService {
         loggingHistoryRequest.setEventDescription(eventDescription);
 
         // TODO : Add EventType
-        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
+        loggingHistoryRequest.setEventType(eventType.toString());
 
         loggingHistoryService.createLog(loggingHistoryRequest);
     }
 
     @Override
     public List<MaterialDemandResponse> getAllDemandsByProjectId() {
-        List<MaterialDemandEntity> demandEntityList = materialDemandRepository.findAll();
+        List<MaterialDemandEntity> demandEntityList = getAllDemands();
 
         return demandEntityList.stream().map(this::convertDemandResponseDto).toList();
     }
@@ -116,12 +150,22 @@ public class DemandServiceImpl implements DemandService {
 
     @Override
     public MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest) {
-        MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest);
+        //TODO : here update the status param
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("your-persistence-unit-name");
+        EntityManager entityManager = emf.createEntityManager();
+        MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest, demandId);
+        oldMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
         demand.setId(UUID.fromString(demandId));
-
         demand = materialDemandRepository.save(demand);
-        postLogs(demandId, "MATERIAL DEMAND Updated");
+        entityManager.flush();
+        newMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
+        postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT);
+        updateStatus();
         return convertDemandResponseDto(demand);
+    }
+
+    private List<MaterialDemandEntity> getAllDemands() {
+        return materialDemandRepository.findAll();
     }
 
     @Override
@@ -132,7 +176,7 @@ public class DemandServiceImpl implements DemandService {
     @Override
     public void deleteDemandById(String demandId) {
         MaterialDemandEntity demand = getDemandEntity(demandId);
-        postLogs(demandId, "MATERIAL DEMAND Deleted");
+        postLogs(demandId, "MATERIAL DEMAND Deleted", EventType.GENERAL_EVENT);
         materialDemandRepository.delete(demand);
     }
 
@@ -210,6 +254,9 @@ public class DemandServiceImpl implements DemandService {
     }
 
     private MaterialDemandEntity getDemandEntity(String demandId) {
+        if (demandId.isEmpty()) {
+            return null;
+        }
         UUIDUtil.checkValidUUID(demandId);
         UUID uuid = UUIDUtil.generateUUIDFromString(demandId);
         Optional<MaterialDemandEntity> demand = materialDemandRepository.findById(uuid);
@@ -243,6 +290,7 @@ public class DemandServiceImpl implements DemandService {
         responseDto.setMaterialNumberSupplier(materialDemandEntity.getMaterialNumberSupplier());
         responseDto.setCustomer(customer);
         responseDto.setSupplier(supplier);
+        responseDto.setLinkStatus(String.valueOf(materialDemandEntity.getLinkStatus()));
         responseDto.setChangedAt(materialDemandEntity.getChangedAt().toString());
         responseDto.setId(materialDemandEntity.getId().toString());
 
@@ -283,19 +331,18 @@ public class DemandServiceImpl implements DemandService {
             .forEach(
                 materialDemandSeries -> {
                     if (!UUIDUtil.checkValidUUID(materialDemandSeries.getCustomerLocationId())) {
-                        throw new BadRequestException(
-                            400,
-                            "Not a valid customer location ID",
-                            new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getCustomerLocationId()))
-                        );
+                                            throw new BadRequestException(
+                                                400,
+                                                "Not a valid customer location ID",
+                                                new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getCustomerLocationId()))
+                                            );
                     }
-
                     if (!UUIDUtil.checkValidUUID(materialDemandSeries.getDemandCategoryId())) {
-                        throw new BadRequestException(
-                            400,
-                            "Not a valid demand category ID",
-                            new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getDemandCategoryId()))
-                        );
+                                            throw new BadRequestException(
+                                                400,
+                                                "Not a valid demand category ID",
+                                                new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getDemandCategoryId()))
+                                            );
                     }
 
                     List<LocalDateTime> dates = materialDemandSeries
@@ -349,19 +396,20 @@ public class DemandServiceImpl implements DemandService {
             );
     }
 
-    private MaterialDemandEntity convertDtoToEntity(MaterialDemandRequest materialDemandRequest) {
+    private MaterialDemandEntity convertDtoToEntity(MaterialDemandRequest materialDemandRequest, String id) {
         CompanyEntity supplierEntity = companyService.getCompanyById(
             UUIDUtil.generateUUIDFromString(materialDemandRequest.getSupplierId())
         );
 
         CompanyEntity customerEntity = companyService.getCompanyById(
-            UUIDUtil.generateUUIDFromString(materialDemandRequest.getSupplierId())
+            UUIDUtil.generateUUIDFromString(materialDemandRequest.getCustomerId())
         );
 
         UnitMeasureEntity unitMeasure = unityOfMeasureService.findById(
             UUID.fromString(materialDemandRequest.getUnitMeasureId())
         );
 
+        AtomicInteger index = new AtomicInteger();
         List<DemandSeries> demandSeriesList = materialDemandRequest
             .getMaterialDemandSeries()
             .stream()
@@ -370,13 +418,14 @@ public class DemandServiceImpl implements DemandService {
                     DemandCategoryEntity demandCategory = demandCategoryService.findById(
                         UUIDUtil.generateUUIDFromString(materialDemandSeries.getDemandCategoryId())
                     );
-                    return enrichDemandSeries(materialDemandSeries, customerEntity, demandCategory);
+                    return enrichDemandSeries(materialDemandSeries, customerEntity, demandCategory, UUID.randomUUID());
                 }
             )
             .toList();
 
         return MaterialDemandEntity
             .builder()
+            .id(id == null ? UUID.randomUUID() : UUID.fromString(id))
             .materialDescriptionCustomer(materialDemandRequest.getMaterialDescriptionCustomer())
             .materialNumberCustomer(materialDemandRequest.getMaterialNumberCustomer())
             .materialNumberSupplier(materialDemandRequest.getMaterialNumberSupplier())
@@ -388,14 +437,29 @@ public class DemandServiceImpl implements DemandService {
             .build();
     }
 
+    public List<MaterialDemandSeriesResponse> getDemandSeries() {
+        return demandSeriesRepository.findAll().stream().map(this::enrichMaterialDemandSeriesResponse).toList();
+    }
+
+    @Override
+    public List<MaterialDemandSeriesResponse> getDemandSeriesByMaterialDemand(String materialDemandId) {
+        return getDemandSeries()
+            .stream()
+            .filter(demand -> materialDemandId.equals(demand.getMaterialDemandId()))
+            .toList();
+    }
+
     private DemandSeries enrichDemandSeries(
         MaterialDemandSeries materialDemandSeries,
         CompanyEntity customerEntity,
-        DemandCategoryEntity demandCategory
+        DemandCategoryEntity demandCategory,
+        UUID demandSeriesId
     ) {
         List<DemandSeriesValues> demandSeriesValues = enrichDemandSeriesValues(
             materialDemandSeries.getDemandSeriesValues()
         );
+
+        MaterialDemandEntity materialDemand = getDemandEntityById(materialDemandSeries.getMaterialDemand());
 
         return DemandSeries
             .builder()
@@ -403,6 +467,8 @@ public class DemandServiceImpl implements DemandService {
             .customerLocation(customerEntity)
             .demandCategory(demandCategory)
             .demandSeriesValues(demandSeriesValues)
+            .materialDemand(materialDemand)
+            .capacityGroupId(materialDemandSeries.getDemandCategoryId())
             .build();
     }
 

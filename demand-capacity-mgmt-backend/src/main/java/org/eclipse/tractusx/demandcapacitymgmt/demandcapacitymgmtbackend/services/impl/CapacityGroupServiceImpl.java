@@ -41,10 +41,8 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
 
@@ -59,13 +57,13 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final CompanyService companyService;
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
     private final CapacityGroupRepository capacityGroupRepository;
-
+    private final StatusesRepository statusesRepository;
     private final DemandSeriesRepository demandSeriesRepository;
     private UnitMeasure unitMeasure;
-
     private final LoggingHistoryService loggingHistoryService;
-
     private final FavoriteService favoriteService;
+    private static List<CapacityGroupEntity> oldCapacityGroups;
+    private static List<CapacityGroupEntity> newCapacityGroups;
 
     @Override
     public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
@@ -78,7 +76,30 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             entity.setMaterialDemandID(uuid);
             linkedCapacityGroupMaterialDemandRepository.save(entity);
         }
+        oldCapacityGroups = capacityGroupRepository.findAll();
+        //TODO: update the link Status here
+        updateStatus();
         return convertCapacityGroupDto(capacityGroupEntity);
+    }
+
+    public EventType updateStatus() {
+        if (statusesRepository != null) {
+            List<MaterialDemandEntity> oldMaterialDemands = materialDemandRepository.findAll();
+
+            if (newCapacityGroups == null) {
+                newCapacityGroups = List.of();
+            }
+            final StatusesService statusesService = new StatusesServiceImpl(
+                oldCapacityGroups,
+                newCapacityGroups,
+                oldMaterialDemands,
+                oldMaterialDemands,
+                statusesRepository,
+                linkedCapacityGroupMaterialDemandRepository
+            );
+            return statusesService.updateStatus(false);
+        }
+        return null;
     }
 
     private void postLogs(String capacityGroupId) {
@@ -104,6 +125,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     @Override
     public void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest) {
+        oldCapacityGroups = capacityGroupRepository.findAll();
         Optional<CapacityGroupEntity> optionalCapacityGroupEntity = capacityGroupRepository.findById(
             UUID.fromString(linkCGDSRequest.getCapacityGroupID())
         );
@@ -145,6 +167,9 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 linkedCapacityGroupMaterialDemandRepository.save(entity);
             }
         }
+        newCapacityGroups = capacityGroupRepository.findAll();
+
+        updateStatus();
     }
 
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest request) {
@@ -159,6 +184,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         capacityGroupEntity.setEndDate(LocalDate.parse(request.getEndDate()));
         capacityGroupEntity.setCustomer(customer);
         capacityGroupEntity.setSupplier(supplier);
+        capacityGroupEntity.setLinkStatus(EventType.valueOf(request.getLinkStatus()));
         return capacityGroupEntity;
     }
 

@@ -23,18 +23,19 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusesEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.StatusColor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.models.MaterialCapacityQuantity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.StatusManager;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.WeekBasedStatusManager;
+//import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.StatusManager2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -45,11 +46,19 @@ import org.springframework.stereotype.Service;
 public class StatusesServiceImpl implements StatusesService {
 
     private final StatusesRepository statusesRepository;
+    private LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
+
     List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroupResponse;
     List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroupResponse;
     List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemandResponse;
     List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse;
 
+    List<CapacityGroupEntity> oldCapacityGroup;
+    List<CapacityGroupEntity> newCapacityGroup;
+    List<MaterialDemandEntity> newMaterialDemand;
+    List<MaterialDemandEntity> oldMaterialDemand;
+
+    @Autowired
     public StatusesServiceImpl(
         StatusesRepository statusesRepository,
         List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse,
@@ -62,6 +71,22 @@ public class StatusesServiceImpl implements StatusesService {
         this.newWeekBasedMaterialDemandResponse = newWeekBasedMaterialDemandResponse;
         this.oldWeekBasedCapacityGroupResponse = oldWeekBasedCapacityGroupResponse;
         this.newWeekBasedCapacityGroupResponse = newWeekBasedCapacityGroupResponse;
+    }
+
+    public StatusesServiceImpl(
+        List<CapacityGroupEntity> oldCapacityGroup,
+        List<CapacityGroupEntity> newCapacityGroup,
+        List<MaterialDemandEntity> oldMaterialDemand,
+        List<MaterialDemandEntity> newMaterialDemand,
+        StatusesRepository statusesRepository,
+        LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository
+    ) {
+        this.statusesRepository = statusesRepository;
+        this.oldCapacityGroup = oldCapacityGroup;
+        this.newCapacityGroup = newCapacityGroup;
+        this.oldMaterialDemand = oldMaterialDemand;
+        this.newMaterialDemand = newMaterialDemand;
+        this.linkedCapacityGroupMaterialDemandRepository = linkedCapacityGroupMaterialDemandRepository;
     }
 
     @Override
@@ -90,7 +115,7 @@ public class StatusesServiceImpl implements StatusesService {
     public StatusesResponse getAllStatuses() {
         List<StatusesEntity> statusesEntities = statusesRepository.findAll();
         if (statusesEntities.isEmpty()) {
-            return new StatusesResponse();
+            return null;
         }
         return statusesEntities.stream().map(this::convertStatusesResponseDto).toList().get(0);
     }
@@ -108,30 +133,8 @@ public class StatusesServiceImpl implements StatusesService {
         return responseDto;
     }
 
-    // TODO : Saja Add these methods
-    //    private EventType getStatusForMaterialDemand(){
-    //        EventType eventType;
-    //        if(eventType == EventType.TODO){
-    //            return EventType.TODO;
-    //        }
-    //        return EventType.LINKED;
-    //    }
-    //
-    //    private EventType getStatusForCapacityGroup(){
-    //        EventType eventType;
-    //        if(eventType == EventType.STATUS_IMPROVEMENT){
-    //            return EventType.TODO;
-    //        }
-    //        return EventType.STATUS_REDUCTION;
-    //    }
-
-    //    @Override
-    //    public void updateStatus() {
-    //        saveStatusesData();
-    //    }
-
-    public void updateStatus() {
-        StatusManager statusManager = new StatusManager();
+    public void updateWeeklyBasedStatus() {
+        WeekBasedStatusManager statusManager = new WeekBasedStatusManager();
         postStatuses(
             statusManager.retrieveUpdatedStatusRequest(
                 oldWeekBasedCapacityGroupResponse,
@@ -140,5 +143,23 @@ public class StatusesServiceImpl implements StatusesService {
                 newWeekBasedMaterialDemandResponse
             )
         );
+    }
+
+    public EventType updateStatus(boolean isMaterialDemand) {
+        StatusManager statusManager = new StatusManager(linkedCapacityGroupMaterialDemandRepository);
+        postStatuses(
+            statusManager.retrieveUpdatedStatusRequest(
+                getAllStatuses(),
+                oldCapacityGroup,
+                newCapacityGroup,
+                oldMaterialDemand,
+                newMaterialDemand
+            )
+        );
+        EventType eventType = statusManager.getEventType();
+        if (eventType != EventType.TODO && eventType != EventType.UN_LINKED && isMaterialDemand) {
+            return EventType.LINKED;
+        }
+        return eventType;
     }
 }
