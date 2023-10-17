@@ -331,10 +331,6 @@ paths:
                   $ref: '#/components/schemas/LoggingHistoryResponse'
         404:
           description: loggingHistory not found
-
-
-
-
   /statuses:
     post:
       tags:
@@ -999,7 +995,6 @@ components:
           type: integer
         overall_statusDegradation:
           type: integer
-
 
     DemandRequestDto:
       type: object

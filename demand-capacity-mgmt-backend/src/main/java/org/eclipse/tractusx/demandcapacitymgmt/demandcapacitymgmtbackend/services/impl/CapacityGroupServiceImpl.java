@@ -32,10 +32,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
@@ -43,7 +40,8 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
 
@@ -59,9 +57,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final CapacityGroupRepository capacityGroupRepository;
     private final StatusesRepository statusesRepository;
     private final DemandSeriesRepository demandSeriesRepository;
-
     private final UserRepository userRepository;
-
     private final LoggingHistoryService loggingHistoryService;
     private final FavoriteService favoriteService;
     private static List<CapacityGroupEntity> oldCapacityGroups;
@@ -80,7 +76,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             linkedCapacityGroupMaterialDemandRepository.save(entity);
         }
         oldCapacityGroups = capacityGroupRepository.findAll();
-        //TODO: update the link Status here
         updateStatus(userID);
         return convertCapacityGroupDto(capacityGroupEntity);
     }
@@ -126,6 +121,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
         loggingHistoryService.createLog(loggingHistoryRequest);
     }
+
 
     @Override
     public void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest,String userID) {

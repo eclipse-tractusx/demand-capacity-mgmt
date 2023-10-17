@@ -37,7 +37,7 @@ function TopMenuLinks() {
   const { setUser } = useUser();
   const [collapsed, setCollapsed] = useState(() => {
     // Load the state from local storage, defaulting to false if it doesn't exist
-    return localStorage.getItem('navbarCollapsed') === 'true' ? true : false;
+    return localStorage.getItem('navbarCollapsed') === 'true';
   });
 
   useEffect(() => {

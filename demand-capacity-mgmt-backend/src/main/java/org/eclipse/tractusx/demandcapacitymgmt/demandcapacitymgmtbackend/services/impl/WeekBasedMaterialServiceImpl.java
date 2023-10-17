@@ -53,6 +53,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     private final LinkDemandService linkDemandService;
 
     private final StatusesRepository statusesRepository;
+    private final LoggingHistoryService loggingHistoryService;
     private List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemands;
     private List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemands;
 
@@ -61,8 +62,6 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     private final UserRepository userRepository;
 
     private final DemandService demandService;
-
-    private final LoggingHistoryService loggingHistoryService;
 
     @Override
     public void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDtoList) {

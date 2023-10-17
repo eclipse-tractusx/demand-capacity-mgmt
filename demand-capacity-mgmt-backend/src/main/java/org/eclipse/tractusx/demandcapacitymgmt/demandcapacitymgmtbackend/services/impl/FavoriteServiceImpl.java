@@ -95,7 +95,6 @@ public class FavoriteServiceImpl implements FavoriteService {
         FavoriteResponse response = new FavoriteResponse();
         response.setFavoriteId(request.getId().toString());
         response.setfType(request.getType().name());
-        response.setfTypeId(request.getFavoriteTypeId().toString());
         return response;
     }
 

@@ -20,11 +20,12 @@
  *    ********************************************************************************
  */
 
+
 import React, { useContext, useMemo, useState } from 'react';
 import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaEye, FaRedo, FaStar } from 'react-icons/fa';
+import { useUser } from '../../contexts/UserContext';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
-import { useUser } from "../../contexts/UserContext";
 import '../../index.css';
 import { EventType } from '../../interfaces/event_interfaces';
 import { getUserGreeting } from '../../interfaces/user_interface';
@@ -37,6 +38,7 @@ import CapacityGroupsTable from './CapacityGroupsTable';
 const CapacityGroupsList: React.FC = () => {
   const { user } = useUser();
   const { capacitygroups, isLoading, fetchCapacityGroupsWithRetry } = useContext(CapacityGroupContext)!;
+
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState('');
