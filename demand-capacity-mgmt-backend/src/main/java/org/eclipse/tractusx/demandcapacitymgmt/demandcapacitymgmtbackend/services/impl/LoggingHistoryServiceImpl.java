@@ -108,7 +108,6 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
 
     private LoggingHistoryEntity convertDtoToEntity(LoggingHistoryRequest loggingHistoryRequest) {
         LoggingHistoryEntity loggingHistoryEntity = new LoggingHistoryEntity();
-        loggingHistoryEntity.setId(UUID.randomUUID());
         loggingHistoryEntity.setEventType(EventType.valueOf(loggingHistoryRequest.getEventType()));
         loggingHistoryEntity.setObjectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()));
 
@@ -132,7 +131,6 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
 
     private ArchivedLogEntity convertDtoToArchivedEntity(LoggingHistoryRequest loggingHistoryRequest) {
         ArchivedLogEntity loggingHistoryEntity = new ArchivedLogEntity();
-        loggingHistoryEntity.setId(UUID.randomUUID());
         loggingHistoryEntity.setEventType(EventType.valueOf(loggingHistoryRequest.getEventType()));
         loggingHistoryEntity.setObjectType(EventObjectType.valueOf(loggingHistoryRequest.getObjectType()));
 
@@ -267,7 +265,7 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     private LoggingHistoryResponse convertLoggingHistoryResponseDto(LoggingHistoryEntity loggingHistoryEntity) {
         LoggingHistoryResponse responseDto = new LoggingHistoryResponse();
 
-        responseDto.setId(loggingHistoryEntity.getId().toString());
+        responseDto.setId(loggingHistoryEntity.getId());
         responseDto.setEventDescription(loggingHistoryEntity.getDescription());
         responseDto.setUserAccount(loggingHistoryEntity.getUserAccount());
         responseDto.setIsFavorited(loggingHistoryEntity.getIsFavorited());
@@ -285,7 +283,7 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     ) {
         ArchivedLoggingHistoryResponse responseDto = new ArchivedLoggingHistoryResponse();
 
-        responseDto.setId(archivedLogEntity.getId().toString());
+        responseDto.setId(archivedLogEntity.getId());
         responseDto.setEventDescription(archivedLogEntity.getDescription());
         responseDto.setUserAccount(archivedLogEntity.getUserAccount());
         responseDto.setIsFavorited(archivedLogEntity.getIsFavorited());

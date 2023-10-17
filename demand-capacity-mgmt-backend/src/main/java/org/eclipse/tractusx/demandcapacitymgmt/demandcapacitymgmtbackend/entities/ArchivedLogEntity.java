@@ -23,10 +23,8 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import io.micrometer.core.lang.Nullable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.sql.Timestamp;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -44,9 +42,9 @@ import org.hibernate.annotations.GenericGenerator;
 public class ArchivedLogEntity {
 
     @Id
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "uuid", updatable = false, name = "id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
 
     @Column(name = "USER_ACCOUNT")
     private String userAccount;
@@ -75,7 +73,7 @@ public class ArchivedLogEntity {
     private Boolean isFavorited;
 
     public ArchivedLogEntity(
-        UUID id,
+        int id,
         String userAccount,
         Timestamp time_created,
         EventType eventType,

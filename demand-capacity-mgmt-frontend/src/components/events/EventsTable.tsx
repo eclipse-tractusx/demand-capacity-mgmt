@@ -188,7 +188,7 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
                                         variant="outline-info"
                                         onClick={() => {
                                             // Function to copy the internalId to the clipboard
-                                            navigator.clipboard.writeText(event.id);
+                                            navigator.clipboard.writeText(event.id.toString());
                                         }}
                                     ><FaCopy />
                                     </Button></OverlayTrigger></td>
@@ -208,7 +208,7 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
                                                     // Function to copy the appropriate ID to the clipboard
                                                     const idToCopy = event.capacityGroupId !== "null" ? event.capacityGroupId : event.materialDemandId;
                                                     if (idToCopy !== "null") {
-                                                        navigator.clipboard.writeText(idToCopy);
+                                                        navigator.clipboard.writeText(idToCopy.toString());
                                                     }
                                                 }}
                                             >
@@ -228,8 +228,8 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu>
                                             <Dropdown.Item onClick={() => handleArchiveClick(event)}><FaArchive className='text-muted' /> Archive</Dropdown.Item>
-                                            <Dropdown.Item onClick={() => { navigator.clipboard.writeText(event.id) }}><FaCopy /> Copy ID</Dropdown.Item>
-                                            <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteButtonClick(event.id)}><FaTrashAlt /> Delete</Dropdown.Item>
+                                            <Dropdown.Item onClick={() => { navigator.clipboard.writeText(event.id.toString()) }}><FaCopy /> Copy ID</Dropdown.Item>
+                                            <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteButtonClick(event.id.toString())}><FaTrashAlt /> Delete</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </td>
