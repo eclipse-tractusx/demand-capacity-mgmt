@@ -134,9 +134,14 @@ public class StatusManager {
         AtomicInteger overAllStatusReductionCount = new AtomicInteger();
         AtomicInteger overAllTodoCount = new AtomicInteger();
 
-        processMaterialDemands(todoCount, overAllTodoCount, newCapacityGroup, newMaterialDemand, newCapacityQuantities);
+        try {
+            processMaterialDemands(todoCount, overAllTodoCount, newCapacityGroup, newMaterialDemand, newCapacityQuantities);
+            processMaterialDemands(todoCount, overAllTodoCount, oldCapacityGroup, oldMaterialDemand, oldCapacityQuantities);
+        } catch (Exception e) {
+            //TODO SAJA FIX
+            System.out.println("Needs fix.");
+        }
 
-        processMaterialDemands(todoCount, overAllTodoCount, oldCapacityGroup, oldMaterialDemand, oldCapacityQuantities);
 
         processCapacityQuantities(
             oldCapacityQuantities,
@@ -147,18 +152,6 @@ public class StatusManager {
             overAllStatusImprovementCount,
             user
         );
-
-        //       setAllDemandsCountCount(allDemandsCount, newMaterialNumberDemandsMapList);
-        //
-        //                // set the general count
-        //      generalCount.set(
-        //                        allDemandsCount.get() - (todoCount.get() + statusImprovementCount.get() + statusReductionCount.get())
-        //                );
-        //
-        //                overAllGeneralCount.set(
-        //                        newMaterialNumberDemandsMapList.size() -
-        //                                (overAllTodoCount.get() + overAllStatusImprovementCount.get() + overAllStatusReductionCount.get())
-        //                );
 
         StatusRequest statusRequest = new StatusRequest();
         // Set DTOs in StatusRequest
@@ -179,7 +172,6 @@ public class StatusManager {
                 userID
         );
 
-        // Post the StatusRequest
         return statusRequest;
     }
 
@@ -245,7 +237,7 @@ public class StatusManager {
                                                                 capacityGroup.getDefaultActualCapacity() + ""
                                                             ),
                                                             null,
-                                                            materialDemandSeriesValue.getDemand().doubleValue(),
+                                                                materialDemandSeriesValue.getDemand(),
                                                             materialDemandOrder
                                                         )
                                                     );

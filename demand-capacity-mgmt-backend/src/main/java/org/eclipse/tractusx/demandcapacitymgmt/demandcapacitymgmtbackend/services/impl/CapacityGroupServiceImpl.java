@@ -80,7 +80,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         return convertCapacityGroupDto(capacityGroupEntity);
     }
 
-    public EventType updateStatus(String userID) {
+    public void updateStatus(String userID) {
         if (statusesRepository != null) {
             List<MaterialDemandEntity> oldMaterialDemands = materialDemandRepository.findAll();
 
@@ -96,9 +96,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 linkedCapacityGroupMaterialDemandRepository,
                 userRepository
             );
-            return statusesService.updateStatus(false,userID);
+            statusesService.updateStatus(false,userID);
         }
-        return null;
     }
 
     private void postLogs(String capacityGroupId) {
@@ -168,7 +167,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             }
         }
         newCapacityGroups = capacityGroupRepository.findAll();
-
         updateStatus(userID);
     }
 
@@ -196,9 +194,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             capacityGroupEntity.getDefaultMaximumCapacity(),
             capacityGroupEntity
         );
-
-        capacityGroupEntity.setLinkStatus(EventType.valueOf(request.getLinkStatus()));
-
         return capacityGroupEntity;
     }
 

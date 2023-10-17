@@ -76,10 +76,7 @@ public class DemandServiceImpl implements DemandService {
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest,String userID) {
         validateMaterialDemandRequestFields(materialDemandRequest);
-        MaterialDemandEntity materialDemandEntity = convertDtoToEntity(
-            materialDemandRequest,
-            materialDemandRequest.getId()
-        );
+        MaterialDemandEntity materialDemandEntity = convertDtoToEntity(materialDemandRequest);
         List<MaterialDemandEntity> oldMaterialDemands = getAllDemands();
         oldMaterialDemands.add(materialDemandEntity);
         EventType eventType = updateStatus(oldMaterialDemands,null,userID);
@@ -156,7 +153,7 @@ public class DemandServiceImpl implements DemandService {
 
     @Override
     public MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest,String userID) {
-        MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest, demandId);
+        MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest);
         List<MaterialDemandEntity> oldMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
         demand.setId(UUID.fromString(demandId));
         demand = materialDemandRepository.save(demand);
@@ -393,20 +390,19 @@ public class DemandServiceImpl implements DemandService {
             );
     }
 
-    private MaterialDemandEntity convertDtoToEntity(MaterialDemandRequest materialDemandRequest, String id) {
+    private MaterialDemandEntity convertDtoToEntity(MaterialDemandRequest materialDemandRequest) {
         CompanyEntity supplierEntity = companyService.getCompanyById(
             UUIDUtil.generateUUIDFromString(materialDemandRequest.getSupplierId())
         );
 
         CompanyEntity customerEntity = companyService.getCompanyById(
-            UUIDUtil.generateUUIDFromString(materialDemandRequest.getCustomerId())
+            UUIDUtil.generateUUIDFromString(materialDemandRequest.getSupplierId())
         );
 
         UnitMeasureEntity unitMeasure = unityOfMeasureService.findById(
             UUID.fromString(materialDemandRequest.getUnitMeasureId())
         );
 
-        AtomicInteger index = new AtomicInteger();
         List<DemandSeries> demandSeriesList = materialDemandRequest
             .getMaterialDemandSeries()
             .stream()
@@ -415,14 +411,13 @@ public class DemandServiceImpl implements DemandService {
                     DemandCategoryEntity demandCategory = demandCategoryService.findById(
                         UUIDUtil.generateUUIDFromString(materialDemandSeries.getDemandCategoryId())
                     );
-                    return enrichDemandSeries(materialDemandSeries, customerEntity, demandCategory, UUID.randomUUID());
+                    return enrichDemandSeries(materialDemandSeries, customerEntity, demandCategory);
                 }
             )
             .toList();
 
         return MaterialDemandEntity
             .builder()
-            .id(id == null ? UUID.randomUUID() : UUID.fromString(id))
             .materialDescriptionCustomer(materialDemandRequest.getMaterialDescriptionCustomer())
             .materialNumberCustomer(materialDemandRequest.getMaterialNumberCustomer())
             .materialNumberSupplier(materialDemandRequest.getMaterialNumberSupplier())
@@ -449,8 +444,7 @@ public class DemandServiceImpl implements DemandService {
     private DemandSeries enrichDemandSeries(
         MaterialDemandSeries materialDemandSeries,
         CompanyEntity customerEntity,
-        DemandCategoryEntity demandCategory,
-        UUID demandSeriesId
+        DemandCategoryEntity demandCategory
     ) {
         List<DemandSeriesValues> demandSeriesValues = enrichDemandSeriesValues(
             materialDemandSeries.getDemandSeriesValues()

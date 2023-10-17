@@ -85,7 +85,7 @@ export interface CapacityGroupLink {
   linkedMaterialDemandID: string[]
 }
 
-/*This is used for the Chronogram */
+
 export interface CapacityGroupData {
   calendarWeek: string;
   actualCapacity: number;

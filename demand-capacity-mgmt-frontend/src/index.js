@@ -22,33 +22,13 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router } from "react-router-dom";
+import AppComponent from './components/dcm/AppComponent';
+import AuthenticationComponent from './components/pages/AuthenticationPage';
 import './custom-bootstrap.scss';
 import './index.css';
-import reportWebVitals from './reportWebVitals';
-import {BrowserRouter as Router, Route,Routes } from "react-router-dom";
 import { isAuthenticated } from './util/Auth';
-import AppComponent from './components/dcm/AppComponent';
-
-//Import Default always visible components.
-import TopMenu from "./components/common/TopMenu";
-import { InfoMenuProvider } from './contexts/InfoMenuContextProvider';
-import QuickAcessItems from "./components/common/QuickAcessItems";
-//Import Context Providers
-import DemandContextProvider from "../src/contexts/DemandContextProvider";
-import CapacityGroupsProvider from './contexts/CapacityGroupsContextProvider';
-//Pages
-import Home from "./components/pages/CapacityGroupPage";
-import CapacityGroupDetailsPage from "./components/pages/CapacityGroupDetailsPage";
-
-import TodoListPage from "./components/pages/TodoListPage";
-import DownStatusPage from "./components/pages/DownStatusPage";
-import UpStatusPage from "./components/pages/UpStatusPage";
-
-import './custom-bootstrap.scss';
-import'./index.css';
 import {UserProvider} from "./contexts/UserContext";
-import AuthenticationComponent from "./components/pages/AuthenticationPage";
-
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 function App() {
@@ -63,21 +43,5 @@ function App() {
 }
 
 root.render(
-    <App>
-        <InfoMenuProvider>
-            <TopMenu></TopMenu>
-        </InfoMenuProvider>
-        <Router>
-            <Routes>
-                <Route path="/" element={<Home/>} />
-                <Route path="/details/:id" element={<CapacityGroupsProvider><CapacityGroupDetailsPage/></CapacityGroupsProvider>} />
-                <Route path="/up" element={<DemandContextProvider><UpStatusPage/></DemandContextProvider>} />
-                <Route path="/down" element={<DemandContextProvider><DownStatusPage/></DemandContextProvider>} />
-                <Route path="/todo" element={<DemandContextProvider><TodoListPage/></DemandContextProvider>} /> 
-            </Routes>
-        </Router>
-        <DemandContextProvider>
-            <QuickAcessItems></QuickAcessItems>
-        </DemandContextProvider>
-    </App>
+    <App />
 );
