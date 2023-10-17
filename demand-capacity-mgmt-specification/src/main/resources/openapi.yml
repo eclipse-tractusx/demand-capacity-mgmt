@@ -1088,7 +1088,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          type: integer
         userAccount:
           type: string
         timeCreated:
@@ -1111,7 +1111,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          type: integer
         userAccount:
           type: string
         timeCreated:
@@ -1133,7 +1133,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          type: integer
         userAccount:
           type: string
         timeCreated:
@@ -1155,7 +1155,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          type: integer
         userAccount:
           type: string
         timeCreated:

@@ -22,7 +22,7 @@
 
 
 export interface EventProp {
-  id: string
+  id: number
   userAccount: string
   timeCreated: string
   objectType: string
