@@ -59,7 +59,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final CapacityGroupRepository capacityGroupRepository;
     private final StatusesRepository statusesRepository;
     private final DemandSeriesRepository demandSeriesRepository;
-    private UnitMeasure unitMeasure;
+
+    private final UserRepository userRepository;
 
     private final LoggingHistoryService loggingHistoryService;
     private final FavoriteService favoriteService;
@@ -67,7 +68,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private static List<CapacityGroupEntity> newCapacityGroups;
 
     @Override
-    public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
+    public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest,String userID) {
         CapacityGroupEntity capacityGroupEntity = enrichCapacityGroup(capacityGroupRequest);
         capacityGroupEntity = capacityGroupRepository.save(capacityGroupEntity);
         String cgID = capacityGroupEntity.getId().toString();
@@ -80,11 +81,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         }
         oldCapacityGroups = capacityGroupRepository.findAll();
         //TODO: update the link Status here
-        updateStatus();
+        updateStatus(userID);
         return convertCapacityGroupDto(capacityGroupEntity);
     }
 
-    public EventType updateStatus() {
+    public EventType updateStatus(String userID) {
         if (statusesRepository != null) {
             List<MaterialDemandEntity> oldMaterialDemands = materialDemandRepository.findAll();
 
@@ -97,9 +98,10 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 oldMaterialDemands,
                 oldMaterialDemands,
                 statusesRepository,
-                linkedCapacityGroupMaterialDemandRepository
+                linkedCapacityGroupMaterialDemandRepository,
+                userRepository
             );
-            return statusesService.updateStatus(false);
+            return statusesService.updateStatus(false,userID);
         }
         return null;
     }
@@ -126,7 +128,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     }
 
     @Override
-    public void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest) {
+    public void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest,String userID) {
         oldCapacityGroups = capacityGroupRepository.findAll();
         Optional<CapacityGroupEntity> optionalCapacityGroupEntity = capacityGroupRepository.findById(
             UUID.fromString(linkCGDSRequest.getCapacityGroupID())
@@ -171,7 +173,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         }
         newCapacityGroups = capacityGroupRepository.findAll();
 
-        updateStatus();
+        updateStatus(userID);
     }
 
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest request) {

@@ -29,8 +29,11 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandR
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,6 +43,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class DemandController implements DemandApi {
 
     private final DemandService demandService;
+
+    private HttpServletRequest request;
 
     @Override
     public ResponseEntity<Void> deleteDemandsById(String demandId) {
@@ -93,7 +98,8 @@ public class DemandController implements DemandApi {
 
     @Override
     public ResponseEntity<MaterialDemandResponse> postDemand(MaterialDemandRequest materialDemandRequest) {
-        MaterialDemandResponse responseDto = demandService.createDemand(materialDemandRequest);
+        String userID = UserUtil.getUserID(request);
+        MaterialDemandResponse responseDto = demandService.createDemand(materialDemandRequest,userID);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
@@ -102,7 +108,8 @@ public class DemandController implements DemandApi {
         String demandId,
         MaterialDemandRequest materialDemandRequest
     ) {
-        MaterialDemandResponse responseDto = demandService.updateDemand(demandId, materialDemandRequest);
+        String userID = UserUtil.getUserID(request);
+        MaterialDemandResponse responseDto = demandService.updateDemand(demandId, materialDemandRequest,userID);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

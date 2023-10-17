@@ -35,6 +35,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UserRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
@@ -56,6 +57,8 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     private List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemands;
 
     private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
+
+    private final UserRepository userRepository;
 
     private final DemandService demandService;
 
@@ -146,7 +149,8 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                 oldWeekBasedMaterialDemands,
                 newWeekBasedMaterialDemands,
                 oldWeekBasedCapacityGroups,
-                oldWeekBasedCapacityGroups
+                oldWeekBasedCapacityGroups,
+                    userRepository
             );
             statusesService.updateWeeklyBasedStatus();
         }

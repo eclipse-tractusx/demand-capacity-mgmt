@@ -23,23 +23,19 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import jdk.jfr.Event;
-import lombok.Getter;
+
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeriesValues;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LinkedCapacityGroupMaterialDemandEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.StatusColor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.models.MaterialCapacityQuantity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,8 +47,11 @@ public class StatusManager {
 
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
 
-    public StatusManager(LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository) {
+    private UserRepository userRepository;
+
+    public StatusManager(LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository,UserRepository userRepository) {
         this.linkedCapacityGroupMaterialDemandRepository = linkedCapacityGroupMaterialDemandRepository;
+        this.userRepository = userRepository;
     }
 
     public void setEventType(EventType eventType) {
@@ -63,11 +62,16 @@ public class StatusManager {
         StatusesResponse currentStatuses,
         int overAllTodoCount,
         int overAllStatusImprovementCount,
-        int overAllStatusReductionCount
-    ) {
+        int overAllStatusReductionCount,
+        String userID) {
+        Optional<UserEntity> userEntity = userRepository.findById(UUID.fromString(userID));
+        UserEntity user = null;
+        if(userEntity.isPresent()){
+            user = userEntity.get();
+        }
         if (currentStatuses == null) {
             if (overAllTodoCount != 0) {
-                if (true) {
+                if (user.getRole().equals(Role.CUSTOMER)) {
                     setEventType(EventType.TODO);
                 }
                 setEventType(EventType.UN_LINKED);
@@ -81,7 +85,7 @@ public class StatusManager {
         } else {
             // if to-do increased, then the latest status is todo
             if (currentStatuses.getOverallTodos() != overAllTodoCount && overAllTodoCount != 0) {
-                if (true) {
+                if (user.getRole().equals(Role.CUSTOMER)) {
                     setEventType(EventType.TODO);
                 }
                 setEventType(EventType.UN_LINKED);
@@ -110,8 +114,13 @@ public class StatusManager {
         List<CapacityGroupEntity> oldCapacityGroup,
         List<CapacityGroupEntity> newCapacityGroup,
         List<MaterialDemandEntity> oldMaterialDemand,
-        List<MaterialDemandEntity> newMaterialDemand
-    ) {
+        List<MaterialDemandEntity> newMaterialDemand,
+        String userID) {
+        Optional<UserEntity> userEntity = userRepository.findById(UUID.fromString(userID));
+        UserEntity user = null;
+        if(userEntity.isPresent()){
+            user = userEntity.get();
+        }
         List<MaterialCapacityQuantity> oldCapacityQuantities = new ArrayList<>();
         List<MaterialCapacityQuantity> newCapacityQuantities = new ArrayList<>();
 
@@ -135,7 +144,8 @@ public class StatusManager {
             statusReductionCount,
             statusImprovementCount,
             overAllStatusReductionCount,
-            overAllStatusImprovementCount
+            overAllStatusImprovementCount,
+            user
         );
 
         //       setAllDemandsCountCount(allDemandsCount, newMaterialNumberDemandsMapList);
@@ -165,7 +175,8 @@ public class StatusManager {
             currentStatuses,
             overAllTodoCount.intValue(),
             overAllStatusImprovementCount.intValue(),
-            overAllStatusReductionCount.intValue()
+            overAllStatusReductionCount.intValue(),
+                userID
         );
 
         // Post the StatusRequest
@@ -292,14 +303,15 @@ public class StatusManager {
         AtomicInteger statusReductionCount,
         AtomicInteger statusImprovementCount,
         AtomicInteger overAllStatusReductionCount,
-        AtomicInteger overAllStatusImprovementCount
+        AtomicInteger overAllStatusImprovementCount,
+        UserEntity user
     ) {
         AtomicInteger previousDemand = new AtomicInteger(-1);
         oldMaterialCapacityQuantities.forEach(
             oldCapacityQuantity ->
                 newMaterialCapacityQuantities.forEach(
                     newCapacityQuantity -> {
-                        EventType eventType = getEventType(oldCapacityQuantity, newCapacityQuantity);
+                        EventType eventType = getEventType(oldCapacityQuantity, newCapacityQuantity,user);
 
                         if (eventType == EventType.STATUS_REDUCTION) {
                             if (
@@ -326,7 +338,8 @@ public class StatusManager {
 
     private static EventType getEventType(
         MaterialCapacityQuantity oldCapacityQuantity,
-        MaterialCapacityQuantity newCapacityQuantity
+        MaterialCapacityQuantity newCapacityQuantity,
+        UserEntity user
     ) {
         StatusColor oldStatusColor = WeekBasedStatusManager.getStatusColor(
             oldCapacityQuantity.getDemand(),
@@ -340,8 +353,7 @@ public class StatusManager {
         );
 
         return WeekBasedStatusManager.getEventType(
-            true,
-            true,
+            true, user.getRole().equals(Role.CUSTOMER),
             oldStatusColor,
             newStatusColor
         );

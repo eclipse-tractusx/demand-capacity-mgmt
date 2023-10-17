@@ -28,7 +28,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 
 public interface DemandService {
-    MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest);
+    MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest,String userID);
 
     List<MaterialDemandResponse> getAllDemandsByProjectId();
     List<MaterialDemandSeriesResponse> getDemandSeries();
@@ -38,7 +38,7 @@ public interface DemandService {
 
     MaterialDemandResponse getDemandById(String demandId);
 
-    MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest);
+    MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest,String userID);
 
     void deleteDemandById(String demandId);
 
