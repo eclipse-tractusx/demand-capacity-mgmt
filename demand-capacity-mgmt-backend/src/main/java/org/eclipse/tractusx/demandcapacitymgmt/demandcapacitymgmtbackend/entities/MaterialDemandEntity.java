@@ -41,6 +41,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 
 @Entity
+@Cacheable(false)
 @Table(name = "material_demand")
 @Data
 @Builder

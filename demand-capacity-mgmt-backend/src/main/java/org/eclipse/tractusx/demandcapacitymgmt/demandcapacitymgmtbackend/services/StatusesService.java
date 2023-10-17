@@ -29,9 +29,11 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusesRespons
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 
 public interface StatusesService {
     StatusesResponse postStatuses(StatusRequest statusRequest);
     StatusesResponse getAllStatuses();
-    void updateStatus();
+    EventType updateStatus(boolean isMaterialDemand);
+    void updateWeeklyBasedStatus();
 }

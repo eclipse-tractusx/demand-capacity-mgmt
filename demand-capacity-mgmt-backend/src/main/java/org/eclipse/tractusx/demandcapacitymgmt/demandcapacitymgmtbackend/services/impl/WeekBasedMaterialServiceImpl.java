@@ -54,6 +54,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     private final StatusesRepository statusesRepository;
     private List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemands;
     private List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemands;
+
     private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
 
     private final DemandService demandService;
@@ -107,7 +108,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
         );
         //  updateStatus(); TODO: remove the comment when the EDC is ready
 
-        linkDemandService.createLinkDemands(weekBasedMaterialDemandEntities);
+        //        linkDemandService.createLinkDemands(weekBasedMaterialDemandEntities);
     }
 
     @Override
@@ -147,7 +148,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                 oldWeekBasedCapacityGroups,
                 oldWeekBasedCapacityGroups
             );
-            statusesService.updateStatus();
+            statusesService.updateWeeklyBasedStatus();
         }
     }
 
