@@ -29,6 +29,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryR
 import jakarta.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -118,22 +119,13 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
             loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
         }
         if (null != capacityGroupID && !capacityGroupID.isEmpty()) {
-
-        if (loggingHistoryRequest.getMaterialDemandId() != null) {
-            loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
-        }
-
-        if (loggingHistoryRequest.getCapacityGroupId() != null) {
             loggingHistoryEntity.setCapacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()));
         }
-
         loggingHistoryEntity.setUserAccount(loggingHistoryRequest.getUserAccount());
         loggingHistoryEntity.setTime_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()));
         loggingHistoryEntity.setDescription(loggingHistoryRequest.getEventDescription());
         loggingHistoryEntity.setIsFavorited(loggingHistoryRequest.getIsFavorited());
 
-
-    }
         return loggingHistoryEntity;
     }
 
@@ -189,29 +181,30 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         String startTime,
         String endTime
     ) {
-        Timestamp startTimeStamp;
-        Timestamp endTimeStamp;
-        if (!(startTime.isEmpty() && endTime.isEmpty())) {
-            startTimeStamp = new Timestamp(Long.parseLong(startTime) * 1000L);
-            endTimeStamp = new Timestamp(Long.parseLong(endTime) * 1000L);
-        } else {
-            startTimeStamp = null;
-            endTimeStamp = null;
-        }
+            Timestamp startTimeStamp;
+            Timestamp endTimeStamp;
+            if (!(startTime.isEmpty() && endTime.isEmpty())) {
+                startTimeStamp = new Timestamp(Long.parseLong(startTime) * 1000L);
+                endTimeStamp = new Timestamp(Long.parseLong(endTime) * 1000L);
+            } else {
+                startTimeStamp = null;
+                endTimeStamp = null;
+            }
         List<LoggingHistoryResponse> loggingHistoryResponses = getAllLoggingHistory();
-        loggingHistoryResponses =
-            loggingHistoryResponses
-                .stream()
-                .filter(
-                    log ->
-                        (
-                            isOnTimeInterval(startTimeStamp, endTimeStamp, Timestamp.valueOf(log.getTimeCreated())) ||
-                            isMatchesId(capacityGroupId, materialDemandId, log) ||
-                            containsEventText(filterText, log)
-                        )
-                )
-                .collect(Collectors.toList());
-        return loggingHistoryResponses;
+        List<LoggingHistoryResponse> filteredLoggingHistoryResponses = new ArrayList<>();
+
+        for (LoggingHistoryResponse log : loggingHistoryResponses) {
+            if (isOnTimeInterval(startTimeStamp, endTimeStamp, Timestamp.valueOf(log.getTimeCreated()))
+                    || isMatchesId(capacityGroupId, materialDemandId, log)
+                    || containsEventText(filterText, log)) {
+
+                filteredLoggingHistoryResponses.add(log);
+            }
+        }
+
+        loggingHistoryResponses = filteredLoggingHistoryResponses;
+
+            return loggingHistoryResponses;
     }
 
     private static boolean isMatchesId(String capacityGroupId, String materialDemandId, LoggingHistoryResponse log) {
