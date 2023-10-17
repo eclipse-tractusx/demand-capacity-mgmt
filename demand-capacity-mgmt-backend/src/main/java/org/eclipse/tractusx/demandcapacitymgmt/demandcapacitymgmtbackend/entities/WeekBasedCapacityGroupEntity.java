@@ -31,7 +31,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters.WeekBasedCapacityGroupConverter;
 import org.hibernate.annotations.ColumnTransformer;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "week_based_capacity")

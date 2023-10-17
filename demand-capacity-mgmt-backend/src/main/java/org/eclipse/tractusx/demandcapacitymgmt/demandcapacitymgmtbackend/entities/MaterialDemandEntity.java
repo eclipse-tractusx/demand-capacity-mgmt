@@ -24,13 +24,9 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import io.micrometer.core.lang.Nullable;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.List;
-import java.util.UUID;
 import java.util.UUID;
 import lombok.*;
 import lombok.AllArgsConstructor;

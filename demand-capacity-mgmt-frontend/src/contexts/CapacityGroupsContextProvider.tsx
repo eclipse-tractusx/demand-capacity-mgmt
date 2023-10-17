@@ -20,9 +20,9 @@
  *    ********************************************************************************
  */
 
+
 import React, { createContext, useEffect, useState } from 'react';
 import { CapacityGroupCreate, CapacityGroupLink, CapacityGroupProp, SingleCapacityGroup } from '../interfaces/capacitygroup_interfaces';
-
 import createAPIInstance from "../util/Api";
 import { useUser } from './UserContext';
 

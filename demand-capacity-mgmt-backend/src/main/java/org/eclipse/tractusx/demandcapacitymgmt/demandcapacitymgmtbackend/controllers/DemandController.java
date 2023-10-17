@@ -28,7 +28,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandR
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
-import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;

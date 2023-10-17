@@ -73,7 +73,6 @@ public class DemandServiceImpl implements DemandService {
     private final CapacityGroupRepository capacityGroupRepository;
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
 
-
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest,String userID) {
         validateMaterialDemandRequestFields(materialDemandRequest);
@@ -145,6 +144,11 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
+    public MaterialDemandEntity getDemandEntityById(String demandId) {
+        return null;
+    }
+
+    @Override
     public MaterialDemandResponse getDemandById(String demandId) {
         MaterialDemandEntity demand = getDemandEntity(demandId);
         return convertDemandResponseDto(demand);
@@ -164,11 +168,6 @@ public class DemandServiceImpl implements DemandService {
 
     private List<MaterialDemandEntity> getAllDemands() {
         return materialDemandRepository.findAll();
-    }
-
-    @Override
-    public MaterialDemandEntity getDemandEntityById(String demandId) {
-        return getDemandEntity(demandId);
     }
 
     @Override

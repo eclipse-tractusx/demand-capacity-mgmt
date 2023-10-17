@@ -108,7 +108,6 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         loggingHistoryRequest.setMaterialDemandId(weekBasedCapacityGroupId);
         loggingHistoryRequest.setIsFavorited(false);
         loggingHistoryRequest.setEventDescription("WEEKLY_BASED_CAPACITY_GROUP Created");
-        //TODO: Add Event
         loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
         loggingHistoryService.createLog(loggingHistoryRequest);
     }
@@ -173,28 +172,9 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         WeekBasedCapacityGroupRequest basedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
 
         basedCapacityGroupRequest.setCapacityGroupId(capacityGroupEntity.getId().toString());
-        //        basedCapacityGroupRequest.setUnityOfMeasure(capacityGroupEntity.getUnitMeasure().getCodeValue());
         basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomer().getBpn());
-        //        basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomerId().getBpn());
         basedCapacityGroupRequest.setSupplier(capacityGroupEntity.getSupplier().getBpn());
         basedCapacityGroupRequest.setName(capacityGroupEntity.getCapacityGroupName());
-        //        basedCapacityGroupRequest.setChangedAt(capacityGroupEntity.getChangedAt().toString());
-        //        basedCapacityGroupRequest.setSupplierLocations(capacityGroupEntity.getSupplierLocation());
-
-        //        List<LinkedDemandSeriesRequest> linkedDemandSeries = capacityGroupEntity
-        //            .getLinkedDemandSeries()
-        //            .stream()
-        //            .map(WeekBasedCapacityGroupServiceImpl::getLinkedDemandSeries)
-        //            .toList();
-        //        basedCapacityGroupRequest.setLinkedDemandSeries(linkedDemandSeries);
-        //
-        //        List<CapacitiesDto> capacitiesDtos = capacityGroupEntity
-        //            .getCapacityTimeSeries()
-        //            .stream()
-        //            .map(WeekBasedCapacityGroupServiceImpl::getCapacitiesDto)
-        //            .toList();
-        //
-        //        basedCapacityGroupRequest.setCapacities(capacitiesDtos);
         updateStatus();
     }
 

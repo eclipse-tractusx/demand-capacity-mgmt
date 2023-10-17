@@ -45,7 +45,7 @@ spring:
     user: ${DCM_DATASOURCE_USER:dcm}
     password: ${DCM_DATASOURCE_PASS:dcm}
     schemas: migrations
-    locations: classpath:db/migration
+    locations: classpath:db/migration/postgresql
 
 management:
   security:

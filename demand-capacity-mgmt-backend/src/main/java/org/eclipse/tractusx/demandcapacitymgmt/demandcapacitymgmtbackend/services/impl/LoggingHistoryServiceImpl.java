@@ -118,6 +118,12 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
             loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
         }
         if (null != capacityGroupID && !capacityGroupID.isEmpty()) {
+
+        if (loggingHistoryRequest.getMaterialDemandId() != null) {
+            loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
+        }
+
+        if (loggingHistoryRequest.getCapacityGroupId() != null) {
             loggingHistoryEntity.setCapacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()));
         }
 
@@ -126,6 +132,8 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         loggingHistoryEntity.setDescription(loggingHistoryRequest.getEventDescription());
         loggingHistoryEntity.setIsFavorited(loggingHistoryRequest.getIsFavorited());
 
+
+    }
         return loggingHistoryEntity;
     }
 
