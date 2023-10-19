@@ -18,8 +18,6 @@ function EventsPage() {
     const [filteredEvents, setFilteredEvents] = useState<EventProp[]>(events);
 
     const handleUserInputChange = (newValue: string | undefined) => {
-        console.log('New Value:', newValue);
-        console.log('Events:', events);
         setUserInput(newValue || '');
         setFilteredEvents(newValue === undefined ? events : []);
     };

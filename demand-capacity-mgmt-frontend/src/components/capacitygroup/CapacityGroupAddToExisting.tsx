@@ -54,7 +54,7 @@ const CapacityGroupAddToExisting: React.FC<CapacityGroupAddToExistingProps> = ({
 
       const capacityGroupLink = {
         capacityGroupID: selectedCapacityGroup?.value,
-        linkedMaterialDemandID: demandIds,
+        linkMaterialDemandIds: demandIds,
       };
 
       capacityGroupContext?.linkToCapacityGroup(capacityGroupLink);

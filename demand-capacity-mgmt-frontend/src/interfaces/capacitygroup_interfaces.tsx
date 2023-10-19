@@ -82,7 +82,7 @@ export interface CapacityGroupCreate {
 
 export interface CapacityGroupLink {
   capacityGroupID: string
-  linkedMaterialDemandID: string[]
+  linkMaterialDemandIds: string[]
 }
 
 

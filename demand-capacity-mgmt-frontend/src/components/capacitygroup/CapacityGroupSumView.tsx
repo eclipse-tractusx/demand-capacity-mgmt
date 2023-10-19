@@ -117,7 +117,6 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     });
   }
 
-  console.log(materialDemands)
   // Track which Demand.description rows are expanded
   const [expandedDemandRows, setExpandedDemandRows] = useState<Record<string, boolean>>({});
 
@@ -190,7 +189,6 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     }
 
     if (firstNonZeroDemandWeek !== null) {
-      console.log(firstNonZeroDemandWeek)
       const cellElement = document.getElementById(`cell-${firstNonZeroDemandWeek}`);
 
       // Check if the element exists before focusing
