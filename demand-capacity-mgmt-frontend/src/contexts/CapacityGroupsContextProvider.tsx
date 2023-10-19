@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useState } from 'react';
 import {
   CapacityGroupCreate,
   CapacityGroupLink,
@@ -52,16 +52,13 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   const api = createAPIInstance(access_token);
 
 
-  const fetchCapacityGroupsWithRetry = async () => {
+  const fetchCapacityGroupsWithRetry = useCallback(async () => {
     setIsLoading(true);
 
     try {
       const response = await api.get('/capacityGroup', {});
       const result: CapacityGroupProp[] = response.data;
       setCapacityGroups(result);
-      setIsLoading(false); // Set isLoading to false on success
-      setRetryCount(0); // Reset the retry count on success
-      return; // Exit the loop on success
     } catch (error) {
       console.error(`Error fetching capacitygroups (Retry ${retryCount + 1}):`, error);
 
@@ -70,16 +67,21 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
         await new Promise((resolve) => setTimeout(resolve, 30000));
         setRetryCount(retryCount + 1); // Increment the retry count
       } else {
-        // If the last retry failed, set isLoading to false and do not retry further
-        setIsLoading(false);
+        // If the last retry failed, do not retry further
         setRetryCount(0); // Reset the retry count
       }
+    } finally {
+      // Set isLoading to false regardless of success or failure
+      setIsLoading(false);
     }
+  }, [retryCount, setCapacityGroups, setIsLoading, setRetryCount, api]);
 
-  };
   useEffect(() => {
-    fetchCapacityGroupsWithRetry();
-  }, [retryCount, access_token]);
+    if (retryCount < maxRetries) {
+      fetchCapacityGroupsWithRetry();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [retryCount, maxRetries]);
 
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {
@@ -106,8 +108,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   const linkToCapacityGroup = async (linkToCapacityGroup: CapacityGroupLink) => {
     try {
       const api = createAPIInstance(access_token);
-      console.log(linkToCapacityGroup)
-      const rest = await api.post('/capacityGroup/link', linkToCapacityGroup);
+      await api.post('/capacityGroup/link', linkToCapacityGroup);
     } catch (error) {
       console.error('Error creating capacityGroup:', error);
     }

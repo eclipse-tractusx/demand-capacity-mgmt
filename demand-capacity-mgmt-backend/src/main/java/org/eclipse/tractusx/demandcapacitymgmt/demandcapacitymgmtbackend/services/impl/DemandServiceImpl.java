@@ -74,22 +74,22 @@ public class DemandServiceImpl implements DemandService {
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
 
     @Override
-    public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest,String userID) {
+    public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest, String userID) {
         validateMaterialDemandRequestFields(materialDemandRequest);
         MaterialDemandEntity materialDemandEntity = convertDtoToEntity(materialDemandRequest);
         List<MaterialDemandEntity> oldMaterialDemands = getAllDemands();
         oldMaterialDemands.add(materialDemandEntity);
-        EventType eventType = updateStatus(oldMaterialDemands,null,userID);
+        EventType eventType = EventType.GENERAL_EVENT;
         materialDemandEntity.setLinkStatus(eventType);
         materialDemandEntity = materialDemandRepository.save(materialDemandEntity);
-        postLogs(materialDemandEntity.getId().toString(), "MATERIAL DEMAND Created", eventType);
+        postLogs(materialDemandEntity.getId().toString(), "Material Demand created", eventType);
         return convertDemandResponseDto(materialDemandEntity);
     }
 
     public EventType updateStatus(
-            List<MaterialDemandEntity> newMaterialDemands,
-            List<MaterialDemandEntity> oldMaterialDemands,
-            String userID
+        List<MaterialDemandEntity> newMaterialDemands,
+        List<MaterialDemandEntity> oldMaterialDemands,
+        String userID
     ) {
         if (newMaterialDemands == null) {
             newMaterialDemands = List.of();
@@ -103,9 +103,9 @@ public class DemandServiceImpl implements DemandService {
                 newMaterialDemands,
                 statusesRepository,
                 linkedCapacityGroupMaterialDemandRepository,
-                    userRepository
+                userRepository
             );
-            return statusesService.updateStatus(true,userID);
+            return statusesService.updateStatus(true, userID);
         }
         return null;
     }
@@ -152,14 +152,18 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
-    public MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest,String userID) {
+    public MaterialDemandResponse updateDemand(
+        String demandId,
+        MaterialDemandRequest materialDemandRequest,
+        String userID
+    ) {
         MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest);
         List<MaterialDemandEntity> oldMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
         demand.setId(UUID.fromString(demandId));
         demand = materialDemandRepository.save(demand);
         List<MaterialDemandEntity> newMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
-        postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT);
-        updateStatus(newMaterialDemands,oldMaterialDemands,userID);
+        postLogs(demandId, "Material Demand updated", EventType.GENERAL_EVENT);
+        updateStatus(newMaterialDemands, oldMaterialDemands, userID);
         return convertDemandResponseDto(demand);
     }
 
@@ -170,7 +174,7 @@ public class DemandServiceImpl implements DemandService {
     @Override
     public void deleteDemandById(String demandId) {
         MaterialDemandEntity demand = getDemandEntity(demandId);
-        postLogs(demandId, "MATERIAL DEMAND Deleted", EventType.GENERAL_EVENT);
+        postLogs(demandId, "Material Demand deleted", EventType.GENERAL_EVENT);
         materialDemandRepository.delete(demand);
     }
 
@@ -325,18 +329,18 @@ public class DemandServiceImpl implements DemandService {
             .forEach(
                 materialDemandSeries -> {
                     if (!UUIDUtil.checkValidUUID(materialDemandSeries.getCustomerLocationId())) {
-                                            throw new BadRequestException(
-                                                400,
-                                                "Not a valid customer location ID",
-                                                new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getCustomerLocationId()))
-                                            );
+                        throw new BadRequestException(
+                            400,
+                            "Not a valid customer location ID",
+                            new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getCustomerLocationId()))
+                        );
                     }
                     if (!UUIDUtil.checkValidUUID(materialDemandSeries.getDemandCategoryId())) {
-                                            throw new BadRequestException(
-                                                400,
-                                                "Not a valid demand category ID",
-                                                new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getDemandCategoryId()))
-                                            );
+                        throw new BadRequestException(
+                            400,
+                            "Not a valid demand category ID",
+                            new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getDemandCategoryId()))
+                        );
                     }
 
                     List<LocalDateTime> dates = materialDemandSeries

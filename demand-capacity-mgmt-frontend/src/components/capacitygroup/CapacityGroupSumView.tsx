@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import '../../../src/index.css';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
@@ -129,7 +129,12 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
   };
 
   // Calculate the sum of demand values for each week
-  const demandSums: Record<number, number> = {};
+  const demandSums = useMemo(() => {
+    const computedDemandSums: Record<number, number> = {};
+
+    return computedDemandSums;
+  }, []);
+
   // Calculate the sum of demandSeriesValues.demand for each week
   const demandSumsByWeek: Record<number, number> = {};
 

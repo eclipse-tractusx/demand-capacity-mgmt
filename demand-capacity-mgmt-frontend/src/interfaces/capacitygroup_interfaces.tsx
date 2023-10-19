@@ -47,12 +47,6 @@ interface Address {
   myCompany: string;
 }
 
-interface UnitOfMeasure {
-  id: string;
-  codeValue: string;
-  displayValue: string;
-}
-
 interface Capacities {
   capacityId: string,
   actualCapacity: number,

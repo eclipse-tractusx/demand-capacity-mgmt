@@ -63,7 +63,7 @@ function EventsPage() {
         };
 
         fetchData();
-    }, [userInput, events]);
+    }, [userInput, events, fetchFilteredEvents]);
 
 
     return (

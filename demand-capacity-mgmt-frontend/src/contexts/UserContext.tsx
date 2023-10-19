@@ -20,9 +20,9 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { User } from "../interfaces/user_interface";
-import { refreshToken as fetchNewToken } from "../util/RefreshToken"
+import { refreshToken as fetchNewToken } from "../util/RefreshToken";
 
 interface UserContextProps {
     user: User | null;
@@ -48,7 +48,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [access_token, setAccessToken] = useState<string | null>(() => localStorage.getItem('access_token') || null);
     const [expiresIn, setExpiresIn] = useState<number | null>(() => Number(localStorage.getItem('expiresIn')) || null);
 
-    const refreshToken = async () => {
+    const refreshToken = useCallback(async () => {
         if (refresh_token) {
             try {
                 const response = await fetchNewToken(refresh_token);
@@ -60,7 +60,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 console.error("Failed to refresh token", error);
             }
         }
-    }
+    }, [refresh_token]);
 
     useEffect(() => {
         if (user) {
@@ -104,7 +104,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 clearTimeout(timeoutId);
             }
         };
-    }, [expiresIn, refresh_token]);
+    }, [expiresIn, refresh_token, refreshToken]);
 
     return (
         <UserContext.Provider value={{ user, setUser, refresh_token, setRefreshToken, access_token, setAccessToken, expiresIn, setExpiresIn }}>
