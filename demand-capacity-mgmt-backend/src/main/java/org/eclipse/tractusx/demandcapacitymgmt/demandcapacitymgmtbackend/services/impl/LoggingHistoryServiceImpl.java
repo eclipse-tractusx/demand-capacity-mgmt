@@ -68,6 +68,7 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         if (userEntity.isPresent()) {
             userAccount = userEntity.get().getUsername();
         } else {
+            //If no user account defined, we set it to system, usefull for system and EDC Event logs
             userAccount = "System";
         }
         loggingHistoryRequest.setUserAccount(userAccount);
@@ -184,30 +185,31 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         String startTime,
         String endTime
     ) {
-            Timestamp startTimeStamp;
-            Timestamp endTimeStamp;
-            if (!(startTime.isEmpty() && endTime.isEmpty())) {
-                startTimeStamp = new Timestamp(Long.parseLong(startTime) * 1000L);
-                endTimeStamp = new Timestamp(Long.parseLong(endTime) * 1000L);
-            } else {
-                startTimeStamp = null;
-                endTimeStamp = null;
-            }
+        Timestamp startTimeStamp;
+        Timestamp endTimeStamp;
+        if (!(startTime.isEmpty() && endTime.isEmpty())) {
+            startTimeStamp = new Timestamp(Long.parseLong(startTime) * 1000L);
+            endTimeStamp = new Timestamp(Long.parseLong(endTime) * 1000L);
+        } else {
+            startTimeStamp = null;
+            endTimeStamp = null;
+        }
         List<LoggingHistoryResponse> loggingHistoryResponses = getAllLoggingHistory();
         List<LoggingHistoryResponse> filteredLoggingHistoryResponses = new ArrayList<>();
 
         for (LoggingHistoryResponse log : loggingHistoryResponses) {
-            if (isOnTimeInterval(startTimeStamp, endTimeStamp, Timestamp.valueOf(log.getTimeCreated()))
-                    || isMatchesId(capacityGroupId, materialDemandId, log)
-                    || containsEventText(filterText, log)) {
-
+            if (
+                isOnTimeInterval(startTimeStamp, endTimeStamp, Timestamp.valueOf(log.getTimeCreated())) ||
+                isMatchesId(capacityGroupId, materialDemandId, log) ||
+                containsEventText(filterText, log)
+            ) {
                 filteredLoggingHistoryResponses.add(log);
             }
         }
 
         loggingHistoryResponses = filteredLoggingHistoryResponses;
 
-            return loggingHistoryResponses;
+        return loggingHistoryResponses;
     }
 
     private static boolean isMatchesId(String capacityGroupId, String materialDemandId, LoggingHistoryResponse log) {

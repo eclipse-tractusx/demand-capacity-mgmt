@@ -27,6 +27,7 @@ import { FcTodoList } from "react-icons/fc";
 import { DemandContext } from "../../contexts/DemandContextProvider";
 import { EventsContext } from "../../contexts/EventsContextProvider";
 import { EventProp, EventType } from "../../interfaces/event_interfaces";
+import { LoadingMessage } from "../common/LoadingMessages";
 import DemandsSearch from "../common/Search";
 import DemandList from "../demands/DemandList";
 import EventsTable from "../events/EventsTable";
@@ -57,8 +58,8 @@ function TodoListPage() {
       }
     };
 
-    fetchData(); // Call the fetchData function when the component mounts
-  }, []);
+    fetchData();
+  }, [fetchFilteredEvents]);
 
   const toggleWizardModal = () => {
     setShowWizard(!showWizard); // Toggle the state (true to false or false to true)
@@ -70,6 +71,10 @@ function TodoListPage() {
   const handleRefreshClick = () => {
     fetchDemandProps(); // Call your fetchEvents function to refresh the data
   };
+
+  if (loading) {
+    return <LoadingMessage />; // Show loading spinner when data is loading
+  }
 
   return (
     <>

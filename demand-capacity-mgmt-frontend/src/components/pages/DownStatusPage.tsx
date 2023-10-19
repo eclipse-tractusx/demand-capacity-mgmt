@@ -24,6 +24,7 @@ import { useContext, useEffect, useState } from "react";
 import { FcBearish } from "react-icons/fc";
 import { EventsContext } from "../../contexts/EventsContextProvider";
 import { EventProp, EventType } from "../../interfaces/event_interfaces";
+import { LoadingMessage } from "../common/LoadingMessages";
 import EventsTable from "../events/EventsTable";
 
 function DownStatusPage() {
@@ -50,7 +51,11 @@ function DownStatusPage() {
         };
 
         fetchData(); // Call the fetchData function when the component mounts
-    }, []);
+    }, [fetchFilteredEvents]);
+
+    if (loading) {
+        return <LoadingMessage />; // Show loading spinner when data is loading
+    }
 
     return (
         <>

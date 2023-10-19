@@ -50,6 +50,7 @@ function CapacityGroupDetailsPage() {
   const { getDemandbyId } = useContext(DemandContext)!;
   const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
   const navigate = useNavigate()
+
   useEffect(() => {
     if (id) {
       (async () => {
@@ -87,7 +88,7 @@ function CapacityGroupDetailsPage() {
         }
       })();
     }
-  }, [id, getCapacityGroupById, , getDemandbyId]);
+  }, [id, getCapacityGroupById, fetchFilteredEvents, navigate, getDemandbyId]);
 
 
 
@@ -136,7 +137,7 @@ function CapacityGroupDetailsPage() {
         </div>
       </>
     );
-  }, [capacityGroup, activeTab]);
+  }, [capacityGroup, capacityGroupEvents, materialDemands, activeTab]);
 
   return memoizedComponent;
 }

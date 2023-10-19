@@ -64,7 +64,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private static List<CapacityGroupEntity> newCapacityGroups;
 
     @Override
-    public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest,String userID) {
+    public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest, String userID) {
         CapacityGroupEntity capacityGroupEntity = enrichCapacityGroup(capacityGroupRequest);
         capacityGroupEntity = capacityGroupRepository.save(capacityGroupEntity);
         String cgID = capacityGroupEntity.getId().toString();
@@ -96,7 +96,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 linkedCapacityGroupMaterialDemandRepository,
                 userRepository
             );
-            statusesService.updateStatus(false,userID);
+            statusesService.updateStatus(false, userID);
         }
     }
 
@@ -115,15 +115,14 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         loggingHistoryRequest.setObjectType(EventObjectType.CAPACITY_GROUP.name());
         loggingHistoryRequest.setMaterialDemandId("");
         loggingHistoryRequest.setCapacityGroupId(capacityGroupId);
-        loggingHistoryRequest.setEventDescription("Capacity Group Created");
+        loggingHistoryRequest.setEventDescription("Capacity Group created");
         loggingHistoryRequest.setIsFavorited(isFavorited.get());
         loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
         loggingHistoryService.createLog(loggingHistoryRequest);
     }
 
-
     @Override
-    public void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest,String userID) {
+    public void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest, String userID) {
         oldCapacityGroups = capacityGroupRepository.findAll();
         Optional<CapacityGroupEntity> optionalCapacityGroupEntity = capacityGroupRepository.findById(
             UUID.fromString(linkCGDSRequest.getCapacityGroupID())
@@ -175,7 +174,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
         loggingHistoryRequest.setObjectType(EventObjectType.LINK_DEMAND_SERVICE.name());
         loggingHistoryRequest.setEventType(EventType.LINKED.toString());
-        loggingHistoryRequest.setEventDescription("LinkDemands Created");
+        loggingHistoryRequest.setEventDescription("Demand linked to Capacity Group");
         loggingHistoryService.createLog(loggingHistoryRequest);
     }
 

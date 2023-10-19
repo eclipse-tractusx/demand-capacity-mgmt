@@ -203,7 +203,16 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
                 />
                 <YAxis label={{ value: "Amount", angle: -90, position: "insideLeft" }} />
 
-                <Tooltip />
+                <Tooltip formatter={(value, name, props) => {
+                    if (name === 'Demand') {
+                        return [value, 'Demand'];
+                    } else if (name === 'actualCapacity') {
+                        return [value, 'Actual Capacity'];
+                    } else if (name === 'maximumCapacity') {
+                        return [value, 'Maximum Capacity'];
+                    }
+                    return [value, '']; // Return an empty string for other cases
+                }} />
                 <Legend verticalAlign="bottom" height={36} wrapperStyle={{ bottom: -10 }} />
 
 

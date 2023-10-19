@@ -74,6 +74,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const fetchDemandProps = useCallback(() => {
     fetchDemandPropsWithRetry();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [access_token]);
 
   useEffect(() => {

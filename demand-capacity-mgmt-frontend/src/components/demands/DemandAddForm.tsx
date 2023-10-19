@@ -280,7 +280,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
                 required
               >
                 <UnitsofMeasureContextContextProvider>
-                  <UnitsOfMeasureOptions selectedUnitMeasureId='' />
+                  <UnitsOfMeasureOptions selectedUnitMeasureId={formState.unitMeasureId} />
                 </UnitsofMeasureContextContextProvider>
               </Form.Select>
             </Form.Group>
@@ -296,7 +296,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
               required
             >
               <CompanyContextProvider>
-                <CompanyOptions selectedCompanyName='' />
+                <CompanyOptions selectedCompanyName={formState.supplierId} />
               </CompanyContextProvider>
             </Form.Select>
           </Form.Group>

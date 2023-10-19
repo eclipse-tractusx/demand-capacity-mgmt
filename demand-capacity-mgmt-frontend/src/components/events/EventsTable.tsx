@@ -22,7 +22,7 @@
 
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { FaArchive, FaArrowDown, FaArrowUp, FaCopy, FaEllipsisV, FaEnvelope, FaExclamation, FaExternalLinkAlt, FaStar, FaTrashAlt, FaUnlink, FaWrench } from 'react-icons/fa';
+import { FaArchive, FaArrowDown, FaArrowUp, FaCopy, FaEllipsisV, FaEnvelope, FaExclamation, FaLink, FaStar, FaTrashAlt, FaUnlink, FaWrench } from 'react-icons/fa';
 import { EventsContext } from '../../contexts/EventsContextProvider';
 import { EventProp } from '../../interfaces/event_interfaces';
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
@@ -52,7 +52,7 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
         ALERT: <FaExclamation className="text-danger" size={25} />,
         STATUS_IMPROVEMENT: <FaArrowUp className="text-success" size={25} />,
         STATUS_REDUCTION: <FaArrowDown className="text-danger" size={25} />,
-        LINKED: <FaExternalLinkAlt className="text-info" size={25} />,
+        LINKED: <FaLink className="text-info" size={25} />,
         UN_LINKED: <FaUnlink className="text-danger" size={25} />,
     };
 
@@ -119,7 +119,7 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
                 console.error('Error deleting event:', error);
             }
         },
-        [deleteArchivedEventId, deleteEventId, eventsContext]
+        [deleteArchivedEventId, deleteEventId, isArchive, eventsContext]
     );
 
     const handleDeleteButtonClick = (id: string) => {
