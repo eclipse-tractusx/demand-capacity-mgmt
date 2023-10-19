@@ -174,7 +174,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private void postLogs() {
         LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
         loggingHistoryRequest.setObjectType(EventObjectType.LINK_DEMAND_SERVICE.name());
-        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
+        loggingHistoryRequest.setEventType(EventType.LINKED.toString());
         loggingHistoryRequest.setEventDescription("LinkDemands Created");
         loggingHistoryService.createLog(loggingHistoryRequest);
     }
