@@ -811,13 +811,12 @@ paths:
       operationId: getFavorite
       responses:
         200:
-          description: favorite response array
+          description: Combined response with three arrays
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FavoriteResponse'
+                $ref: '#/components/schemas/FavoriteResponse'
+
     post:
       tags:
         - favorite
@@ -1723,9 +1722,15 @@ components:
     FavoriteResponse:
       type: object
       properties:
-        favoriteId:
-          type: string
-        fType:
-          type: string
-        fTypeId:
-          type: string
+        capacityGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/SingleCapacityGroup'
+        materialDemands:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialDemandResponse'
+        companies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyDto'

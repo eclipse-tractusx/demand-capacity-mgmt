@@ -36,12 +36,11 @@ function InfoMenu() {
     const formatData = (data: number | null | undefined): number | string => {
         return data !== null && data !== undefined ? data : '0';
     };
-
     return (
         <>
             <Nav className="me-auto">
                 <Nav.Link href="/"><FaHome /> Home</Nav.Link>
-                <Nav.Link href="../#favorites"><FaStar /> Favorites <span className="ms-1 badge rounded-pill text-bg-primary"
+                <Nav.Link onClick={() => handleNavigation('/favorites')}><FaStar /> Favorites <span className="ms-1 badge rounded-pill text-bg-primary"
                     id="favorites-count">-</span></Nav.Link>
 
                 <Nav.Link href="../alerts">Alerts

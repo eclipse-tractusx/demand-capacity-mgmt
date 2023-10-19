@@ -93,8 +93,8 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private FavoriteResponse convertFavoriteResponse(FavoriteEntity request) {
         FavoriteResponse response = new FavoriteResponse();
-        response.setFavoriteId(request.getId().toString());
-        response.setfType(request.getType().name());
+
+
         return response;
     }
 
