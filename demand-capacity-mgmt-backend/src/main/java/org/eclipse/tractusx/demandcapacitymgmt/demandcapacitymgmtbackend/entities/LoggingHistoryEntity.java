@@ -24,23 +24,22 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-
-import java.sql.Timestamp;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.UserSpecificEventStatus;
-import org.hibernate.annotations.GenericGenerator;
+
+import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 @Table(name = "logging_history")
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoggingHistoryEntity {
 
     @Id
@@ -79,28 +78,4 @@ public class LoggingHistoryEntity {
     @Column(name = "IS_FAVORITED")
     @Nullable
     private Boolean isFavorited;
-
-    public LoggingHistoryEntity(
-        int id,
-        String userAccount,
-        Timestamp time_created,
-        EventType eventType,
-        UUID capacityGroupId,
-        UUID materialDemandId,
-        String description,
-        EventObjectType objectType,
-        Boolean isFavorited
-    ) {
-        this.id = id;
-        this.userAccount = userAccount;
-        this.time_created = time_created;
-        this.eventType = eventType;
-        this.capacityGroupId = capacityGroupId;
-        this.materialDemandId = materialDemandId;
-        this.description = description;
-        this.objectType = objectType;
-        this.isFavorited = isFavorited;
-    }
-
-    public LoggingHistoryEntity() {}
 }
