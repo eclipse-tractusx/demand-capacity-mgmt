@@ -79,9 +79,6 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
         const simplifiedDate = new Date(week).toISOString().split('T')[0];
         demandSumsMap[simplifiedDate] = demandSumsByWeek[week];
     });
-    console.log(demands)
-    console.log(demandSumsMap)
-    console.log(rawCapacities)
 
     // Create data for the chart by matching calendarWeek with demand sums
     const data: CapacityGroupData[] = rawCapacities.map((d) => {

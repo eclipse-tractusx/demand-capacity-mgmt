@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import React, {createContext, useEffect, useState} from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import {
   CapacityGroupCreate,
   CapacityGroupLink,
@@ -28,7 +28,7 @@ import {
   SingleCapacityGroup
 } from '../interfaces/capacitygroup_interfaces';
 import createAPIInstance from "../util/Api";
-import {useUser} from './UserContext';
+import { useUser } from './UserContext';
 
 
 interface CapacityGroupContextData {
@@ -106,6 +106,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   const linkToCapacityGroup = async (linkToCapacityGroup: CapacityGroupLink) => {
     try {
       const api = createAPIInstance(access_token);
+      console.log(linkToCapacityGroup)
       const rest = await api.post('/capacityGroup/link', linkToCapacityGroup);
     } catch (error) {
       console.error('Error creating capacityGroup:', error);

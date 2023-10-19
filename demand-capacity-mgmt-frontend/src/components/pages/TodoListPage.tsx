@@ -36,7 +36,7 @@ function TodoListPage() {
   const { fetchDemandProps } = useContext(DemandContext)!;
   const [showWizard, setShowWizard] = useState(false);
   const [showAddToExisting, setShowAddToExisting] = useState(false);
-  const [activeTab, setActiveTab] = useState("Events");
+  const [activeTab, setActiveTab] = useState("Demands");
   const { fetchFilteredEvents } = useContext(EventsContext)!;
   const [filteredEvents, setFilteredEvents] = useState<EventProp[]>([]);
   const [loading, setLoading] = useState(false);
@@ -90,7 +90,7 @@ function TodoListPage() {
             }
           }}
         >
-          <Tab eventKey="Events" title="Events">
+          <Tab eventKey="Demands" title="Demands">
             <div className="table">
               <div className="table-wrapper">
                 <div className="table-title">
@@ -131,7 +131,7 @@ function TodoListPage() {
               </div>
             </div>
           </Tab>
-          <Tab eventKey="Log" title="Events">
+          <Tab eventKey="Events" title="Events">
             <EventsTable events={filteredEvents} isArchive={false} />
           </Tab>
         </Tabs>
