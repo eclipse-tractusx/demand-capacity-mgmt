@@ -114,49 +114,53 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
     @Override
     public void receiveWeekBasedCapacityGroup() {
-        List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository.getAllByViewed(
-            false
-        );
+        try {
+            List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository.getAllByViewed(
+                false
+            );
 
-        weekBasedCapacityGroupEntities.forEach(
-            weekBasedCapacityGroupEntity -> {
-                WeekBasedCapacityGroupRequest weekBasedCapacityGroup = weekBasedCapacityGroupEntity.getWeekBasedCapacityGroup();
+            weekBasedCapacityGroupEntities.forEach(
+                weekBasedCapacityGroupEntity -> {
+                    WeekBasedCapacityGroupRequest weekBasedCapacityGroup = weekBasedCapacityGroupEntity.getWeekBasedCapacityGroup();
 
-                if (weekBasedCapacityGroup != null) {
-                    List<LinkedDemandSeriesRequest> likedDemandSeriesList = weekBasedCapacityGroup.getLinkedDemandSeries();
+                    if (weekBasedCapacityGroup != null) {
+                        List<LinkedDemandSeriesRequest> likedDemandSeriesList = weekBasedCapacityGroup.getLinkedDemandSeries();
 
-                    if (likedDemandSeriesList != null) {
-                        for (LinkedDemandSeriesRequest likedDemandSeries : likedDemandSeriesList) {
-                            String materialNumberCustomer = likedDemandSeries.getMaterialNumberCustomer();
-                            String customerLocation = likedDemandSeries.getCustomerLocation();
-                            String demandCategoryCode = likedDemandSeries.getDemandCategory().getDemandCategory();
+                        if (likedDemandSeriesList != null) {
+                            for (LinkedDemandSeriesRequest likedDemandSeries : likedDemandSeriesList) {
+                                String materialNumberCustomer = likedDemandSeries.getMaterialNumberCustomer();
+                                String customerLocation = likedDemandSeries.getCustomerLocation();
+                                String demandCategoryCode = likedDemandSeries.getDemandCategory().getDemandCategory();
 
-                            List<MaterialDemandEntity> matchingDemands = materialDemandRepository.findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
-                                materialNumberCustomer,
-                                customerLocation,
-                                demandCategoryCode
-                            );
+                                List<MaterialDemandEntity> matchingDemands = materialDemandRepository.findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
+                                    materialNumberCustomer,
+                                    customerLocation,
+                                    demandCategoryCode
+                                );
 
-                            matchingDemands.forEach(
-                                materialDemandEntity ->
-                                    materialDemandEntity
-                                        .getDemandSeries()
-                                        .forEach(
-                                            demandSeries -> {
-                                                demandSeries.setCapacityGroupId(
-                                                    weekBasedCapacityGroup.getCapacityGroupId()
-                                                );
-                                            }
-                                        )
-                            );
+                                matchingDemands.forEach(
+                                    materialDemandEntity ->
+                                        materialDemandEntity
+                                            .getDemandSeries()
+                                            .forEach(
+                                                demandSeries -> {
+                                                    demandSeries.setCapacityGroupId(
+                                                        weekBasedCapacityGroup.getCapacityGroupId()
+                                                    );
+                                                }
+                                            )
+                                );
 
-                            materialDemandRepository.saveAll(matchingDemands);
+                                materialDemandRepository.saveAll(matchingDemands);
+                            }
                         }
                     }
                 }
-            }
-        );
-        // updateStatus(); TODO: remove the comment when the EDC is ready
+            );
+            // updateStatus(); TODO: remove the comment when the EDC is ready
+        } catch (Exception e) {
+            //Probably sql initialize error here.
+        }
     }
 
     @Override

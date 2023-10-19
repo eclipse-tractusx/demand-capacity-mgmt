@@ -143,7 +143,7 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         if (null != materialDemandID && !materialDemandID.isEmpty()) {
             loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
         }
-        if (null != capacityGroupID && !capacityGroupID.isEmpty()) {
+        if (null != capacityGroupID && !capacityGroupID.isEmpty() && !capacityGroupID.equalsIgnoreCase("null")) {
             loggingHistoryEntity.setCapacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()));
         }
         loggingHistoryEntity.setUserAccount(loggingHistoryRequest.getUserAccount());
