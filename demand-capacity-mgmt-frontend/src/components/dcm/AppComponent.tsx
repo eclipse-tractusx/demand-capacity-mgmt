@@ -37,6 +37,8 @@ import EventsPage from "../pages/EventsPage";
 import TodoListPage from '../pages/TodoListPage';
 import UpStatusPage from '../pages/UpStatusPage';
 import Layout from './Layout';
+import FavoritesPage from "../pages/FavoritesPage";
+import FavoritesContextProvider from "../../contexts/FavoritesContextProvider";
 
 
 const AppComponent: React.FC = () => {
@@ -118,6 +120,18 @@ const AppComponent: React.FC = () => {
                             <EventsContextProvider>
                                 <EventsPage />
                             </EventsContextProvider>
+                        </Layout>
+                    </DemandContextProvider>
+                </AuthenticatedRoute>
+            } />
+
+            <Route path="/favorites" element={
+                <AuthenticatedRoute>
+                    <DemandContextProvider>
+                        <Layout>
+                            <FavoritesContextProvider>
+                                <FavoritesPage />
+                            </FavoritesContextProvider>
                         </Layout>
                     </DemandContextProvider>
                 </AuthenticatedRoute>
