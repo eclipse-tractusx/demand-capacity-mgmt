@@ -238,7 +238,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
   // Use another useEffect to listen for changes in the tableRef
   useEffect(() => {
     if (tableRef.current) {
-      console.log('Without this console log is not scrolling automatically.. god knows why.');
       setShouldScroll(true);
     }
   }, [demandValuesMap, tableRef]);
