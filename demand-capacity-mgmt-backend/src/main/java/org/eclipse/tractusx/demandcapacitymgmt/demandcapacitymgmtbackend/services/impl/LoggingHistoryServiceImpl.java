@@ -29,10 +29,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryR
 import jakarta.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +37,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.ArchivedLogsRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LoggingHistoryRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UserRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
@@ -53,6 +51,8 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     private final LoggingHistoryRepository loggingHistoryRepository;
     private final ArchivedLogsRepository archivedLogsRepository;
     private final FavoriteService favoriteService;
+
+    private final UserRepository userRepository;
     private final HttpServletRequest request;
 
     @Override
@@ -64,7 +64,10 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     @Override
     public LoggingHistoryResponse createLog(LoggingHistoryRequest loggingHistoryRequest) {
         String userAccount = UserUtil.getUserID(request);
-        if (userAccount == null || userAccount.isEmpty()) {
+        Optional<UserEntity> userEntity = userRepository.findById(UUID.fromString(userAccount));
+        if (userEntity.isPresent()) {
+            userAccount = userEntity.get().getUsername();
+        } else {
             userAccount = "System";
         }
         loggingHistoryRequest.setUserAccount(userAccount);
