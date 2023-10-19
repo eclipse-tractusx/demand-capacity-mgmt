@@ -167,7 +167,16 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             }
         }
         newCapacityGroups = capacityGroupRepository.findAll();
+        postLogs();
         updateStatus(userID);
+    }
+
+    private void postLogs() {
+        LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
+        loggingHistoryRequest.setObjectType(EventObjectType.LINK_DEMAND_SERVICE.name());
+        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
+        loggingHistoryRequest.setEventDescription("LinkDemands Created");
+        loggingHistoryService.createLog(loggingHistoryRequest);
     }
 
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest request) {
