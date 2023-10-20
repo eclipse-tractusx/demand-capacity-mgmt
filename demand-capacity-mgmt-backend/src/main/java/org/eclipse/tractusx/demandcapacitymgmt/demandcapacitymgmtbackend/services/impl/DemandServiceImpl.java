@@ -23,18 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -49,6 +37,15 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @Service
@@ -113,14 +110,21 @@ public class DemandServiceImpl implements DemandService {
     private void postLogs(String materialDemandId, String eventDescription, EventType eventType) {
         AtomicBoolean isFavorited = new AtomicBoolean(false);
         favoriteService
-            .getAllFavoritesByType(FavoriteType.MATERIAL_DEMAND.toString())
-            .forEach(
-                favoriteResponse -> {
-                    if (favoriteResponse.getfTypeId().equals(materialDemandId)) {
-                        isFavorited.set(true);
-                    }
-                }
-            );
+                .getAllFavoritesByType(FavoriteType.MATERIAL_DEMAND.toString())
+                .forEach(
+                        favoriteResponse -> {
+                            Optional<MaterialDemandResponse> found = Optional.empty();
+                            for (MaterialDemandResponse mt : favoriteResponse.getMaterialDemands()) {
+                                if (mt.getId().equals(materialDemandId)) {
+                                    found = Optional.of(mt);
+                                    break;
+                                }
+                            }
+                            if (found.isPresent()) {
+                                isFavorited.set(true);
+                            }
+                        }
+                );
         LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
         loggingHistoryRequest.setObjectType(EventObjectType.MATERIAL_DEMAND.name());
         loggingHistoryRequest.setMaterialDemandId(materialDemandId);
