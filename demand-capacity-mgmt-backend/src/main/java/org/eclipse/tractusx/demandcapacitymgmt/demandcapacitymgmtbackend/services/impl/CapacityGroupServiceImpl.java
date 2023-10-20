@@ -41,19 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
-import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
@@ -82,7 +70,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         capacityGroupEntity.setLinkStatus(eventType);
         capacityGroupEntity = capacityGroupRepository.save(capacityGroupEntity);
         String cgID = capacityGroupEntity.getId().toString();
-        postLogs(cgID);
+        postLogs(cgID,userID);
         for (UUID uuid : capacityGroupRequest.getLinkMaterialDemandIds()) {
             LinkedCapacityGroupMaterialDemandEntity entity = new LinkedCapacityGroupMaterialDemandEntity();
             entity.setCapacityGroupID(capacityGroupEntity.getId());
@@ -113,24 +101,15 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         return null;
     }
 
-    private void postLogs(String capacityGroupId) {
-        /*AtomicBoolean isFavorited = new AtomicBoolean(false);
-        favoriteService
-            .getAllFavoritesByType(FavoriteType.CAPACITY_GROUP.toString())
-            .forEach(
-                favoriteResponse -> {
-                    Optional<SingleCapacityGroup> found = Optional.empty();
-                    for (SingleCapacityGroup cg : favoriteResponse.getCapacityGroups()) {
-                        if (cg.getCapacityGroupId().equals(capacityGroupId)) {
-                            found = Optional.of(cg);
-                            break;
-                        }
-                    }
-                    if (found.isPresent()) {
-                        isFavorited.set(true);
-                    }
-                }
-            );
+    private void postLogs(String capacityGroupId,String userID) {
+        AtomicBoolean isFavorited = new AtomicBoolean(false);
+        FavoriteResponse favoriteResponse = favoriteService.getAllFavorites(userID);
+        for(SingleCapacityGroupFavoriteResponse singleCapacityGroupFavoriteResponse : favoriteResponse.getCapacityGroups()){
+            if(singleCapacityGroupFavoriteResponse.getId().equals(capacityGroupId)){
+                isFavorited.set(true);
+                break;
+            }
+        }
         LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
         loggingHistoryRequest.setObjectType(EventObjectType.CAPACITY_GROUP.name());
         loggingHistoryRequest.setMaterialDemandId("");
@@ -138,8 +117,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         loggingHistoryRequest.setEventDescription("Capacity Group created");
         loggingHistoryRequest.setIsFavorited(isFavorited.get());
         loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
-        loggingHistoryService.createLog(loggingHistoryRequest); */
-        //TODO FIX THIS
+        loggingHistoryService.createLog(loggingHistoryRequest);
     }
 
     @Override
@@ -151,7 +129,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
         List<MaterialDemandEntity> materialDemandEntities = new ArrayList<>();
 
-        for (UUID uuid : linkCGDSRequest.getLinkedMaterialDemandID()) {
+        for (UUID uuid : linkCGDSRequest.getLinkMaterialDemandIds()) {
             Optional<MaterialDemandEntity> materialDemandEntity = materialDemandRepository.findById(uuid);
             if (materialDemandEntity.isPresent()) {
                 MaterialDemandEntity materialDemand = materialDemandEntity.get();
@@ -189,7 +167,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         newCapacityGroups = capacityGroupRepository.findAll();
         EventType eventType = updateStatus(userID,true);
 
-        for (UUID uuid : linkCGDSRequest.getLinkedMaterialDemandID()) {
+        for (UUID uuid : linkCGDSRequest.getLinkMaterialDemandIds()) {
             Optional<MaterialDemandEntity> materialDemandEntity = materialDemandRepository.findById(uuid);
             materialDemandEntity.ifPresent(demandEntity -> {
             demandEntity.setLinkStatus(eventType);
@@ -319,7 +297,9 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             response.setNumberOfMaterials(
                 linkedCapacityGroupMaterialDemandRepository.countByCapacityGroupID(entity.getId())
             );
-            response.setLinkStatus(entity.getLinkStatus().toString());
+            if(entity.getLinkStatus()!=null) {
+                response.setLinkStatus(entity.getLinkStatus().toString());
+            }
             capacityGroupList.add(response);
         }
         return capacityGroupList;

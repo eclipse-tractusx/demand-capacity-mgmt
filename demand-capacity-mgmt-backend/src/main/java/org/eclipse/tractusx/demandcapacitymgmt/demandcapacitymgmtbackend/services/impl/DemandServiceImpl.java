@@ -23,28 +23,12 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
@@ -61,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @Service
@@ -98,7 +83,7 @@ public class DemandServiceImpl implements DemandService {
         EventType eventType = updateStatus(oldMaterialDemands, oldMaterialDemands, userID);
         materialDemandEntity.setLinkStatus(eventType);
         materialDemandEntity = materialDemandRepository.save(materialDemandEntity);
-        postLogs(materialDemandEntity.getId().toString(), "Material Demand created", eventType);
+        postLogs(materialDemandEntity.getId().toString(), "Material Demand created", eventType,userID);
         return convertDemandResponseDto(materialDemandEntity);
     }
 
@@ -126,36 +111,22 @@ public class DemandServiceImpl implements DemandService {
         return null;
     }
 
-    private void postLogs(String materialDemandId, String eventDescription, EventType eventType) {
-        /*AtomicBoolean isFavorited = new AtomicBoolean(false);
-        favoriteService
-                .getAllFavoritesByType(FavoriteType.MATERIAL_DEMAND.toString())
-                .forEach(
-                        favoriteResponse -> {
-                            Optional<MaterialDemandResponse> found = Optional.empty();
-                            for (MaterialDemandResponse mt : favoriteResponse.getMaterialDemands()) {
-                                if (mt.getId().equals(materialDemandId)) {
-                                    found = Optional.of(mt);
-                                    break;
-                                }
-                            }
-                            if (found.isPresent()) {
-                                isFavorited.set(true);
-                            }
-                        }
-                );
+    private void postLogs(String materialDemandId, String eventDescription, EventType eventType,String userID) {
+        AtomicBoolean isFavorited = new AtomicBoolean(false);
+        FavoriteResponse favoriteResponse = favoriteService.getAllFavorites(userID);
+        for(MaterialDemandFavoriteResponse materialDemandFavoriteResponse : favoriteResponse.getMaterialDemands()){
+            if(materialDemandFavoriteResponse.getId().equals(materialDemandId)){
+                isFavorited.set(true);
+                break;
+            }
+        }
         LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
         loggingHistoryRequest.setObjectType(EventObjectType.MATERIAL_DEMAND.name());
         loggingHistoryRequest.setMaterialDemandId(materialDemandId);
         loggingHistoryRequest.setIsFavorited(isFavorited.get());
         loggingHistoryRequest.setEventDescription(eventDescription);
-
-        // TODO : Add EventType
         loggingHistoryRequest.setEventType(eventType.toString());
-
         loggingHistoryService.createLog(loggingHistoryRequest);
-         */
-        //TODO FIX THIS
     }
 
     @Override
@@ -199,7 +170,7 @@ public class DemandServiceImpl implements DemandService {
         EventType eventType = updateStatus(newMaterialDemands, oldMaterialDemands, userID);
         demand.setLinkStatus(eventType);
         demand = materialDemandRepository.save(demand);
-        postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT);
+        postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT,userID);
         return convertDemandResponseDto(demand);
     }
 
@@ -208,9 +179,9 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
-    public void deleteDemandById(String demandId) {
+    public void deleteDemandById(String demandId,String userID) {
         MaterialDemandEntity demand = getDemandEntity(demandId);
-        postLogs(demandId, "Material Demand deleted", EventType.GENERAL_EVENT);
+        postLogs(demandId, "Material Demand deleted", EventType.GENERAL_EVENT,userID);
         materialDemandRepository.delete(demand);
     }
 
@@ -327,6 +298,7 @@ public class DemandServiceImpl implements DemandService {
         responseDto.setCustomer(customer);
         responseDto.setSupplier(supplier);
 
+        if(materialDemandEntity.getLinkStatus() != null){
         if((materialDemandEntity.getLinkStatus().equals(EventType.TODO)  || (materialDemandEntity.getLinkStatus().equals(EventType.UN_LINKED))
                 && user.getRole().equals(Role.CUSTOMER))){
             responseDto.setLinkStatus(String.valueOf(EventType.UN_LINKED));
@@ -335,6 +307,7 @@ public class DemandServiceImpl implements DemandService {
             responseDto.setLinkStatus(String.valueOf(EventType.TODO));
         }else {
         responseDto.setLinkStatus(String.valueOf(materialDemandEntity.getLinkStatus()));
+        }
         }
 
         responseDto.setChangedAt(materialDemandEntity.getChangedAt().toString());
