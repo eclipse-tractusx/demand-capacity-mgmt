@@ -27,10 +27,9 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.MaterialDemandResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import java.util.List;
-import java.util.List;
-
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
@@ -54,17 +53,19 @@ public class DemandController implements DemandApi {
 
     @Override
     public ResponseEntity<List<MaterialDemandSeriesResponse>> getDemandSeries() throws Exception {
-        List<MaterialDemandSeriesResponse> demandSeriesResponses = demandService.getDemandSeries();
-        return ResponseEntity.status(HttpStatus.OK).body(demandSeriesResponses);
+        //        List<MaterialDemandSeriesResponse> demandSeriesResponses = demandService.getDemandSeries();
+        //        return ResponseEntity.status(HttpStatus.OK).body(demandSeriesResponses);
+        return null;
     }
 
     @Override
     public ResponseEntity<List<MaterialDemandSeriesResponse>> getDemandSeriesByMaterialDemand(String materialDemandId)
         throws Exception {
-        List<MaterialDemandSeriesResponse> demandSeriesResponses = demandService.getDemandSeriesByMaterialDemand(
-            materialDemandId
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(demandSeriesResponses);
+        //        List<MaterialDemandSeriesResponse> demandSeriesResponses = demandService.getDemandSeriesByMaterialDemand(
+        //            materialDemandId
+        //        );
+        //        return ResponseEntity.status(HttpStatus.OK).body(demandSeriesResponses);
+        return null;
     }
 
     @Override
@@ -99,7 +100,7 @@ public class DemandController implements DemandApi {
     @Override
     public ResponseEntity<MaterialDemandResponse> postDemand(MaterialDemandRequest materialDemandRequest) {
         String userID = UserUtil.getUserID(request);
-        MaterialDemandResponse responseDto = demandService.createDemand(materialDemandRequest,userID);
+        MaterialDemandResponse responseDto = demandService.createDemand(materialDemandRequest, userID);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
@@ -109,7 +110,7 @@ public class DemandController implements DemandApi {
         MaterialDemandRequest materialDemandRequest
     ) {
         String userID = UserUtil.getUserID(request);
-        MaterialDemandResponse responseDto = demandService.updateDemand(demandId, materialDemandRequest,userID);
+        MaterialDemandResponse responseDto = demandService.updateDemand(demandId, materialDemandRequest, userID);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

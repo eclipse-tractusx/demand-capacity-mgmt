@@ -96,7 +96,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
                 oldWeekBasedMaterialDemands,
                 oldWeekBasedCapacityGroups,
                 newWeekBasedCapacityGroups,
-                    userRepository
+                userRepository
             );
             statusesService.updateWeeklyBasedStatus();
         }

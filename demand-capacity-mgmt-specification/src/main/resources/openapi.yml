@@ -1439,7 +1439,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesResponse'
-        link_status:
+        linkStatus:
           type: string
 
 
@@ -1640,7 +1640,7 @@ components:
           type: string
         status:
           type: string
-        link_status:
+        linkStatus:
           type: string
 
     LinkCGDSRequest:
@@ -1648,7 +1648,8 @@ components:
       properties:
         capacityGroupID:
           type: string
-        linkMaterialDemandIds:
+
+        linkedMaterialDemandID:
           type: array
           items:
             type: string
@@ -1678,8 +1679,6 @@ components:
           items:
             type: string
             format: uuid
-        link_status:
-          type: string
 
     SingleCapacityGroup:
       type: object

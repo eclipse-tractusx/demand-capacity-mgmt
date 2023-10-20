@@ -249,13 +249,13 @@ const DemandManagement: React.FC = () => {
               </span>
             ) : demand.linkStatus === EventType.TODO ? (
               <span className="badge rounded-pill bg-warning text-black" id="tag-warning">
-                TODO
+                samo
               </span>
             ) : demand.linkStatus === EventType.UN_LINKED ? (
               <span className="badge rounded-pill bg-danger text-white" id="tag-danger">
                 Unlinked
               </span>
-            ) : (
+            ): (
               <span className="badge rounded-pill bg-secondary text-white">N/A</span>
             )}
           </td>

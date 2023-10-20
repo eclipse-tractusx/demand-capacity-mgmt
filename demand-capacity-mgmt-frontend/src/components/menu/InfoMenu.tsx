@@ -46,26 +46,26 @@ function InfoMenu() {
 
                 <Nav.Link href="../alerts">Alerts
                     <span className="ms-1 badge rounded-pill text-bg-danger" id="alerts-count">
-                        {formatData(data?.general)}
+                        {formatData(data?.overall_general)}
                     </span>
                 </Nav.Link>
 
                 <Nav.Link href="../up">
                     <FaArrowUp /> Status
                     <span className="ms-1 badge rounded-pill text-bg-success" id="status-plus-count">
-                        {formatData(data?.statusImprovement)}
+                        {formatData(data?.overall_statusImprovement)}
                     </span>
                 </Nav.Link>
                 <Nav.Link href="../down">
                     <FaArrowDown /> Status
                     <span className="ms-1 badge rounded-pill text-bg-danger" id="status-minus-count">
-                        {formatData(data?.statusDegredation)}
+                        {formatData(data?.overall_statusDegredation)}
                     </span>
                 </Nav.Link>
                 <Nav.Link href="../todo">
                     Todo
                     <span className="ms-1 badge rounded-pill text-bg-warning" id="todo-count">
-                        {formatData(data?.todos)}
+                        {formatData(data?.overall_todos)}
                     </span>
                 </Nav.Link>
                 <Nav.Link onClick={() => handleNavigation('/events')}>

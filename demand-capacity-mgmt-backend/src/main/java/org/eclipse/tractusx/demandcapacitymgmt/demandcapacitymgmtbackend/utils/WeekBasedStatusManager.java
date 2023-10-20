@@ -52,15 +52,11 @@ public class WeekBasedStatusManager {
 
     public static EventType getEventType(
         boolean isMaterialDemandLinkedToCG,
-        boolean isCustomer,
         StatusColor oldStatusColor,
         StatusColor newStatusColor
     ) {
         if (!isMaterialDemandLinkedToCG) {
-            if (!isCustomer) {
                 return EventType.TODO;
-            }
-            return EventType.UN_LINKED;
         }
         if (newStatusColor == oldStatusColor) {
             return EventType.GENERAL_EVENT;
@@ -391,7 +387,7 @@ public class WeekBasedStatusManager {
             newCapacityQuantity.getActualCapacity()
         );
 
-        return getEventType(true, false, oldStatusColor, newStatusColor);
+        return getEventType(true, oldStatusColor, newStatusColor);
     }
 }
 
