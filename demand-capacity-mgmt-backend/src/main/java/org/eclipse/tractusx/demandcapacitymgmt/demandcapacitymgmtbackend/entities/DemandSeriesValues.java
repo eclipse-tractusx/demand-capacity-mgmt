@@ -23,10 +23,9 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDate;
 import java.util.UUID;
+import lombok.*;
 
 @Entity
 @Table(name = "demand_series_values")

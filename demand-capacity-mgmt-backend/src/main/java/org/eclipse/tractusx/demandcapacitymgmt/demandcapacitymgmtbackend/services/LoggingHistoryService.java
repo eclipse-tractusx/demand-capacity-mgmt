@@ -23,7 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-
 import java.util.List;
 
 public interface LoggingHistoryService {

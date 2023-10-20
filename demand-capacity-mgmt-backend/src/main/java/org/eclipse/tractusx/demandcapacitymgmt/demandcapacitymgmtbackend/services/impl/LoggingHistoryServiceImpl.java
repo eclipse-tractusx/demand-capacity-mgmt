@@ -24,6 +24,10 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import jakarta.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.ArchivedLogEntity;
@@ -38,11 +42,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -244,26 +243,24 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         List<LoggingHistoryResponse> loggingHistoryResponses = new java.util.ArrayList<>(List.of());
         FavoriteResponse favoriteResponses = favoriteService.getAllFavorites(userID);
 
-        for(MaterialDemandFavoriteResponse materialDemandFavoriteResponse : favoriteResponses.getMaterialDemands()){
+        for (MaterialDemandFavoriteResponse materialDemandFavoriteResponse : favoriteResponses.getMaterialDemands()) {
             loggingHistoryResponses.addAll(getLoggingHistoryByMaterialDemandId(materialDemandFavoriteResponse.getId()));
         }
 
         return loggingHistoryResponses;
     }
 
-
     @Override
     public List<LoggingHistoryResponse> filterByFavoriteCapacityGroup(String userID) {
         List<LoggingHistoryResponse> loggingHistoryResponses = new java.util.ArrayList<>(List.of());
         FavoriteResponse favoriteResponses = favoriteService.getAllFavorites(userID);
 
-        for(SingleCapacityGroupFavoriteResponse singleCapacityGroupFavoriteResponse : favoriteResponses.getCapacityGroups()){
+        for (SingleCapacityGroupFavoriteResponse singleCapacityGroupFavoriteResponse : favoriteResponses.getCapacityGroups()) {
             loggingHistoryResponses.addAll(getLoggingHistoryByCapacityId(singleCapacityGroupFavoriteResponse.getId()));
         }
 
         return loggingHistoryResponses;
     }
-
 
     private LoggingHistoryResponse convertLoggingHistoryResponseDto(LoggingHistoryEntity loggingHistoryEntity) {
         LoggingHistoryResponse responseDto = new LoggingHistoryResponse();

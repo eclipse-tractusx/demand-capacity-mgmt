@@ -22,13 +22,12 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
+import java.util.List;
+import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.FavoriteEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
-
-import java.util.List;
-import java.util.UUID;
 
 public interface FavoriteRepository extends JpaRepository<FavoriteEntity, UUID> {
     FavoriteEntity findByUserIDAndId(UUID userID, int id);

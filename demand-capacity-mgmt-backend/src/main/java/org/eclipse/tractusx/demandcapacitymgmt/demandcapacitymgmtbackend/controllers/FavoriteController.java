@@ -26,14 +26,13 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.api.FavoriteApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -61,7 +60,6 @@ public class FavoriteController implements FavoriteApi {
         return ResponseEntity.status(200).body(responseList);
     }
 
-
     @Override
     public ResponseEntity<List<FavoriteResponse>> getFavoriteByType(String type) {
         //FavoriteResponse responseList = favoriteService.getAllFavoritesByType(type,UserUtil.getUserID(request));
@@ -70,13 +68,9 @@ public class FavoriteController implements FavoriteApi {
     }
 
     @Override
-    public ResponseEntity<FavoriteResponse> updateFavorite(Integer id, String type, FavoriteRequest favoriteRequest) throws Exception {
-        FavoriteResponse response = favoriteService.updateFavorite(
-                id,
-                favoriteRequest,
-                UserUtil.getUserID(request)
-        );
+    public ResponseEntity<FavoriteResponse> updateFavorite(Integer id, String type, FavoriteRequest favoriteRequest)
+        throws Exception {
+        FavoriteResponse response = favoriteService.updateFavorite(id, favoriteRequest, UserUtil.getUserID(request));
         return ResponseEntity.status(200).body(response);
     }
-
 }

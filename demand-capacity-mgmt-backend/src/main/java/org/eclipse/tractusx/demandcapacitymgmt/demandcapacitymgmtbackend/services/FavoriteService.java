@@ -24,7 +24,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
-
 import java.util.UUID;
 
 public interface FavoriteService {
