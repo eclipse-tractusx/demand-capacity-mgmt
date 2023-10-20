@@ -846,7 +846,7 @@ paths:
           required: true
           description: ID of the favorite to update
           schema:
-            type: string
+            type: integer
         - name: type
           in: query
           required: true
@@ -1457,6 +1457,50 @@ components:
         myCompany:
           type: string
 
+    CompanyDtoFavoriteResponse:
+      type: object
+      properties:
+        bpn:
+          type: string
+        companyName:
+          type: string
+        zipCode:
+          type: string
+        country:
+          type: string
+        myCompany:
+          type: string
+
+    MaterialDemandFavoriteResponse:
+      type: object
+      properties:
+        materialDescriptionCustomer:
+          type: string
+        materialNumberCustomer:
+          type: string
+        materialNumberSupplier:
+          type: string
+        customer:
+          type: string
+        supplier:
+          type: string
+        unitOfMeasure:
+          type: string
+        changedAt:
+          type: string
+
+    SingleCapacityGroupFavoriteResponse:
+      type: object
+      properties:
+        customer:
+          type: string
+        supplier:
+          type: string
+        capacityGroupId:
+          type: string
+        capacityGroupName:
+          type: string
+
     UnitMeasure:
       type: object
       properties:
@@ -1725,12 +1769,12 @@ components:
         capacityGroups:
           type: array
           items:
-            $ref: '#/components/schemas/SingleCapacityGroup'
+            $ref: '#/components/schemas/SingleCapacityGroupFavoriteResponse'
         materialDemands:
           type: array
           items:
-            $ref: '#/components/schemas/MaterialDemandResponse'
+            $ref: '#/components/schemas/MaterialDemandFavoriteResponse'
         companies:
           type: array
           items:
-            $ref: '#/components/schemas/CompanyDto'
+            $ref: '#/components/schemas/CompanyDtoFavoriteResponse'

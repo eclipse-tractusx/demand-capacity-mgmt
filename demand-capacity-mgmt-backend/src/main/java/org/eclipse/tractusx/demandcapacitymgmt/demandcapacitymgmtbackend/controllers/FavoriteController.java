@@ -27,7 +27,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.ResponseEntity;
@@ -61,25 +60,25 @@ public class FavoriteController implements FavoriteApi {
 
     @Override
     public ResponseEntity<FavoriteResponse> getFavorite() throws Exception {
-        FavoriteResponse responseList = favoriteService.getAllFavorites();
+        FavoriteResponse responseList = favoriteService.getAllFavorites(UserUtil.getUserID(request));
         return ResponseEntity.status(200).body(responseList);
     }
 
 
     @Override
     public ResponseEntity<List<FavoriteResponse>> getFavoriteByType(String type) {
-        List<FavoriteResponse> responseList = favoriteService.getAllFavoritesByType(type);
+        List<FavoriteResponse> responseList = favoriteService.getAllFavoritesByType(type,UserUtil.getUserID(request));
         return ResponseEntity.status(200).body(responseList);
     }
 
     @Override
-    public ResponseEntity<FavoriteResponse> updateFavorite(String id, String type, FavoriteRequest favoriteRequest) {
+    public ResponseEntity<FavoriteResponse> updateFavorite(Integer id, String type, FavoriteRequest favoriteRequest) throws Exception {
         FavoriteResponse response = favoriteService.updateFavorite(
-            UUID.fromString(id),
-            FavoriteType.valueOf(type),
-            favoriteRequest,
-            UserUtil.getUserID(request)
+                id,
+                favoriteRequest,
+                UserUtil.getUserID(request)
         );
         return ResponseEntity.status(200).body(response);
     }
+
 }

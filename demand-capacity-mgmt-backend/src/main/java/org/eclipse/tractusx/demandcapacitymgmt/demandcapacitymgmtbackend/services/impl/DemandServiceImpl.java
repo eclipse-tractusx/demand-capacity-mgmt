@@ -26,9 +26,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
@@ -45,7 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @Service
@@ -108,7 +105,7 @@ public class DemandServiceImpl implements DemandService {
     }
 
     private void postLogs(String materialDemandId, String eventDescription, EventType eventType) {
-        AtomicBoolean isFavorited = new AtomicBoolean(false);
+        /*AtomicBoolean isFavorited = new AtomicBoolean(false);
         favoriteService
                 .getAllFavoritesByType(FavoriteType.MATERIAL_DEMAND.toString())
                 .forEach(
@@ -135,6 +132,8 @@ public class DemandServiceImpl implements DemandService {
         loggingHistoryRequest.setEventType(eventType.toString());
 
         loggingHistoryService.createLog(loggingHistoryRequest);
+         */
+        //TODO FIX THIS
     }
 
     @Override
