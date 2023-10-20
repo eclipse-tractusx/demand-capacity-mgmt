@@ -23,17 +23,35 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -66,14 +84,18 @@ public class DemandServiceImpl implements DemandService {
     private final StatusesRepository statusesRepository;
     private final CapacityGroupRepository capacityGroupRepository;
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
+    private final HttpServletRequest request;
 
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest, String userID) {
         validateMaterialDemandRequestFields(materialDemandRequest);
-        MaterialDemandEntity materialDemandEntity = convertDtoToEntity(materialDemandRequest);
+        MaterialDemandEntity materialDemandEntity = convertDtoToEntity(
+                materialDemandRequest,
+                materialDemandRequest.getId()
+        );
         List<MaterialDemandEntity> oldMaterialDemands = getAllDemands();
         oldMaterialDemands.add(materialDemandEntity);
-        EventType eventType = EventType.GENERAL_EVENT;
+        EventType eventType = updateStatus(oldMaterialDemands, oldMaterialDemands, userID);
         materialDemandEntity.setLinkStatus(eventType);
         materialDemandEntity = materialDemandRepository.save(materialDemandEntity);
         postLogs(materialDemandEntity.getId().toString(), "Material Demand created", eventType);
@@ -160,13 +182,24 @@ public class DemandServiceImpl implements DemandService {
         MaterialDemandRequest materialDemandRequest,
         String userID
     ) {
-        MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest);
+        MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest, demandId);
         List<MaterialDemandEntity> oldMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
+        List<MaterialDemandEntity> newMaterialDemands = new ArrayList<>();
         demand.setId(UUID.fromString(demandId));
+
+        oldMaterialDemands.forEach(materialDemandEntity -> {
+                    if (materialDemandEntity.getId().toString().equals(demandId)) {
+                        MaterialDemandEntity updateMaterial = convertDtoToEntity(materialDemandRequest,demandId);
+                        newMaterialDemands.add(updateMaterial);
+                    }else {
+                        newMaterialDemands.add(materialDemandEntity);
+                    }
+                }
+        );
+        EventType eventType = updateStatus(newMaterialDemands, oldMaterialDemands, userID);
+        demand.setLinkStatus(eventType);
         demand = materialDemandRepository.save(demand);
-        List<MaterialDemandEntity> newMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
-        postLogs(demandId, "Material Demand updated", EventType.GENERAL_EVENT);
-        updateStatus(newMaterialDemands, oldMaterialDemands, userID);
+        postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT);
         return convertDemandResponseDto(demand);
     }
 
@@ -255,9 +288,6 @@ public class DemandServiceImpl implements DemandService {
     }
 
     private MaterialDemandEntity getDemandEntity(String demandId) {
-        if (demandId.isEmpty()) {
-            return null;
-        }
         UUIDUtil.checkValidUUID(demandId);
         UUID uuid = UUIDUtil.generateUUIDFromString(demandId);
         Optional<MaterialDemandEntity> demand = materialDemandRepository.findById(uuid);
@@ -275,6 +305,11 @@ public class DemandServiceImpl implements DemandService {
 
     private MaterialDemandResponse convertDemandResponseDto(MaterialDemandEntity materialDemandEntity) {
         MaterialDemandResponse responseDto = new MaterialDemandResponse();
+        UserEntity user = null;
+        Optional<UserEntity> userEntity = userRepository.findById(UUID.fromString(UserUtil.getUserID(request)));
+        if (userEntity.isPresent()) {
+            user = userEntity.get();
+        }
 
         CompanyDto customer = null;
         if (materialDemandEntity.getCustomerId() != null) {
@@ -291,7 +326,17 @@ public class DemandServiceImpl implements DemandService {
         responseDto.setMaterialNumberSupplier(materialDemandEntity.getMaterialNumberSupplier());
         responseDto.setCustomer(customer);
         responseDto.setSupplier(supplier);
+
+        if((materialDemandEntity.getLinkStatus().equals(EventType.TODO)  || (materialDemandEntity.getLinkStatus().equals(EventType.UN_LINKED))
+                && user.getRole().equals(Role.CUSTOMER))){
+            responseDto.setLinkStatus(String.valueOf(EventType.UN_LINKED));
+        } else if((materialDemandEntity.getLinkStatus().equals(EventType.TODO)  || (materialDemandEntity.getLinkStatus().equals(EventType.UN_LINKED))
+                && user.getRole().equals(Role.SUPPLIER))){
+            responseDto.setLinkStatus(String.valueOf(EventType.TODO));
+        }else {
         responseDto.setLinkStatus(String.valueOf(materialDemandEntity.getLinkStatus()));
+        }
+
         responseDto.setChangedAt(materialDemandEntity.getChangedAt().toString());
         responseDto.setId(materialDemandEntity.getId().toString());
 
@@ -397,55 +442,43 @@ public class DemandServiceImpl implements DemandService {
             );
     }
 
-    private MaterialDemandEntity convertDtoToEntity(MaterialDemandRequest materialDemandRequest) {
+    private MaterialDemandEntity convertDtoToEntity(MaterialDemandRequest materialDemandRequest, String id) {
         CompanyEntity supplierEntity = companyService.getCompanyById(
-            UUIDUtil.generateUUIDFromString(materialDemandRequest.getSupplierId())
+                UUIDUtil.generateUUIDFromString(materialDemandRequest.getSupplierId())
         );
 
         CompanyEntity customerEntity = companyService.getCompanyById(
-            UUIDUtil.generateUUIDFromString(materialDemandRequest.getSupplierId())
+                UUIDUtil.generateUUIDFromString(materialDemandRequest.getCustomerId())
         );
 
         UnitMeasureEntity unitMeasure = unityOfMeasureService.findById(
-            UUID.fromString(materialDemandRequest.getUnitMeasureId())
+                UUID.fromString(materialDemandRequest.getUnitMeasureId())
         );
 
         List<DemandSeries> demandSeriesList = materialDemandRequest
-            .getMaterialDemandSeries()
-            .stream()
-            .map(
-                materialDemandSeries -> {
-                    DemandCategoryEntity demandCategory = demandCategoryService.findById(
-                        UUIDUtil.generateUUIDFromString(materialDemandSeries.getDemandCategoryId())
-                    );
-                    return enrichDemandSeries(materialDemandSeries, customerEntity, demandCategory);
-                }
-            )
-            .toList();
+                .getMaterialDemandSeries()
+                .stream()
+                .map(
+                        materialDemandSeries -> {
+                            DemandCategoryEntity demandCategory = demandCategoryService.findById(
+                                    UUIDUtil.generateUUIDFromString(materialDemandSeries.getDemandCategoryId())
+                            );
+                            return enrichDemandSeries(materialDemandSeries, customerEntity, demandCategory);
+                        }
+                )
+                .toList();
 
         return MaterialDemandEntity
-            .builder()
-            .materialDescriptionCustomer(materialDemandRequest.getMaterialDescriptionCustomer())
-            .materialNumberCustomer(materialDemandRequest.getMaterialNumberCustomer())
-            .materialNumberSupplier(materialDemandRequest.getMaterialNumberSupplier())
-            .customerId(customerEntity)
-            .supplierId(supplierEntity)
-            .unitMeasure(unitMeasure)
-            .demandSeries(demandSeriesList)
-            .changedAt(LocalDateTime.now())
-            .build();
-    }
-
-    public List<MaterialDemandSeriesResponse> getDemandSeries() {
-        return demandSeriesRepository.findAll().stream().map(this::enrichMaterialDemandSeriesResponse).toList();
-    }
-
-    @Override
-    public List<MaterialDemandSeriesResponse> getDemandSeriesByMaterialDemand(String materialDemandId) {
-        return getDemandSeries()
-            .stream()
-            .filter(demand -> materialDemandId.equals(demand.getMaterialDemandId()))
-            .toList();
+                .builder()
+                .materialDescriptionCustomer(materialDemandRequest.getMaterialDescriptionCustomer())
+                .materialNumberCustomer(materialDemandRequest.getMaterialNumberCustomer())
+                .materialNumberSupplier(materialDemandRequest.getMaterialNumberSupplier())
+                .customerId(customerEntity)
+                .supplierId(supplierEntity)
+                .unitMeasure(unitMeasure)
+                .demandSeries(demandSeriesList)
+                .changedAt(LocalDateTime.now())
+                .build();
     }
 
     private DemandSeries enrichDemandSeries(
@@ -457,16 +490,12 @@ public class DemandServiceImpl implements DemandService {
             materialDemandSeries.getDemandSeriesValues()
         );
 
-        MaterialDemandEntity materialDemand = getDemandEntityById(materialDemandSeries.getMaterialDemand());
-
         return DemandSeries
             .builder()
             .expectedSupplierLocation(materialDemandSeries.getExpectedSupplierLocationId())
             .customerLocation(customerEntity)
             .demandCategory(demandCategory)
             .demandSeriesValues(demandSeriesValues)
-            .materialDemand(materialDemand)
-            .capacityGroupId(materialDemandSeries.getDemandCategoryId())
             .build();
     }
 

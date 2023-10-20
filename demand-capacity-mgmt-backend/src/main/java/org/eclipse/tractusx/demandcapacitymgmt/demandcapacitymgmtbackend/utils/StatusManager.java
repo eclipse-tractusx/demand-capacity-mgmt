@@ -23,11 +23,9 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
@@ -49,7 +47,10 @@ public class StatusManager {
 
     private UserRepository userRepository;
 
-    public StatusManager(LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository,UserRepository userRepository) {
+    public StatusManager(
+        LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository,
+        UserRepository userRepository
+    ) {
         this.linkedCapacityGroupMaterialDemandRepository = linkedCapacityGroupMaterialDemandRepository;
         this.userRepository = userRepository;
     }
@@ -63,18 +64,15 @@ public class StatusManager {
         int overAllTodoCount,
         int overAllStatusImprovementCount,
         int overAllStatusReductionCount,
-        String userID) {
-        Optional<UserEntity> userEntity = userRepository.findById(UUID.fromString(userID));
-        UserEntity user = null;
-        if(userEntity.isPresent()){
-            user = userEntity.get();
-        }
+        UserEntity user
+    ) {
         if (currentStatuses == null) {
             if (overAllTodoCount != 0) {
                 if (user.getRole().equals(Role.CUSTOMER)) {
+                    setEventType(EventType.UN_LINKED);
+                } else {
                     setEventType(EventType.TODO);
                 }
-                setEventType(EventType.UN_LINKED);
             } else if (overAllStatusImprovementCount != 0) {
                 setEventType(EventType.STATUS_IMPROVEMENT);
             } else if (overAllStatusReductionCount != 0) {
@@ -84,11 +82,12 @@ public class StatusManager {
             }
         } else {
             // if to-do increased, then the latest status is todo
-            if (currentStatuses.getOverallTodos() != overAllTodoCount && overAllTodoCount != 0) {
-                if (user.getRole().equals(Role.CUSTOMER)) {
+            if (currentStatuses.getOverallTodos() != overAllTodoCount && overAllTodoCount != 0 && !(overAllTodoCount < currentStatuses.getOverallTodos())) {
+                if (user.getRole().equals(Role.SUPPLIER)) {
                     setEventType(EventType.TODO);
+                } else {
+                    setEventType(EventType.UN_LINKED);
                 }
-                setEventType(EventType.UN_LINKED);
             } else if (
                 currentStatuses.getOverallStatusImprovement() != overAllStatusImprovementCount &&
                 overAllStatusImprovementCount != 0
@@ -115,10 +114,11 @@ public class StatusManager {
         List<CapacityGroupEntity> newCapacityGroup,
         List<MaterialDemandEntity> oldMaterialDemand,
         List<MaterialDemandEntity> newMaterialDemand,
-        String userID) {
+        String userID
+    ) {
         Optional<UserEntity> userEntity = userRepository.findById(UUID.fromString(userID));
         UserEntity user = null;
-        if(userEntity.isPresent()){
+        if (userEntity.isPresent()) {
             user = userEntity.get();
         }
         List<MaterialCapacityQuantity> oldCapacityQuantities = new ArrayList<>();
@@ -134,14 +134,37 @@ public class StatusManager {
         AtomicInteger overAllStatusReductionCount = new AtomicInteger();
         AtomicInteger overAllTodoCount = new AtomicInteger();
 
-        try {
-            processMaterialDemands(todoCount, overAllTodoCount, newCapacityGroup, newMaterialDemand, newCapacityQuantities);
-            processMaterialDemands(todoCount, overAllTodoCount, oldCapacityGroup, oldMaterialDemand, oldCapacityQuantities);
-        } catch (Exception e) {
-            //TODO SAJA FIX
-            System.out.println("Needs fix.");
-        }
+        AtomicBoolean isLinked = new AtomicBoolean(false);
+        List<LinkedCapacityGroupMaterialDemandEntity> linkedCGMD = linkedCapacityGroupMaterialDemandRepository.findAll();
 
+        newMaterialDemand.forEach(
+                materialDemandEntity -> {
+                    isLinked.set(
+                            !(
+                                    linkedCGMD
+                                            .stream()
+                                            .filter(li -> li.getMaterialDemandID().equals(materialDemandEntity.getId()))
+                                            .toList()
+                                            .isEmpty()
+                            )
+                    );
+
+                    if (!isLinked.get()) {
+                        overAllTodoCount.incrementAndGet();
+                        materialDemandEntity
+                                .getDemandSeries()
+                                .forEach(
+                                        demandSeries -> {
+                                            todoCount.set(todoCount.get() + demandSeries.getDemandSeriesValues().size());
+                                        }
+                                );
+                    }
+                }
+        );
+
+        processMaterialDemands(  newCapacityGroup, newMaterialDemand, newCapacityQuantities);
+
+        processMaterialDemands( oldCapacityGroup, oldMaterialDemand, oldCapacityQuantities);
 
         processCapacityQuantities(
             oldCapacityQuantities,
@@ -169,47 +192,19 @@ public class StatusManager {
             overAllTodoCount.intValue(),
             overAllStatusImprovementCount.intValue(),
             overAllStatusReductionCount.intValue(),
-                userID
+            user
         );
 
         return statusRequest;
     }
 
     private Map<MaterialDemandEntity, CapacityGroupEntity> processMaterialDemands(
-        AtomicInteger todoCount,
-        AtomicInteger overAllTodoCount,
         List<CapacityGroupEntity> CapacityGroupEntities,
         List<MaterialDemandEntity> materialDemandEntities,
         List<MaterialCapacityQuantity> materialCapacityQuantities
     ) {
         Map<MaterialDemandEntity, CapacityGroupEntity> capacitiesLinkedDemandsMap = new HashMap<>();
-        AtomicBoolean isLinked = new AtomicBoolean(false);
         List<LinkedCapacityGroupMaterialDemandEntity> linkedCGMD = linkedCapacityGroupMaterialDemandRepository.findAll();
-
-        materialDemandEntities.forEach(
-            materialDemandEntity -> {
-                isLinked.set(
-                    !(
-                        linkedCGMD
-                            .stream()
-                            .filter(li -> li.getMaterialDemandID().equals(materialDemandEntity.getId()))
-                            .toList()
-                            .isEmpty()
-                    )
-                );
-
-                if (!isLinked.get()) {
-                    overAllTodoCount.incrementAndGet();
-                    materialDemandEntity
-                        .getDemandSeries()
-                        .forEach(
-                            demandSeries -> {
-                                todoCount.set(todoCount.get() + demandSeries.getDemandSeriesValues().size());
-                            }
-                        );
-                }
-            }
-        );
 
         CapacityGroupEntities.forEach(
             capacityGroup -> {
@@ -256,7 +251,12 @@ public class StatusManager {
     MaterialDemandEntity getMaterialDemandById(List<MaterialDemandEntity> materialDemandEntities, String id) {
         List<MaterialDemandEntity> materialDemands = materialDemandEntities
             .stream()
-            .filter(materialDemandEntity -> materialDemandEntity.getId().toString().equals(id))
+            .filter(materialDemandEntity -> {
+                if(materialDemandEntity.getId() == null){
+                    return false;
+                }
+                return materialDemandEntity.getId().toString().equals(id);
+            })
             .toList();
         if (!materialDemands.isEmpty()) return materialDemands.get(0);
         return null;
@@ -303,14 +303,20 @@ public class StatusManager {
             oldCapacityQuantity ->
                 newMaterialCapacityQuantities.forEach(
                     newCapacityQuantity -> {
-                        EventType eventType = getEventType(oldCapacityQuantity, newCapacityQuantity,user);
+                        EventType eventType = getEventType(oldCapacityQuantity, newCapacityQuantity, user);
 
                         if (eventType == EventType.STATUS_REDUCTION) {
                             if (
                                 previousDemand.get() == -1 ||
                                 previousDemand.get() != newCapacityQuantity.getMaterialDemandOrder()
                             ) {
-                                overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
+                                if(statusReductionCount.get() > statusImprovementCount.get()){
+                                    overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
+                                }
+                                if(statusImprovementCount.get() > statusReductionCount.get()){
+                                    overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
+
+                                }
                             }
                             statusReductionCount.set(statusReductionCount.get() + 1);
                         } else if (eventType == EventType.STATUS_IMPROVEMENT) {
@@ -318,8 +324,13 @@ public class StatusManager {
                                 previousDemand.get() != -1 ||
                                 previousDemand.get() != newCapacityQuantity.getMaterialDemandOrder()
                             ) {
-                                overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
-                            }
+                                if(statusReductionCount.get() > statusImprovementCount.get()){
+                                    overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
+                                }
+                                if(statusImprovementCount.get() > statusReductionCount.get()){
+                                    overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
+
+                                }                            }
                             statusImprovementCount.set(statusImprovementCount.get() + 1);
                         }
                         previousDemand.set(newCapacityQuantity.getMaterialDemandOrder());
@@ -345,7 +356,7 @@ public class StatusManager {
         );
 
         return WeekBasedStatusManager.getEventType(
-            true, user.getRole().equals(Role.CUSTOMER),
+            true,
             oldStatusColor,
             newStatusColor
         );

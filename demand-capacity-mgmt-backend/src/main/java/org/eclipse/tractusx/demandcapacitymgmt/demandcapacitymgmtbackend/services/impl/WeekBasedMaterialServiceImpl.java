@@ -144,7 +144,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                 newWeekBasedMaterialDemands,
                 oldWeekBasedCapacityGroups,
                 oldWeekBasedCapacityGroups,
-                    userRepository
+                userRepository
             );
             statusesService.updateWeeklyBasedStatus();
         }

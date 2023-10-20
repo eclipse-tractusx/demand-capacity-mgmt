@@ -28,17 +28,14 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 
 public interface DemandService {
-    MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest,String userID);
+    MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest, String userID);
 
     List<MaterialDemandResponse> getAllDemandsByProjectId();
-    List<MaterialDemandSeriesResponse> getDemandSeries();
-    List<MaterialDemandSeriesResponse> getDemandSeriesByMaterialDemand(String materialDemandId);
-
     MaterialDemandEntity getDemandEntityById(String demandId);
 
     MaterialDemandResponse getDemandById(String demandId);
 
-    MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest,String userID);
+    MaterialDemandResponse updateDemand(String demandId, MaterialDemandRequest materialDemandRequest, String userID);
 
     void deleteDemandById(String demandId);
 
