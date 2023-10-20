@@ -23,10 +23,8 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.sql.Timestamp;
+
 import java.util.List;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventStatus;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 
 public interface LoggingHistoryService {
     List<LoggingHistoryResponse> getAllLoggingHistory();
@@ -37,8 +35,8 @@ public interface LoggingHistoryService {
     List<ArchivedLoggingHistoryResponse> getAllArchivedLogs();
     void deleteAllArchivedLogs();
     void deleteArchivedLogById(String logId);
-    List<LoggingHistoryResponse> filterByFavoriteMaterialDemand();
-    List<LoggingHistoryResponse> filterByFavoriteCapacityGroup();
+    List<LoggingHistoryResponse> filterByFavoriteMaterialDemand(String userID);
+    List<LoggingHistoryResponse> filterByFavoriteCapacityGroup(String userID);
 
     List<LoggingHistoryResponse> filterLog(
         String capacityGroupId,

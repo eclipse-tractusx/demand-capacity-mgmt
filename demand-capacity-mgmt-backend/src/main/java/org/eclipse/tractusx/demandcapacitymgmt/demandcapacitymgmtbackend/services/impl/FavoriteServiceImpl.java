@@ -88,6 +88,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         if(cgEntity.isPresent()){
             CapacityGroupEntity capacityGroup = cgEntity.get();
             SingleCapacityGroupFavoriteResponse scgfv = new SingleCapacityGroupFavoriteResponse();
+            scgfv.setId(capacityGroup.getId().toString());
             scgfv.setCapacityGroupId(capacityGroup.getId().toString());
             scgfv.setCapacityGroupName(capacityGroup.getCapacityGroupName());
             scgfv.setCustomer(capacityGroup.getCustomer().getBpn());
@@ -102,6 +103,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             MaterialDemandEntity materialDemand = materialDemandEntity.get();
 
             MaterialDemandFavoriteResponse response = new MaterialDemandFavoriteResponse();
+            response.setId(materialDemand.getId().toString());
             response.setCustomer(materialDemand.getCustomerId().toString());
             response.setSupplier(materialDemand.getSupplierId().toString());
             response.setMaterialNumberCustomer(materialDemand.getMaterialNumberCustomer());
@@ -119,6 +121,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             CompanyEntity companyEntity = cEntity.get();
 
             CompanyDtoFavoriteResponse companyFavoriteResponse = new CompanyDtoFavoriteResponse();
+            companyFavoriteResponse.setId(companyEntity.getId().toString());
             companyFavoriteResponse.setBpn(companyEntity.getBpn());
             companyFavoriteResponse.setMyCompany(companyEntity.getMyCompany());
             companyFavoriteResponse.setCompanyName(companyEntity.getCompanyName());
@@ -127,13 +130,6 @@ public class FavoriteServiceImpl implements FavoriteService {
 
             return companyFavoriteResponse;
         } else return null;
-    }
-
-    @Override
-    public List<FavoriteResponse> getAllFavoritesByType(String type, String userID) {
-        List<FavoriteEntity> favoriteEntities = favoriteRepository.findByType(FavoriteType.valueOf(type));
-        //return favoriteEntities.stream().map(this::convertFavoriteResponse).toList();
-        return null;
     }
 
     @Override

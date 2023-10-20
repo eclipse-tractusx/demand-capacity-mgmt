@@ -1460,6 +1460,8 @@ components:
     CompanyDtoFavoriteResponse:
       type: object
       properties:
+        id:
+          type: string
         bpn:
           type: string
         companyName:
@@ -1474,6 +1476,8 @@ components:
     MaterialDemandFavoriteResponse:
       type: object
       properties:
+        id:
+          type: string
         materialDescriptionCustomer:
           type: string
         materialNumberCustomer:
@@ -1492,6 +1496,8 @@ components:
     SingleCapacityGroupFavoriteResponse:
       type: object
       properties:
+        id:
+          type: string
         customer:
           type: string
         supplier:
@@ -1686,8 +1692,7 @@ components:
       properties:
         capacityGroupID:
           type: string
-
-        linkedMaterialDemandID:
+        linkMaterialDemandIds:
           type: array
           items:
             type: string

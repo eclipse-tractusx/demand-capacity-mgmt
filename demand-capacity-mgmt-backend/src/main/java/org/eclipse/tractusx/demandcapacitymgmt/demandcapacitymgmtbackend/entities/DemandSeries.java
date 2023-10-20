@@ -25,10 +25,11 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import java.util.List;
-import java.util.UUID;
 import lombok.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.converters.ListToStringConverter;
+
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "demand_series")
@@ -61,6 +62,8 @@ public class DemandSeries {
 
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinColumn(name = "demand_series_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<DemandSeriesValues> demandSeriesValues;
 
     @ToString.Exclude

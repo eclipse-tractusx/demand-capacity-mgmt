@@ -26,18 +26,23 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.api.LoggingHistoryApi
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.ArchivedLoggingHistoryResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryResponse;
-import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
 public class LoggingHistoryController implements LoggingHistoryApi {
 
     private final LoggingHistoryService loggingHistoryService;
+
+    private HttpServletRequest request;
 
     @Override
     public ResponseEntity<Void> createArchivedLog(LoggingHistoryRequest loggingHistoryRequest) {
@@ -94,12 +99,14 @@ public class LoggingHistoryController implements LoggingHistoryApi {
 
     @Override
     public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistoryForFavoriteCapacityGroups() {
-        return ResponseEntity.status(HttpStatus.OK).body(loggingHistoryService.filterByFavoriteCapacityGroup());
+        String userID = UserUtil.getUserID(request);
+        return ResponseEntity.status(HttpStatus.OK).body(loggingHistoryService.filterByFavoriteCapacityGroup(userID));
     }
 
     @Override
     public ResponseEntity<List<LoggingHistoryResponse>> getLoggingHistoryForFavoriteMaterialDemands() {
-        return ResponseEntity.status(HttpStatus.OK).body(loggingHistoryService.filterByFavoriteMaterialDemand());
+        String userID = UserUtil.getUserID(request);
+        return ResponseEntity.status(HttpStatus.OK).body(loggingHistoryService.filterByFavoriteMaterialDemand(userID));
     }
 
     @Override
