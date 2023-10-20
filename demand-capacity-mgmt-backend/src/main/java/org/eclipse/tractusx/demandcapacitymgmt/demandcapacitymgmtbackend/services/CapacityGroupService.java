@@ -28,9 +28,9 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.CapacityGroupStatus;
 
 public interface CapacityGroupService {
-    CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest,String userID);
+    CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest, String userID);
 
-    void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest,String userID);
+    void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest, String userID);
 
     SingleCapacityGroup getCapacityGroupById(String CapacityGroupId);
     List<CapacityGroupDefaultViewResponse> getAll();

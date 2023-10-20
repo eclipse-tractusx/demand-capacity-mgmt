@@ -24,9 +24,8 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.CapacityGroupApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.util.List;
-
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
@@ -56,14 +55,14 @@ public class CapacityGroupsController implements CapacityGroupApi {
     @Override
     public ResponseEntity<CapacityGroupResponse> postCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
         String userID = UserUtil.getUserID(request);
-        CapacityGroupResponse capacityGroupResponse = service.createCapacityGroup(capacityGroupRequest,userID);
+        CapacityGroupResponse capacityGroupResponse = service.createCapacityGroup(capacityGroupRequest, userID);
         return ResponseEntity.status(HttpStatus.OK).body(capacityGroupResponse);
     }
 
     @Override
     public ResponseEntity<Void> postLinkedCapacityGroupDemand(LinkCGDSRequest linkCGDSRequest) throws Exception {
         String userID = UserUtil.getUserID(request);
-        service.linkCapacityGroupToMaterialDemand(linkCGDSRequest,userID);
+        service.linkCapacityGroupToMaterialDemand(linkCGDSRequest, userID);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

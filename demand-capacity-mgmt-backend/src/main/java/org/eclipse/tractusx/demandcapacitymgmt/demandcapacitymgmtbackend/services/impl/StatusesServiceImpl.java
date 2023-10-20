@@ -151,8 +151,8 @@ public class StatusesServiceImpl implements StatusesService {
         );
     }
 
-    public EventType updateStatus(boolean isMaterialDemand,String userID) {
-        StatusManager statusManager = new StatusManager(linkedCapacityGroupMaterialDemandRepository,userRepository);
+    public EventType updateStatus(boolean isMaterialDemand, String userID) {
+        StatusManager statusManager = new StatusManager(linkedCapacityGroupMaterialDemandRepository, userRepository);
         postStatuses(
             statusManager.retrieveUpdatedStatusRequest(
                 getAllStatuses(),
@@ -164,8 +164,16 @@ public class StatusesServiceImpl implements StatusesService {
             )
         );
         EventType eventType = statusManager.getEventType();
-        if (eventType != EventType.TODO && eventType != EventType.UN_LINKED && isMaterialDemand) {
+
+        if(eventType == EventType.STATUS_REDUCTION || eventType == EventType.STATUS_IMPROVEMENT){
+            return eventType;
+        }
+
+        if (eventType != EventType.TODO && eventType != EventType.UN_LINKED && isMaterialDemand ) {
             return EventType.LINKED;
+        }
+        if(!isMaterialDemand && eventType == EventType.TODO){
+            return EventType.GENERAL_EVENT;
         }
         return eventType;
     }
