@@ -23,6 +23,10 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
@@ -37,11 +41,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -85,7 +84,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private SingleCapacityGroupFavoriteResponse convertToSingleCapacityGroup(FavoriteEntity entity) {
         Optional<CapacityGroupEntity> cgEntity = capacityGroupRepository.findById(entity.getFavoriteId());
-        if(cgEntity.isPresent()){
+        if (cgEntity.isPresent()) {
             CapacityGroupEntity capacityGroup = cgEntity.get();
             SingleCapacityGroupFavoriteResponse scgfv = new SingleCapacityGroupFavoriteResponse();
             scgfv.setId(capacityGroup.getId().toString());
@@ -99,7 +98,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private MaterialDemandFavoriteResponse convertToMaterialDemandResponse(FavoriteEntity entity) {
         Optional<MaterialDemandEntity> materialDemandEntity = materialDemandRepository.findById(entity.getFavoriteId());
-        if(materialDemandEntity.isPresent()){
+        if (materialDemandEntity.isPresent()) {
             MaterialDemandEntity materialDemand = materialDemandEntity.get();
 
             MaterialDemandFavoriteResponse response = new MaterialDemandFavoriteResponse();
@@ -116,8 +115,8 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     private CompanyDtoFavoriteResponse convertToCompanyDto(FavoriteEntity entity) {
-        Optional<CompanyEntity> cEntity =  companyRepository.findById(entity.getFavoriteId());
-        if (cEntity.isPresent()){
+        Optional<CompanyEntity> cEntity = companyRepository.findById(entity.getFavoriteId());
+        if (cEntity.isPresent()) {
             CompanyEntity companyEntity = cEntity.get();
 
             CompanyDtoFavoriteResponse companyFavoriteResponse = new CompanyDtoFavoriteResponse();
@@ -140,12 +139,8 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public FavoriteResponse updateFavorite(
-        Integer id,
-        FavoriteRequest favoriteRequest,
-        String userID
-    ) {
-        FavoriteEntity entity = favoriteRepository.findByUserIDAndId(UUID.fromString(userID),id);
+    public FavoriteResponse updateFavorite(Integer id, FavoriteRequest favoriteRequest, String userID) {
+        FavoriteEntity entity = favoriteRepository.findByUserIDAndId(UUID.fromString(userID), id);
 
         if (entity != null) {
             entity.setFavoriteId(UUID.fromString(favoriteRequest.getFavoriteId()));

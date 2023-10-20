@@ -165,14 +165,14 @@ public class StatusesServiceImpl implements StatusesService {
         );
         EventType eventType = statusManager.getEventType();
 
-        if(eventType == EventType.STATUS_REDUCTION || eventType == EventType.STATUS_IMPROVEMENT){
+        if (eventType == EventType.STATUS_REDUCTION || eventType == EventType.STATUS_IMPROVEMENT) {
             return eventType;
         }
 
-        if (eventType != EventType.TODO && eventType != EventType.UN_LINKED && isMaterialDemand ) {
+        if (eventType != EventType.TODO && eventType != EventType.UN_LINKED && isMaterialDemand) {
             return EventType.LINKED;
         }
-        if(!isMaterialDemand && eventType == EventType.TODO){
+        if (!isMaterialDemand && eventType == EventType.TODO) {
             return EventType.GENERAL_EVENT;
         }
         return eventType;

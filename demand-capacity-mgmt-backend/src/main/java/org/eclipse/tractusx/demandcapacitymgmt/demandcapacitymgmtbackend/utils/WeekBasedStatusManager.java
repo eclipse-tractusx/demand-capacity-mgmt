@@ -56,7 +56,7 @@ public class WeekBasedStatusManager {
         StatusColor newStatusColor
     ) {
         if (!isMaterialDemandLinkedToCG) {
-                return EventType.TODO;
+            return EventType.TODO;
         }
         if (newStatusColor == oldStatusColor) {
             return EventType.GENERAL_EVENT;

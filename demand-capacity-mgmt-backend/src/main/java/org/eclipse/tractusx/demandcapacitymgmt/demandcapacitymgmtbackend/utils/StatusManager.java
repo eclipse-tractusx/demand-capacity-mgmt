@@ -82,7 +82,11 @@ public class StatusManager {
             }
         } else {
             // if to-do increased, then the latest status is todo
-            if (currentStatuses.getOverallTodos() != overAllTodoCount && overAllTodoCount != 0 && !(overAllTodoCount < currentStatuses.getOverallTodos())) {
+            if (
+                currentStatuses.getOverallTodos() != overAllTodoCount &&
+                overAllTodoCount != 0 &&
+                !(overAllTodoCount < currentStatuses.getOverallTodos())
+            ) {
                 if (user.getRole().equals(Role.SUPPLIER)) {
                     setEventType(EventType.TODO);
                 } else {
@@ -138,33 +142,33 @@ public class StatusManager {
         List<LinkedCapacityGroupMaterialDemandEntity> linkedCGMD = linkedCapacityGroupMaterialDemandRepository.findAll();
 
         newMaterialDemand.forEach(
-                materialDemandEntity -> {
-                    isLinked.set(
-                            !(
-                                    linkedCGMD
-                                            .stream()
-                                            .filter(li -> li.getMaterialDemandID().equals(materialDemandEntity.getId()))
-                                            .toList()
-                                            .isEmpty()
-                            )
-                    );
+            materialDemandEntity -> {
+                isLinked.set(
+                    !(
+                        linkedCGMD
+                            .stream()
+                            .filter(li -> li.getMaterialDemandID().equals(materialDemandEntity.getId()))
+                            .toList()
+                            .isEmpty()
+                    )
+                );
 
-                    if (!isLinked.get()) {
-                        overAllTodoCount.incrementAndGet();
-                        materialDemandEntity
-                                .getDemandSeries()
-                                .forEach(
-                                        demandSeries -> {
-                                            todoCount.set(todoCount.get() + demandSeries.getDemandSeriesValues().size());
-                                        }
-                                );
-                    }
+                if (!isLinked.get()) {
+                    overAllTodoCount.incrementAndGet();
+                    materialDemandEntity
+                        .getDemandSeries()
+                        .forEach(
+                            demandSeries -> {
+                                todoCount.set(todoCount.get() + demandSeries.getDemandSeriesValues().size());
+                            }
+                        );
                 }
+            }
         );
 
-        processMaterialDemands(  newCapacityGroup, newMaterialDemand, newCapacityQuantities);
+        processMaterialDemands(newCapacityGroup, newMaterialDemand, newCapacityQuantities);
 
-        processMaterialDemands( oldCapacityGroup, oldMaterialDemand, oldCapacityQuantities);
+        processMaterialDemands(oldCapacityGroup, oldMaterialDemand, oldCapacityQuantities);
 
         processCapacityQuantities(
             oldCapacityQuantities,
@@ -232,7 +236,7 @@ public class StatusManager {
                                                                 capacityGroup.getDefaultActualCapacity() + ""
                                                             ),
                                                             null,
-                                                                materialDemandSeriesValue.getDemand(),
+                                                            materialDemandSeriesValue.getDemand(),
                                                             materialDemandOrder
                                                         )
                                                     );
@@ -251,12 +255,14 @@ public class StatusManager {
     MaterialDemandEntity getMaterialDemandById(List<MaterialDemandEntity> materialDemandEntities, String id) {
         List<MaterialDemandEntity> materialDemands = materialDemandEntities
             .stream()
-            .filter(materialDemandEntity -> {
-                if(materialDemandEntity.getId() == null){
-                    return false;
+            .filter(
+                materialDemandEntity -> {
+                    if (materialDemandEntity.getId() == null) {
+                        return false;
+                    }
+                    return materialDemandEntity.getId().toString().equals(id);
                 }
-                return materialDemandEntity.getId().toString().equals(id);
-            })
+            )
             .toList();
         if (!materialDemands.isEmpty()) return materialDemands.get(0);
         return null;
@@ -310,12 +316,13 @@ public class StatusManager {
                                 previousDemand.get() == -1 ||
                                 previousDemand.get() != newCapacityQuantity.getMaterialDemandOrder()
                             ) {
-                                if(statusReductionCount.get() > statusImprovementCount.get()){
+                                if (statusReductionCount.get() > statusImprovementCount.get()) {
                                     overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
                                 }
-                                if(statusImprovementCount.get() > statusReductionCount.get()){
+                                else if (statusImprovementCount.get() > statusReductionCount.get()) {
                                     overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
-
+                                }else{
+                                    overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
                                 }
                             }
                             statusReductionCount.set(statusReductionCount.get() + 1);
@@ -324,13 +331,15 @@ public class StatusManager {
                                 previousDemand.get() != -1 ||
                                 previousDemand.get() != newCapacityQuantity.getMaterialDemandOrder()
                             ) {
-                                if(statusReductionCount.get() > statusImprovementCount.get()){
+                                if (statusReductionCount.get() > statusImprovementCount.get()) {
                                     overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
                                 }
-                                if(statusImprovementCount.get() > statusReductionCount.get()){
+                                else if (statusImprovementCount.get() > statusReductionCount.get()) {
                                     overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
-
-                                }                            }
+                                } else{
+                                    overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
+                                }
+                            }
                             statusImprovementCount.set(statusImprovementCount.get() + 1);
                         }
                         previousDemand.set(newCapacityQuantity.getMaterialDemandOrder());
@@ -355,10 +364,6 @@ public class StatusManager {
             newCapacityQuantity.getActualCapacity()
         );
 
-        return WeekBasedStatusManager.getEventType(
-            true,
-            oldStatusColor,
-            newStatusColor
-        );
+        return WeekBasedStatusManager.getEventType(true, oldStatusColor, newStatusColor);
     }
 }
