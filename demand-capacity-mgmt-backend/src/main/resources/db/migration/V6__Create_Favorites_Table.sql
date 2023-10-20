@@ -22,7 +22,8 @@
 SET search_path TO public;
  create table  if not exists favorites
  (
-     user_id uuid primary key,
+     id serial primary key,
+     user_id uuid,
      favorite_id uuid,
      f_type varchar(30)
  );

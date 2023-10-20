@@ -23,7 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.ArchivedLoggingHistoryResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +33,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.ArchivedLogsRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LoggingHistoryRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UserRepository;
@@ -245,11 +243,12 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
 
     @Override
     public List<LoggingHistoryResponse> filterByFavoriteMaterialDemand() {
+                /*
         List<LoggingHistoryResponse> loggingHistoryResponses = new java.util.ArrayList<>(List.of());
         List<FavoriteResponse> favoriteResponses = favoriteService.getAllFavoritesByType(
             FavoriteType.MATERIAL_DEMAND.toString()
         );
-        /*
+
         favoriteResponses.forEach(
             favoriteResponse -> {
                 loggingHistoryResponses.addAll(getLoggingHistoryByMaterialDemandId(favoriteResponse.getfTypeId()));
@@ -258,13 +257,13 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         return loggingHistoryResponses;
         */
         //TODO FIX THIS
-        return null;
+        return new ArrayList<>();
     }
 
 
     @Override
     public List<LoggingHistoryResponse> filterByFavoriteCapacityGroup() {
-        List<LoggingHistoryResponse> loggingHistoryResponses = new java.util.ArrayList<>(List.of());
+        /*List<LoggingHistoryResponse> loggingHistoryResponses = new java.util.ArrayList<>(List.of());
         List<FavoriteResponse> favoriteResponses = favoriteService.getAllFavoritesByType(
             FavoriteType.CAPACITY_GROUP.toString()
         );
@@ -272,8 +271,11 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         //or(SingleCapacityGroup scg : favoriteResponses)
         //return loggingHistoryResponses;
         //TODO FIX THIS
-        return null;
+
+        */
+        return new ArrayList<>();
     }
+
 
     private LoggingHistoryResponse convertLoggingHistoryResponseDto(LoggingHistoryEntity loggingHistoryEntity) {
         LoggingHistoryResponse responseDto = new LoggingHistoryResponse();

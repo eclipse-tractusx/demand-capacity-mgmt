@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
@@ -42,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @Service
@@ -100,7 +98,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     }
 
     private void postLogs(String capacityGroupId) {
-        AtomicBoolean isFavorited = new AtomicBoolean(false);
+        /*AtomicBoolean isFavorited = new AtomicBoolean(false);
         favoriteService
             .getAllFavoritesByType(FavoriteType.CAPACITY_GROUP.toString())
             .forEach(
@@ -124,7 +122,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         loggingHistoryRequest.setEventDescription("Capacity Group created");
         loggingHistoryRequest.setIsFavorited(isFavorited.get());
         loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
-        loggingHistoryService.createLog(loggingHistoryRequest);
+        loggingHistoryService.createLog(loggingHistoryRequest); */
+        //TODO FIX THIS
     }
 
     @Override

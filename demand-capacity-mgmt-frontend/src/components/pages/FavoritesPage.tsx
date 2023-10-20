@@ -1,71 +1,81 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext} from "react";
+import { Tab, Tabs } from "react-bootstrap";
+import FavoritesTable from "../favorites/FavoritesTable";
+import {
+    MaterialDemandFavoriteResponse,
+    SingleCapacityGroupFavoriteResponse,
+    CompanyDtoFavoriteResponse
+} from "../../interfaces/Favorite_interface";
 import {FavoritesContext} from "../../contexts/FavoritesContextProvider";
-import MaterialDemandFavoritesTable from "../favorites/MaterialDemandFavoritesTable";
-import {FcBookmark, FcTimeline} from "react-icons/fc";
 import {BsFillBookmarkStarFill} from "react-icons/bs";
-import {Tab, Tabs} from "react-bootstrap";
 
-function FavoritesPage() {
-    const [loading, setLoading] = useState(false);
-    const {favorites, fetchFavorites} = useContext(FavoritesContext)!;
-    const [activeTab, setActiveTab] = useState("Favorites");
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                await fetchFavorites();
-                console.log(favorites)
-            } catch (error) {
-                console.error('Error fetching events:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+const FavoritesPage: React.FC = () => {
+    const favoritesContext = useContext(FavoritesContext);
 
-        fetchData();
-    }, [favorites]);
+    if (!favoritesContext) {
+        return <div>Loading...</div>;
+    }
 
+    const { favorites } = favoritesContext;
+
+    if (!favorites) {
+        return <div>Loading...</div>;
+    }
 
     return (
-        <div className="events-page">
-            <br/>
-            <div className="container-xl">
-                <div style={{display: "flex"}}>
-                    <BsFillBookmarkStarFill size={35} color={"#a4d34d"}/>
-                    <h3 className="icon-text-padding">Favorites</h3>
-                </div>
-                <div className="favorites-tabs">
-                    <Tabs
-                        defaultActiveKey="MaterialDemands"
-                        id="FavoritesTabs"
-                        className="mb-3"
-                        activeKey={activeTab}
-                        onSelect={(tabKey) => {
-                            if (typeof tabKey === "string") {
-                                setActiveTab(tabKey);
-                            }
-                        }}
-                    >
-                        <Tab eventKey="MaterialDemands" title="Material Demands">
-                            <div className="tab-content">
-                                <MaterialDemandFavoritesTable favorites={favorites}></MaterialDemandFavoritesTable>
-                            </div>
-                        </Tab>
-                        <Tab eventKey="CapacityGroups" title="Capacity Groups">
-                            <div className="tab-content">
-                                <MaterialDemandFavoritesTable favorites={favorites}></MaterialDemandFavoritesTable>
-                            </div>
-                        </Tab>
-                        <Tab eventKey="CompanyData" title="Material Demands">
-                            <div className="tab-content">
-                                <MaterialDemandFavoritesTable favorites={favorites}></MaterialDemandFavoritesTable>
-                            </div>
-                        </Tab>
-                    </Tabs>
-                </div>
-            </div>
+        <>
+        <br/>
+    <div className="container-xl">
+        <div style={{display: "flex"}}>
+            <BsFillBookmarkStarFill size={35} color={"#a4d34d"}/>
+            <h3 className="icon-text-padding">Favorites</h3>
         </div>
+        <div className="favorites-tabs">
+        <Tabs defaultActiveKey="MaterialDemands" id="favorites-tabs">
+            <Tab eventKey="MaterialDemands" title="Material Demands">
+                <FavoritesTable
+                    data={favorites?.materialDemands || []}
+                    headings={['Description', 'Material Number', 'Material Number Supplier', 'Customer','Supplier', 'UOM']}
+                    renderRow={(item: MaterialDemandFavoriteResponse, index: number) => [
+                        <span key={index}>{item.materialDescriptionCustomer}</span>,
+                        <span key={index}>{item.materialNumberCustomer}</span>,
+                        <span key={index}>{item.materialNumberSupplier}</span>,
+                        <span key={index}>{item.customer}</span>,
+                        <span key={index}>{item.supplier}</span>,
+                        <span key={index}>{item.unitOfMeasure}</span>,
+                    ]}
+                />
+            </Tab>
+            <Tab eventKey="CapacityGroups" title="Capacity Groups">
+                <FavoritesTable
+                    data={favorites?.capacityGroups || []}
+                    headings={['Customer', 'Supplier', 'ID', 'Name']}
+                    renderRow={(item: SingleCapacityGroupFavoriteResponse, index: number) => [
+                        <span key={index}>{item.customer}</span>,
+                        <span key={index}>{item.supplier}</span>,
+                        <span key={index}>{item.capacityGroupId}</span>,
+                        <span key={index}>{item.capacityGroupName}</span>,
+                    ]}
+                />
+            </Tab>
+            <Tab eventKey="CompanyData" title="Company Data">
+                <FavoritesTable
+                    data={favorites?.companies || []}
+                    headings={['BPN', 'Name', 'ZIP Code', 'Country', 'My Company']}
+                    renderRow={(item: CompanyDtoFavoriteResponse, index: number) => [
+                        <span key={index}>{item.bpn}</span>,
+                        <span key={index}>{item.companyName}</span>,
+                        <span key={index}>{item.zipCode}</span>,
+                        <span key={index}>{item.country}</span>,
+                        <span key={index}>{item.myCompany}</span>,
+                    ]}
+                />
+            </Tab>
+        </Tabs>
+        </div>
+    </div>
+        </>
     );
-}
+};
 
 export default FavoritesPage;

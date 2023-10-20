@@ -22,27 +22,32 @@
 
 
 import React, { createContext, useEffect, useState } from 'react';
-import { FavoriteProp } from '../interfaces/Favorite_interface';
+import { FavoriteResponse } from '../interfaces/Favorite_interface';
 import createAPIInstance from "../util/Api";
 import { useUser } from './UserContext';
 
-interface FavoritesContextData{
-    favorites: FavoriteProp[],
-    fetchFavorites : () => Promise<void>;
+interface FavoritesContextData {
+    favorites: FavoriteResponse | null | undefined;
+    fetchFavorites: () => Promise<void>;
+    // If you've added a refresh function
+    refresh?: () => void;
 }
+
 export const FavoritesContext = createContext<FavoritesContextData | undefined>(undefined);
 
+
 const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
+    const [favorites, setFavorites] = useState<FavoriteResponse | undefined>(undefined);
 
     const { access_token } = useUser();
-    const [favorites, setFavorites] = useState<FavoriteProp[]>([]);
+
+    const api = createAPIInstance(access_token);
 
     const fetchFavorites = async () => {
         try {
-            const api = createAPIInstance(access_token);
-            const response = await api.get('/favorites');
-            const result: FavoriteProp[] = response.data;
-            setFavorites(result);
+            const response = await api.get('/favorite');
+            console.log('Fetched data:', response.data);
+            setFavorites(response.data);
         } catch (error) {
             console.error('Error fetching event history:', error);
         }
@@ -50,10 +55,20 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
 
     useEffect(() => {
         fetchFavorites();
-    }, [access_token]);
+    }, []);  // Note the empty array, this ensures it runs only once.
+
+    const refresh = () => {
+        fetchFavorites();
+    };
+
+    const contextValue = {
+        favorites,
+        fetchFavorites,
+        refresh
+    };
 
     return (
-        <FavoritesContext.Provider value={{ favorites, fetchFavorites }}>
+        <FavoritesContext.Provider value={contextValue}>
             {props.children}
         </FavoritesContext.Provider>
     );
