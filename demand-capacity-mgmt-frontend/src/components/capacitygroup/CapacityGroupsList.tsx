@@ -72,7 +72,7 @@ const CapacityGroupsList: React.FC = () => {
         capacitygroup.supplierBNPL.toString().includes(searchQuery.toLowerCase()) ||
         capacitygroup.numberOfMaterials.toString().includes(searchQuery.toLowerCase()) ||
         capacitygroup.favoritedBy.toString().includes(searchQuery.toLowerCase()) ||
-        capacitygroup.status.toString().includes(searchQuery.toLowerCase())
+        capacitygroup.linkStatus.toString().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -151,7 +151,13 @@ const CapacityGroupsList: React.FC = () => {
               <span className="badge rounded-pill text-bg-danger" id="tag-danger">
                 Down
               </span>
-            ) : (
+            ) :
+                capacitygroup.linkStatus === EventType.GENERAL_EVENT ? (
+                    <span className="badge rounded-pill text-bg-success" id="tag-ok">
+                General
+              </span>
+                )
+                : (
               <span className="badge rounded-pill text-bg-secondary">N/A</span>
             )}
           </td>

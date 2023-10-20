@@ -45,10 +45,7 @@ public class FavoriteController implements FavoriteApi {
 
     @Override
     public ResponseEntity<FavoriteResponse> createFavorite(FavoriteRequest favoriteRequest) {
-        FavoriteResponse response = favoriteService.createFavorite(
-            favoriteRequest,
-            UserUtil.getUserID(request)
-        );
+        FavoriteResponse response = favoriteService.createFavorite(favoriteRequest, UserUtil.getUserID(request));
         return ResponseEntity.status(200).body(response);
     }
 
