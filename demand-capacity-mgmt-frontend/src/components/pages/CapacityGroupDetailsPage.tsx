@@ -84,7 +84,7 @@ function CapacityGroupDetailsPage() {
           setcapacityGroupEvents(await fetchFilteredEvents(filters));
         } catch (error) {
           console.error('Failed to fetch capacity group:', error);
-          navigate('/error');
+          //navigate('/error');
         }
       })();
     }

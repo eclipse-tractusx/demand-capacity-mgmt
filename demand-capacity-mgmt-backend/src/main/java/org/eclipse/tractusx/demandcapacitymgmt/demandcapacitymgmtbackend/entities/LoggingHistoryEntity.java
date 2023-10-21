@@ -24,14 +24,15 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import java.sql.Timestamp;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+
+import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 @Table(name = "logging_history")

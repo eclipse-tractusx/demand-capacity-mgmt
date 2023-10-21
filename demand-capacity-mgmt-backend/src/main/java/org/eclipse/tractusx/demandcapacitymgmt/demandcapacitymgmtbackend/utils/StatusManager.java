@@ -318,10 +318,9 @@ public class StatusManager {
                             ) {
                                 if (statusReductionCount.get() > statusImprovementCount.get()) {
                                     overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
-                                }
-                                else if (statusImprovementCount.get() > statusReductionCount.get()) {
+                                } else if (statusImprovementCount.get() > statusReductionCount.get()) {
                                     overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
-                                }else{
+                                } else {
                                     overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
                                 }
                             }
@@ -333,10 +332,9 @@ public class StatusManager {
                             ) {
                                 if (statusReductionCount.get() > statusImprovementCount.get()) {
                                     overAllStatusReductionCount.set(overAllStatusReductionCount.get() + 1);
-                                }
-                                else if (statusImprovementCount.get() > statusReductionCount.get()) {
+                                } else if (statusImprovementCount.get() > statusReductionCount.get()) {
                                     overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
-                                } else{
+                                } else {
                                     overAllStatusImprovementCount.set(overAllStatusImprovementCount.get() + 1);
                                 }
                             }
