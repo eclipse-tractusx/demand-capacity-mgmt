@@ -25,7 +25,7 @@ SET search_path TO public;
 CREATE TABLE IF NOT EXISTS logging_history
 (
     id serial primary key,
-    capacity_gp_id varchar(255),
+    capacity_gp_id uuid,
     description varchar(150),
     event_type smallint,
     is_favorited boolean,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS logging_history
 CREATE TABLE IF NOT EXISTS archived_log
 (
     id serial primary key,
-    capacity_gp_id varchar(255),
+    capacity_gp_id uuid,
     description varchar(150),
     event_type smallint,
     is_favorited boolean,

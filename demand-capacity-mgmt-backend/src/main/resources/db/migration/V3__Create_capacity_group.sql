@@ -31,17 +31,19 @@ create table capacity_group
     start_date date,
     end_date date,
     customer uuid constraint capacity_group_customer_id references company_base_data(id),
-    supplier uuid constraint capacity_group_supplier_id references company_base_data(id)
+    supplier uuid constraint capacity_group_supplier_id references company_base_data(id),
+    link_status VARCHAR(50)
 );
 
 create table capacity_time_series
 (
     id uuid DEFAULT uuid_generate_v4() primary key,
-    calendar_week timestamp not null,
+    calendar_week varchar(255),
     actual_capacity numeric,
     maximum_capacity numeric,
     required_amount numeric,
-    capacity_group_id uuid constraint capacity_group_id references capacity_group(id)
+    capacity_group_id uuid constraint capacity_group_id references capacity_group(id),
+    capacity_group_entity_id uuid constraint capacity_group_entity_id references capacity_group(id)
 );
 
 create table linked_demand_series

@@ -20,6 +20,7 @@
  * *******************************************************************************
  */
 SET search_path TO public;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 INSERT INTO unit_of_measure
 (dimension,un_code, description, description_german, un_symbol, c_x_symbol)
 VALUES

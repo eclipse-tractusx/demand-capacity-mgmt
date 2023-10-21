@@ -23,37 +23,47 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import jakarta.persistence.*;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "statuses")
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class StatusesEntity {
 
     @Id
-    private String id;
+    @GeneratedValue
+    @Column(columnDefinition = "uuid", updatable = false, name = "id")
+    private UUID id;
 
+    @Column(name = "todos_count")
     private int todosCount;
 
+    @Column(name = "status_improvement_count")
     private int statusImprovementCount;
 
+    @Column(name = "status_degradation_count")
     private int statusDegradationCount;
 
+    @Column(name = "general_count")
     private int generalCount;
 
+    @Column(name = "over_all_todos_count")
     private int overAllTodosCount;
 
+    @Column(name = "over_all_status_improvement_count")
     private int overAllStatusImprovementCount;
 
+    @Column(name = "over_all_status_degradation_count")
     private int overAllStatusDegradationCount;
 
+    @Column(name = "over_all_general_count")
     private int overAllGeneralCount;
 }

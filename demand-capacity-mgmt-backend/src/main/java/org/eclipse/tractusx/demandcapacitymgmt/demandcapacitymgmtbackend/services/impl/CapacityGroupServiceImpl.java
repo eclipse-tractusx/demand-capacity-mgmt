@@ -23,14 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -41,6 +33,15 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @Service
@@ -65,8 +66,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         CapacityGroupEntity capacityGroupEntity = enrichCapacityGroup(capacityGroupRequest);
         oldCapacityGroups = capacityGroupRepository.findAll();
         oldCapacityGroups.add(capacityGroupEntity);
-        EventType eventType = updateStatus(userID, false);
-        capacityGroupEntity.setLinkStatus(eventType);
         capacityGroupEntity = capacityGroupRepository.save(capacityGroupEntity);
         String cgID = capacityGroupEntity.getId().toString();
         postLogs(cgID, userID);
@@ -74,8 +73,17 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             LinkedCapacityGroupMaterialDemandEntity entity = new LinkedCapacityGroupMaterialDemandEntity();
             entity.setCapacityGroupID(capacityGroupEntity.getId());
             entity.setMaterialDemandID(uuid);
+            Optional<MaterialDemandEntity> helperEntity = materialDemandRepository.findById(entity.getMaterialDemandID());
+            if(helperEntity.isPresent()){
+                MaterialDemandEntity materialDemandEntity = helperEntity.get();
+                materialDemandEntity.setLinkStatus(EventType.LINKED);
+                materialDemandRepository.save(materialDemandEntity);
+            }
             linkedCapacityGroupMaterialDemandRepository.save(entity);
+            capacityGroupEntity.setLinkStatus(EventType.GENERAL_EVENT);
+            capacityGroupRepository.save(capacityGroupEntity);
         }
+        updateStatus(userID, false);
         return convertCapacityGroupDto(capacityGroupEntity);
     }
 
@@ -164,43 +172,53 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             }
         }
         newCapacityGroups = capacityGroupRepository.findAll();
-        EventType eventType = updateStatus(userID, true);
+        updateStatus(userID, true);
 
         for (UUID uuid : linkCGDSRequest.getLinkMaterialDemandIds()) {
             Optional<MaterialDemandEntity> materialDemandEntity = materialDemandRepository.findById(uuid);
-            materialDemandEntity.ifPresent(
-                demandEntity -> {
-                    demandEntity.setLinkStatus(eventType);
-                    materialDemandRepository.save(materialDemandEntity.get());
-                }
-            );
+            if (materialDemandEntity.isPresent()) {
+                MaterialDemandEntity demandEntity = materialDemandEntity.get();
+                demandEntity.setLinkStatus(EventType.LINKED);
+                materialDemandRepository.save(demandEntity);
+            }
         }
     }
 
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest request) {
-        CompanyEntity customer = companyService.getCompanyById(UUID.fromString(request.getCustomer()));
-        CompanyEntity supplier = companyService.getCompanyById(UUID.fromString(request.getSupplier()));
-
         CapacityGroupEntity capacityGroupEntity = new CapacityGroupEntity();
+        if (!request.getCustomer().isEmpty()) {
+            CompanyEntity customer = companyService.getCompanyById(UUID.fromString(request.getCustomer()));
+            capacityGroupEntity.setCustomer(customer);
+        }
+        if (!request.getSupplier().isEmpty()) {
+            CompanyEntity supplier = companyService.getCompanyById(UUID.fromString(request.getSupplier()));
+            capacityGroupEntity.setSupplier(supplier);
+        }
+
         capacityGroupEntity.setCapacityGroupName(request.getCapacitygroupname());
         capacityGroupEntity.setDefaultActualCapacity(request.getDefaultActualCapacity());
         capacityGroupEntity.setDefaultMaximumCapacity(request.getDefaultMaximumCapacity());
-        capacityGroupEntity.setStartDate(LocalDate.parse(request.getStartDate()));
-        capacityGroupEntity.setEndDate(LocalDate.parse(request.getEndDate()));
-        capacityGroupEntity.setCustomer(customer);
-        capacityGroupEntity.setSupplier(supplier);
+        if (!request.getStartDate().isEmpty()) {
+            capacityGroupEntity.setStartDate(LocalDate.parse(request.getStartDate()));
+        }
+        if (!request.getEndDate().isEmpty()) {
+            capacityGroupEntity.setEndDate(LocalDate.parse(request.getEndDate()));
+        }
 
         List<CapacityTimeSeries> capacityTimeSeriesList = new ArrayList<>();
         capacityGroupEntity.setCapacityTimeSeriesList(capacityTimeSeriesList);
+        try {
+            List<String> mondays = getMondaysBetween(request.getStartDate(), request.getEndDate()); //tem que ser inclusivo
+            createCapacityTimeSeries(
+                mondays,
+                capacityGroupEntity.getDefaultActualCapacity(),
+                capacityGroupEntity.getDefaultMaximumCapacity(),
+                capacityGroupEntity
+            );
+        } catch (Exception e) {
+            //TODO Throw custom exception
+        }
 
-        List<String> mondays = getMondaysBetween(request.getStartDate(), request.getEndDate()); //tem que ser inclusivo
-
-        createCapacityTimeSeries(
-            mondays,
-            capacityGroupEntity.getDefaultActualCapacity(),
-            capacityGroupEntity.getDefaultMaximumCapacity(),
-            capacityGroupEntity
-        );
         return capacityGroupEntity;
     }
 
