@@ -26,6 +26,10 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { FiLogOut, FiSettings } from 'react-icons/fi';
 import { useNavigate } from "react-router-dom";
+import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
+import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
+import EventsContextProvider from '../../contexts/EventsContextProvider';
+import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
 import { useUser } from "../../contexts/UserContext";
 import { logout } from "../../util/Auth";
 import InfoMenu from "../menu/InfoMenu";
@@ -82,7 +86,15 @@ function TopMenuLinks() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" >
           <div className={`info-menu ${collapsed ? 'move-out' : 'move-in'}`}>
-            <InfoMenu />
+            <DemandCategoryContextProvider>
+              <CapacityGroupsProvider>
+                <EventsContextProvider>
+                  <InfoMenuProvider>
+                    <InfoMenu />
+                  </InfoMenuProvider>
+                </EventsContextProvider>
+              </CapacityGroupsProvider>
+            </DemandCategoryContextProvider>
           </div>
 
         </Navbar.Collapse>

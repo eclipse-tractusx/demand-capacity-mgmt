@@ -25,10 +25,6 @@ import React, { FunctionComponent, createContext, useCallback, useContext, useEf
 import { InfoMenuData } from '../interfaces/InfoMenu_interfaces';
 import createAPIInstance from "../util/Api";
 import { useUser } from "./UserContext";
-//Events, Capacitity groups, material demands
-import { CapacityGroupContext } from '../contexts/CapacityGroupsContextProvider';
-import { DemandContext } from '../contexts/DemandContextProvider';
-import { EventsContext } from '../contexts/EventsContextProvider';
 
 interface InfoMenuContextData {
     data: InfoMenuData | null;
@@ -46,9 +42,7 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
     const { access_token } = useUser();
 
     //These are used to trigger the top Menu whenever they change
-    const { capacitygroups } = useContext(CapacityGroupContext) || {};;
-    const { demandprops } = useContext(DemandContext) || {};;
-    const { events } = useContext(EventsContext) || {};;
+
 
     const fetchData = useCallback(async () => {
         try {
@@ -62,9 +56,8 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
     }, [access_token]);
 
     useEffect(() => {
-        console.log('Update Trigger')
         fetchData();
-    }, [fetchData, access_token, demandprops, capacitygroups, events]);
+    }, [fetchData, access_token]);
 
     return (
         <InfoMenuContext.Provider value={{ data, fetchData }}>
