@@ -1,27 +1,30 @@
 /*
- *  *******************************************************************************
- *  Copyright (c) 2023 BMW AG
- *  Copyright (c) 2023 Contributors to the Eclipse Foundation
- *
- *    See the NOTICE file(s) distributed with this work for additional
- *    information regarding copyright ownership.
- *
- *    This program and the accompanying materials are made available under the
- *    terms of the Apache License, Version 2.0 which is available at
- *    https://www.apache.org/licenses/LICENSE-2.0.
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- *    License for the specific language governing permissions and limitations
- *    under the License.
- *
- *    SPDX-License-Identifier: Apache-2.0
- *    ********************************************************************************
- */
+*  *******************************************************************************
+*  Copyright (c) 2023 BMW AG
+*  Copyright (c) 2023 Contributors to the Eclipse Foundation
+*
+*    See the NOTICE file(s) distributed with this work for additional
+*    information regarding copyright ownership.
+*
+*    This program and the accompanying materials are made available under the
+*    terms of the Apache License, Version 2.0 which is available at
+*    https://www.apache.org/licenses/LICENSE-2.0.
+*
+*    Unless required by applicable law or agreed to in writing, software
+*    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+*    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+*    License for the specific language governing permissions and limitations
+*    under the License.
+*
+*    SPDX-License-Identifier: Apache-2.0
+*    ********************************************************************************
+*/
 
 
 import React, { FunctionComponent, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { CapacityGroupContext } from '../contexts/CapacityGroupsContextProvider';
+import { DemandContext } from '../contexts/DemandContextProvider';
+import { EventsContext } from '../contexts/EventsContextProvider';
 import { InfoMenuData } from '../interfaces/InfoMenu_interfaces';
 import createAPIInstance from "../util/Api";
 import { useUser } from "./UserContext";
@@ -42,7 +45,9 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
     const { access_token } = useUser();
 
     //These are used to trigger the top Menu whenever they change
-
+    const { capacitygroups } = useContext(CapacityGroupContext) || {};
+    const { demandprops } = useContext(DemandContext) || {};
+    const { events } = useContext(EventsContext) || {};
 
     const fetchData = useCallback(async () => {
         try {
@@ -57,7 +62,7 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
 
     useEffect(() => {
         fetchData();
-    }, [fetchData, access_token]);
+    }, [access_token, capacitygroups, demandprops, events]);
 
     return (
         <InfoMenuContext.Provider value={{ data, fetchData }}>

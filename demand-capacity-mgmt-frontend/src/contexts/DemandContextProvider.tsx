@@ -40,7 +40,6 @@ export const DemandContext = createContext<DemandContextData | undefined>(undefi
 
 const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [demands, setDemands] = useState<Demand[]>([]);
   const [demandprops, setDemandProps] = useState<DemandProp[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { access_token } = useUser();
@@ -81,7 +80,6 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
     fetchDemandProps();
   }, [fetchDemandProps, access_token]);
 
-
   const getDemandbyId = async (id: string): Promise<DemandProp | undefined> => {
     try {
       const response = await api.get(`/demand/${id}`);
@@ -110,11 +108,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const updateDemand = async (updatedDemand: Demand) => {
     try {
-      const response = await api.put(`/demand/${updatedDemand.id}`, updatedDemand);
-      const modifiedDemand: Demand = response.data;
-      setDemands((prevDemands) =>
-        prevDemands.map((demand) => (demand.id === modifiedDemand.id ? modifiedDemand : demand))
-      );
+      await api.put(`/demand/${updatedDemand.id}`, updatedDemand);
       fetchDemandProps();
     } catch (error) {
       console.error('Error updating demand:', error);
