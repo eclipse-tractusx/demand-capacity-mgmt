@@ -25,27 +25,16 @@ import { FaArrowDown, FaArrowUp, FaHome, FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useInfoMenu } from "../../contexts/InfoMenuContextProvider";
 //Events, Capacitity groups, material demands
-import { useContext, useEffect } from "react";
-import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
-import { DemandContext } from '../../contexts/DemandContextProvider';
-import { EventsContext } from '../../contexts/EventsContextProvider';
+
 
 
 function InfoMenu() {
-    const { data, fetchData } = useInfoMenu();
-
-    const { capacitygroups } = useContext(CapacityGroupContext) || {};
-    const { demandprops } = useContext(DemandContext) || {};
-    const { events } = useContext(EventsContext) || {};
+    const { data } = useInfoMenu();
 
     const navigate = useNavigate();
     const handleNavigation = (path: string) => {
         navigate(path);
     }
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData, capacitygroups, demandprops, events]);
 
     const formatData = (data: number | null | undefined): number | string => {
         return data !== null && data !== undefined ? data : '0';

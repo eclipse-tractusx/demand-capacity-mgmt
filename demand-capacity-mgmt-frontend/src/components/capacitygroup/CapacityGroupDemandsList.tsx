@@ -25,6 +25,7 @@ import { Button, Col, Dropdown, Form, Row } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt, FaUnlink } from 'react-icons/fa';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
+import { EventType } from '../../interfaces/event_interfaces';
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import DemandDetailsModal from '../demands/DemandDetailsModal';
 import DemandListTable from '../demands/DemandListTable';
@@ -234,9 +235,21 @@ const CapacityGroupDemandsList: React.FC<{
               ) : 'N/A'}
             </td>
             <td>
-              <span className="badge rounded-pill text-bg-success" id="tag-ok">Up</span>
-              <span className="badge rounded-pill text-bg-warning" id="tag-warning">TODO</span>
-              <span className="badge rounded-pill text-bg-danger" id="tag-danger">Down</span>
+              {demand.linkStatus === EventType.LINKED ? (
+                <span className="badge rounded-pill bg-primary text-white" id="tag-ok">
+                  Linked
+                </span>
+              ) : demand.linkStatus === EventType.TODO ? (
+                <span className="badge rounded-pill bg-warning text-black" id="tag-warning">
+                  TODO
+                </span>
+              ) : demand.linkStatus === EventType.UN_LINKED ? (
+                <span className="badge rounded-pill bg-danger text-white" id="tag-danger">
+                  Unlinked
+                </span>
+              ) : (
+                <span className="badge rounded-pill bg-secondary text-white">N/A</span>
+              )}
             </td>
             <td>
               <Dropdown>

@@ -49,8 +49,7 @@ const DemandList: React.FC<{
   showWizard = false,
   toggleWizardModal,
   showAddToExisting = false,
-  toggleAddToExisting,
-  capacityGroupDemands = [],
+  toggleAddToExisting
 }) => {
 
     const [showDetailsModal, setShowDetailsModal] = useState(false);
