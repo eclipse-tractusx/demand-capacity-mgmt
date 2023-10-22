@@ -132,7 +132,9 @@ function TodoListPage() {
                   toggleWizardModal={toggleWizardModal}
                   showAddToExisting={showAddToExisting}
                   toggleAddToExisting={toggleAddToExisting}
+                  eventTypes={[EventType.TODO, EventType.UN_LINKED]}
                 />
+
               </div>
             </div>
           </Tab>

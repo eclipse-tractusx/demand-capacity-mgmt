@@ -44,12 +44,14 @@ const DemandList: React.FC<{
   showAddToExisting?: boolean;
   toggleAddToExisting?: () => void;
   capacityGroupDemands?: string[];
+  eventTypes?: EventType[];
 }> = ({
   searchQuery = '',
   showWizard = false,
   toggleWizardModal,
   showAddToExisting = false,
-  toggleAddToExisting
+  toggleAddToExisting,
+  eventTypes = []
 }) => {
 
     const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -76,6 +78,17 @@ const DemandList: React.FC<{
       setShowWizardModal(showWizard || false);
       fetchDemandProps();
     }, [showWizard, fetchDemandProps]);
+
+
+    const filteredDemandsByEventTypes = useMemo(() => {
+      if (eventTypes.length > 0) {
+        // If eventTypes array is provided, filter demands based on the specified event types
+        return filteredDemands.filter((demand) => eventTypes.includes(demand.linkStatus));
+      } else {
+        // If no eventTypes are provided, return all filteredDemands
+        return filteredDemands;
+      }
+    }, [filteredDemands, eventTypes]);
 
 
     const handleSort = (column: string | null) => {
@@ -182,10 +195,11 @@ const DemandList: React.FC<{
     }, [demandprops, searchQuery, sortColumn, sortOrder]);
 
     const slicedDemands = useMemo(() => {
+      // Use filteredDemandsByEventTypes instead of filteredDemands for slicing and rendering
       const indexOfLastDemand = currentPage * demandsPerPage;
       const indexOfFirstDemand = indexOfLastDemand - demandsPerPage;
-      return filteredDemands.slice(indexOfFirstDemand, indexOfLastDemand);
-    }, [filteredDemands, currentPage, demandsPerPage]);
+      return filteredDemandsByEventTypes.slice(indexOfFirstDemand, indexOfLastDemand);
+    }, [filteredDemandsByEventTypes, currentPage, demandsPerPage]);
 
     const totalPagesNum = useMemo(() => Math.ceil(filteredDemands.length / demandsPerPage), [
       filteredDemands,
