@@ -23,50 +23,41 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroupService {
 
-    private final StatusesRepository statusesRepository;
-
     private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
-
-    private final CapacityGroupService capacityGroupService;
 
     private final MaterialDemandRepository materialDemandRepository;
 
     private final LoggingHistoryService loggingHistoryService;
 
-    private static List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroups;
-    private static List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroups;
-
-    private final WeekBasedMaterialDemandRepository weekBasedMaterialDemandRepository;
-
-    private final UserRepository userRepository;
-
     @Override
-    public void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupDtoRequest> weekBasedCapacityGroupRequestList) {
+    public void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupDtoRequest> weekBasedCapacityGroupRequestList,String userID) {
         weekBasedCapacityGroupRequestList.forEach(
             weekBasedCapacityGroupRequest -> {
                 validateFields(weekBasedCapacityGroupRequest.getWeekBasedCapacityGroupRequest());
@@ -77,29 +68,6 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
                 weekBasedCapacityGroupRepository.save(weekBasedCapacityGroup);
             }
         );
-        oldWeekBasedCapacityGroups =
-            DataConverterUtil.convertToWeekBasedCapacityGroupDtoList(weekBasedCapacityGroupRepository.findAll());
-        updateStatus();
-    }
-
-    public void updateStatus() {
-        if (statusesRepository != null) {
-            List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemands = DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(
-                weekBasedMaterialDemandRepository.findAll()
-            );
-            if (newWeekBasedCapacityGroups == null) {
-                newWeekBasedCapacityGroups = List.of();
-            }
-            final StatusesService statusesService = new StatusesServiceImpl(
-                statusesRepository,
-                oldWeekBasedMaterialDemands,
-                oldWeekBasedMaterialDemands,
-                oldWeekBasedCapacityGroups,
-                newWeekBasedCapacityGroups,
-                userRepository
-            );
-            statusesService.updateWeeklyBasedStatus();
-        }
     }
 
     private void postLogs(String weekBasedCapacityGroupId) {
@@ -172,31 +140,26 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     public void sendWeekBasedCapacityGroup() {}
 
     @Override
-    public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity) {
+    public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity,String userID) {
         WeekBasedCapacityGroupRequest basedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
 
         basedCapacityGroupRequest.setCapacityGroupId(capacityGroupEntity.getId().toString());
         basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomer().getBpn());
         basedCapacityGroupRequest.setSupplier(capacityGroupEntity.getSupplier().getBpn());
         basedCapacityGroupRequest.setName(capacityGroupEntity.getCapacityGroupName());
-        updateStatus();
     }
 
     @Override
     public WeekBasedCapacityGroupDtoResponse updateWeekBasedCapacityGroup(
         String id,
-        WeekBasedCapacityGroupDtoRequest weekBasedCapacityGroupRequest
+        WeekBasedCapacityGroupDtoRequest weekBasedCapacityGroupRequest,
+        String userID
     ) {
-        oldWeekBasedCapacityGroups =
-            DataConverterUtil.convertToWeekBasedCapacityGroupDtoList(weekBasedCapacityGroupRepository.findAll());
         WeekBasedCapacityGroupEntity weekBasedCapacityGroupEntity = convertWeekMaterialDemandToEntity(
             weekBasedCapacityGroupRequest
         );
         weekBasedCapacityGroupEntity.setId(UUID.fromString(id));
         weekBasedCapacityGroupEntity = weekBasedCapacityGroupRepository.save(weekBasedCapacityGroupEntity);
-        newWeekBasedCapacityGroups =
-            DataConverterUtil.convertToWeekBasedCapacityGroupDtoList(weekBasedCapacityGroupRepository.findAll());
-        updateStatus();
         return convertToWeekBasedCapacityGroupDto(weekBasedCapacityGroupEntity);
     }
 
@@ -238,29 +201,6 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         }
 
         return weekBasedCapacityGroupEntityOptional.get();
-    }
-
-    private static CapacitiesDto getCapacitiesDto(CapacityTimeSeries capacityTimeSeries) {
-        CapacitiesDto capacitiesDto = new CapacitiesDto();
-
-        capacitiesDto.setActualCapacity(capacityTimeSeries.getActualCapacity().toString());
-        capacitiesDto.setMaximumCapacity(capacitiesDto.getMaximumCapacity());
-        capacitiesDto.setCalendarWeek(capacitiesDto.getCalendarWeek());
-
-        return capacitiesDto;
-    }
-
-    private static LinkedDemandSeriesRequest getLinkedDemandSeries(LinkedDemandSeries linkedDemandSeries1) {
-        LinkedDemandSeriesRequest linkedDemandSeriesRequest = new LinkedDemandSeriesRequest();
-        DemandCategoryDto demandCategoryDto = new DemandCategoryDto();
-        demandCategoryDto.setDemandCategory(linkedDemandSeries1.getDemandCategory().getDemandCategoryCode());
-
-        linkedDemandSeriesRequest.setDemandCategory(demandCategoryDto);
-        linkedDemandSeriesRequest.setCustomerLocation(linkedDemandSeries1.getCustomerId().getBpn());
-        linkedDemandSeriesRequest.setMaterialNumberCustomer(linkedDemandSeries1.getMaterialNumberCustomer());
-        linkedDemandSeriesRequest.setMaterialNumberSupplier(linkedDemandSeries1.getMaterialNumberSupplier());
-
-        return linkedDemandSeriesRequest;
     }
 
     private void validateFields(WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest) {

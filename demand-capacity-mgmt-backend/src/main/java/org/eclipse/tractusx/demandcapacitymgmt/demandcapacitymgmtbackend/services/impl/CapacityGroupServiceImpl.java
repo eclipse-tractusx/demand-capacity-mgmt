@@ -55,7 +55,9 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final CapacityGroupRepository capacityGroupRepository;
     private final StatusesRepository statusesRepository;
     private final DemandSeriesRepository demandSeriesRepository;
+
     private final UserRepository userRepository;
+    private final StatusesService statusesService;
     private final LoggingHistoryService loggingHistoryService;
     private final FavoriteService favoriteService;
     private static List<CapacityGroupEntity> oldCapacityGroups;
@@ -77,35 +79,14 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             if(helperEntity.isPresent()){
                 MaterialDemandEntity materialDemandEntity = helperEntity.get();
                 materialDemandEntity.setLinkStatus(EventType.LINKED);
+                statusesService.addOrSubtractTodos(false,userID);
                 materialDemandRepository.save(materialDemandEntity);
             }
             linkedCapacityGroupMaterialDemandRepository.save(entity);
             capacityGroupEntity.setLinkStatus(EventType.GENERAL_EVENT);
             capacityGroupRepository.save(capacityGroupEntity);
         }
-        updateStatus(userID, false);
         return convertCapacityGroupDto(capacityGroupEntity);
-    }
-
-    public EventType updateStatus(String userId, boolean isMaterialDemand) {
-        if (statusesRepository != null) {
-            List<MaterialDemandEntity> oldMaterialDemands = materialDemandRepository.findAll();
-
-            if (newCapacityGroups == null) {
-                newCapacityGroups = List.of();
-            }
-            final StatusesService statusesService = new StatusesServiceImpl(
-                oldCapacityGroups,
-                newCapacityGroups,
-                oldMaterialDemands,
-                oldMaterialDemands,
-                statusesRepository,
-                linkedCapacityGroupMaterialDemandRepository,
-                userRepository
-            );
-            return statusesService.updateStatus(isMaterialDemand, userId);
-        }
-        return null;
     }
 
     private void postLogs(String capacityGroupId, String userID) {
@@ -140,7 +121,9 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             Optional<MaterialDemandEntity> materialDemandEntity = materialDemandRepository.findById(uuid);
             if (materialDemandEntity.isPresent()) {
                 MaterialDemandEntity materialDemand = materialDemandEntity.get();
+                materialDemand.setLinkStatus(EventType.LINKED);
                 materialDemandEntities.add(materialDemand);
+                statusesService.addOrSubtractTodos(false,userID);
             }
         }
 
@@ -172,13 +155,13 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             }
         }
         newCapacityGroups = capacityGroupRepository.findAll();
-        updateStatus(userID, true);
 
         for (UUID uuid : linkCGDSRequest.getLinkMaterialDemandIds()) {
             Optional<MaterialDemandEntity> materialDemandEntity = materialDemandRepository.findById(uuid);
             if (materialDemandEntity.isPresent()) {
                 MaterialDemandEntity demandEntity = materialDemandEntity.get();
                 demandEntity.setLinkStatus(EventType.LINKED);
+                statusesService.addOrSubtractTodos(false,userID);
                 materialDemandRepository.save(demandEntity);
             }
         }

@@ -24,106 +24,38 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusesResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupDtoResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandResponseDto;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusesEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UserRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.StatusManager;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.WeekBasedStatusManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.UUID;
+
+@Lazy
+@RequiredArgsConstructor
 @Service
 @Slf4j
-@Lazy
 public class StatusesServiceImpl implements StatusesService {
 
     private final StatusesRepository statusesRepository;
-    private final UserRepository userRepository;
-    private LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
 
-    List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroupResponse;
-    List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroupResponse;
-    List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemandResponse;
-    List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse;
-
-    List<CapacityGroupEntity> oldCapacityGroup;
-    List<CapacityGroupEntity> newCapacityGroup;
-    List<MaterialDemandEntity> newMaterialDemand;
-    List<MaterialDemandEntity> oldMaterialDemand;
-
-    @Autowired
-    public StatusesServiceImpl(
-        StatusesRepository statusesRepository,
-        List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemandResponse,
-        List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemandResponse,
-        List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroupResponse,
-        List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroupResponse,
-        UserRepository userRepository
-    ) {
-        this.statusesRepository = statusesRepository;
-        this.oldWeekBasedMaterialDemandResponse = oldWeekBasedMaterialDemandResponse;
-        this.newWeekBasedMaterialDemandResponse = newWeekBasedMaterialDemandResponse;
-        this.oldWeekBasedCapacityGroupResponse = oldWeekBasedCapacityGroupResponse;
-        this.newWeekBasedCapacityGroupResponse = newWeekBasedCapacityGroupResponse;
-        this.userRepository = userRepository;
-    }
-
-    public StatusesServiceImpl(
-        List<CapacityGroupEntity> oldCapacityGroup,
-        List<CapacityGroupEntity> newCapacityGroup,
-        List<MaterialDemandEntity> oldMaterialDemand,
-        List<MaterialDemandEntity> newMaterialDemand,
-        StatusesRepository statusesRepository,
-        LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository,
-        UserRepository userRepository
-    ) {
-        this.statusesRepository = statusesRepository;
-        this.oldCapacityGroup = oldCapacityGroup;
-        this.newCapacityGroup = newCapacityGroup;
-        this.oldMaterialDemand = oldMaterialDemand;
-        this.newMaterialDemand = newMaterialDemand;
-        this.linkedCapacityGroupMaterialDemandRepository = linkedCapacityGroupMaterialDemandRepository;
-        this.userRepository = userRepository;
-    }
-
-    @Override
-    public StatusesResponse postStatuses(StatusRequest statusRequest) {
-        StatusesEntity statusesEntity = convertDtoToEntity(statusRequest);
-        statusesRepository.save(statusesEntity);
-        return convertStatusesResponseDto(statusesEntity);
-    }
-
-    private StatusesEntity convertDtoToEntity(StatusRequest statusRequest) {
+    private StatusesEntity convertDtoToEntity(StatusRequest statusRequest,String userID) {
         return StatusesEntity
-            .builder()
-            .todosCount(statusRequest.getTodos())
-            .generalCount(statusRequest.getGeneral())
-            .statusImprovementCount(statusRequest.getStatusImprovement())
-            .statusDegradationCount(statusRequest.getStatusDegradation())
-            .overAllStatusDegradationCount(statusRequest.getOverallStatusDegradation())
-            .overAllGeneralCount(statusRequest.getOverallGeneral())
-            .overAllStatusImprovementCount(statusRequest.getOverallStatusImprovement())
-            .overAllTodosCount(statusRequest.getOverallTodos())
-            .build();
-    }
-
-    @Override
-    public StatusesResponse getAllStatuses() {
-        List<StatusesEntity> statusesEntities = statusesRepository.findAll();
-        if (statusesEntities.isEmpty()) {
-            return null;
-        }
-        return statusesEntities.stream().map(this::convertStatusesResponseDto).toList().get(0);
+                .builder()
+                .userID(UUID.fromString(userID))
+                .todosCount(statusRequest.getTodos())
+                .generalCount(statusRequest.getGeneral())
+                .statusImprovementCount(statusRequest.getStatusImprovement())
+                .statusDegradationCount(statusRequest.getStatusDegradation())
+                .overAllStatusDegradationCount(statusRequest.getOverallStatusDegradation())
+                .overAllGeneralCount(statusRequest.getOverallGeneral())
+                .overAllStatusImprovementCount(statusRequest.getOverallStatusImprovement())
+                .overAllTodosCount(statusRequest.getOverallTodos())
+                .build();
     }
 
     private StatusesResponse convertStatusesResponseDto(StatusesEntity statusesEntity) {
@@ -139,42 +71,49 @@ public class StatusesServiceImpl implements StatusesService {
         return responseDto;
     }
 
-    public void updateWeeklyBasedStatus() {
-        WeekBasedStatusManager statusManager = new WeekBasedStatusManager();
-        postStatuses(
-            statusManager.retrieveUpdatedStatusRequest(
-                oldWeekBasedCapacityGroupResponse,
-                newWeekBasedCapacityGroupResponse,
-                oldWeekBasedMaterialDemandResponse,
-                newWeekBasedMaterialDemandResponse
-            )
-        );
+
+    @Override
+    public StatusesResponse postStatuses(StatusRequest statusRequest, String userID) {
+        UUID uuid = UUID.fromString(userID);
+        StatusesEntity existingEntity = statusesRepository.findByUserID(uuid).orElse(null);
+        StatusesEntity statusesEntity = convertDtoToEntity(statusRequest, userID);
+        if (existingEntity != null) {
+            statusesEntity.setId(existingEntity.getId());
+        }
+        statusesRepository.save(statusesEntity);
+        return convertStatusesResponseDto(statusesEntity);
     }
 
-    public EventType updateStatus(boolean isMaterialDemand, String userID) {
-        StatusManager statusManager = new StatusManager(linkedCapacityGroupMaterialDemandRepository, userRepository);
-        postStatuses(
-            statusManager.retrieveUpdatedStatusRequest(
-                getAllStatuses(),
-                oldCapacityGroup,
-                newCapacityGroup,
-                oldMaterialDemand,
-                newMaterialDemand,
-                userID
-            )
-        );
-        EventType eventType = statusManager.getEventType();
+    @Override
+    public StatusesResponse getAllStatuses(String userID) {
+        Optional<StatusesEntity> entity = statusesRepository.findByUserID(UUID.fromString(userID));
+        return entity.map(this::convertStatusesResponseDto).orElse(null);
+    }
 
-        if (eventType == EventType.STATUS_REDUCTION || eventType == EventType.STATUS_IMPROVEMENT) {
-            return eventType;
+    @Override
+    public void updateStatus(StatusRequest statusRequest, String userID) {
+        Optional<StatusesEntity> entity = statusesRepository.findByUserID(UUID.fromString(userID));
+        if(entity.isPresent()){
+            StatusesEntity statusesEntity = convertDtoToEntity(statusRequest,userID);
+            statusesEntity.setId(entity.get().getId());
+            statusesRepository.save(statusesEntity);
         }
+    }
 
-        if (eventType != EventType.TODO && eventType != EventType.UN_LINKED && isMaterialDemand) {
-            return EventType.LINKED;
-        }
-        if (!isMaterialDemand && eventType == EventType.TODO) {
-            return EventType.GENERAL_EVENT;
-        }
-        return eventType;
+    @Override
+    public void addOrSubtractTodos(boolean add, String userID) {
+        UUID userUUID = UUID.fromString(userID);
+        StatusesEntity statusesEntity = statusesRepository.findByUserID(userUUID).orElseGet(() -> generateNewEntity(userID));
+        int adjustment = add ? 1 : -1;
+        int newTodosCount = statusesEntity.getTodosCount() + adjustment;
+        statusesEntity.setTodosCount(Math.max(newTodosCount, 0));
+        statusesRepository.save(statusesEntity);
+    }
+
+
+    private StatusesEntity generateNewEntity(String userID){
+        return StatusesEntity.builder()
+                .userID(UUID.fromString(userID))
+                .build();
     }
 }

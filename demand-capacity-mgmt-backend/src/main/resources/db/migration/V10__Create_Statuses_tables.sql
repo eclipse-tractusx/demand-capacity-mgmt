@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS status_object
 
 CREATE TABLE IF NOT EXISTS statuses
 (
-    id uuid DEFAULT uuid_generate_v4() primary key,
+    id serial primary key,
+    user_id uuid,
     general_count int,
     over_all_general_count int,
     over_all_status_degradation_count int,
@@ -40,3 +41,5 @@ CREATE TABLE IF NOT EXISTS statuses
     status_improvement_count int,
     todos_count int
 );
+
+ALTER TABLE statuses ADD CONSTRAINT unique_user_id UNIQUE (user_id);

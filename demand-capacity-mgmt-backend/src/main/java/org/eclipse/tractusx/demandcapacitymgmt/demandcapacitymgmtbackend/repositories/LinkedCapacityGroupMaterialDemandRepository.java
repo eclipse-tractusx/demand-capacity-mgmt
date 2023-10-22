@@ -23,13 +23,14 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
 import jakarta.transaction.Transactional;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LinkedCapacityGroupMaterialDemandEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface LinkedCapacityGroupMaterialDemandRepository
@@ -39,6 +40,9 @@ public interface LinkedCapacityGroupMaterialDemandRepository
 
     @Transactional
     void deleteByCapacityGroupIDAndMaterialDemandID(UUID capacityGroup, UUID materialDemandID);
+
+    @Transactional
+    void deleteByMaterialDemandID(UUID materialDemandID);
 
     List<LinkedCapacityGroupMaterialDemandEntity> findLinkedCapacityGroupMaterialDemandEntitiesByCapacityGroupID(
         UUID capacityGroup

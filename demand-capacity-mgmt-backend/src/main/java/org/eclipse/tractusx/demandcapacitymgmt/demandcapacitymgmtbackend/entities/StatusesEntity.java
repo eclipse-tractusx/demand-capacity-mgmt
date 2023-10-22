@@ -39,9 +39,12 @@ import java.util.UUID;
 public class StatusesEntity {
 
     @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid", name = "id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
+    @Column(name = "user_id", unique = true)
+    private UUID userID;
 
     @Column(name = "todos_count")
     private int todosCount;

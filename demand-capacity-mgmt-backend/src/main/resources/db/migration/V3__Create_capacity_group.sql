@@ -66,14 +66,3 @@ create table link_capacitygroup_demandseries
     capacity_group_id uuid,
     material_demand_id uuid
 );
-
-/*DEPRECATED TABLE TODO REMOVE*/
-create table link_demand
-(
-    id uuid DEFAULT uuid_generate_v4() primary key,
-    material_number_customer varchar(400),
-    material_number_supplier varchar(400),
-    demand_category_id varchar(400),
-    linked boolean,
-    week_based_material_demand_id uuid constraint week_based_material_demand_id references week_based_material_demand(id)
-);
