@@ -110,7 +110,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     @Override
     public void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest, String userID) {
-        oldCapacityGroups = capacityGroupRepository.findAll();
         Optional<CapacityGroupEntity> optionalCapacityGroupEntity = capacityGroupRepository.findById(
             UUID.fromString(linkCGDSRequest.getCapacityGroupID())
         );
@@ -150,12 +149,10 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                     matchedDemandSeries.setCapacityGroupId(capacityGroupEntity.getId().toString());
                     demandSeriesRepository.save(matchedDemandSeries);
                 }
-
+                calculateBottleneck(capacityGroupEntity,matchedDemandSeriesList);
                 linkedCapacityGroupMaterialDemandRepository.save(entity);
             }
         }
-        newCapacityGroups = capacityGroupRepository.findAll();
-
         for (UUID uuid : linkCGDSRequest.getLinkMaterialDemandIds()) {
             Optional<MaterialDemandEntity> materialDemandEntity = materialDemandRepository.findById(uuid);
             if (materialDemandEntity.isPresent()) {
@@ -165,6 +162,36 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 materialDemandRepository.save(demandEntity);
             }
         }
+
+    }
+
+    private void calculateBottleneck(
+            CapacityGroupEntity capacityGroupEntity,
+            List<DemandSeries> matchedDemandSeriesList)
+    {
+        double actualCapacity = (double) capacityGroupEntity.getDefaultActualCapacity();
+        double maxCapacity = (double) capacityGroupEntity.getDefaultMaximumCapacity(); //default é 0 || null
+
+        double totalDemand = 0;
+        
+        for(DemandSeries demandSeries : matchedDemandSeriesList){
+            List<DemandSeriesValues> demandSeriesValues = demandSeries.getDemandSeriesValues();
+            for(DemandSeriesValues values : demandSeriesValues){
+                totalDemand += values.getDemand();
+            }
+        }
+
+        //capacityGroupEntity.setLinkStatus(flagCalculation());
+    }
+
+    // LOGAR O IMPROVEMENT OU DEGRADATION
+    // O STATUS NO TOP É PRA TODOS OS CAPACITY GROUPS
+    // FILTRAR ESTE STATUS IMPROV OU DEGRAD POR USERID
+    // NESTE CASO, UM CUSTOMER OU SUPPLIER.
+    // VERIFICAR O CAPACITY GROUP PARA CALCULO GERAL A PARTIR
+    // DO CUSTOMER / SUPPLIER ID
+    private void flagCalculation(){
+
     }
 
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest request) {
