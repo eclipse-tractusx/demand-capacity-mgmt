@@ -24,11 +24,10 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusesResponse;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 
 public interface StatusesService {
-    StatusesResponse postStatuses(StatusRequest statusRequest);
-    StatusesResponse getAllStatuses();
-    EventType updateStatus(boolean isMaterialDemand, String userID);
-    void updateWeeklyBasedStatus();
+    StatusesResponse postStatuses(StatusRequest statusRequest,String userID);
+    StatusesResponse getAllStatuses(String userID);
+    void updateStatus(StatusRequest statusRequest,String userID);
+    void addOrSubtractTodos(boolean add, String userID);
 }

@@ -67,7 +67,7 @@ function InfoMenu() {
                 <Nav.Link href="../todo">
                     Todo
                     <span className="ms-1 badge rounded-pill text-bg-warning" id="todo-count">
-                        {formatData(data?.overall_todos)}
+                        {formatData(data?.todos)}
                     </span>
                 </Nav.Link>
                 <Nav.Link onClick={() => handleNavigation('/events')}>

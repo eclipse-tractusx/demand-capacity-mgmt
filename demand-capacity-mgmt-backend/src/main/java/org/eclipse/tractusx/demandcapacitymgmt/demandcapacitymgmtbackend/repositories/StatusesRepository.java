@@ -22,8 +22,14 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
-import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusesEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StatusesRepository extends JpaRepository<StatusesEntity, UUID> {}
+import java.util.Optional;
+import java.util.UUID;
+
+public interface StatusesRepository extends JpaRepository<StatusesEntity, Integer> {
+    Optional<StatusesEntity> findByUserID(UUID userID);
+    void deleteByUserID(UUID userID);
+
+}
