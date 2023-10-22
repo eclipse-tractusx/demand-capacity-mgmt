@@ -35,6 +35,7 @@ interface WeeklyViewProps {
   materialDemands: DemandProp[] | null;
 }
 
+
 function getISOWeekMonday(year: number, isoWeek: number): Date {
   const january4 = new Date(year, 0, 4);
   const diff = (isoWeek - 1) * 7 + (1 - january4.getDay());
@@ -57,8 +58,6 @@ function getWeeksInMonth(year: number, monthIndex: number): number[] {
 }
 
 const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materialDemands }) => {
-
-
 
   const { demandcategories } = useContext(DemandCategoryContext) || {};
   const currentYear = new Date().getFullYear();
@@ -128,38 +127,73 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     }));
   };
 
-  // Calculate the sum of demand values for each week
+  const demandSumsByWeek: Record<number, number> = {};
+  const computedDemandSums: Record<number, number> = useMemo(() => {
+
+    // Populate demandSumsByWeek
+    if (capacityGroup && materialDemands) {
+      materialDemands.forEach((demand) => {
+        demand.demandSeries?.forEach((demandSeries) => {
+          demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+            const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
+            demandSumsByWeek[week] = (demandSumsByWeek[week] || 0) + demandSeriesValue.demand;
+          });
+        });
+      });
+    }
+
+    const computedSums: Record<number, number> = {};
+
+    for (const week in demandSumsByWeek) {
+      computedSums[week] = 0;
+      materialDemands?.forEach((demand) => {
+        demand.demandSeries?.forEach((demandSeries) => {
+          demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+            const seriesWeek = getISOWeek(new Date(demandSeriesValue.calendarWeek));
+            if (seriesWeek.toString() === week) {
+              computedSums[week] += demandSeriesValue.demand;
+            }
+          });
+        });
+      });
+    }
+
+    return computedSums;
+  }, [capacityGroup, materialDemands]);
+
+
   const demandSums = useMemo(() => {
-    const computedDemandSums: Record<number, number> = {};
+
+
+    // Populate demandSumsByWeek
+    if (capacityGroup && materialDemands) {
+      materialDemands.forEach((demand) => {
+        demand.demandSeries?.forEach((demandSeries) => {
+          demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+            const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
+            demandSumsByWeek[week] = (demandSumsByWeek[week] || 0) + demandSeriesValue.demand;
+          });
+        });
+      });
+    }
+
+    // Iterate over demandSumsByWeek to populate computedDemandSums
+    for (const week in demandSumsByWeek) {
+      computedDemandSums[week] = 0;
+      materialDemands?.forEach((demand) => {
+        demand.demandSeries?.forEach((demandSeries) => {
+          demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+            const seriesWeek = getISOWeek(new Date(demandSeriesValue.calendarWeek));
+            if (seriesWeek.toString() === week) {
+              computedDemandSums[week] += demandSeriesValue.demand;
+            }
+          });
+        });
+      });
+    }
 
     return computedDemandSums;
-  }, []);
-
-  // Calculate the sum of demandSeriesValues.demand for each week
-  const demandSumsByWeek: Record<number, number> = {};
-
-  // Track the sum of the Demands.demand for each Demand.description row
-  if (capacityGroup && materialDemands) {
-    materialDemands.forEach((demand) => {
-      demand.demandSeries?.forEach((demandSeries) => {
-        demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
-          const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
-          demandSums[week] = (demandSums[week] || 0) + demandSeriesValue.demand;
-        });
-      });
-    });
-  }
-
-  if (capacityGroup && materialDemands) {
-    materialDemands.forEach((demand) => {
-      demand.demandSeries?.forEach((demandSeries) => {
-        demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
-          const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
-          demandSumsByWeek[week] = (demandSumsByWeek[week] || 0) + demandSeriesValue.demand;
-        });
-      });
-    });
-  }
+  }, [capacityGroup, materialDemands]);
 
   // Calculate demand sums for each demand name
   const demandSumsByDemandAndWeek: Record<string, Record<number, number>> = {};
@@ -205,28 +239,53 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     }
   }, [demandSums]);
 
-  const calculateDelta = (week: number, demandSumsByWeek: Record<number, number>, actualCapacityMap: Record<number, number>) => {
-    const demandSum = demandSumsByWeek[week] || 0;
-    const actualCapacity = actualCapacityMap[week] || 0;
-    return actualCapacity - demandSum;
-  };
+  // Batch update actualCapacityMap
+  const actualCapacityMap: Record<number, number> = useMemo(() => {
+    const capacityMap: Record<number, number> = {};
+    if (capacityGroup && capacityGroup.capacities) {
+      capacityGroup.capacities.forEach((capacity) => {
+        const week = getISOWeek(new Date(capacity.calendarWeek));
+        capacityMap[week] = capacity.actualCapacity;
+      });
+    }
+    return capacityMap;
+  }, [computedDemandSums]);
 
-  const actualCapacityMap: Record<number, number> = {};
 
-  if (capacityGroup && capacityGroup.capacities) {
-    capacityGroup.capacities.forEach((capacity) => {
-      const week = getISOWeek(new Date(capacity.calendarWeek));
-      actualCapacityMap[week] = capacity.actualCapacity;
+  // Calculate deltaMap directly based on demandSumsByWeek and actualCapacityMap
+  const deltaMap: Record<number, Record<number, number>> = useMemo(() => {
+    const calculatedDeltaMap: Record<number, Record<number, number>> = {};
+
+    // Calculate deltas for the previous year
+    monthsPreviousYear.forEach((month) => {
+      calculatedDeltaMap[month.year] = calculatedDeltaMap[month.year] || {};
+      month.weeks.forEach((week) => {
+        calculatedDeltaMap[month.year][week] =
+          (actualCapacityMap[week] || 0) - (computedDemandSums[week] || 0);
+      });
     });
-  }
 
-  const deltaMap: Record<number, number> = {};
-
-  monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).forEach((month) => {
-    month.weeks.forEach((week) => {
-      deltaMap[week] = calculateDelta(week, demandSumsByWeek, actualCapacityMap);
+    // Calculate deltas for the current year
+    monthsCurrentYear.forEach((month) => {
+      calculatedDeltaMap[month.year] = calculatedDeltaMap[month.year] || {};
+      month.weeks.forEach((week) => {
+        calculatedDeltaMap[month.year][week] =
+          (actualCapacityMap[week] || 0) - (computedDemandSums[week] || 0);
+      });
     });
-  });
+
+    // Calculate deltas for the next year
+    monthsNextYear.forEach((month) => {
+      calculatedDeltaMap[month.year] = calculatedDeltaMap[month.year] || {};
+      month.weeks.forEach((week) => {
+        calculatedDeltaMap[month.year][week] =
+          (actualCapacityMap[week] || 0) - (computedDemandSums[week] || 0);
+      });
+    });
+
+    return calculatedDeltaMap;
+  }, [computedDemandSums]); // Empty dependency array ensures that this useMemo runs only once
+
 
   // Function to get the beginning and end dates of the week
   const getWeekDates = (year: number, month: string, week: number) => {
@@ -492,10 +551,10 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                 {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
                   month.weeks.map((week) => (
                     <td
-                      key={`delta-${week}`}
-                      className={`data-cell ${deltaMap[week] < 0 ? 'bg-light-red' : deltaMap[week] > 0 ? 'bg-light-green' : ''}`}
+                      key={`delta-${month.year}-${week}`}
+                      className={`data-cell ${deltaMap[month.year]?.[week] < 0 ? 'bg-light-red' : deltaMap[month.year]?.[week] > 0 ? 'bg-light-green' : ''}`}
                     >
-                      {deltaMap[week] > 0 ? `+${deltaMap[week]}` : deltaMap[week]}
+                      {deltaMap[month.year][week] > 0 ? `+${deltaMap[month.year][week]}` : deltaMap[month.year][week]}
                     </td>
                   ))
                 )}
