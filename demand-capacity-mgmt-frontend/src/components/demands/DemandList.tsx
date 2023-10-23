@@ -67,7 +67,7 @@ const DemandList: React.FC<{
     const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
 
     const [currentPage, setCurrentPage] = useState(1);//Its updated from showWizard
-    const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
+    const [sortColumn, setSortColumn] = useState<keyof DemandProp>('changedAt');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
@@ -97,7 +97,7 @@ const DemandList: React.FC<{
         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
       } else {
         // If a different column is clicked, set it as the new sort column and default to ascending order
-        setSortColumn(column as keyof DemandProp | null);
+        setSortColumn(column as keyof DemandProp);
         setSortOrder('asc');
       }
     };
@@ -171,18 +171,25 @@ const DemandList: React.FC<{
           const aValue = a[sortColumn];
           const bValue = b[sortColumn];
 
-          if (typeof aValue === 'string' && typeof bValue === 'string') {
-            // Sort strings alphabetically
-            return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
-          } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-            // Sort numbers numerically
-            return aValue - bValue;
+          if (sortColumn === 'changedAt') {
+            const timestampA = aValue instanceof Date ? aValue.getTime() : typeof aValue === 'string' ? new Date(aValue).getTime() : 0;
+            const timestampB = bValue instanceof Date ? bValue.getTime() : typeof bValue === 'string' ? new Date(bValue).getTime() : 0;
+
+            return sortOrder === 'asc' ? timestampB - timestampA : timestampA - timestampB;
+          } else {
+            // For other columns, perform string or numeric comparison
+            if (typeof aValue === 'string' && typeof bValue === 'string') {
+              // Sort strings alphabetically
+              return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
+            } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+              // Sort numbers numerically
+              return aValue - bValue;
+            }
+
+            // If the types are not string or number, return 0 (no sorting)
+            return 0;
           }
-
-          // If the types are not string or number, return 0 (no sorting)
-          return 0;
         });
-
 
         if (sortOrder === 'desc') {
           // Reverse the array if the sort order is descending
@@ -190,9 +197,8 @@ const DemandList: React.FC<{
         }
       }
 
-
       setFilteredDemands(sortedDemands);
-    }, [demandprops, searchQuery, sortColumn, sortOrder]);
+    }, [demandprops, searchQuery]);
 
     const slicedDemands = useMemo(() => {
       // Use filteredDemandsByEventTypes instead of filteredDemands for slicing and rendering

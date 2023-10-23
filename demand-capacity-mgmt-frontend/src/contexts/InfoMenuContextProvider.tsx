@@ -43,8 +43,6 @@ interface InfoMenuProviderProps {
 export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ children }) => {
     const [data, setData] = useState<InfoMenuData | null>(null);
     const { access_token } = useUser();
-
-    //These are used to trigger the top Menu whenever they change
     const { capacitygroups } = useContext(CapacityGroupContext) || {};
     const { demandprops } = useContext(DemandContext) || {};
     const { events } = useContext(EventsContext) || {};
@@ -62,7 +60,23 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
 
     useEffect(() => {
         fetchData();
-    }, [access_token, capacitygroups, demandprops, events]);
+        console.log('Top menu triggered due to access_token change');
+    }, [fetchData, access_token]);
+
+    useEffect(() => {
+        fetchData();
+        console.log('Top menu triggered due to capacitygroups change');
+    }, [fetchData, capacitygroups]);
+
+    useEffect(() => {
+        fetchData();
+        console.log('Top menu triggered due to demandprops change');
+    }, [fetchData, demandprops]);
+
+    useEffect(() => {
+        fetchData();
+        console.log('Top menu triggered due to events change');
+    }, [fetchData, events]);
 
     return (
         <InfoMenuContext.Provider value={{ data, fetchData }}>

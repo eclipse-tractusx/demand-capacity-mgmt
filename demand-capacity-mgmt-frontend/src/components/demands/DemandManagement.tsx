@@ -71,8 +71,8 @@ const DemandManagement: React.FC = () => {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       // If a different column is clicked, set it as the new sort column and default to ascending order
-      setSortColumn(column as keyof DemandProp); // Update sortColumn to the clicked column
-      setSortOrder('asc'); // Default to ascending order
+      setSortColumn(column as keyof DemandProp);
+      setSortOrder('asc');
     }
   };
 
@@ -172,7 +172,7 @@ const DemandManagement: React.FC = () => {
     }
 
     setFilteredDemands(sortedDemands);
-  }, [demandprops, searchQuery, sortColumn, sortOrder]);
+  }, [demandprops, searchQuery]);
 
 
   const slicedDemands = useMemo(() => {
@@ -255,7 +255,7 @@ const DemandManagement: React.FC = () => {
               <span className="badge rounded-pill bg-danger text-white" id="tag-danger">
                 Unlinked
               </span>
-            ): (
+            ) : (
               <span className="badge rounded-pill bg-secondary text-white">N/A</span>
             )}
           </td>

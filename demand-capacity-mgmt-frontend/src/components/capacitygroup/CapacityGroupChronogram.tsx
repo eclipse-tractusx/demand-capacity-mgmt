@@ -185,7 +185,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
             >
 
-                <CartesianGrid stroke="#f5f5f5" />
+                <CartesianGrid stroke="#e6e6e6" />
                 <XAxis
                     dataKey="calendarWeek"
                     tickFormatter={weekTickFormatter}
@@ -218,12 +218,12 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
                 <Bar dataKey="Demand" barSize={20} fill="#413ea0" />
                 <Line type="monotone" dataKey="actualCapacity" stroke="#ff7300" />
-                <Line type="monotone" dataKey="maximumCapacity" stroke="#8884d8" />
+                <Line type="monotone" dataKey="maximumCapacity" stroke="#7aa725" />
                 <Brush
                     y={450}
                     dataKey="calendarWeek"
-                    height={20}
-                    stroke="#8884d8"
+                    height={22}
+                    stroke="#8a8a8a"
                     onChange={handleBrushChange}
                     startIndex={brushIndexesRef.current?.startIndex}
                     endIndex={brushIndexesRef.current?.endIndex}
@@ -241,7 +241,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
                     top: 5,
                     right: 80,
                     bottom: 20,
-                    left: 20
+                    left: 80
                 }}
             >
                 <CartesianGrid />
@@ -250,7 +250,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
                 {/* Highlighted area based on the brush selection from the main graph */}
                 {selectedRange.start && selectedRange.end && (
-                    <ReferenceArea x1={selectedRange.start} x2={selectedRange.end} fill="rgba(255,0,0,0.2)" />
+                    <ReferenceArea x1={selectedRange.start} x2={selectedRange.end} fill="rgba(148,203,0,0.3)" />
                 )}
             </BarChart>
         </div>

@@ -20,9 +20,9 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import createAPIInstance from "../util/Api";
-import {useUser} from "./UserContext";
+import { useUser } from "./UserContext";
 
 export interface DemandCategory {
   id: string
@@ -52,14 +52,14 @@ const DemandCategoryContextProvider: React.FC<React.PropsWithChildren<{}>> = (pr
         console.error('Error fetching demands:', error);
       }
     };
-  
+
     fetchDemandCategories();
   }, [access_token]);
-  
+
 
 
   return (
-    <DemandCategoryContext.Provider value={{ demandcategories}}>
+    <DemandCategoryContext.Provider value={{ demandcategories }}>
       {props.children}
     </DemandCategoryContext.Provider>
   );
