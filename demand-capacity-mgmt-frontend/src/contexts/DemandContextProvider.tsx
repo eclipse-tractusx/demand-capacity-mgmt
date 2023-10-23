@@ -19,7 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { Demand, DemandProp } from '../interfaces/demand_interfaces';
 import createAPIInstance from "../util/Api";
 import { useUser } from "./UserContext";
@@ -46,7 +46,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const api = createAPIInstance(access_token);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fetchDemandPropsWithRetry = async (maxRetries = 3) => {
+  const fetchDemandPropsWithRetry = useMemo(() => async (maxRetries = 3) => {
     let retries = 0;
 
     while (retries < maxRetries) {
@@ -69,7 +69,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
         }
       }
     }
-  };
+  }, [api]);
 
   const fetchDemandProps = useCallback(() => {
     fetchDemandPropsWithRetry();
