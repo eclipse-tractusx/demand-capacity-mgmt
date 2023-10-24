@@ -51,10 +51,6 @@ public class StatusesServiceImpl implements StatusesService {
                 .generalCount(statusRequest.getGeneral())
                 .statusImprovementCount(statusRequest.getStatusImprovement())
                 .statusDegradationCount(statusRequest.getStatusDegradation())
-                .overAllStatusDegradationCount(statusRequest.getOverallStatusDegradation())
-                .overAllGeneralCount(statusRequest.getOverallGeneral())
-                .overAllStatusImprovementCount(statusRequest.getOverallStatusImprovement())
-                .overAllTodosCount(statusRequest.getOverallTodos())
                 .build();
     }
 
@@ -64,10 +60,6 @@ public class StatusesServiceImpl implements StatusesService {
         responseDto.setGeneral(statusesEntity.getGeneralCount());
         responseDto.setStatusImprovement(statusesEntity.getStatusImprovementCount());
         responseDto.setStatusDegredation(statusesEntity.getStatusDegradationCount());
-        responseDto.setOverallGeneral(statusesEntity.getOverAllGeneralCount());
-        responseDto.setOverallTodos(statusesEntity.getOverAllTodosCount());
-        responseDto.setOverallStatusImprovement(statusesEntity.getOverAllStatusImprovementCount());
-        responseDto.setOverallStatusDegredation(statusesEntity.getOverAllStatusDegradationCount());
         return responseDto;
     }
 

@@ -72,6 +72,7 @@ public class DemandServiceImpl implements DemandService {
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
     private final HttpServletRequest request;
     private final StatusesService statusesService;
+    private final StatusManagerImpl statusManager;
 
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest, String userID) {
@@ -86,6 +87,7 @@ public class DemandServiceImpl implements DemandService {
         materialDemandEntity = materialDemandRepository.save(materialDemandEntity);
         postLogs(materialDemandEntity.getId().toString(), "Material Demand created", EventType.GENERAL_EVENT, userID);
         statusesService.addOrSubtractTodos(true,userID);
+        statusManager.calculateBottleneck(userID);
         return convertDemandResponseDto(materialDemandEntity);
     }
 
@@ -166,6 +168,7 @@ public class DemandServiceImpl implements DemandService {
             );
         demand = materialDemandRepository.save(demand);
         postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT, userID);
+        statusManager.calculateBottleneck(userID);
         return convertDemandResponseDto(demand);
     }
 
@@ -182,6 +185,7 @@ public class DemandServiceImpl implements DemandService {
         linkedCapacityGroupMaterialDemandRepository.deleteByMaterialDemandID(demand.getId());
         materialDemandRepository.delete(demand);
         statusesService.addOrSubtractTodos(false,userID);
+        statusManager.calculateBottleneck(userID);
     }
 
     @Override
@@ -267,6 +271,7 @@ public class DemandServiceImpl implements DemandService {
         List<MaterialDemandEntity> oldMaterialDemands = getAllDemands();
         oldMaterialDemands.removeIf(md -> md.getId().equals(mdID));
         statusesService.addOrSubtractTodos(true,userID);
+        statusManager.calculateBottleneck(userID);
     }
 
     private MaterialDemandEntity getDemandEntity(String demandId) {

@@ -29,7 +29,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectToken
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.Role;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.TokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
-import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
@@ -46,12 +45,16 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.*;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class SecurityTokenServiceImpl implements SecurityTokenService {
 
     private final WebClient keycloakWebClient;
+
+    private final StatusManagerImpl statusManager;
 
     private final UserRepository userRepository;
     private static final String CLIENT_ID = "client_id";
@@ -258,6 +261,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         user.setAccessToken(accessToken);
         user.setRefreshToken(refreshToken);
         user.setExpiresIn(expiresIn);
+        statusManager.calculateBottleneck(user.getUserID());
         return user;
     }
 

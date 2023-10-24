@@ -965,15 +965,6 @@ components:
           type: integer
         statusDegredation:
           type: integer
-        overall_general:
-          type: integer
-        overall_todos:
-          type: integer
-        overall_statusImprovement:
-          type: integer
-        overall_statusDegredation:
-          type: integer
-
 
     StatusRequest:
       type: object
@@ -985,14 +976,6 @@ components:
         statusImprovement:
           type: integer
         statusDegradation:
-          type: integer
-        overall_general:
-          type: integer
-        overall_todos:
-          type: integer
-        overall_statusImprovement:
-          type: integer
-        overall_statusDegradation:
           type: integer
 
     DemandRequestDto:

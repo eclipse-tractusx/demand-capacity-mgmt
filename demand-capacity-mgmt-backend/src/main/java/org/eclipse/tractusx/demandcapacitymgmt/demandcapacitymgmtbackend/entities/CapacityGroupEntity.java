@@ -23,11 +23,12 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import lombok.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 
 @Entity
 @Table(name = "capacity_group")
@@ -41,6 +42,9 @@ public class CapacityGroupEntity {
     @GeneratedValue
     @Column(columnDefinition = "uuid", updatable = false, name = "id")
     private UUID id;
+
+    @Column(name = "userID")
+    private UUID userID;
 
     @Column(name = "capacity_group_name")
     private String capacityGroupName;

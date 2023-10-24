@@ -57,16 +57,4 @@ public class StatusesEntity {
 
     @Column(name = "general_count")
     private int generalCount;
-
-    @Column(name = "over_all_todos_count")
-    private int overAllTodosCount;
-
-    @Column(name = "over_all_status_improvement_count")
-    private int overAllStatusImprovementCount;
-
-    @Column(name = "over_all_status_degradation_count")
-    private int overAllStatusDegradationCount;
-
-    @Column(name = "over_all_general_count")
-    private int overAllGeneralCount;
 }

@@ -48,20 +48,20 @@ function InfoMenu() {
 
                 <Nav.Link href="../alerts">Alerts
                     <span className="ms-1 badge rounded-pill text-bg-danger" id="alerts-count">
-                        {formatData(data?.overall_general)}
+                        {formatData(data?.general)}
                     </span>
                 </Nav.Link>
 
                 <Nav.Link href="../up">
                     <FaArrowUp /> Status
                     <span className="ms-1 badge rounded-pill text-bg-success" id="status-plus-count">
-                        {formatData(data?.overall_statusImprovement)}
+                        {formatData(data?.statusImprovement)}
                     </span>
                 </Nav.Link>
                 <Nav.Link href="../down">
                     <FaArrowDown /> Status
                     <span className="ms-1 badge rounded-pill text-bg-danger" id="status-minus-count">
-                        {formatData(data?.overall_statusDegredation)}
+                        {formatData(data?.statusDegredation)}
                     </span>
                 </Nav.Link>
                 <Nav.Link href="../todo">

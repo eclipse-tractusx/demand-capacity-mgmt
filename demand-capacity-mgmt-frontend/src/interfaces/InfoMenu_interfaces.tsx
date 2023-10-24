@@ -25,8 +25,4 @@ export interface InfoMenuData {
     todos: number;
     statusImprovement: number;
     statusDegredation: number;
-    overall_general: number;
-    overall_todos: number;
-    overall_statusImprovement: number;
-    overall_statusDegredation: number;
 }

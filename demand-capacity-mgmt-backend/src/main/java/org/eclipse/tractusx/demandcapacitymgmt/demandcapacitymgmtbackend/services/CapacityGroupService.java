@@ -31,5 +31,5 @@ public interface CapacityGroupService {
     void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest, String userID);
 
     SingleCapacityGroup getCapacityGroupById(String CapacityGroupId);
-    List<CapacityGroupDefaultViewResponse> getAll();
+    List<CapacityGroupDefaultViewResponse> getAll(String userID);
 }
