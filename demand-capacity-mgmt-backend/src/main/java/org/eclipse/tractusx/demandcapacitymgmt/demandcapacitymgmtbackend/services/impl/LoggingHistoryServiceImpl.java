@@ -228,10 +228,14 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
     }
 
     boolean isOnTimeInterval(Timestamp startTime, Timestamp endTime, Timestamp logCreationTime) {
-        if (startTime == null || endTime == null) {
+        try {
+            if (startTime == null || endTime == null) {
+                return false;
+            }
+            return logCreationTime.after(startTime) && logCreationTime.before(endTime);
+        } catch (Exception e) {
             return false;
         }
-        return logCreationTime.after(startTime) && logCreationTime.before(endTime);
     }
 
     @Override

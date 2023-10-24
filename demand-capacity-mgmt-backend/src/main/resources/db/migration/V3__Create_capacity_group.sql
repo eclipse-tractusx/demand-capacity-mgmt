@@ -25,6 +25,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 create table capacity_group
 (
     id uuid DEFAULT uuid_generate_v4() primary key,
+    userID uuid,
     capacity_group_name varchar(400),
     defaultActualCapacity float,
     defaultMaximumCapacity float,

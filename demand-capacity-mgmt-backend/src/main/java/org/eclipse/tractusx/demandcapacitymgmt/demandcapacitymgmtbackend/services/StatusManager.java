@@ -20,16 +20,8 @@
  * *******************************************************************************
  */
 
-SET search_path TO public;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
-CREATE TABLE IF NOT EXISTS statuses
-(
-    id serial primary key,
-    user_id uuid,
-    general_count int,
-    status_degradation_count int,
-    status_improvement_count int,
-    todos_count int
-);
-
-ALTER TABLE statuses ADD CONSTRAINT unique_user_id UNIQUE (user_id);
+public interface StatusManager {
+    void calculateBottleneck(String userID);
+}
