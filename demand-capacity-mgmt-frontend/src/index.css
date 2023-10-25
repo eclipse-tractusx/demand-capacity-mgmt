@@ -111,6 +111,11 @@ code {
   /* Add some spacing between the label text and the asterisk */
 }
 
+.invalid-feedback {
+  color: red;
+  display: block !important;
+}
+
 
 /*Sum View Tables*/
 .table-container {

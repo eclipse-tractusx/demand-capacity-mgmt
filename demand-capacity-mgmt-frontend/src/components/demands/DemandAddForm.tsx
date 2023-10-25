@@ -70,12 +70,6 @@ const useHandleSubmit = (initialFormState: Demand) => {
     const startDateInput = document.querySelector<HTMLInputElement>('#startDate');
     const endDateInput = document.querySelector<HTMLInputElement>('#endDate');
 
-    if (!startDateInput?.value || !endDateInput?.value) {
-      // Validation check: start date and end date are required
-      console.error('Start date and end date are required.');
-      return;
-    }
-
     if (startDateInput && endDateInput) {
       const startDateObj = new Date(startDateInput.value);
       const endDateObj = new Date(endDateInput.value);
@@ -118,7 +112,7 @@ const useHandleSubmit = (initialFormState: Demand) => {
   return { submissionStatus, handleSubmit };
 };
 
-const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
+const AddForm: React.FC<AddFormProps> = () => {
   const initialFormState: Demand = {
     id: '',
     materialDescriptionCustomer: '',
@@ -141,16 +135,79 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false); // New state to handle the success message
   const { submissionStatus, handleSubmit } = useHandleSubmit(initialFormState);
 
+
+  const [unitMeasureError, setUnitMeasureError] = useState<string>('');
+  const [supplierError, setSupplierError] = useState<string>('');
+  const [demandCategoryError, setDemandCategoryError] = useState<string>('');
+  const [materialNumberCustomerError, setMaterialNumberCustomerError] = useState<string>('');
+  const [descriptionError, setDescriptionError] = useState<string>('');
+
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+
+    //We do this since the startDate and end date are not on the fromstate, but used to generate demands.
     const startDateInput = document.querySelector<HTMLInputElement>('#startDate');
     const endDateInput = document.querySelector<HTMLInputElement>('#endDate');
 
-    if (!startDateInput?.value || !endDateInput?.value) {
-      console.error('Start date and end date are required.');
+    const { supplierId, unitMeasureId, materialDemandSeries, materialDescriptionCustomer, materialNumberCustomer } = formState;
+
+    const errorMessages = document.querySelectorAll('.invalid-feedback');
+    errorMessages.forEach((errorMsg) => {
+      errorMsg.textContent = '';
+    });
+
+    if (!startDateInput?.value) {
+      console.error('Start date is required.');
+      startDateInput?.classList.add('invalid-input');
       return;
     }
+
+    if (!endDateInput?.value) {
+      console.error('End date is required.');
+      endDateInput?.classList.add('invalid-input');
+      return;
+    }
+
+    if (!unitMeasureId) {
+      setUnitMeasureError('Unit of measure is required.');
+      return;
+    } else {
+      setUnitMeasureError('');
+    }
+
+    // Validate Supplier
+    if (!supplierId) {
+      setSupplierError('Supplier is required.');
+      return;
+    } else {
+      setSupplierError('');
+    }
+
+    // Validate Demand Category
+    if (!materialDemandSeries?.[0]?.demandCategoryId) {
+      setDemandCategoryError('Demand category is required.');
+      return;
+    } else {
+      setDemandCategoryError('');
+    }
+
+    // Validate Material Number Customer
+    if (!materialNumberCustomer) {
+      setMaterialNumberCustomerError('Material Number Customer is required.');
+      return;
+    } else {
+      setMaterialNumberCustomerError('');
+    }
+
+    // Validate Description
+    if (!materialDescriptionCustomer) {
+      setDescriptionError('Description is required.');
+      return;
+    } else {
+      setDescriptionError('');
+    }
+
     await handleSubmit(formState);
     setShowSuccessMessage(true);
   }
@@ -168,18 +225,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
     const { name, value } = e.target;
 
     setFormState((prevFormState) => {
-      if (name === 'supplierId') {
-        return {
-          ...prevFormState,
-          supplierId: value,
-          materialDemandSeries: [
-            {
-              ...prevFormState.materialDemandSeries[0],
-              expectedSupplierLocationId: [value],
-            },
-          ],
-        };
-      } else if (name === 'demandCategoryId') {
+      if (name === 'demandCategoryId') {
         return {
           ...prevFormState,
           materialDemandSeries: [
@@ -196,6 +242,20 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
         };
       }
     });
+  }
+
+  const handleUnitMeasureChange = (value: string) => {
+    setFormState((prevFormState) => ({
+      ...prevFormState,
+      unitMeasureId: value,
+    }));
+  };
+
+  const handleSupplierChange = (value: string) => {
+    setFormState((prevFormState) => ({
+      ...prevFormState,
+      supplierId: value,
+    }));
   };
 
   const getNextMonday = () => {
@@ -262,7 +322,6 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
                 pattern="\d{4}-\d{2}-\d{2}"
                 min={getNextMonday().toISOString().slice(0, 10)}
                 onChange={onEndDateChange}
-                required
                 isInvalid={!endDateValid}
               />
               <Form.Control.Feedback type="invalid">End Date has to be a Monday after Start Date.</Form.Control.Feedback>
@@ -272,33 +331,19 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
           <Row className="mb-3">
             <Form.Group className="form-group required" as={Col}>
               <Form.Label className="control-label required-field-label">Unit of Measure</Form.Label>
-              <Form.Select
-                name="unitMeasureId"
-                id="unitMeasureId"
-                onChange={onInputChangeSelect}
-                value={formState.unitMeasureId}
-                required
-              >
-                <UnitsofMeasureContextContextProvider>
-                  <UnitsOfMeasureOptions selectedUnitMeasureId={formState.unitMeasureId} />
-                </UnitsofMeasureContextContextProvider>
-              </Form.Select>
+              <UnitsofMeasureContextContextProvider>
+                <UnitsOfMeasureOptions selectedUnitMeasureId={formState.unitMeasureId} onChange={handleUnitMeasureChange} />
+              </UnitsofMeasureContextContextProvider>
+              <div className="invalid-feedback">{unitMeasureError}</div>
             </Form.Group>
           </Row>
+
           <Form.Group className="mb-3 form-group required">
             <Form.Label className="control-label required-field-label">Supplier</Form.Label>
-            <Form.Select
-              aria-label="Default select example"
-              name="supplierId"
-              id="supplierId"
-              onChange={onInputChangeSelect}
-              value={formState.supplierId}
-              required
-            >
-              <CompanyContextProvider>
-                <CompanyOptions selectedCompanyName={formState.supplierId} />
-              </CompanyContextProvider>
-            </Form.Select>
+            <CompanyContextProvider>
+              <CompanyOptions selectedCompanyName={formState.supplierId} onChange={handleSupplierChange} />
+            </CompanyContextProvider>
+            <div className="invalid-feedback">{supplierError}</div>
           </Form.Group>
 
           <Form.Group className="mb-3 form-group required">
@@ -316,6 +361,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
                 <DemandCategoryOptions selectedDemandCategoryId='' />
               </DemandCategoryContextProvider>
             </Form.Select>
+            <div className="invalid-feedback">{demandCategoryError}</div>
           </Form.Group>
 
           <Form.Group className="mb-3 form-group required">
@@ -329,6 +375,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
               onChange={onInputChange}
               required
             />
+            <div className="invalid-feedback">{materialNumberCustomerError}</div>
           </Form.Group>
 
           <Form.Group className="mb-3 required">
@@ -354,6 +401,7 @@ const AddForm: React.FC<AddFormProps> = ({ fetchDemandProps }) => {
               onChange={onInputChange}
               required
             />
+            <div className="invalid-feedback">{descriptionError}</div>
           </Form.Group>
 
           <Button variant="primary" onClick={handleFormSubmit} disabled={submissionStatus === 'submitting'}>
