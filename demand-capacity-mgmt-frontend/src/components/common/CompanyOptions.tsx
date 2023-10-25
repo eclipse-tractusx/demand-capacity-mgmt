@@ -20,30 +20,46 @@
  *    ********************************************************************************
  */
 
-import React, { useContext } from 'react';
+import React, { useCallback, useContext } from 'react';
+import Select from 'react-select';
 import { CompanyContext } from '../../contexts/CompanyContextProvider';
 
 interface CompanyOptionsProps {
   selectedCompanyName: string;
+  onChange: (value: string) => void;
 }
 
-const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName }) => {
+const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName, onChange }) => {
   const companiesContextData = useContext(CompanyContext);
   const { companies } = companiesContextData || {};
 
-  // Use the companies array to fill the <select> options
+  const options = companies?.map((company) => ({
+    value: company.id,
+    label: `${company.bpn || ''} | ${company.companyName || ''}`,
+  }));
+
+  const selectedOption = options?.find((option) => option.value === selectedCompanyName);
+
+  const handleSelectChange = useCallback(
+    (selectedOption: { value: string; label: string } | null) => {
+      onChange(selectedOption?.value || ''); // Provide a default value ('') if selectedOption is undefined
+    },
+    [onChange]
+  );
+
+
   return (
-    <>
-      <option disabled={true} value="">
-        --Choose an option--
-      </option>
-      {companies &&
-        companies.map((company) => (
-          <option key={company.id} value={company.id} selected={company.companyName === selectedCompanyName}>
-            {company.companyName}
-          </option>
-        ))}
-    </>
+    <Select
+      name="supplierId"
+      id="supplierId"
+      options={options}
+      value={selectedOption}
+      onChange={handleSelectChange}
+      placeholder="--Choose an option--"
+      noOptionsMessage={() => "No suppliers match criteria"}
+      required
+      isSearchable
+    />
   );
 };
 
