@@ -20,6 +20,8 @@
  *    ********************************************************************************
  */
 
+import { FaArrowDown, FaArrowUp, FaEnvelope, FaExclamation, FaLink, FaUnlink, FaWrench } from "react-icons/fa"
+
 
 export interface EventProp {
   id: number
@@ -44,3 +46,13 @@ export enum EventType {
   LINKED = 'LINKED',
   UN_LINKED = 'UN_LINKED'
 }
+
+export const eventTypeIcons: { [key: string]: React.ReactNode } = {
+  GENERAL_EVENT: <FaEnvelope className="text-primary" size={25} />,
+  TODO: <FaWrench className="text-warning" size={25} />,
+  ALERT: <FaExclamation className="text-danger" size={25} />,
+  STATUS_IMPROVEMENT: <FaArrowUp className="text-success" size={25} />,
+  STATUS_REDUCTION: <FaArrowDown className="text-danger" size={25} />,
+  LINKED: <FaLink className="text-info" size={25} />,
+  UN_LINKED: <FaUnlink className="text-danger" size={25} />,
+};
