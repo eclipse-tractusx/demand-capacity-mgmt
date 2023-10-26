@@ -23,10 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
@@ -41,6 +37,11 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -58,6 +59,20 @@ public class FavoriteServiceImpl implements FavoriteService {
         List<FavoriteEntity> favoriteEntities = favoriteRepository.findByUserID(UUID.fromString(userID));
         return filterFavorites(favoriteEntities);
     }
+
+    @Override
+    public FavoriteResponse getAllFavoritesByType(String userID, FavoriteType type) {
+        List<FavoriteEntity> favoriteResponseList = favoriteRepository.findByUserIDAndType(UUID.fromString(userID),type);
+        List<MaterialDemandFavoriteResponse> favoriteResponses = new ArrayList<>();
+        for(FavoriteEntity fav : favoriteResponseList){
+            favoriteResponses.add(convertToMaterialDemandResponse(fav));
+        }
+        FavoriteResponse response = new FavoriteResponse();
+        response.setMaterialDemands(favoriteResponses);
+        return response;
+    }
+
+
 
     private FavoriteResponse filterFavorites(List<FavoriteEntity> favoriteEntities) {
         FavoriteResponse response = new FavoriteResponse();
@@ -132,32 +147,27 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public FavoriteResponse createFavorite(FavoriteRequest favoriteRequest, String cookieUserID) {
-        FavoriteEntity entity = favoriteRepository.save(generateFavoriteEntity(favoriteRequest, cookieUserID));
-        //return convertFavoriteResponse(entity);
-        return null;
+    public void createFavorite(FavoriteRequest favoriteRequest, String cookieUserID) {
+        favoriteRepository.save(generateFavoriteEntity(favoriteRequest, cookieUserID));
     }
 
     @Override
-    public FavoriteResponse updateFavorite(Integer id, FavoriteRequest favoriteRequest, String userID) {
+    public void updateFavorite(Integer id, FavoriteRequest favoriteRequest, String userID) {
         FavoriteEntity entity = favoriteRepository.findByUserIDAndId(UUID.fromString(userID), id);
-
         if (entity != null) {
             entity.setFavoriteId(UUID.fromString(favoriteRequest.getFavoriteId()));
             entity.setType(FavoriteType.valueOf(favoriteRequest.getfType()));
             favoriteRepository.saveAndFlush(entity);
-            //return convertFavoriteResponse(entity);
-            return null;
         } else throw new NotFoundException(
             404,
-            "Demand category not found",
+            "Favorite type not found",
             new ArrayList<>(List.of("provided UUID did not match any records. - " + id))
         );
     }
 
     @Override
-    public void deleteFavorite(UUID id, String cookieUserID) {
-        //favoriteRepository.deleteByFavoriteIdAndId(id, UUID.fromString(cookieUserID));
+    public void deleteFavorite(String userID, String favoriteID) {
+        favoriteRepository.deleteFavorite(UUID.fromString(userID),UUID.fromString(favoriteID));
     }
 
     private FavoriteEntity generateFavoriteEntity(FavoriteRequest request, String cookieUserID) {

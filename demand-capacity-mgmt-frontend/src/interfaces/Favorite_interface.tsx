@@ -1,4 +1,5 @@
 export interface CompanyDtoFavoriteResponse {
+    id: string;
     bpn: string;
     companyName: string;
     zipCode: string;
@@ -7,6 +8,7 @@ export interface CompanyDtoFavoriteResponse {
 }
 
 export interface MaterialDemandFavoriteResponse {
+    id: string;
     materialDescriptionCustomer: string;
     materialNumberCustomer: string;
     materialNumberSupplier: string;
@@ -17,6 +19,7 @@ export interface MaterialDemandFavoriteResponse {
 }
 
 export interface SingleCapacityGroupFavoriteResponse {
+    id: string;
     customer: string;
     supplier: string;
     capacityGroupId: string;
@@ -27,4 +30,15 @@ export interface FavoriteResponse {
     capacityGroups: SingleCapacityGroupFavoriteResponse[];
     materialDemands: MaterialDemandFavoriteResponse[];
     companies: CompanyDtoFavoriteResponse[];
+}
+
+export enum FavoriteType {
+    CAPACITY_GROUP = 'CAPACITY_GROUP',
+    COMPANY_BASE_DATA = 'COMPANY_BASE_DATA',
+    MATERIAL_DEMAND = 'MATERIAL_DEMAND'
+}
+
+export interface FavoritePayload {
+    favoriteId: string;
+    fType: string;
 }

@@ -25,12 +25,16 @@ import React, { createContext, useEffect, useState } from 'react';
 import { FavoriteResponse } from '../interfaces/Favorite_interface';
 import createAPIInstance from "../util/Api";
 import { useUser } from './UserContext';
+import { FavoritePayload,FavoriteType } from  '../interfaces/Favorite_interface';
 
 interface FavoritesContextData {
     favorites: FavoriteResponse | null | undefined;
     fetchFavorites: () => Promise<void>;
     // If you've added a refresh function
     refresh?: () => void;
+    addFavorite: (favoriteID: string, fType: FavoriteType) => Promise<void>;
+    deleteFavorite: (favoriteID: string) => Promise<void>;
+    fetchFavoritesByType: (type: string) => Promise<FavoriteResponse>;
 }
 
 export const FavoritesContext = createContext<FavoritesContextData | undefined>(undefined);
@@ -53,6 +57,38 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
         }
     };
 
+    const fetchFavoritesByType = async (type: string): Promise<FavoriteResponse> => {
+        try {
+            const response = await api.get(`/favorite/${type}`);
+            console.log('Fetched favorites by type:', response.data);
+            setFavorites(response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching favorites by type:', error);
+            throw error;  // Propagate the error to allow handling in calling functions if necessary
+        }
+    };
+
+    const addFavorite = async (favoriteID: string, fType: FavoriteType) => {
+        try {
+            const payloadData: FavoritePayload = {
+                favoriteId: favoriteID,
+                fType: fType
+            };
+            await api.post('/favorite', payloadData);
+        } catch (error) {
+            console.log("Error adding to favorites", error);
+        }
+    }
+
+    const deleteFavorite = async (favoriteID: string) => {
+        try {
+            await api.delete(`/favorite/${favoriteID}`);
+        } catch (error) {
+            console.log("Error adding to favorites", error);
+        }
+    }
+
     useEffect(() => {
         fetchFavorites();
     }, []);  // Note the empty array, this ensures it runs only once.
@@ -64,7 +100,10 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
     const contextValue = {
         favorites,
         fetchFavorites,
-        refresh
+        refresh,
+        fetchFavoritesByType,
+        addFavorite,
+        deleteFavorite
     };
 
     return (

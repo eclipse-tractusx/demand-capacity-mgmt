@@ -108,7 +108,7 @@ const CapacityGroupsList: React.FC = () => {
     () =>
       slicedcapacitygroups.map((capacitygroup) => (
         <tr key={capacitygroup.internalId}>
-          <td><FaStar className="text-muted" opacity='0.2' size={25} /></td>
+          <td>< FaStar className="text-muted" opacity='0.2' size={25} /></td>
           <td>
             <Button href={`/details/${capacitygroup.internalId}`} target='new-tab' variant="outline-primary" >
               <div style={{ display: "flex", justifyContent: "center" }}>
