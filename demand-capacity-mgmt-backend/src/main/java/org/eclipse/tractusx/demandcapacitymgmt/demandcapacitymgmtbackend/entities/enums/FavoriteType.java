@@ -26,4 +26,5 @@ public enum FavoriteType {
     CAPACITY_GROUP,
     COMPANY_BASE_DATA,
     MATERIAL_DEMAND,
+    EVENT,
 }

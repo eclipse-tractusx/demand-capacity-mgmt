@@ -1031,6 +1031,8 @@ components:
       properties:
         id:
           type: integer
+        logID:
+          type: string
         userAccount:
           type: string
         timeCreated:
@@ -1054,6 +1056,8 @@ components:
       properties:
         id:
           type: integer
+        logID:
+          type: string
         userAccount:
           type: string
         timeCreated:
@@ -1076,6 +1080,8 @@ components:
       properties:
         id:
           type: integer
+        logID:
+          type: string
         userAccount:
           type: string
         timeCreated:
@@ -1098,6 +1104,8 @@ components:
       properties:
         id:
           type: integer
+        logID:
+          type: string
         userAccount:
           type: string
         timeCreated:
@@ -1421,6 +1429,22 @@ components:
         myCompany:
           type: string
 
+    EventFavoriteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        logID:
+          type: string
+        eventType:
+          type: string
+        timeCreated:
+          type: string
+        userAccount:
+          type: string
+        description:
+          type: string
+
     MaterialDemandFavoriteResponse:
       type: object
       properties:
@@ -1728,3 +1752,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CompanyDtoFavoriteResponse'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventFavoriteResponse'

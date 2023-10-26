@@ -47,6 +47,10 @@ public class LoggingHistoryEntity {
     @Column(name = "id")
     private int id;
 
+    @Column(name = "log_id")
+    @Nullable
+    private UUID logID;
+
     @Column(name = "USER_ACCOUNT")
     @Nullable
     private String userAccount;
@@ -74,8 +78,4 @@ public class LoggingHistoryEntity {
     @Nullable
     @Column(name = "OBJECT_TYPE")
     private EventObjectType objectType;
-
-    @Column(name = "IS_FAVORITED")
-    @Nullable
-    private Boolean isFavorited;
 }

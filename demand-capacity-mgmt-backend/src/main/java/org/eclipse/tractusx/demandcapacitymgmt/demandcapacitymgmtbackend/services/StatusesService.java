@@ -26,8 +26,8 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusesResponse;
 
 public interface StatusesService {
-    StatusesResponse postStatuses(StatusRequest statusRequest,String userID);
+    StatusesResponse postStatuses(StatusRequest statusRequest, String userID);
     StatusesResponse getAllStatuses(String userID);
-    void updateStatus(StatusRequest statusRequest,String userID);
+    void updateStatus(StatusRequest statusRequest, String userID);
     void addOrSubtractTodos(boolean add, String userID);
 }

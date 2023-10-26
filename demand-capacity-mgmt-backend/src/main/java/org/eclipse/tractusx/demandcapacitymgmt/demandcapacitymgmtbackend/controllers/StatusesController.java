@@ -50,14 +50,14 @@ public class StatusesController implements StatusesApi {
     @Override
     public ResponseEntity<StatusesResponse> postStatus(StatusRequest statusRequest) {
         String userID = UserUtil.getUserID(request);
-        StatusesResponse responseDto = statusesService.postStatuses(statusRequest,userID);
+        StatusesResponse responseDto = statusesService.postStatuses(statusRequest, userID);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @Override
     public ResponseEntity<StatusesResponse> updateStatusesById(String statusId, StatusRequest statusRequest) {
         String userID = UserUtil.getUserID(request);
-        statusesService.updateStatus(statusRequest,userID);
+        statusesService.updateStatus(statusRequest, userID);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
