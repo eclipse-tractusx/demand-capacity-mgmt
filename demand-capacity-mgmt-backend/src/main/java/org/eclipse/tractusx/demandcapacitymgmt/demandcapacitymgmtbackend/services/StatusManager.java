@@ -23,5 +23,5 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 public interface StatusManager {
-    void calculateBottleneck(String userID);
+    void calculateBottleneck(String userID,boolean postLog);
 }
