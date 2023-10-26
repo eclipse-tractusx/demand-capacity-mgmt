@@ -20,8 +20,8 @@
  * *******************************************************************************
  */
 
-import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
-import {Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip} from 'react-bootstrap';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import {
     FaArchive,
     FaArrowDown,
@@ -36,19 +36,19 @@ import {
     FaUnlink,
     FaWrench
 } from 'react-icons/fa';
-import {EventsContext} from '../../contexts/EventsContextProvider';
-import {EventProp} from '../../interfaces/event_interfaces';
-import DangerConfirmationModal, {ConfirmationAction} from '../common/DangerConfirmationModal';
+import { EventsContext } from '../../contexts/EventsContextProvider';
+import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
+import { EventFavoriteResponse, FavoriteType } from "../../interfaces/Favorite_interface";
+import { EventProp } from '../../interfaces/event_interfaces';
+import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import Pagination from '../common/Pagination';
-import {EventFavoriteResponse, FavoriteType} from "../../interfaces/Favorite_interface";
-import {FavoritesContext} from "../../contexts/FavoritesContextProvider";
 
 interface EventsTableProps {
     events: EventProp[];
     isArchive: boolean
 }
 
-const EventsTable: React.FC<EventsTableProps> = ({events, isArchive}) => {
+const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
     const eventsContext = useContext(EventsContext)!;
     const [sortField, setSortField] = useState<string>('timestamp');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -59,7 +59,7 @@ const EventsTable: React.FC<EventsTableProps> = ({events, isArchive}) => {
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
     const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
-    const {deleteEventId, deleteArchivedEventId} = useContext(EventsContext)!;
+    const { deleteEventId, deleteArchivedEventId } = useContext(EventsContext)!;
     const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
     const [favoriteEvents, setFavoriteEvents] = useState<string[]>([]);
 
@@ -87,13 +87,13 @@ const EventsTable: React.FC<EventsTableProps> = ({events, isArchive}) => {
     };
 
     const eventTypeIcons: { [key: string]: React.ReactNode } = {
-        GENERAL_EVENT: <FaEnvelope className="text-primary" size={25}/>,
-        TODO: <FaWrench className="text-warning" size={25}/>,
-        ALERT: <FaExclamation className="text-danger" size={25}/>,
-        STATUS_IMPROVEMENT: <FaArrowUp className="text-success" size={25}/>,
-        STATUS_REDUCTION: <FaArrowDown className="text-danger" size={25}/>,
-        LINKED: <FaLink className="text-info" size={25}/>,
-        UN_LINKED: <FaUnlink className="text-danger" size={25}/>,
+        GENERAL_EVENT: <FaEnvelope className="text-primary" size={25} />,
+        TODO: <FaWrench className="text-warning" size={25} />,
+        ALERT: <FaExclamation className="text-danger" size={25} />,
+        STATUS_IMPROVEMENT: <FaArrowUp className="text-success" size={25} />,
+        STATUS_REDUCTION: <FaArrowDown className="text-danger" size={25} />,
+        LINKED: <FaLink className="text-info" size={25} />,
+        UN_LINKED: <FaUnlink className="text-danger" size={25} />,
     };
 
 
@@ -194,109 +194,109 @@ const EventsTable: React.FC<EventsTableProps> = ({events, isArchive}) => {
             <div className='table-responsive table-overflow-control mt-2'>
                 <table className="table table-striped table-hover">
                     <thead>
-                    <tr>
-                        <th></th>
-                        <th onClick={() => handleSort('timestamp')}>
-                            Timestamp {sortField === 'timestamp' ? (sortOrder === 'asc' ? <FaArrowUp/> :
-                            <FaArrowDown/>) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('eventId')}>
-                            Event ID {sortField === 'eventId' ? (sortOrder === 'asc' ? <FaArrowUp/> :
-                            <FaArrowDown/>) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('objectId')}>
-                            Object ID {sortField === 'objectId' ? (sortOrder === 'asc' ? <FaArrowUp/> :
-                            <FaArrowDown/>) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('eventType')}>
-                            Type {sortField === 'eventType' ? (sortOrder === 'asc' ? <FaArrowUp/> :
-                            <FaArrowDown/>) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('objectType')}>
-                            Object Type {sortField === 'objectType' ? (sortOrder === 'asc' ? <FaArrowUp/> :
-                            <FaArrowDown/>) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('eventDescription')}>
-                            Description {sortField === 'eventDescription' ? (sortOrder === 'asc' ? <FaArrowUp/> :
-                            <FaArrowDown/>) : '-'}
-                        </th>
-                        <th onClick={() => handleSort('userAccount')}>
-                            User {sortField === 'userAccount' ? (sortOrder === 'asc' ? <FaArrowUp/> :
-                            <FaArrowDown/>) : '-'}
-                        </th>
-                        <th></th>
-                    </tr>
+                        <tr>
+                            <th></th>
+                            <th onClick={() => handleSort('timestamp')}>
+                                Timestamp {sortField === 'timestamp' ? (sortOrder === 'asc' ? <FaArrowUp /> :
+                                    <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('eventId')}>
+                                Event ID {sortField === 'eventId' ? (sortOrder === 'asc' ? <FaArrowUp /> :
+                                    <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('objectId')}>
+                                Object ID {sortField === 'objectId' ? (sortOrder === 'asc' ? <FaArrowUp /> :
+                                    <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('eventType')}>
+                                Type {sortField === 'eventType' ? (sortOrder === 'asc' ? <FaArrowUp /> :
+                                    <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('objectType')}>
+                                Object Type {sortField === 'objectType' ? (sortOrder === 'asc' ? <FaArrowUp /> :
+                                    <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('eventDescription')}>
+                                Description {sortField === 'eventDescription' ? (sortOrder === 'asc' ? <FaArrowUp /> :
+                                    <FaArrowDown />) : '-'}
+                            </th>
+                            <th onClick={() => handleSort('userAccount')}>
+                                User {sortField === 'userAccount' ? (sortOrder === 'asc' ? <FaArrowUp /> :
+                                    <FaArrowDown />) : '-'}
+                            </th>
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {currentEvents.map((event, index) => (
-                        <tr key={index}>
-                            <td>
-                                <FaStar
-                                    className={favoriteEvents.includes(event.logID) ? "text-warning" : "text-muted"}
-                                    opacity={favoriteEvents.includes(event.logID) ? "1" : "0.2"}
-                                    onClick={() => toggleFavorite(event.logID)}
-                                    size={25}
-                                />
-                            </td>
-                            <td>{new Date(event.timeCreated).toLocaleString()}</td>
-                            <td><OverlayTrigger
-                                placement="top"
-                                overlay={<Tooltip id={`tooltip-copy-${event.id}`}>{event.id}</Tooltip>}>
-                                <Button
-                                    variant="outline-info"
-                                    onClick={() => {
-                                        // Function to copy the internalId to the clipboard
-                                        navigator.clipboard.writeText(event.id.toString());
-                                    }}
-                                ><FaCopy/>
-                                </Button></OverlayTrigger></td>
-                            <td>
-                                {event.capacityGroupId !== "null" || event.materialDemandId !== "null" ? (
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={
-                                            <Tooltip id={`tooltip-copy-${event.id}`}>
-                                                {event.capacityGroupId !== "null" ? event.capacityGroupId : event.materialDemandId}
-                                            </Tooltip>
-                                        }
-                                    >
-                                        <Button
-                                            variant="outline-info"
-                                            onClick={() => {
-                                                // Function to copy the appropriate ID to the clipboard
-                                                const idToCopy = event.capacityGroupId !== "null" ? event.capacityGroupId : event.materialDemandId;
-                                                if (idToCopy !== "null") {
-                                                    navigator.clipboard.writeText(idToCopy.toString());
-                                                }
-                                            }}
+                        {currentEvents.map((event, index) => (
+                            <tr key={index}>
+                                <td>
+                                    <FaStar
+                                        className={favoriteEvents.includes(event.logID) ? "text-warning" : "text-muted"}
+                                        opacity={favoriteEvents.includes(event.logID) ? "1" : "0.2"}
+                                        onClick={() => toggleFavorite(event.logID)}
+                                        size={25}
+                                    />
+                                </td>
+                                <td>{new Date(event.timeCreated).toLocaleString()}</td>
+                                <td><OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip id={`tooltip-copy-${event.id}`}>{event.id}</Tooltip>}>
+                                    <Button
+                                        variant="outline-info"
+                                        onClick={() => {
+                                            // Function to copy the internalId to the clipboard
+                                            navigator.clipboard.writeText(event.id.toString());
+                                        }}
+                                    ><FaCopy />
+                                    </Button></OverlayTrigger></td>
+                                <td>
+                                    {event.capacityGroupId !== "null" || event.materialDemandId !== "null" ? (
+                                        <OverlayTrigger
+                                            placement="top"
+                                            overlay={
+                                                <Tooltip id={`tooltip-copy-${event.id}`}>
+                                                    {event.capacityGroupId !== "null" ? event.capacityGroupId : event.materialDemandId}
+                                                </Tooltip>
+                                            }
                                         >
-                                            <FaCopy/>
-                                        </Button>
-                                    </OverlayTrigger>
-                                ) : '-'}
-                            </td>
-                            <td>{generateOverlay(event)}</td>
-                            <td>{event.objectType}</td>
-                            <td>{event.eventDescription}</td>
-                            <td>{event.userAccount}</td>
-                            <td>
-                                <Dropdown>
-                                    <Dropdown.Toggle variant="light" id={`dropdown-menu-${event.id}`}>
-                                        <span><FaEllipsisV/></span>
-                                    </Dropdown.Toggle>
-                                    <Dropdown.Menu>
-                                        <Dropdown.Item onClick={() => handleArchiveClick(event)}><FaArchive
-                                            className='text-muted'/> Archive</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => {
-                                            navigator.clipboard.writeText(event.id.toString())
-                                        }}><FaCopy/> Copy ID</Dropdown.Item>
-                                        <Dropdown.Item className="red-delete-item"
-                                                       onClick={() => handleDeleteButtonClick(event.id.toString())}><FaTrashAlt/> Delete</Dropdown.Item>
-                                    </Dropdown.Menu>
-                                </Dropdown>
-                            </td>
-                        </tr>
-                    ))}
+                                            <Button
+                                                variant="outline-info"
+                                                onClick={() => {
+                                                    // Function to copy the appropriate ID to the clipboard
+                                                    const idToCopy = event.capacityGroupId !== "null" ? event.capacityGroupId : event.materialDemandId;
+                                                    if (idToCopy !== "null") {
+                                                        navigator.clipboard.writeText(idToCopy.toString());
+                                                    }
+                                                }}
+                                            >
+                                                <FaCopy />
+                                            </Button>
+                                        </OverlayTrigger>
+                                    ) : '-'}
+                                </td>
+                                <td>{generateOverlay(event)}</td>
+                                <td>{event.objectType}</td>
+                                <td>{event.eventDescription}</td>
+                                <td>{event.userAccount}</td>
+                                <td>
+                                    <Dropdown>
+                                        <Dropdown.Toggle variant="light" id={`dropdown-menu-${event.id}`}>
+                                            <span><FaEllipsisV /></span>
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item onClick={() => handleArchiveClick(event)}><FaArchive
+                                                className='text-muted' /> Archive</Dropdown.Item>
+                                            <Dropdown.Item onClick={() => {
+                                                navigator.clipboard.writeText(event.id.toString())
+                                            }}><FaCopy /> Copy ID</Dropdown.Item>
+                                            <Dropdown.Item className="red-delete-item"
+                                                onClick={() => handleDeleteButtonClick(event.id.toString())}><FaTrashAlt /> Delete</Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
