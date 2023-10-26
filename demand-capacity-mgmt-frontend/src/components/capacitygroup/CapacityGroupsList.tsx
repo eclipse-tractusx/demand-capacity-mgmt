@@ -21,7 +21,7 @@
  */
 
 
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState, useEffect } from 'react';
 import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaEye, FaRedo, FaStar } from 'react-icons/fa';
 import { useUser } from '../../contexts/UserContext';
@@ -33,6 +33,11 @@ import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
 import Search from '../common/Search';
 import CapacityGroupsTable from './CapacityGroupsTable';
+import {
+  FavoriteType,
+  SingleCapacityGroupFavoriteResponse
+} from "../../interfaces/Favorite_interface";
+import {FavoritesContext} from "../../contexts/FavoritesContextProvider";
 
 
 const CapacityGroupsList: React.FC = () => {
@@ -44,6 +49,8 @@ const CapacityGroupsList: React.FC = () => {
   const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('');
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
+  const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
+  const [favoriteCapacityGroups, setFavoriteCapacityGroups] = useState<string[]>([]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -55,10 +62,37 @@ const CapacityGroupsList: React.FC = () => {
       setSortOrder('asc');
     }
   };
-
+  const fetchFavorites = async () => {
+    try {
+      const favorites = await fetchFavoritesByType(FavoriteType.CAPACITY_GROUP);
+      console.log(favorites)
+      if (favorites && favorites.capacityGroups) {
+        setFavoriteCapacityGroups(favorites.capacityGroups.map((fav: SingleCapacityGroupFavoriteResponse) => fav.id));
+      }
+    } catch (error) {
+      console.error('Error fetching favorites by type in DemandList:', error);
+    }
+  };
   const handleRefreshClick = async () => {
     await fetchCapacityGroupsWithRetry();
+    await fetchFavorites();
   };
+
+  const toggleFavorite = async (capacityGroupID: string) => {
+    if (favoriteCapacityGroups.includes(capacityGroupID)) {
+      await deleteFavorite(capacityGroupID)
+      setFavoriteCapacityGroups(prev => prev.filter(id => id !== capacityGroupID));
+    } else {
+      await addFavorite(capacityGroupID, FavoriteType.CAPACITY_GROUP)
+      setFavoriteCapacityGroups(prev => [...prev, capacityGroupID]);
+    }
+    handleRefreshClick();
+  };
+
+  useEffect(() => {
+    fetchFavorites();
+  }, [capacitygroups]);
+
 
   const filteredcapacitygroups = useMemo(() => {
     let sortedcapacitygroups = [...capacitygroups];
@@ -108,7 +142,14 @@ const CapacityGroupsList: React.FC = () => {
     () =>
       slicedcapacitygroups.map((capacitygroup) => (
         <tr key={capacitygroup.internalId}>
-          <td>< FaStar className="text-muted" opacity='0.2' size={25} /></td>
+          <td>
+            <FaStar
+                className={favoriteCapacityGroups.includes(capacitygroup.internalId) ? "text-warning" : "text-muted"}
+                opacity={favoriteCapacityGroups.includes(capacitygroup.internalId) ? "1" : "0.2"}
+                onClick={() => toggleFavorite(capacitygroup.internalId)}
+                size={25}
+            />
+          </td>
           <td>
             <Button href={`/details/${capacitygroup.internalId}`} target='new-tab' variant="outline-primary" >
               <div style={{ display: "flex", justifyContent: "center" }}>

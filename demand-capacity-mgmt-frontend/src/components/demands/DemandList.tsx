@@ -255,6 +255,7 @@ const DemandList: React.FC<{
             setFavoriteDemands(prev => [...prev, demandId]);
         }
         fetchFavorites();
+        fetchDemandProps();
     };
 
 

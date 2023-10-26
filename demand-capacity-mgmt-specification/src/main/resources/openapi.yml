@@ -831,33 +831,6 @@ paths:
       responses:
         200:
           description: Favorite created successfully
-    put:
-      tags:
-        - favorite
-      summary: Update a Favorite
-      operationId: updateFavorite
-      parameters:
-        - name: id
-          in: query
-          required: true
-          description: ID of the favorite to update
-          schema:
-            type: integer
-        - name: type
-          in: query
-          required: true
-          description: type of the favorite to update
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FavoriteRequest'
-      responses:
-        200:
-          description: Favorite updated successfully
 
 
   /favorite/{id}:
