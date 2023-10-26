@@ -24,14 +24,15 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import java.sql.Timestamp;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+
+import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 @Table(name = "archived_log")
@@ -45,6 +46,10 @@ public class ArchivedLogEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
+
+    @Column(name = "log_id")
+    @Nullable
+    private UUID logID;
 
     @Column(name = "USER_ACCOUNT")
     private String userAccount;
@@ -68,7 +73,4 @@ public class ArchivedLogEntity {
 
     @Column(name = "OBJECT_TYPE")
     private EventObjectType objectType;
-
-    @Column(name = "IS_FAVORITED")
-    private Boolean isFavorited;
 }

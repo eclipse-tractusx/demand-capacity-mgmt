@@ -66,19 +66,23 @@ public class StatusManagerImpl implements StatusManager {
                 accumulatedDegradations++;
             }
         }
-            StatusesEntity status = getStatus(userID);
-            status.setStatusImprovementCount(accumulatedImprovements);
-            status.setStatusDegradationCount(accumulatedDegradations);
-            statusesRepository.save(status);
+        StatusesEntity status = getStatus(userID);
+        status.setStatusImprovementCount(accumulatedImprovements);
+        status.setStatusDegradationCount(accumulatedDegradations);
+        statusesRepository.save(status);
     }
 
     private EventType processCapacityGroup(String userID, CapacityGroupEntity cgs) {
-        List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(cgs.getId());
+        List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(
+            cgs.getId()
+        );
 
         double aggregatedTotalDemand = 0.0;
 
         for (LinkedCapacityGroupMaterialDemandEntity entity : matchedEntities) {
-            Optional<MaterialDemandEntity> materialDemand = materialDemandRepository.findById(entity.getMaterialDemandID());
+            Optional<MaterialDemandEntity> materialDemand = materialDemandRepository.findById(
+                entity.getMaterialDemandID()
+            );
             if (materialDemand.isPresent()) {
                 aggregatedTotalDemand += calculateTotalDemand(materialDemand.get().getDemandSeries());
             }
@@ -91,28 +95,33 @@ public class StatusManagerImpl implements StatusManager {
         return eventType;
     }
 
-
     private UserEntity getUser(String userID) {
-        return userRepository.findById(UUID.fromString(userID)).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return userRepository
+            .findById(UUID.fromString(userID))
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
     private StatusesEntity getStatus(String userID) {
-        return statusesRepository.findByUserID(UUID.fromString(userID))
-                .orElseGet(() -> {
+        return statusesRepository
+            .findByUserID(UUID.fromString(userID))
+            .orElseGet(
+                () -> {
                     StatusesEntity status = new StatusesEntity();
                     status.setUserID(UUID.fromString(userID));
                     status.setStatusImprovementCount(0);
                     status.setStatusDegradationCount(0);
                     statusesRepository.save(status);
                     return status;
-                });
+                }
+            );
     }
 
     private double calculateTotalDemand(List<DemandSeries> matchedDemandSeries) {
-        return matchedDemandSeries.stream()
-                .flatMap(demand -> demand.getDemandSeriesValues().stream())
-                .mapToDouble(DemandSeriesValues::getDemand)
-                .sum();
+        return matchedDemandSeries
+            .stream()
+            .flatMap(demand -> demand.getDemandSeriesValues().stream())
+            .mapToDouble(DemandSeriesValues::getDemand)
+            .sum();
     }
 
     private EventType determineEventType(CapacityGroupEntity capacityGroup, double totalDemand) {
@@ -133,10 +142,10 @@ public class StatusManagerImpl implements StatusManager {
     private void logEvent(EventType eventType, String userID) {
         LoggingHistoryEntity logEntity = new LoggingHistoryEntity();
         logEntity.setObjectType(EventObjectType.CAPACITY_GROUP);
-        logEntity.setIsFavorited(false);
         logEntity.setEventType(eventType);
         logEntity.setUserAccount(getUser(userID).getUsername());
         logEntity.setTime_created(Timestamp.valueOf(LocalDateTime.now()));
+        logEntity.setLogID(UUID.randomUUID());
 
         switch (eventType) {
             case STATUS_IMPROVEMENT:
@@ -152,5 +161,3 @@ public class StatusManagerImpl implements StatusManager {
         loggingRepository.save(logEntity);
     }
 }
-
-

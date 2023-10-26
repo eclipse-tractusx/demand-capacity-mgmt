@@ -23,20 +23,20 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
 import jakarta.transaction.Transactional;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LinkedCapacityGroupMaterialDemandEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.UUID;
-
 @Repository
 public interface LinkedCapacityGroupMaterialDemandRepository
     extends JpaRepository<LinkedCapacityGroupMaterialDemandEntity, UUID> {
     List<LinkedCapacityGroupMaterialDemandEntity> findByCapacityGroupID(@NonNull UUID capacityGroupID);
+
     @Query("select count(l) from LinkedCapacityGroupMaterialDemandEntity l where l.materialDemandID = ?1")
     long countLinkedDemands(UUID materialDemandID);
 

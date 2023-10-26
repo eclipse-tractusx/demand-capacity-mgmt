@@ -23,8 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
-import java.util.LinkedList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LinkDemandEntity;
@@ -35,6 +33,10 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LinkDemandService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.springframework.stereotype.Service;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -65,6 +67,7 @@ public class LinkDemandServiceImpl implements LinkDemandService {
         loggingHistoryRequest.setObjectType(EventObjectType.LINK_DEMAND_SERVICE.name());
         loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
         loggingHistoryRequest.setEventDescription("LinkDemands Created");
+        loggingHistoryRequest.setLogID(UUID.randomUUID().toString());
         loggingHistoryService.createLog(loggingHistoryRequest);
     }
 

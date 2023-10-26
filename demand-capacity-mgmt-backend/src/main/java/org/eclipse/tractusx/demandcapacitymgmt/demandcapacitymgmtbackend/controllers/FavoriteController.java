@@ -63,8 +63,8 @@ public class FavoriteController implements FavoriteApi {
     @Override
     public ResponseEntity<FavoriteResponse> getFavoriteByType(String type) {
         FavoriteResponse responseList = favoriteService.getAllFavoritesByType(
-                UserUtil.getUserID(request),
-                FavoriteType.valueOf(type)
+            UserUtil.getUserID(request),
+            FavoriteType.valueOf(type)
         );
         return ResponseEntity.status(200).body(responseList);
     }

@@ -129,8 +129,7 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         loggingHistoryEntity.setUserAccount(loggingHistoryRequest.getUserAccount());
         loggingHistoryEntity.setTime_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()));
         loggingHistoryEntity.setDescription(loggingHistoryRequest.getEventDescription());
-        loggingHistoryEntity.setIsFavorited(loggingHistoryRequest.getIsFavorited());
-
+        loggingHistoryEntity.setLogID(UUID.randomUUID());
         return loggingHistoryEntity;
     }
 
@@ -151,8 +150,7 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         loggingHistoryEntity.setUserAccount(loggingHistoryRequest.getUserAccount());
         loggingHistoryEntity.setTime_created(Timestamp.valueOf(loggingHistoryRequest.getTimeCreated()));
         loggingHistoryEntity.setDescription(loggingHistoryRequest.getEventDescription());
-        loggingHistoryEntity.setIsFavorited(loggingHistoryRequest.getIsFavorited());
-
+        loggingHistoryEntity.setLogID(UUID.randomUUID());
         return loggingHistoryEntity;
     }
 
@@ -271,9 +269,9 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         LoggingHistoryResponse responseDto = new LoggingHistoryResponse();
 
         responseDto.setId(loggingHistoryEntity.getId());
+        responseDto.setLogID(loggingHistoryEntity.getLogID().toString());
         responseDto.setEventDescription(loggingHistoryEntity.getDescription());
         responseDto.setUserAccount(loggingHistoryEntity.getUserAccount());
-        responseDto.setIsFavorited(loggingHistoryEntity.getIsFavorited());
         responseDto.setEventType(String.valueOf(loggingHistoryEntity.getEventType()));
         responseDto.setCapacityGroupId(String.valueOf(loggingHistoryEntity.getCapacityGroupId()));
         responseDto.setMaterialDemandId(String.valueOf(loggingHistoryEntity.getMaterialDemandId()));
@@ -289,9 +287,9 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         ArchivedLoggingHistoryResponse responseDto = new ArchivedLoggingHistoryResponse();
 
         responseDto.setId(archivedLogEntity.getId());
+        responseDto.setLogID(archivedLogEntity.getLogID().toString());
         responseDto.setEventDescription(archivedLogEntity.getDescription());
         responseDto.setUserAccount(archivedLogEntity.getUserAccount());
-        responseDto.setIsFavorited(archivedLogEntity.getIsFavorited());
         responseDto.setEventType(archivedLogEntity.getEventType().toString());
         if (archivedLogEntity.getCapacityGroupId() != null) {
             responseDto.setCapacityGroupId(archivedLogEntity.getCapacityGroupId().toString());

@@ -57,7 +57,10 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     private final LoggingHistoryService loggingHistoryService;
 
     @Override
-    public void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupDtoRequest> weekBasedCapacityGroupRequestList,String userID) {
+    public void createWeekBasedCapacityGroup(
+        List<WeekBasedCapacityGroupDtoRequest> weekBasedCapacityGroupRequestList,
+        String userID
+    ) {
         weekBasedCapacityGroupRequestList.forEach(
             weekBasedCapacityGroupRequest -> {
                 validateFields(weekBasedCapacityGroupRequest.getWeekBasedCapacityGroupRequest());
@@ -140,7 +143,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     public void sendWeekBasedCapacityGroup() {}
 
     @Override
-    public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity,String userID) {
+    public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity, String userID) {
         WeekBasedCapacityGroupRequest basedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
 
         basedCapacityGroupRequest.setCapacityGroupId(capacityGroupEntity.getId().toString());

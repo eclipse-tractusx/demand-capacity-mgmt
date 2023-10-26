@@ -26,14 +26,13 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.api.WeekBasedCapacity
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupDtoRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupDtoResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -53,7 +52,7 @@ public class WeekBasedCapacityGroupController implements WeekBasedCapacityGroupA
         List<WeekBasedCapacityGroupDtoRequest> weekBasedCapacityGroupRequest
     ) {
         String userID = UserUtil.getUserID(request);
-        weekBasedCapacityGroupService.createWeekBasedCapacityGroup(weekBasedCapacityGroupRequest,userID);
+        weekBasedCapacityGroupService.createWeekBasedCapacityGroup(weekBasedCapacityGroupRequest, userID);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -66,7 +65,7 @@ public class WeekBasedCapacityGroupController implements WeekBasedCapacityGroupA
         WeekBasedCapacityGroupDtoResponse responseDto = weekBasedCapacityGroupService.updateWeekBasedCapacityGroup(
             weekBasedCapacityId,
             weekBasedCapacityGroupRequest,
-                userID
+            userID
         );
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }

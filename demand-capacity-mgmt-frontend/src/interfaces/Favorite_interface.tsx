@@ -7,6 +7,15 @@ export interface CompanyDtoFavoriteResponse {
     myCompany: string;
 }
 
+export interface EventFavoriteResponse {
+    id: number;
+    logID: string;
+    eventType: string;
+    timeCreated: string;
+    userAccount: string;
+    description: string;
+}
+
 export interface MaterialDemandFavoriteResponse {
     id: string;
     materialDescriptionCustomer: string;
@@ -30,12 +39,14 @@ export interface FavoriteResponse {
     capacityGroups: SingleCapacityGroupFavoriteResponse[];
     materialDemands: MaterialDemandFavoriteResponse[];
     companies: CompanyDtoFavoriteResponse[];
+    events: EventFavoriteResponse[];
 }
 
 export enum FavoriteType {
     CAPACITY_GROUP = 'CAPACITY_GROUP',
     COMPANY_BASE_DATA = 'COMPANY_BASE_DATA',
-    MATERIAL_DEMAND = 'MATERIAL_DEMAND'
+    MATERIAL_DEMAND = 'MATERIAL_DEMAND',
+    EVENT = 'EVENT'
 }
 
 export interface FavoritePayload {

@@ -26,14 +26,13 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.api.WeekBasedMaterial
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandRequestDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedMaterialDemandResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -53,7 +52,7 @@ public class WeekBasedMaterialController implements WeekBasedMaterialDemandApi {
         List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDto
     ) {
         String userID = UserUtil.getUserID(request);
-        weekBasedMaterialService.createWeekBasedMaterial(weekBasedMaterialDemandRequestDto,userID);
+        weekBasedMaterialService.createWeekBasedMaterial(weekBasedMaterialDemandRequestDto, userID);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -66,7 +65,7 @@ public class WeekBasedMaterialController implements WeekBasedMaterialDemandApi {
         WeekBasedMaterialDemandResponseDto responseDto = weekBasedMaterialService.updateWeekBasedMaterial(
             demandId,
             weekBasedMaterialDemandRequestDto,
-                userID
+            userID
         );
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }

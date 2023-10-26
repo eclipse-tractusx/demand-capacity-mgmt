@@ -25,10 +25,10 @@ SET search_path TO public;
 CREATE TABLE IF NOT EXISTS logging_history
 (
     id serial primary key,
+    log_id uuid,
     capacity_gp_id uuid,
     description varchar(150),
     event_type smallint,
-    is_favorited boolean,
     material_demand_id uuid,
     object_type smallint,
     time_created timestamp,
@@ -38,10 +38,10 @@ CREATE TABLE IF NOT EXISTS logging_history
 CREATE TABLE IF NOT EXISTS archived_log
 (
     id serial primary key,
+    log_id uuid,
     capacity_gp_id uuid,
     description varchar(150),
     event_type smallint,
-    is_favorited boolean,
     material_demand_id uuid,
     object_type smallint,
     time_created timestamp,

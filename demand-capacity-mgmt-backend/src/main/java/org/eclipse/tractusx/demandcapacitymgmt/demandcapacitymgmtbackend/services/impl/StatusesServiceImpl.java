@@ -24,6 +24,8 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusesResponse;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusesEntity;
@@ -31,9 +33,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @Lazy
 @RequiredArgsConstructor
@@ -43,15 +42,15 @@ public class StatusesServiceImpl implements StatusesService {
 
     private final StatusesRepository statusesRepository;
 
-    private StatusesEntity convertDtoToEntity(StatusRequest statusRequest,String userID) {
+    private StatusesEntity convertDtoToEntity(StatusRequest statusRequest, String userID) {
         return StatusesEntity
-                .builder()
-                .userID(UUID.fromString(userID))
-                .todosCount(statusRequest.getTodos())
-                .generalCount(statusRequest.getGeneral())
-                .statusImprovementCount(statusRequest.getStatusImprovement())
-                .statusDegradationCount(statusRequest.getStatusDegradation())
-                .build();
+            .builder()
+            .userID(UUID.fromString(userID))
+            .todosCount(statusRequest.getTodos())
+            .generalCount(statusRequest.getGeneral())
+            .statusImprovementCount(statusRequest.getStatusImprovement())
+            .statusDegradationCount(statusRequest.getStatusDegradation())
+            .build();
     }
 
     private StatusesResponse convertStatusesResponseDto(StatusesEntity statusesEntity) {
@@ -62,7 +61,6 @@ public class StatusesServiceImpl implements StatusesService {
         responseDto.setStatusDegredation(statusesEntity.getStatusDegradationCount());
         return responseDto;
     }
-
 
     @Override
     public StatusesResponse postStatuses(StatusRequest statusRequest, String userID) {
@@ -85,8 +83,8 @@ public class StatusesServiceImpl implements StatusesService {
     @Override
     public void updateStatus(StatusRequest statusRequest, String userID) {
         Optional<StatusesEntity> entity = statusesRepository.findByUserID(UUID.fromString(userID));
-        if(entity.isPresent()){
-            StatusesEntity statusesEntity = convertDtoToEntity(statusRequest,userID);
+        if (entity.isPresent()) {
+            StatusesEntity statusesEntity = convertDtoToEntity(statusRequest, userID);
             statusesEntity.setId(entity.get().getId());
             statusesRepository.save(statusesEntity);
         }
@@ -95,17 +93,16 @@ public class StatusesServiceImpl implements StatusesService {
     @Override
     public void addOrSubtractTodos(boolean add, String userID) {
         UUID userUUID = UUID.fromString(userID);
-        StatusesEntity statusesEntity = statusesRepository.findByUserID(userUUID).orElseGet(() -> generateNewEntity(userID));
+        StatusesEntity statusesEntity = statusesRepository
+            .findByUserID(userUUID)
+            .orElseGet(() -> generateNewEntity(userID));
         int adjustment = add ? 1 : -1;
         int newTodosCount = statusesEntity.getTodosCount() + adjustment;
         statusesEntity.setTodosCount(Math.max(newTodosCount, 0));
         statusesRepository.save(statusesEntity);
     }
 
-
-    private StatusesEntity generateNewEntity(String userID){
-        return StatusesEntity.builder()
-                .userID(UUID.fromString(userID))
-                .build();
+    private StatusesEntity generateNewEntity(String userID) {
+        return StatusesEntity.builder().userID(UUID.fromString(userID)).build();
     }
 }

@@ -25,15 +25,9 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.FavoriteEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CapacityGroupRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CompanyRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.FavoriteRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +47,8 @@ public class FavoriteServiceImpl implements FavoriteService {
     private final MaterialDemandRepository materialDemandRepository;
     private final CompanyRepository companyRepository;
 
+    private final LoggingHistoryRepository eventRepository;
+
     @Override
     public FavoriteResponse getAllFavorites(String userID) {
         List<FavoriteEntity> favoriteEntities = favoriteRepository.findByUserID(UUID.fromString(userID));
@@ -61,7 +57,10 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     @Override
     public FavoriteResponse getAllFavoritesByType(String userID, FavoriteType type) {
-        List<FavoriteEntity> favoriteResponseList = favoriteRepository.findByUserIDAndType(UUID.fromString(userID), type);
+        List<FavoriteEntity> favoriteResponseList = favoriteRepository.findByUserIDAndType(
+            UUID.fromString(userID),
+            type
+        );
         switch (type) {
             case CAPACITY_GROUP -> {
                 List<SingleCapacityGroupFavoriteResponse> favoriteResponses = new ArrayList<>();
@@ -90,10 +89,18 @@ public class FavoriteServiceImpl implements FavoriteService {
                 response.setCompanies(favoriteResponses);
                 return response;
             }
+            case EVENT -> {
+                List<EventFavoriteResponse> favoriteResponses = new ArrayList<>();
+                for(FavoriteEntity fav : favoriteResponseList){
+                    favoriteResponses.add(convertToEventDto(fav));
+                }
+                FavoriteResponse response = new FavoriteResponse();
+                response.setEvents(favoriteResponses);
+                return response;
+            }
         }
         return new FavoriteResponse();
     }
-
 
     private FavoriteResponse filterFavorites(List<FavoriteEntity> favoriteEntities) {
         FavoriteResponse response = new FavoriteResponse();
@@ -101,12 +108,14 @@ public class FavoriteServiceImpl implements FavoriteService {
         List<SingleCapacityGroupFavoriteResponse> capacityGroupList = new ArrayList<>();
         List<MaterialDemandFavoriteResponse> materialDemandList = new ArrayList<>();
         List<CompanyDtoFavoriteResponse> companyList = new ArrayList<>();
+        List<EventFavoriteResponse> eventsList = new ArrayList<>();
 
         for (FavoriteEntity entity : favoriteEntities) {
             switch (entity.getType()) {
                 case CAPACITY_GROUP -> capacityGroupList.add(convertToSingleCapacityGroup(entity));
                 case MATERIAL_DEMAND -> materialDemandList.add(convertToMaterialDemandResponse(entity));
                 case COMPANY_BASE_DATA -> companyList.add(convertToCompanyDto(entity));
+                case EVENT -> eventsList.add(convertToEventDto(entity));
             }
         }
 
@@ -114,6 +123,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         response.setCapacityGroups(capacityGroupList);
         response.setMaterialDemands(materialDemandList);
         response.setCompanies(companyList);
+        response.setEvents(eventsList);
 
         return response;
     }
@@ -169,6 +179,21 @@ public class FavoriteServiceImpl implements FavoriteService {
         } else return null;
     }
 
+    private EventFavoriteResponse convertToEventDto(FavoriteEntity entity){
+        Optional<LoggingHistoryEntity> eEntity = Optional.ofNullable(eventRepository.findByLogID(entity.getFavoriteId()));
+        if(eEntity.isPresent()){
+            EventFavoriteResponse eventEntity = new EventFavoriteResponse();
+            LoggingHistoryEntity loggingHistoryEntity = eEntity.get();
+            eventEntity.setEventType(loggingHistoryEntity.getEventType().toString());
+            eventEntity.setDescription(loggingHistoryEntity.getDescription());
+            eventEntity.setUserAccount(loggingHistoryEntity.getUserAccount());
+            eventEntity.setId(String.valueOf(loggingHistoryEntity.getId()));
+            eventEntity.setLogID(loggingHistoryEntity.getLogID().toString());
+            eventEntity.setTimeCreated(loggingHistoryEntity.getTime_created().toString());
+            return eventEntity;
+        } else return null;
+    }
+
     @Override
     public void createFavorite(FavoriteRequest favoriteRequest, String cookieUserID) {
         favoriteRepository.save(generateFavoriteEntity(favoriteRequest, cookieUserID));
@@ -181,10 +206,10 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private FavoriteEntity generateFavoriteEntity(FavoriteRequest request, String cookieUserID) {
         return FavoriteEntity
-                .builder()
-                .userID(UUID.fromString(cookieUserID))
-                .favoriteId(UUID.fromString(request.getFavoriteId()))
-                .type(FavoriteType.valueOf(request.getfType()))
-                .build();
+            .builder()
+            .userID(UUID.fromString(cookieUserID))
+            .favoriteId(UUID.fromString(request.getFavoriteId()))
+            .type(FavoriteType.valueOf(request.getfType()))
+            .build();
     }
 }

@@ -23,6 +23,14 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -33,15 +41,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @Service
@@ -59,7 +58,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final FavoriteService favoriteService;
     private final StatusManagerImpl statusManager;
 
-
     @Override
     public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest, String userID) {
         CapacityGroupEntity capacityGroupEntity = enrichCapacityGroup(capacityGroupRequest);
@@ -71,12 +69,14 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             LinkedCapacityGroupMaterialDemandEntity entity = new LinkedCapacityGroupMaterialDemandEntity();
             entity.setCapacityGroupID(capacityGroupEntity.getId());
             entity.setMaterialDemandID(uuid);
-            Optional<MaterialDemandEntity> helperEntity = materialDemandRepository.findById(entity.getMaterialDemandID());
+            Optional<MaterialDemandEntity> helperEntity = materialDemandRepository.findById(
+                entity.getMaterialDemandID()
+            );
             List<DemandSeries> matchedMaterialDemands = new ArrayList<>();
-            if(helperEntity.isPresent()){
+            if (helperEntity.isPresent()) {
                 MaterialDemandEntity materialDemandEntity = helperEntity.get();
                 materialDemandEntity.setLinkStatus(EventType.LINKED);
-                statusesService.addOrSubtractTodos(false,userID);
+                statusesService.addOrSubtractTodos(false, userID);
                 materialDemandRepository.save(materialDemandEntity);
                 matchedMaterialDemands.addAll(materialDemandEntity.getDemandSeries());
             }
@@ -121,7 +121,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 MaterialDemandEntity materialDemand = materialDemandEntity.get();
                 materialDemand.setLinkStatus(EventType.LINKED);
                 materialDemandEntities.add(materialDemand);
-                statusesService.addOrSubtractTodos(false,userID);
+                statusesService.addOrSubtractTodos(false, userID);
             }
         }
 
@@ -157,7 +157,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             if (materialDemandEntity.isPresent()) {
                 MaterialDemandEntity demandEntity = materialDemandEntity.get();
                 demandEntity.setLinkStatus(EventType.LINKED);
-                statusesService.addOrSubtractTodos(false,userID);
+                statusesService.addOrSubtractTodos(false, userID);
                 materialDemandRepository.save(demandEntity);
             }
         }
@@ -221,7 +221,9 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     @Override
     public List<CapacityGroupDefaultViewResponse> getAll(String userID) {
-        List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupRepository.findByUserID(UUID.fromString(userID));
+        List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupRepository.findByUserID(
+            UUID.fromString(userID)
+        );
         return convertCapacityGroupEntity(capacityGroupEntityList);
     }
 

@@ -4,7 +4,8 @@ import FavoritesTable from "../favorites/FavoritesTable";
 import {
     MaterialDemandFavoriteResponse,
     SingleCapacityGroupFavoriteResponse,
-    CompanyDtoFavoriteResponse
+    CompanyDtoFavoriteResponse,
+    EventFavoriteResponse
 } from "../../interfaces/Favorite_interface";
 import {FavoritesContext} from "../../contexts/FavoritesContextProvider";
 import {BsFillBookmarkStarFill} from "react-icons/bs";
@@ -68,6 +69,19 @@ const FavoritesPage: React.FC = () => {
                         <span key={index}>{item.zipCode}</span>,
                         <span key={index}>{item.country}</span>,
                         <span key={index}>{item.myCompany}</span>,
+                    ]}
+                />
+            </Tab>
+            <Tab eventKey="Events" title="Events">
+                <FavoritesTable
+                    data={favorites?.events || []}
+                    headings={['id', 'event type', 'time created', 'User','description']}
+                    renderRow={(item: EventFavoriteResponse, index: number) => [
+                        <span key={index}>{item.id}</span>,
+                        <span key={index}>{item.eventType}</span>,
+                        <span key={index}>{item.timeCreated}</span>,
+                        <span key={index}>{item.userAccount}</span>,
+                        <span key={index}>{item.description}</span>
                     ]}
                 />
             </Tab>

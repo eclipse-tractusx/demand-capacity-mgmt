@@ -8,6 +8,12 @@ import { EventProp } from "../../interfaces/event_interfaces";
 import DangerConfirmationModal, { ConfirmationAction } from "../common/DangerConfirmationModal";
 import { LoadingMessage } from "../common/LoadingMessages";
 import EventsTable from "../events/EventsTable";
+import {FavoritesContext} from "../../contexts/FavoritesContextProvider";
+import {
+    EventFavoriteResponse,
+    FavoriteType,
+    SingleCapacityGroupFavoriteResponse
+} from "../../interfaces/Favorite_interface";
 
 function EventsPage() {
     const [activeTab, setActiveTab] = useState("Events");
@@ -16,6 +22,7 @@ function EventsPage() {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [filteredEvents, setFilteredEvents] = useState<EventProp[]>(events);
+
 
     const handleUserInputChange = (newValue: string | undefined) => {
         setUserInput(newValue || '');
