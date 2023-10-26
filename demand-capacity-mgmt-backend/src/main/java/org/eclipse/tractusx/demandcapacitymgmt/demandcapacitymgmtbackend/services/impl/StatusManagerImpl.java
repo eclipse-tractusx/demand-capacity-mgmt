@@ -50,7 +50,7 @@ public class StatusManagerImpl implements StatusManager {
     private final LoggingHistoryRepository loggingRepository;
 
     @Override
-    public void calculateBottleneck(String userID) {
+    public void calculateBottleneck(String userID, boolean postLog) {
         UserEntity user = getUser(userID);
         List<CapacityGroupEntity> capacityGroups = capacityGroupRepository.findByUserID(user.getId());
 
@@ -58,7 +58,7 @@ public class StatusManagerImpl implements StatusManager {
         int accumulatedDegradations = 0;
 
         for (CapacityGroupEntity cgs : capacityGroups) {
-            EventType eventType = processCapacityGroup(userID, cgs);
+            EventType eventType = processCapacityGroup(userID, cgs,postLog);
 
             if (eventType == EventType.STATUS_IMPROVEMENT) {
                 accumulatedImprovements++;
@@ -72,7 +72,7 @@ public class StatusManagerImpl implements StatusManager {
         statusesRepository.save(status);
     }
 
-    private EventType processCapacityGroup(String userID, CapacityGroupEntity cgs) {
+    private EventType processCapacityGroup(String userID, CapacityGroupEntity cgs,boolean postLog) {
         List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(
             cgs.getId()
         );
@@ -91,7 +91,7 @@ public class StatusManagerImpl implements StatusManager {
         EventType eventType = determineEventType(cgs, aggregatedTotalDemand);
         cgs.setLinkStatus(eventType);
         capacityGroupRepository.save(cgs);
-        logEvent(eventType, userID);
+        logEvent(eventType, userID,postLog);
         return eventType;
     }
 
@@ -139,25 +139,27 @@ public class StatusManagerImpl implements StatusManager {
         }
     }
 
-    private void logEvent(EventType eventType, String userID) {
-        LoggingHistoryEntity logEntity = new LoggingHistoryEntity();
-        logEntity.setObjectType(EventObjectType.CAPACITY_GROUP);
-        logEntity.setEventType(eventType);
-        logEntity.setUserAccount(getUser(userID).getUsername());
-        logEntity.setTime_created(Timestamp.valueOf(LocalDateTime.now()));
-        logEntity.setLogID(UUID.randomUUID());
+    private void logEvent(EventType eventType, String userID,boolean postLog) {
+        if (postLog) {
+            LoggingHistoryEntity logEntity = new LoggingHistoryEntity();
+            logEntity.setObjectType(EventObjectType.CAPACITY_GROUP);
+            logEntity.setEventType(eventType);
+            logEntity.setUserAccount(getUser(userID).getUsername());
+            logEntity.setTime_created(Timestamp.valueOf(LocalDateTime.now()));
+            logEntity.setLogID(UUID.randomUUID());
 
-        switch (eventType) {
-            case STATUS_IMPROVEMENT:
-                logEntity.setDescription("Status improvement");
-                break;
-            case STATUS_REDUCTION:
-                logEntity.setDescription("Status degradation");
-                break;
-            default:
-                return;
+            switch (eventType) {
+                case STATUS_IMPROVEMENT:
+                    logEntity.setDescription("Status improvement");
+                    break;
+                case STATUS_REDUCTION:
+                    logEntity.setDescription("Status degradation");
+                    break;
+                default:
+                    return;
+            }
+
+            loggingRepository.save(logEntity);
         }
-
-        loggingRepository.save(logEntity);
     }
 }
