@@ -24,11 +24,13 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
-import java.util.UUID;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 
 public interface FavoriteService {
     FavoriteResponse getAllFavorites(String userID);
-    FavoriteResponse createFavorite(FavoriteRequest favoriteRequest, String userID);
-    FavoriteResponse updateFavorite(Integer id, FavoriteRequest favoriteRequest, String userID);
-    void deleteFavorite(UUID id, String cookieUserID);
+
+    FavoriteResponse getAllFavoritesByType(String userID, FavoriteType type);
+    void createFavorite(FavoriteRequest favoriteRequest, String userID);
+    void updateFavorite(Integer id, FavoriteRequest favoriteRequest, String userID);
+    void deleteFavorite(String userID, String favoriteID);
 }

@@ -22,9 +22,9 @@
 
 
 import React, { FunctionComponent, createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { CapacityGroupContext } from '../contexts/CapacityGroupsContextProvider';
-import { DemandContext } from '../contexts/DemandContextProvider';
-import { EventsContext } from '../contexts/EventsContextProvider';
+import { CapacityGroupContext } from './CapacityGroupsContextProvider';
+import { DemandContext } from './DemandContextProvider';
+import { EventsContext } from './EventsContextProvider';
 import { InfoMenuData } from '../interfaces/InfoMenu_interfaces';
 import createAPIInstance from "../util/Api";
 import { useUser } from "./UserContext";

@@ -20,18 +20,20 @@
  *    ********************************************************************************
  */
 
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Button, Col, Dropdown, Form, Row } from 'react-bootstrap';
-import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaStar, FaTrashAlt } from 'react-icons/fa';
+import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import {Button, Col, Dropdown, Form, Row} from 'react-bootstrap';
+import {FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaStar, FaTrashAlt} from 'react-icons/fa';
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
-import { DemandContext } from '../../contexts/DemandContextProvider';
+import {DemandContext} from '../../contexts/DemandContextProvider';
+import {FavoritesContext} from "../../contexts/FavoritesContextProvider";
+import {FavoriteType, MaterialDemandFavoriteResponse} from "../../interfaces/Favorite_interface";
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
-import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
-import { EventType } from '../../interfaces/event_interfaces';
+import {DemandProp, DemandSeries, DemandSeriesValue} from '../../interfaces/demand_interfaces';
+import {EventType} from '../../interfaces/event_interfaces';
 import CapacityGroupAddToExisting from '../capacitygroup/CapacityGroupAddToExisting';
 import CapacityGroupWizardModal from '../capacitygroup/CapacityGroupWizardModal';
-import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
-import { LoadingMessage } from '../common/LoadingMessages';
+import DangerConfirmationModal, {ConfirmationAction} from '../common/DangerConfirmationModal';
+import {LoadingMessage} from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
 import DemandDetailsModal from './DemandDetailsModal';
 import DemandListTable from './DemandListTable';
@@ -61,6 +63,9 @@ const DemandList: React.FC<{
 
     const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
     const { deleteDemand } = useContext(DemandContext)!;
+    const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
+    const [favoriteDemands, setFavoriteDemands] = useState<string[]>([]);
+
     const { demandprops, fetchDemandProps, isLoading } = useContext(DemandContext)!;  // Make sure to get the fetchDemands function from the context.
 
     const [showWizardModal, setShowWizardModal] = useState(false);
@@ -72,12 +77,23 @@ const DemandList: React.FC<{
 
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
     const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
+    const fetchFavorites = async () => {
+        try {
+            const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
+            console.log(favorites)
+            if (favorites && favorites.materialDemands) {
+                setFavoriteDemands(favorites.materialDemands.map((fav: MaterialDemandFavoriteResponse) => fav.id));
+            }
+        } catch (error) {
+            console.error('Error fetching favorites by type in DemandList:', error);
+        }
+    };
 
     useEffect(() => {
-      // Update showWizardModal based on the showWizard prop, providing a default value of false if it's undefined
-      setShowWizardModal(showWizard || false);
-      fetchDemandProps();
-    }, [showWizard, fetchDemandProps]);
+        setShowWizardModal(showWizard || false);
+        fetchDemandProps();
+        fetchFavorites();
+    }, [showWizard]);
 
 
     const filteredDemandsByEventTypes = useMemo(() => {
@@ -230,6 +246,18 @@ const DemandList: React.FC<{
       [filteredDemands]
     );
 
+    const toggleFavorite = async (demandId: string) => {
+        if (favoriteDemands.includes(demandId)) {
+            await deleteFavorite(demandId)
+            setFavoriteDemands(prev => prev.filter(id => id !== demandId));
+        } else {
+            await addFavorite(demandId, FavoriteType.MATERIAL_DEMAND)
+            setFavoriteDemands(prev => [...prev, demandId]);
+        }
+        fetchFavorites();
+    };
+
+
     const demandItems = useMemo(
       () =>
         slicedDemands.map((demand) => (
@@ -242,7 +270,14 @@ const DemandList: React.FC<{
                 checked={selectedDemands.includes(demand)} // Check if the demand is in the selectedDemands array
               />
             </td>
-            <td><FaStar className="text-muted" opacity='0.2' size={25} /></td>
+              <td>
+                  <FaStar
+                      className={favoriteDemands.includes(demand.id) ? "text-warning" : "text-muted"}
+                      opacity={favoriteDemands.includes(demand.id) ? "1" : "0.2"}
+                      onClick={() => toggleFavorite(demand.id)}
+                      size={25}
+                  />
+              </td>
             <td>
               <Button data-toggle="modal" onClick={() => handleDetails(demand)} variant="outline-primary" >
                 <div style={{ display: "flex", justifyContent: "center" }}>

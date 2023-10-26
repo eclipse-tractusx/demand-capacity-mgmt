@@ -22,14 +22,23 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
-import java.util.List;
-import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.FavoriteEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface FavoriteRepository extends JpaRepository<FavoriteEntity, UUID> {
+    @Transactional
+    @Modifying
+    @Query("delete from FavoriteEntity f where f.userID = ?1 and f.favoriteId = ?2")
+    void deleteFavorite(@NonNull UUID userID, @NonNull UUID favoriteId);
+    List<FavoriteEntity> findByUserIDAndType(UUID userID, FavoriteType type);
     FavoriteEntity findByUserIDAndId(UUID userID, int id);
     List<FavoriteEntity> findByUserID(@NonNull UUID userID);
     List<FavoriteEntity> findByType(FavoriteType type);
