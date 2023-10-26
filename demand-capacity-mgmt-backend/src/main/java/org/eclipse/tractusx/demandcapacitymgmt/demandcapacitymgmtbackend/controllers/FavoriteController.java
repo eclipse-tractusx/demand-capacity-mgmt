@@ -68,11 +68,4 @@ public class FavoriteController implements FavoriteApi {
         );
         return ResponseEntity.status(200).body(responseList);
     }
-
-    @Override
-    public ResponseEntity<Void> updateFavorite(Integer id, String type, FavoriteRequest favoriteRequest)
-        throws Exception {
-        favoriteService.updateFavorite(id, favoriteRequest, UserUtil.getUserID(request));
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
 }

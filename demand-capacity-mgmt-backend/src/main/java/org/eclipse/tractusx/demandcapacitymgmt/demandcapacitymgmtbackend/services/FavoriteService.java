@@ -31,6 +31,5 @@ public interface FavoriteService {
 
     FavoriteResponse getAllFavoritesByType(String userID, FavoriteType type);
     void createFavorite(FavoriteRequest favoriteRequest, String userID);
-    void updateFavorite(Integer id, FavoriteRequest favoriteRequest, String userID);
     void deleteFavorite(String userID, String favoriteID);
 }

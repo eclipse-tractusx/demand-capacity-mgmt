@@ -30,7 +30,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.FavoriteEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CompanyRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.FavoriteRepository;
@@ -62,16 +61,38 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     @Override
     public FavoriteResponse getAllFavoritesByType(String userID, FavoriteType type) {
-        List<FavoriteEntity> favoriteResponseList = favoriteRepository.findByUserIDAndType(UUID.fromString(userID),type);
-        List<MaterialDemandFavoriteResponse> favoriteResponses = new ArrayList<>();
-        for(FavoriteEntity fav : favoriteResponseList){
-            favoriteResponses.add(convertToMaterialDemandResponse(fav));
+        List<FavoriteEntity> favoriteResponseList = favoriteRepository.findByUserIDAndType(UUID.fromString(userID), type);
+        switch (type) {
+            case CAPACITY_GROUP -> {
+                List<SingleCapacityGroupFavoriteResponse> favoriteResponses = new ArrayList<>();
+                for (FavoriteEntity fav : favoriteResponseList) {
+                    favoriteResponses.add(convertToSingleCapacityGroup(fav));
+                }
+                FavoriteResponse response = new FavoriteResponse();
+                response.setCapacityGroups(favoriteResponses);
+                return response;
+            }
+            case MATERIAL_DEMAND -> {
+                List<MaterialDemandFavoriteResponse> favoriteResponses = new ArrayList<>();
+                for (FavoriteEntity fav : favoriteResponseList) {
+                    favoriteResponses.add(convertToMaterialDemandResponse(fav));
+                }
+                FavoriteResponse response = new FavoriteResponse();
+                response.setMaterialDemands(favoriteResponses);
+                return response;
+            }
+            case COMPANY_BASE_DATA -> {
+                List<CompanyDtoFavoriteResponse> favoriteResponses = new ArrayList<>();
+                for (FavoriteEntity fav : favoriteResponseList) {
+                    favoriteResponses.add(convertToCompanyDto(fav));
+                }
+                FavoriteResponse response = new FavoriteResponse();
+                response.setCompanies(favoriteResponses);
+                return response;
+            }
         }
-        FavoriteResponse response = new FavoriteResponse();
-        response.setMaterialDemands(favoriteResponses);
-        return response;
+        return new FavoriteResponse();
     }
-
 
 
     private FavoriteResponse filterFavorites(List<FavoriteEntity> favoriteEntities) {
@@ -118,8 +139,10 @@ public class FavoriteServiceImpl implements FavoriteService {
 
             MaterialDemandFavoriteResponse response = new MaterialDemandFavoriteResponse();
             response.setId(materialDemand.getId().toString());
-            response.setCustomer(materialDemand.getCustomerId().toString());
-            response.setSupplier(materialDemand.getSupplierId().toString());
+            CompanyEntity cEntity = materialDemand.getCustomerId();
+            CompanyEntity sEntity = materialDemand.getSupplierId();
+            response.setCustomer(cEntity.getId().toString());
+            response.setSupplier(sEntity.getId().toString());
             response.setMaterialNumberCustomer(materialDemand.getMaterialNumberCustomer());
             response.setMaterialNumberSupplier(materialDemand.getMaterialNumberSupplier());
             response.setChangedAt(materialDemand.getChangedAt().toString());
@@ -152,30 +175,16 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public void updateFavorite(Integer id, FavoriteRequest favoriteRequest, String userID) {
-        FavoriteEntity entity = favoriteRepository.findByUserIDAndId(UUID.fromString(userID), id);
-        if (entity != null) {
-            entity.setFavoriteId(UUID.fromString(favoriteRequest.getFavoriteId()));
-            entity.setType(FavoriteType.valueOf(favoriteRequest.getfType()));
-            favoriteRepository.saveAndFlush(entity);
-        } else throw new NotFoundException(
-            404,
-            "Favorite type not found",
-            new ArrayList<>(List.of("provided UUID did not match any records. - " + id))
-        );
-    }
-
-    @Override
     public void deleteFavorite(String userID, String favoriteID) {
-        favoriteRepository.deleteFavorite(UUID.fromString(userID),UUID.fromString(favoriteID));
+        favoriteRepository.deleteFavorite(UUID.fromString(userID), UUID.fromString(favoriteID));
     }
 
     private FavoriteEntity generateFavoriteEntity(FavoriteRequest request, String cookieUserID) {
         return FavoriteEntity
-            .builder()
-            .userID(UUID.fromString(cookieUserID))
-            .favoriteId(UUID.fromString(request.getFavoriteId()))
-            .type(FavoriteType.valueOf(request.getfType()))
-            .build();
+                .builder()
+                .userID(UUID.fromString(cookieUserID))
+                .favoriteId(UUID.fromString(request.getFavoriteId()))
+                .type(FavoriteType.valueOf(request.getfType()))
+                .build();
     }
 }
