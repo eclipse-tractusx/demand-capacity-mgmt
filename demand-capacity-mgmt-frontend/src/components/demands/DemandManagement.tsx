@@ -40,8 +40,7 @@ import {LoadingMessage} from '../common/LoadingMessages';
 import DemandManagementTable from './DemandManagementTable';
 import {
     FavoriteType,
-    MaterialDemandFavoriteResponse,
-    SingleCapacityGroupFavoriteResponse
+    MaterialDemandFavoriteResponse
 } from "../../interfaces/Favorite_interface";
 import {FavoritesContext} from "../../contexts/FavoritesContextProvider";
 import {de} from "date-fns/locale";

@@ -180,18 +180,15 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     private EventFavoriteResponse convertToEventDto(FavoriteEntity entity){
-        Optional<LoggingHistoryEntity> eEntity = Optional.ofNullable(eventRepository.findByLogID(entity.getFavoriteId()));
-        if(eEntity.isPresent()){
+        LoggingHistoryEntity eEntity = eventRepository.findByLogID(entity.getFavoriteId());
             EventFavoriteResponse eventEntity = new EventFavoriteResponse();
-            LoggingHistoryEntity loggingHistoryEntity = eEntity.get();
-            eventEntity.setEventType(loggingHistoryEntity.getEventType().toString());
-            eventEntity.setDescription(loggingHistoryEntity.getDescription());
-            eventEntity.setUserAccount(loggingHistoryEntity.getUserAccount());
-            eventEntity.setId(String.valueOf(loggingHistoryEntity.getId()));
-            eventEntity.setLogID(loggingHistoryEntity.getLogID().toString());
-            eventEntity.setTimeCreated(loggingHistoryEntity.getTime_created().toString());
+            eventEntity.setEventType(eEntity.getEventType().toString());
+            eventEntity.setDescription(eEntity.getDescription());
+            eventEntity.setUserAccount(eEntity.getUserAccount());
+            eventEntity.setId(String.valueOf(eEntity.getId()));
+            eventEntity.setLogID(eEntity.getLogID().toString());
+            eventEntity.setTimeCreated(eEntity.getTime_created().toString());
             return eventEntity;
-        } else return null;
     }
 
     @Override
