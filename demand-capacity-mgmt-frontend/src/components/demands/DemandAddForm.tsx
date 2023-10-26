@@ -93,7 +93,7 @@ const useHandleSubmit = (initialFormState: Demand) => {
         customerId: formState.customerId,
         supplierId: formState.supplierId,
         unitMeasureId: formState.unitMeasureId,
-        materialDemandSeries: [materialDemandSeries], // Wrap materialDemandSeries in an array
+        materialDemandSeries: [materialDemandSeries],
       };
 
       try {
@@ -118,12 +118,12 @@ const AddForm: React.FC<AddFormProps> = () => {
     materialDescriptionCustomer: '',
     materialNumberCustomer: '',
     materialNumberSupplier: '',
-    customerId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6', //This is my current login ID
+    customerId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6', //This will be the ID of the company associated with the logged user
     supplierId: '',
     unitMeasureId: '',
     materialDemandSeries: [
       {
-        customerLocationId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6',  //This is my current login ID
+        customerLocationId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6',  //This will be the ID of the company associated with the logged user
         expectedSupplierLocationId: [],
         demandCategoryId: '',
         demandSeriesValues: [],
@@ -132,10 +132,10 @@ const AddForm: React.FC<AddFormProps> = () => {
   };
 
   const [formState, setFormState] = useState<Demand>(initialFormState);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false); // New state to handle the success message
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const { submissionStatus, handleSubmit } = useHandleSubmit(initialFormState);
 
-
+  const [datesError, setDatesError] = useState<string>('');
   const [unitMeasureError, setUnitMeasureError] = useState<string>('');
   const [supplierError, setSupplierError] = useState<string>('');
   const [demandCategoryError, setDemandCategoryError] = useState<string>('');
@@ -145,72 +145,39 @@ const AddForm: React.FC<AddFormProps> = () => {
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-
-    //We do this since the startDate and end date are not on the fromstate, but used to generate demands.
     const startDateInput = document.querySelector<HTMLInputElement>('#startDate');
     const endDateInput = document.querySelector<HTMLInputElement>('#endDate');
 
     const { supplierId, unitMeasureId, materialDemandSeries, materialDescriptionCustomer, materialNumberCustomer } = formState;
 
-    const errorMessages = document.querySelectorAll('.invalid-feedback');
-    errorMessages.forEach((errorMsg) => {
-      errorMsg.textContent = '';
-    });
+    const errors = {
+      startDate: !startDateInput?.value ? 'Start date is required.' : '',
+      endDate: !endDateInput?.value ? 'End date is required.' : '',
+      unitMeasure: !unitMeasureId ? 'Unit of measure is required.' : '',
+      supplier: !supplierId ? 'Supplier is required.' : '',
+      demandCategory: !materialDemandSeries?.[0]?.demandCategoryId ? 'Demand category is required.' : '',
+      materialNumberCustomer: !materialNumberCustomer ? 'Material Number Customer is required.' : '',
+      description: !materialDescriptionCustomer ? 'Description is required.' : ''
+    };
 
-    if (!startDateInput?.value) {
-      console.error('Start date is required.');
-      startDateInput?.classList.add('invalid-input');
-      return;
-    }
+    // Set error messages
+    setDatesError(errors.startDate || errors.endDate);
+    setUnitMeasureError(errors.unitMeasure);
+    setSupplierError(errors.supplier);
+    setDemandCategoryError(errors.demandCategory);
+    setMaterialNumberCustomerError(errors.materialNumberCustomer);
+    setDescriptionError(errors.description);
 
-    if (!endDateInput?.value) {
-      console.error('End date is required.');
-      endDateInput?.classList.add('invalid-input');
+    // Check for validation failures
+    const failedValidation = Object.values(errors).some(error => error !== '');
+    if (failedValidation) {
       return;
-    }
-
-    if (!unitMeasureId) {
-      setUnitMeasureError('Unit of measure is required.');
-      return;
-    } else {
-      setUnitMeasureError('');
-    }
-
-    // Validate Supplier
-    if (!supplierId) {
-      setSupplierError('Supplier is required.');
-      return;
-    } else {
-      setSupplierError('');
-    }
-
-    // Validate Demand Category
-    if (!materialDemandSeries?.[0]?.demandCategoryId) {
-      setDemandCategoryError('Demand category is required.');
-      return;
-    } else {
-      setDemandCategoryError('');
-    }
-
-    // Validate Material Number Customer
-    if (!materialNumberCustomer) {
-      setMaterialNumberCustomerError('Material Number Customer is required.');
-      return;
-    } else {
-      setMaterialNumberCustomerError('');
-    }
-
-    // Validate Description
-    if (!materialDescriptionCustomer) {
-      setDescriptionError('Description is required.');
-      return;
-    } else {
-      setDescriptionError('');
     }
 
     await handleSubmit(formState);
     setShowSuccessMessage(true);
-  }
+  };
+
 
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -327,14 +294,14 @@ const AddForm: React.FC<AddFormProps> = () => {
               <Form.Control.Feedback type="invalid">End Date has to be a Monday after Start Date.</Form.Control.Feedback>
             </Form.Group>
           </Row>
-
+          <Row style={{ margin: '-15px 0 15px auto' }}><div className="error-message" >{datesError}</div></Row>
           <Row className="mb-3">
             <Form.Group className="form-group required" as={Col}>
               <Form.Label className="control-label required-field-label">Unit of Measure</Form.Label>
               <UnitsofMeasureContextContextProvider>
                 <UnitsOfMeasureOptions selectedUnitMeasureId={formState.unitMeasureId} onChange={handleUnitMeasureChange} />
               </UnitsofMeasureContextContextProvider>
-              <div className="invalid-feedback">{unitMeasureError}</div>
+              <div className="error-message">{unitMeasureError}</div>
             </Form.Group>
           </Row>
 
@@ -343,7 +310,7 @@ const AddForm: React.FC<AddFormProps> = () => {
             <CompanyContextProvider>
               <CompanyOptions selectedCompanyName={formState.supplierId} onChange={handleSupplierChange} />
             </CompanyContextProvider>
-            <div className="invalid-feedback">{supplierError}</div>
+            <div className="error-message">{supplierError}</div>
           </Form.Group>
 
           <Form.Group className="mb-3 form-group required">
@@ -361,7 +328,7 @@ const AddForm: React.FC<AddFormProps> = () => {
                 <DemandCategoryOptions selectedDemandCategoryId='' />
               </DemandCategoryContextProvider>
             </Form.Select>
-            <div className="invalid-feedback">{demandCategoryError}</div>
+            <div className="error-message">{demandCategoryError}</div>
           </Form.Group>
 
           <Form.Group className="mb-3 form-group required">
@@ -375,7 +342,7 @@ const AddForm: React.FC<AddFormProps> = () => {
               onChange={onInputChange}
               required
             />
-            <div className="invalid-feedback">{materialNumberCustomerError}</div>
+            <div className="error-message">{materialNumberCustomerError}</div>
           </Form.Group>
 
           <Form.Group className="mb-3 required">
@@ -401,7 +368,7 @@ const AddForm: React.FC<AddFormProps> = () => {
               onChange={onInputChange}
               required
             />
-            <div className="invalid-feedback">{descriptionError}</div>
+            <div className="error-message">{descriptionError}</div>
           </Form.Group>
 
           <Button variant="primary" onClick={handleFormSubmit} disabled={submissionStatus === 'submitting'}>

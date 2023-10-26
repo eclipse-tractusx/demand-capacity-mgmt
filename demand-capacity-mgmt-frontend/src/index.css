@@ -113,9 +113,13 @@ code {
 
 .invalid-feedback {
   color: red;
-  display: block !important;
 }
 
+.error-message {
+  color: red;
+  display: contents !important;
+  font-size: small;
+}
 
 /*Sum View Tables*/
 .table-container {
