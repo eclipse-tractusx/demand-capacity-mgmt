@@ -23,6 +23,20 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CapacityGroupRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.DemandSeriesRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -31,16 +45,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
-import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
@@ -81,7 +85,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 matchedMaterialDemands.addAll(materialDemandEntity.getDemandSeries());
             }
             linkedCapacityGroupMaterialDemandRepository.save(entity);
-            statusManager.calculateBottleneck(userID);
+            statusManager.calculateBottleneck(userID,true);
             capacityGroupEntity.setLinkStatus(EventType.GENERAL_EVENT);
             capacityGroupRepository.save(capacityGroupEntity);
         }
@@ -161,7 +165,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 materialDemandRepository.save(demandEntity);
             }
         }
-        statusManager.calculateBottleneck(userID);
+        statusManager.calculateBottleneck(userID,true);
     }
 
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest request) {
