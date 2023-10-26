@@ -26,11 +26,11 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.api.FavoriteApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.FavoriteResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,15 +43,15 @@ public class FavoriteController implements FavoriteApi {
     private HttpServletRequest request;
 
     @Override
-    public ResponseEntity<FavoriteResponse> createFavorite(FavoriteRequest favoriteRequest) {
-        FavoriteResponse response = favoriteService.createFavorite(favoriteRequest, UserUtil.getUserID(request));
-        return ResponseEntity.status(200).body(response);
+    public ResponseEntity<Void> createFavorite(FavoriteRequest favoriteRequest) {
+        favoriteService.createFavorite(favoriteRequest, UserUtil.getUserID(request));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
     public ResponseEntity<Void> deleteFavoriteById(String id) {
-        favoriteService.deleteFavorite(UUID.fromString(id), UserUtil.getUserID(request));
-        return ResponseEntity.status(200).build();
+        favoriteService.deleteFavorite(UserUtil.getUserID(request), id);
+        return ResponseEntity.status(204).build();
     }
 
     @Override
@@ -61,16 +61,18 @@ public class FavoriteController implements FavoriteApi {
     }
 
     @Override
-    public ResponseEntity<List<FavoriteResponse>> getFavoriteByType(String type) {
-        //FavoriteResponse responseList = favoriteService.getAllFavoritesByType(type,UserUtil.getUserID(request));
-        //return ResponseEntity.status(200).body(responseList);
-        return null;
+    public ResponseEntity<FavoriteResponse> getFavoriteByType(String type) {
+        FavoriteResponse responseList = favoriteService.getAllFavoritesByType(
+                UserUtil.getUserID(request),
+                FavoriteType.valueOf(type)
+        );
+        return ResponseEntity.status(200).body(responseList);
     }
 
     @Override
-    public ResponseEntity<FavoriteResponse> updateFavorite(Integer id, String type, FavoriteRequest favoriteRequest)
+    public ResponseEntity<Void> updateFavorite(Integer id, String type, FavoriteRequest favoriteRequest)
         throws Exception {
-        FavoriteResponse response = favoriteService.updateFavorite(id, favoriteRequest, UserUtil.getUserID(request));
-        return ResponseEntity.status(200).body(response);
+        favoriteService.updateFavorite(id, favoriteRequest, UserUtil.getUserID(request));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -831,10 +831,6 @@ paths:
       responses:
         200:
           description: Favorite created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FavoriteResponse'
     put:
       tags:
         - favorite
@@ -862,10 +858,9 @@ paths:
       responses:
         200:
           description: Favorite updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FavoriteResponse'
+
+
+  /favorite/{id}:
     delete:
       tags:
         - favorite
@@ -873,7 +868,7 @@ paths:
       operationId: deleteFavoriteById
       parameters:
         - name: id
-          in: query
+          in: path
           required: true
           description: ID of the favorite to delete
           schema:
@@ -883,7 +878,6 @@ paths:
           description: Favorite deleted successfully
         404:
           description: Favorite not found
-
 
   /favorite/{type}:
     get:
@@ -900,13 +894,11 @@ paths:
             type: string
       responses:
         200:
-          description: Favorite found
+          description: Combined response with three arrays
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FavoriteResponse'
+                $ref: '#/components/schemas/FavoriteResponse'
         404:
           description: Favorite not found
 
@@ -1746,8 +1738,6 @@ components:
         favoriteId:
           type: string
         fType:
-          type: string
-        fTypeId:
           type: string
 
     FavoriteResponse:
