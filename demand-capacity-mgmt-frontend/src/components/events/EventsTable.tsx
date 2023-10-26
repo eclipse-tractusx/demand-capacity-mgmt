@@ -28,18 +28,13 @@ import {
     FaArrowUp,
     FaCopy,
     FaEllipsisV,
-    FaEnvelope,
-    FaExclamation,
-    FaLink,
-    FaStar,
-    FaTrashAlt,
-    FaUnlink,
-    FaWrench
+    FaTrashAlt
 } from 'react-icons/fa';
+import { LuStar } from 'react-icons/lu';
 import { EventsContext } from '../../contexts/EventsContextProvider';
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
-import { EventFavoriteResponse, FavoriteType } from "../../interfaces/Favorite_interface";
-import { EventProp } from '../../interfaces/event_interfaces';
+import { EventProp, eventTypeIcons } from '../../interfaces/event_interfaces';
+import { EventFavoriteResponse, FavoriteType } from "../../interfaces/favorite_interface";
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import Pagination from '../common/Pagination';
 
@@ -85,17 +80,6 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
         }
         fetchFavorites();
     };
-
-    const eventTypeIcons: { [key: string]: React.ReactNode } = {
-        GENERAL_EVENT: <FaEnvelope className="text-primary" size={25} />,
-        TODO: <FaWrench className="text-warning" size={25} />,
-        ALERT: <FaExclamation className="text-danger" size={25} />,
-        STATUS_IMPROVEMENT: <FaArrowUp className="text-success" size={25} />,
-        STATUS_REDUCTION: <FaArrowDown className="text-danger" size={25} />,
-        LINKED: <FaLink className="text-info" size={25} />,
-        UN_LINKED: <FaUnlink className="text-danger" size={25} />,
-    };
-
 
     const handleSort = (field: string) => {
         if (sortField === field) {
@@ -231,12 +215,13 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
                         {currentEvents.map((event, index) => (
                             <tr key={index}>
                                 <td>
-                                    <FaStar
-                                        className={favoriteEvents.includes(event.logID) ? "text-warning" : "text-muted"}
-                                        opacity={favoriteEvents.includes(event.logID) ? "1" : "0.2"}
-                                        onClick={() => toggleFavorite(event.logID)}
-                                        size={25}
-                                    />
+                                    <span className='inlinefav'>
+                                        <LuStar
+                                            className={favoriteEvents.includes(event.logID) ? "text-warning" : "text-muted"}
+                                            opacity={favoriteEvents.includes(event.logID) ? "1" : "0.2"}
+                                            onClick={() => toggleFavorite(event.logID)}
+                                            size={25}
+                                        /></span>
                                 </td>
                                 <td>{new Date(event.timeCreated).toLocaleString()}</td>
                                 <td><OverlayTrigger

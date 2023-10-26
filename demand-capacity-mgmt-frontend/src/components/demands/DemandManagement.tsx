@@ -20,30 +20,30 @@
  *    ********************************************************************************
  */
 
-import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
-import {Button, Col, Dropdown, Form, Modal, Row} from 'react-bootstrap';
-import {FaCopy, FaEllipsisV, FaInfoCircle, FaRedo, FaSearch, FaStar, FaTrashAlt} from 'react-icons/fa';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Button, Col, Dropdown, Form, Modal, Row } from 'react-bootstrap';
+import { FaCopy, FaEllipsisV, FaInfoCircle, FaRedo, FaSearch, FaTrashAlt } from 'react-icons/fa';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
-import {DemandContext} from '../../contexts/DemandContextProvider';
+import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
-import {DemandProp, DemandSeries, DemandSeriesValue} from '../../interfaces/demand_interfaces';
+import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import Pagination from '../common/Pagination';
 import DemandsSearch from '../common/Search';
 import AddForm from './DemandAddForm';
 import DemandDetailsModal from './DemandDetailsModal';
 import EditForm from './DemandEditForm';
 
-import {EventType} from '../../interfaces/event_interfaces';
-import DangerConfirmationModal, {ConfirmationAction} from '../common/DangerConfirmationModal';
-import {LoadingMessage} from '../common/LoadingMessages';
-import DemandManagementTable from './DemandManagementTable';
+import { LuStar } from 'react-icons/lu';
+import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
+import { EventType } from '../../interfaces/event_interfaces';
 import {
     FavoriteType,
     MaterialDemandFavoriteResponse
-} from "../../interfaces/Favorite_interface";
-import {FavoritesContext} from "../../contexts/FavoritesContextProvider";
-import {de} from "date-fns/locale";
+} from "../../interfaces/favorite_interface";
+import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
+import { LoadingMessage } from '../common/LoadingMessages';
+import DemandManagementTable from './DemandManagementTable';
 
 const DemandManagement: React.FC = () => {
     const [showEditModal, setIsEditModalOpen] = useState(false);
@@ -51,21 +51,21 @@ const DemandManagement: React.FC = () => {
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
-    const {deleteDemand} = useContext(DemandContext)!;
+    const { deleteDemand } = useContext(DemandContext)!;
     const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction>(ConfirmationAction.Delete);
 
     const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
-    const {demandprops, fetchDemandProps, isLoading} = useContext(DemandContext)!; // Make sure to get the fetchDemands function from the context.
+    const { demandprops, fetchDemandProps, isLoading } = useContext(DemandContext)!; // Make sure to get the fetchDemands function from the context.
 
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
 
-    const [sortColumn, setSortColumn] = useState<keyof DemandProp>('changedAt');
+    const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
     const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
-    const {addFavorite, fetchFavoritesByType, deleteFavorite} = useContext(FavoritesContext)!;
+    const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
     const [favoriteDemands, setFavoriteDemands] = useState<string[]>([]);
 
     const handleRefreshClick = async () => {
@@ -99,6 +99,7 @@ const DemandManagement: React.FC = () => {
     useEffect(() => {
         fetchFavorites();
     }, []);
+
 
     const handleSort = (column: string | null) => {
         if (sortColumn === column) {
@@ -161,12 +162,13 @@ const DemandManagement: React.FC = () => {
         }
     };
 
+    const isDemandFavorited = (demandId: string) => favoriteDemands.includes(demandId);
 
     useMemo(() => {
-        let sortedDemands = [...demandprops];
+        let filteredDemands = [...demandprops];
 
         if (searchQuery !== '') {
-            sortedDemands = sortedDemands.filter((demand) =>
+            filteredDemands = filteredDemands.filter((demand) =>
                 demand.materialDescriptionCustomer.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 demand.id.toString().includes(searchQuery.toLowerCase()) ||
                 demand.customer.bpn.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -175,29 +177,37 @@ const DemandManagement: React.FC = () => {
             );
         }
 
+        // Separate favorited and unfavorited demands
+        const favoritedDemands = filteredDemands.filter((demand) => isDemandFavorited(demand.id));
+        const unfavoritedDemands = filteredDemands.filter((demand) => !isDemandFavorited(demand.id));
+
+        // Sort favorited demands by changedAt timestamp in descending order
+        favoritedDemands.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
+
+        // Sort unfavorited demands by changedAt timestamp in descending order
+        unfavoritedDemands.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
+
+        // Concatenate favorited and unfavorited demands
+        const sortedDemands = [...favoritedDemands, ...unfavoritedDemands];
+
         if (sortColumn) {
+            // Sort the concatenated array by the specified column
             sortedDemands.sort((a, b) => {
                 const aValue = a[sortColumn];
                 const bValue = b[sortColumn];
 
-                if (sortColumn === 'changedAt') {
-                    const timestampA = aValue instanceof Date ? aValue.getTime() : typeof aValue === 'string' ? new Date(aValue).getTime() : 0;
-                    const timestampB = bValue instanceof Date ? bValue.getTime() : typeof bValue === 'string' ? new Date(bValue).getTime() : 0;
-
-                    return sortOrder === 'asc' ? timestampB - timestampA : timestampA - timestampB;
-                } else {
-                    // For other columns, perform string or numeric comparison
-                    if (typeof aValue === 'string' && typeof bValue === 'string') {
-                        // Sort strings alphabetically
-                        return aValue.localeCompare(bValue, undefined, {sensitivity: 'base'});
-                    } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-                        // Sort numbers numerically
-                        return aValue - bValue;
-                    }
-
-                    // If the types are not string or number, return 0 (no sorting)
-                    return 0;
+                // For other columns, perform string or numeric comparison
+                if (typeof aValue === 'string' && typeof bValue === 'string') {
+                    // Sort strings alphabetically
+                    return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
+                } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+                    // Sort numbers numerically
+                    return aValue - bValue;
                 }
+
+                // If the types are not string or number, return 0 (no sorting)
+                return 0;
+
             });
 
             if (sortOrder === 'desc') {
@@ -207,7 +217,7 @@ const DemandManagement: React.FC = () => {
         }
 
         setFilteredDemands(sortedDemands);
-    }, [demandprops, searchQuery]);
+    }, [demandprops, searchQuery, sortColumn, sortOrder]);
 
 
     const slicedDemands = useMemo(() => {
@@ -226,16 +236,17 @@ const DemandManagement: React.FC = () => {
         () =>
             slicedDemands.map((demand) => (
                 <tr key={demand.id}>
-                    <td><FaStar
-                        className={favoriteDemands.includes(demand.id) ? "text-warning" : "text-muted"}
-                        opacity={favoriteDemands.includes(demand.id) ? "1" : "0.2"}
-                        onClick={() => toggleFavorite(demand.id)}
-                        size={25}
-                    /></td>
+                    <td><span className='inlinefav'>
+                        <LuStar
+                            className={favoriteDemands.includes(demand.id) ? "text-warning" : "text-muted"}
+                            opacity={favoriteDemands.includes(demand.id) ? "1" : "0.2"}
+                            onClick={() => toggleFavorite(demand.id)}
+                            size={25}
+                        /></span></td>
                     <td>
                         <Button data-toggle="modal" onClick={() => handleDetails(demand)} variant="outline-primary">
-                            <div style={{display: "flex", justifyContent: "center"}}>
-                                <FaSearch size={20}/>
+                            <div style={{ display: "flex", justifyContent: "center" }}>
+                                <FaSearch size={20} />
                             </div>
                         </Button>
                     </td>
@@ -285,16 +296,16 @@ const DemandManagement: React.FC = () => {
                     <td>
                         {demand.linkStatus === EventType.LINKED ? (
                             <span className="badge rounded-pill bg-primary text-white" id="tag-ok">
-                Linked
-              </span>
+                                Linked
+                            </span>
                         ) : demand.linkStatus === EventType.TODO ? (
                             <span className="badge rounded-pill bg-warning text-black" id="tag-warning">
-                TODO
-              </span>
+                                TODO
+                            </span>
                         ) : demand.linkStatus === EventType.UN_LINKED ? (
                             <span className="badge rounded-pill bg-danger text-white" id="tag-danger">
-                Unlinked
-              </span>
+                                Unlinked
+                            </span>
                         ) : (
                             <span className="badge rounded-pill bg-secondary text-white">N/A</span>
                         )}
@@ -305,16 +316,16 @@ const DemandManagement: React.FC = () => {
                     <td>
                         <Dropdown>
                             <Dropdown.Toggle variant="light" id={`dropdown-menu-${demand.id}`}>
-                                <span><FaEllipsisV/></span>
+                                <span><FaEllipsisV /></span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 <Dropdown.Item
-                                    onClick={() => handleDetails(demand)}><FaInfoCircle/> Details</Dropdown.Item>
+                                    onClick={() => handleDetails(demand)}><FaInfoCircle /> Details</Dropdown.Item>
                                 <Dropdown.Item onClick={() => {
                                     navigator.clipboard.writeText(demand.id)
-                                }}><FaCopy/> Copy ID</Dropdown.Item>
+                                }}><FaCopy /> Copy ID</Dropdown.Item>
                                 <Dropdown.Item className="red-delete-item"
-                                               onClick={() => handleDeleteButtonClick(demand.id)}><FaTrashAlt/> Delete</Dropdown.Item>
+                                    onClick={() => handleDeleteButtonClick(demand.id)}><FaTrashAlt /> Delete</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     </td>
@@ -328,22 +339,22 @@ const DemandManagement: React.FC = () => {
             <div className="table-title">
                 <div className="row">
                     <div className="col-sm-6">
-                        <DemandsSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                        <DemandsSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </div>
                     <div className="col-sm-6 d-flex justify-content-end align-items-center">
                         <Button className="btn btn-success me-1" data-toggle="modal"
-                                onClick={() => setShowAddModal(true)}>
+                            onClick={() => setShowAddModal(true)}>
                             <span>New Material Demand</span>
                         </Button>
                         <Button className='btn btn-primary' onClick={handleRefreshClick}>
-                            <FaRedo className="spin-on-hover"/>
+                            <FaRedo className="spin-on-hover" />
                         </Button>
                     </div>
                 </div>
 
             </div>
             {isLoading ? ( // Conditional rendering based on loading state
-                <LoadingMessage/>
+                <LoadingMessage />
             ) : (
                 <>
                     <div className='table'>
@@ -402,7 +413,7 @@ const DemandManagement: React.FC = () => {
                                 <DemandCategoryContextProvider>
                                     <CompanyContextProvider>
                                         {selectedDemand && <EditForm theDemand={selectedDemand}
-                                                                     onCloseModal={() => setIsEditModalOpen(false)}/>}
+                                            onCloseModal={() => setIsEditModalOpen(false)} />}
                                     </CompanyContextProvider>
                                 </DemandCategoryContextProvider>
                             </UnitsofMeasureContextContextProvider>
@@ -420,7 +431,7 @@ const DemandManagement: React.FC = () => {
                             <Modal.Title>New Material Demand</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <AddForm fetchDemandProps={fetchDemandProps}/>
+                            <AddForm fetchDemandProps={fetchDemandProps} />
                         </Modal.Body>
                     </Modal>
 
@@ -441,7 +452,7 @@ const DemandManagement: React.FC = () => {
                         onHide={handleCloseDetails}
                         dialogClassName="custom-modal"
                         fullscreen="xl"
-                        selectedDemand={selectedDemand}/>
+                        selectedDemand={selectedDemand} />
 
                 </>
             )}

@@ -112,7 +112,6 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const archiveLog = async (event: EventProp) => {
     try {
-      console.log(event)
       const api = createAPIInstance(access_token);
       await api.post('/loggingHistory/archivedLog', event);
     } catch (error) {

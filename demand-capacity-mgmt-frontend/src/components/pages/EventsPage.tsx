@@ -1,24 +1,43 @@
+/*
+ *  *******************************************************************************
+ *  Copyright (c) 2023 BMW AG
+ *  Copyright (c) 2023 Contributors to the Eclipse Foundation
+ *
+ *    See the NOTICE file(s) distributed with this work for additional
+ *    information regarding copyright ownership.
+ *
+ *    This program and the accompanying materials are made available under the
+ *    terms of the Apache License, Version 2.0 which is available at
+ *    https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *    License for the specific language governing permissions and limitations
+ *    under the License.
+ *
+ *    SPDX-License-Identifier: Apache-2.0
+ *    ********************************************************************************
+ */
 import { useContext, useEffect, useState } from "react";
 import { Button, Tab, Tabs } from "react-bootstrap";
 import { FaFilter, FaRedo } from "react-icons/fa";
 import { FcTimeline } from "react-icons/fc";
+import { LuStar } from "react-icons/lu";
 import Creatable from 'react-select/creatable';
 import { EventsContext } from "../../contexts/EventsContextProvider";
+import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import { EventProp } from "../../interfaces/event_interfaces";
 import DangerConfirmationModal, { ConfirmationAction } from "../common/DangerConfirmationModal";
 import { LoadingMessage } from "../common/LoadingMessages";
 import EventsTable from "../events/EventsTable";
-import {FavoritesContext} from "../../contexts/FavoritesContextProvider";
-import {
-    EventFavoriteResponse,
-    FavoriteType,
-    SingleCapacityGroupFavoriteResponse
-} from "../../interfaces/Favorite_interface";
 
 function EventsPage() {
     const [activeTab, setActiveTab] = useState("Events");
     const [userInput, setUserInput] = useState('');
     const { events, archiveEvents, fetchEvents, fetchFilteredEvents, deleteAllEvents } = useContext(EventsContext)!;
+    const { fetchFavoritesByType } = useContext(FavoritesContext)!;
+    const [options, setOptions] = useState<any[]>([]); // State to store options for Creatable component
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [filteredEvents, setFilteredEvents] = useState<EventProp[]>(events);
@@ -26,9 +45,27 @@ function EventsPage() {
 
     const handleUserInputChange = (newValue: string | undefined) => {
         setUserInput(newValue || '');
-        setFilteredEvents(newValue === undefined ? events : []);
-    };
 
+        // Filter events based on userInput (id, capacityGroupId, or objectId)
+        const filteredEvents: EventProp[] = events.filter((event) => {
+            if (newValue) {
+                const lowerCaseValue = newValue.toLowerCase();
+
+                // Check if the input is a number
+                const isNumber = !isNaN(Number(lowerCaseValue));
+
+                return (
+                    (isNumber && event.id.toString().includes(lowerCaseValue)) ||
+                    (!isNumber &&
+                        ((event.capacityGroupId && event.capacityGroupId.toString().includes(lowerCaseValue)) ||
+                            (event.id && event.id.toString().includes(lowerCaseValue))))
+                );
+            }
+            return true; // Show all events if userInput is empty
+        });
+
+        setFilteredEvents(filteredEvents);
+    };
 
     const handleRefreshClick = () => {
         fetchEvents(); // Call your fetchEvents function to refresh the data
@@ -47,6 +84,7 @@ function EventsPage() {
         setShowConfirmationModal(false);
     };
 
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -62,15 +100,54 @@ function EventsPage() {
                     filteredEvents = events; // Show all events if userInput is empty
                 }
                 setFilteredEvents(filteredEvents);
+
+                console.log(filteredEvents)
+
             } catch (error) {
                 console.error('Error fetching events:', error);
             } finally {
                 setLoading(false);
             }
+
+            try {
+                setLoading(true);
+                let eventOptions: any[] = [];
+                const response = await fetchFavoritesByType('EVENT');
+                eventOptions = response?.events?.map((event: any) => {
+                    // Create a short timestamp (you can adjust the format as per your requirement)
+                    const options: Intl.DateTimeFormatOptions = {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    };
+                    const shortTimestamp = new Date(event.timeCreated).toLocaleString(undefined, options);
+
+                    // Combine short timestamp, eventType, and customer in the label
+                    const label = (
+                        <div>
+                            <LuStar size={12} className="text-warning" />  {shortTimestamp} | {event.eventType} | {event.description}
+                        </div>
+                    );
+
+                    return {
+                        value: event.id,
+                        label: label,
+                    };
+                }) || [];
+                setOptions(eventOptions); // Update options state with event descriptions
+            } catch (error) {
+                console.error('Error fetching filtered events:', error);
+            } finally {
+                setLoading(false);
+            }
+
         };
 
         fetchData();
-    }, [userInput, events, fetchFilteredEvents]);
+    }, [fetchFilteredEvents]);
+
 
 
     return (
@@ -105,6 +182,7 @@ function EventsPage() {
                                                     <FaFilter size={12} className="" /> Filter
                                                 </div>
                                             }
+                                            options={options}
                                             // Handle user input changes and call the filtering function
                                             onChange={(selectedOption) => handleUserInputChange(selectedOption?.value)}
                                         />
