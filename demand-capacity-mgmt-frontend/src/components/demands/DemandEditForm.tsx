@@ -255,7 +255,7 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand, onCloseModal }) => {
 
       <Button variant="primary" type="submit">
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <FiSave size={23} /> Save Changes
+          <FiSave size={23} style={{ margin: " 0 12 0 0px" }} /> Save Changes
         </div>
       </Button>
     </Form>
