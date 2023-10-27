@@ -24,11 +24,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CompanyDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyEntity;
@@ -39,6 +34,12 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -60,21 +61,18 @@ public class CompanyServiceImpl implements CompanyService {
         loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
         loggingHistoryRequest.setEventDescription("Company Created");
         loggingHistoryService.createLog(loggingHistoryRequest);
-        //updateCapacityMaterialDemansStatus
     }
 
     @Override
     public CompanyEntity getCompanyById(UUID id) {
         Optional<CompanyEntity> company = companyRepository.findById(id);
-
         if (company.isEmpty()) {
             throw new NotFoundException(
                 404,
                 "Company not found in DB",
                 new ArrayList<>(List.of("ID provided - : " + id))
             );
-        }
-
+        } else company.get().setCount(company.get().getCount()+1);
         return company.get();
     }
 
@@ -102,6 +100,12 @@ public class CompanyServiceImpl implements CompanyService {
     public List<CompanyDto> getAllCompany() {
         List<CompanyEntity> companyEntityList = companyRepository.findAll();
 
+        return companyEntityList.stream().map(this::convertEntityToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CompanyDto> getTopCompanies() {
+        List<CompanyEntity> companyEntityList = companyRepository.findTop5ByOrderByCountDesc();
         return companyEntityList.stream().map(this::convertEntityToDto).collect(Collectors.toList());
     }
 }

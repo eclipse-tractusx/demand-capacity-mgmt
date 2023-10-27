@@ -29,6 +29,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
@@ -53,4 +54,7 @@ public class FavoriteEntity {
     @Column(name = "f_type", columnDefinition = "varchar")
     @Enumerated(EnumType.STRING)
     private FavoriteType type;
+
+    @Column(name = "favorited_at")
+    private Timestamp favorited_at;
 }
