@@ -54,7 +54,8 @@ create table company_base_data
     zip_code varchar(400),
     country varchar(400),
     my_company varchar(400),
-    edc_url varchar(400)
+    edc_url varchar(400),
+    counter bigint
 );
 
 create table material_demand

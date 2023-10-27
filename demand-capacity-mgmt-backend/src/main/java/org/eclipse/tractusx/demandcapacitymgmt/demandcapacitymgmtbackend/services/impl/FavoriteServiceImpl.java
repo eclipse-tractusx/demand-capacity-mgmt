@@ -31,6 +31,8 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -138,6 +140,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             scgfv.setCapacityGroupName(capacityGroup.getCapacityGroupName());
             scgfv.setCustomer(capacityGroup.getCustomer().getBpn());
             scgfv.setSupplier(capacityGroup.getSupplier().getBpn());
+            scgfv.setFavoritedAt(entity.getFavorited_at().toString());
             return scgfv;
         } else return null;
     }
@@ -157,6 +160,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             response.setMaterialNumberSupplier(materialDemand.getMaterialNumberSupplier());
             response.setChangedAt(materialDemand.getChangedAt().toString());
             response.setUnitOfMeasure(materialDemand.getUnitMeasure().getCxSymbol());
+            response.setFavoritedAt(entity.getFavorited_at().toString());
 
             return response;
         } else return null;
@@ -174,7 +178,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             companyFavoriteResponse.setCompanyName(companyEntity.getCompanyName());
             companyFavoriteResponse.setCountry(companyEntity.getCountry());
             companyFavoriteResponse.setZipCode(companyEntity.getZipCode());
-
+            companyFavoriteResponse.setFavoritedAt(entity.getFavorited_at().toString());
             return companyFavoriteResponse;
         } else return null;
     }
@@ -188,6 +192,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             eventEntity.setId(String.valueOf(eEntity.getId()));
             eventEntity.setLogID(eEntity.getLogID().toString());
             eventEntity.setTimeCreated(eEntity.getTime_created().toString());
+            eventEntity.setFavoritedAt(entity.getFavorited_at().toString());
             return eventEntity;
     }
 
@@ -205,6 +210,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         return FavoriteEntity
             .builder()
             .userID(UUID.fromString(cookieUserID))
+            .favorited_at(Timestamp.from(Instant.now()))
             .favoriteId(UUID.fromString(request.getFavoriteId()))
             .type(FavoriteType.valueOf(request.getfType()))
             .build();
