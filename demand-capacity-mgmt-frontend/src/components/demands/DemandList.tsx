@@ -20,20 +20,21 @@
  *    ********************************************************************************
  */
 
-import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
-import {Button, Col, Dropdown, Form, Row} from 'react-bootstrap';
-import {FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaStar, FaTrashAlt} from 'react-icons/fa';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Button, Col, Dropdown, Form, Row } from 'react-bootstrap';
+import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt } from 'react-icons/fa';
+import { LuStar } from 'react-icons/lu';
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
-import {DemandContext} from '../../contexts/DemandContextProvider';
-import {FavoritesContext} from "../../contexts/FavoritesContextProvider";
-import {FavoriteType, MaterialDemandFavoriteResponse} from "../../interfaces/Favorite_interface";
+import { DemandContext } from '../../contexts/DemandContextProvider';
+import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
-import {DemandProp, DemandSeries, DemandSeriesValue} from '../../interfaces/demand_interfaces';
-import {EventType} from '../../interfaces/event_interfaces';
+import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
+import { EventType } from '../../interfaces/event_interfaces';
+import { FavoriteType, MaterialDemandFavoriteResponse } from "../../interfaces/favorite_interface";
 import CapacityGroupAddToExisting from '../capacitygroup/CapacityGroupAddToExisting';
 import CapacityGroupWizardModal from '../capacitygroup/CapacityGroupWizardModal';
-import DangerConfirmationModal, {ConfirmationAction} from '../common/DangerConfirmationModal';
-import {LoadingMessage} from '../common/LoadingMessages';
+import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
+import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
 import DemandDetailsModal from './DemandDetailsModal';
 import DemandListTable from './DemandListTable';
@@ -72,27 +73,28 @@ const DemandList: React.FC<{
     const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
 
     const [currentPage, setCurrentPage] = useState(1);//Its updated from showWizard
-    const [sortColumn, setSortColumn] = useState<keyof DemandProp>('changedAt');
+    const [sortColumn, setSortColumn] = useState<keyof DemandProp | null>(null);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
 
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
     const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
     const fetchFavorites = async () => {
-        try {
-            const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
-            console.log(favorites)
-            if (favorites && favorites.materialDemands) {
-                setFavoriteDemands(favorites.materialDemands.map((fav: MaterialDemandFavoriteResponse) => fav.id));
-            }
-        } catch (error) {
-            console.error('Error fetching favorites by type in DemandList:', error);
+      try {
+        const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
+        console.log(favorites)
+        if (favorites && favorites.materialDemands) {
+          setFavoriteDemands(favorites.materialDemands.map((fav: MaterialDemandFavoriteResponse) => fav.id));
         }
+      } catch (error) {
+        console.error('Error fetching favorites by type in DemandList:', error);
+      }
     };
 
     useEffect(() => {
-        setShowWizardModal(showWizard || false);
-        fetchDemandProps();
-        fetchFavorites();
+      setShowWizardModal(showWizard || false);
+      fetchDemandProps();
+      fetchFavorites();
     }, [showWizard]);
 
 
@@ -169,11 +171,13 @@ const DemandList: React.FC<{
 
     const handleCloseDetails = () => setShowDetailsModal(false);
 
+    const isDemandFavorited = (demandId: string) => favoriteDemands.includes(demandId);
+
     useMemo(() => {
-      let sortedDemands = [...demandprops];
+      let filteredDemands = [...demandprops];
 
       if (searchQuery !== '') {
-        sortedDemands = sortedDemands.filter((demand) =>
+        filteredDemands = filteredDemands.filter((demand) =>
           demand.materialDescriptionCustomer.toLowerCase().includes(searchQuery.toLowerCase()) ||
           demand.id.toString().includes(searchQuery.toLowerCase()) ||
           demand.customer.bpn.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -182,29 +186,37 @@ const DemandList: React.FC<{
         );
       }
 
+      // Separate favorited and unfavorited demands
+      const favoritedDemands = filteredDemands.filter((demand) => isDemandFavorited(demand.id));
+      const unfavoritedDemands = filteredDemands.filter((demand) => !isDemandFavorited(demand.id));
+
+      // Sort favorited demands by changedAt timestamp in descending order
+      favoritedDemands.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
+
+      // Sort unfavorited demands by changedAt timestamp in descending order
+      unfavoritedDemands.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
+
+      // Concatenate favorited and unfavorited demands
+      const sortedDemands = [...favoritedDemands, ...unfavoritedDemands];
+
       if (sortColumn) {
+        // Sort the concatenated array by the specified column
         sortedDemands.sort((a, b) => {
           const aValue = a[sortColumn];
           const bValue = b[sortColumn];
 
-          if (sortColumn === 'changedAt') {
-            const timestampA = aValue instanceof Date ? aValue.getTime() : typeof aValue === 'string' ? new Date(aValue).getTime() : 0;
-            const timestampB = bValue instanceof Date ? bValue.getTime() : typeof bValue === 'string' ? new Date(bValue).getTime() : 0;
-
-            return sortOrder === 'asc' ? timestampB - timestampA : timestampA - timestampB;
-          } else {
-            // For other columns, perform string or numeric comparison
-            if (typeof aValue === 'string' && typeof bValue === 'string') {
-              // Sort strings alphabetically
-              return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
-            } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-              // Sort numbers numerically
-              return aValue - bValue;
-            }
-
-            // If the types are not string or number, return 0 (no sorting)
-            return 0;
+          // For other columns, perform string or numeric comparison
+          if (typeof aValue === 'string' && typeof bValue === 'string') {
+            // Sort strings alphabetically
+            return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
+          } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+            // Sort numbers numerically
+            return aValue - bValue;
           }
+
+          // If the types are not string or number, return 0 (no sorting)
+          return 0;
+
         });
 
         if (sortOrder === 'desc') {
@@ -214,7 +226,7 @@ const DemandList: React.FC<{
       }
 
       setFilteredDemands(sortedDemands);
-    }, [demandprops, searchQuery]);
+    }, [demandprops, searchQuery, sortColumn, sortOrder]);
 
     const slicedDemands = useMemo(() => {
       // Use filteredDemandsByEventTypes instead of filteredDemands for slicing and rendering
@@ -247,15 +259,15 @@ const DemandList: React.FC<{
     );
 
     const toggleFavorite = async (demandId: string) => {
-        if (favoriteDemands.includes(demandId)) {
-            await deleteFavorite(demandId)
-            setFavoriteDemands(prev => prev.filter(id => id !== demandId));
-        } else {
-            await addFavorite(demandId, FavoriteType.MATERIAL_DEMAND)
-            setFavoriteDemands(prev => [...prev, demandId]);
-        }
-        fetchFavorites();
-        fetchDemandProps();
+      if (favoriteDemands.includes(demandId)) {
+        await deleteFavorite(demandId)
+        setFavoriteDemands(prev => prev.filter(id => id !== demandId));
+      } else {
+        await addFavorite(demandId, FavoriteType.MATERIAL_DEMAND)
+        setFavoriteDemands(prev => [...prev, demandId]);
+      }
+      fetchFavorites();
+      fetchDemandProps();
     };
 
 
@@ -271,14 +283,16 @@ const DemandList: React.FC<{
                 checked={selectedDemands.includes(demand)} // Check if the demand is in the selectedDemands array
               />
             </td>
-              <td>
-                  <FaStar
-                      className={favoriteDemands.includes(demand.id) ? "text-warning" : "text-muted"}
-                      opacity={favoriteDemands.includes(demand.id) ? "1" : "0.2"}
-                      onClick={() => toggleFavorite(demand.id)}
-                      size={25}
-                  />
-              </td>
+            <td>
+              <span className='inlinefav'>
+                <LuStar
+                  className={favoriteDemands.includes(demand.id) ? "text-warning" : "text-muted"}
+                  opacity={favoriteDemands.includes(demand.id) ? "1" : "0.2"}
+                  onClick={() => toggleFavorite(demand.id)}
+                  size={25}
+                />
+              </span>
+            </td>
             <td>
               <Button data-toggle="modal" onClick={() => handleDetails(demand)} variant="outline-primary" >
                 <div style={{ display: "flex", justifyContent: "center" }}>
