@@ -37,7 +37,7 @@ interface CompanyOptionsProps {
 const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName, onChange }) => {
   const companiesContextData = useContext(CompanyContext);
   const { fetchFavoritesByType } = useContext(FavoritesContext)!;
-  const { companies } = companiesContextData || {};
+  const { companies, topCompanies } = companiesContextData || {};
 
   const [companyOptions, setCompanyOptions] = useState<{ value: string; label: string; isFavorite: boolean }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,19 +48,23 @@ const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName, on
         setLoading(true);
         const response = await fetchFavoritesByType(FavoriteType.COMPANY_BASE_DATA);
         const favoriteCompanyIds = new Set(response?.companies?.map((company: CompanyDtoFavoriteResponse) => company.id) || []);
+        const topCompanyIds = new Set(topCompanies?.map((company) => company.id) || []);
         const allCompanyIds = new Set(companies?.map((company) => company.id) || []);
 
+
         // Find unique company IDs by filtering out favorites that are also in regular options
-        const uniqueCompanyIds = Array.from(new Set([...favoriteCompanyIds, ...allCompanyIds]));
+        const uniqueCompanyIds = Array.from(new Set([...favoriteCompanyIds, ...topCompanyIds, ...allCompanyIds]));
 
         const newCompanyOptions = uniqueCompanyIds.map((companyId) => {
           const company = companies?.find((c) => c.id === companyId);
           const isFavorite = favoriteCompanyIds.has(companyId);
+          const isTop = topCompanyIds.has(companyId);
 
           return {
             value: companyId,
             label: `${company?.bpn || ''} | ${company?.companyName || ''}`.trim(),
             isFavorite: isFavorite,
+            isTop: isTop,
           };
         });
 
@@ -102,7 +106,7 @@ const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName, on
       required
       isSearchable
       components={{
-        Option: (props: any) => <CustomOption {...props} isFavorite={props.data.isFavorite} />,
+        Option: (props: any) => <CustomOption {...props} isFavorite={props.data.isFavorite} isTop={props.data.isTop} />,
       }}
     />
   );

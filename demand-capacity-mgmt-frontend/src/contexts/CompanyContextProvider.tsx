@@ -20,9 +20,9 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useState, useEffect } from 'react';
-import {useUser} from "./UserContext";
+import React, { createContext, useEffect, useState } from 'react';
 import createAPIInstance from "../util/Api";
+import { useUser } from "./UserContext";
 
 export interface Company {
   id: string,
@@ -38,6 +38,7 @@ export interface Company {
 
 interface CompanyContextData {
   companies: Company[];
+  topCompanies: Company[];
 }
 
 export const CompanyContext = createContext<CompanyContextData | undefined>(undefined);
@@ -45,9 +46,10 @@ export const CompanyContext = createContext<CompanyContextData | undefined>(unde
 const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
   const { access_token } = useUser();
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [topCompanies, setTopCompanies] = useState<Company[]>([]);
+  const api = createAPIInstance(access_token);
 
   useEffect(() => {
-    const api = createAPIInstance(access_token);
     const fetchCompanies = async () => {
       try {
         const response = await api.get('/company', {
@@ -58,14 +60,26 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
         console.error('Error fetching companies:', error);
       }
     };
-  
+
+    const fetchTopCompanies = async (): Promise<Company> => {
+      try {
+        const response = await api.get(`/company/top`);
+        setTopCompanies(response.data);
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching top companies:', error);
+        throw error;
+      }
+    };
+
     fetchCompanies();
+    fetchTopCompanies();
   }, [access_token]);
-  
+
 
 
   return (
-    <CompanyContext.Provider value={{ companies}}>
+    <CompanyContext.Provider value={{ companies, topCompanies }}>
       {props.children}
     </CompanyContext.Provider>
   );

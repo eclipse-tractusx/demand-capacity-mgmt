@@ -21,11 +21,11 @@
  */
 
 import React from 'react';
-import { LuStar } from 'react-icons/lu';
+import { LuStar, LuTrendingUp } from 'react-icons/lu';
 import { OptionProps } from 'react-select';
 
 const CustomOption: React.FC<OptionProps<any, false>> = ({ innerProps, label, isFocused, isSelected, data }) => {
-    const { isFavorite } = data;
+    const { isFavorite, isTop } = data;
 
     const optionStyle = {
         backgroundColor: isSelected ? '#f0f0f0' : isFocused ? '#e0e0e0' : 'white',
@@ -34,9 +34,11 @@ const CustomOption: React.FC<OptionProps<any, false>> = ({ innerProps, label, is
     };
 
     return (
-        <div {...innerProps} style={optionStyle} >
-            {isFavorite && <LuStar className="text-warning" style={{ margin: " 0 10 0 0px" }} />}{label}
-        </div>
+        <div {...innerProps} style={optionStyle}>
+            {isFavorite && <LuStar className="text-warning" style={{ marginRight: "10px" }} />}
+            {!isFavorite && isTop && <LuTrendingUp className="text-success" style={{ marginRight: "10px" }} />}
+            {label}
+        </div >
     );
 };
 
