@@ -38,7 +38,7 @@ const FavoriteTableMaterialDemands: React.FC<FavoriteTableMaterialDemandsProps> 
     const [sortField, setSortField] = useState<string>('changedAt');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [eventsPerPage, setEventsPerPage] = useState<number>(20);
+    const [eventsPerPage, setEventsPerPage] = useState<number>(5);
 
     const { deleteFavorite, fetchFavorites } = useContext(FavoritesContext)!;
 
@@ -151,7 +151,7 @@ const FavoriteTableMaterialDemands: React.FC<FavoriteTableMaterialDemandsProps> 
                         pages={totalPagesNum}
                         setCurrentPage={setCurrentPage}
                         currentItems={currentEvents}
-                        items={materialdemands}
+                        items={sortedData}
                     />
                     <div className="col-sm">
                         <div className="float-end">

@@ -25,6 +25,7 @@ import { BsFillBookmarkStarFill } from "react-icons/bs";
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import { LoadingMessage } from "../common/LoadingMessages";
 import FavoritesTableCapacityGroup from "../favorites/FavoritesTableCapacityGroup";
+import FavoriteTableCompanies from "../favorites/FavoritesTableCompanies";
 import FavoritesTableEvents from "../favorites/FavoritesTableEvents";
 import FavoriteTableMaterialDemands from "../favorites/FavoritesTableMaterialDemands";
 
@@ -56,17 +57,9 @@ const FavoritesPage: React.FC = () => {
                             />
                         </Tab>
                         <Tab eventKey="CompanyData" title="Companies">
-                            {/* <FavoritesTable
-                                data={favorites?.companies || []}
-                                headings={['BPN', 'Name', 'ZIP Code', 'Country', 'My Company']}
-                                renderRow={(item: CompanyDtoFavoriteResponse, index: number) => [
-                                    <span key={index}>{item.bpn}</span>,
-                                    <span key={index}>{item.companyName}</span>,
-                                    <span key={index}>{item.zipCode}</span>,
-                                    <span key={index}>{item.country}</span>,
-                                    <span key={index}>{item.myCompany}</span>,
-                                ]}
-                            /> */}
+                            <FavoriteTableCompanies
+                                favcompanies={favorites?.companies || []}
+                            />
                         </Tab>
                         <Tab eventKey="Events" title="Events">
                             <FavoritesTableEvents

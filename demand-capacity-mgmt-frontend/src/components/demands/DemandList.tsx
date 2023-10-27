@@ -37,7 +37,7 @@ import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerCon
 import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
 import DemandDetailsModal from './DemandDetailsModal';
-import DemandListTable from './DemandListTable';
+import DemandListTable from './DemandListTableHeaders';
 
 
 const DemandList: React.FC<{

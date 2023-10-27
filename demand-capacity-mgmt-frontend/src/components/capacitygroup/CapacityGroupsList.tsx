@@ -39,7 +39,7 @@ import { getUserGreeting } from '../../interfaces/user_interface';
 import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
 import Search from '../common/Search';
-import CapacityGroupsTable from './CapacityGroupsTable';
+import CapacityGroupsTable from './CapacityGroupsTableHeaders';
 
 
 const CapacityGroupsList: React.FC = () => {
