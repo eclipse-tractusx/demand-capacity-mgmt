@@ -215,16 +215,20 @@ code {
 }
 
 
-/*Something else*/
 .table-checkbox {
+  display: flex;
+  margin-top: 0.7rem;
+  margin-left: 50%;
   -ms-transform: scale(1.5);
-  /* IE */
   -moz-transform: scale(1.5);
-  /* FF */
   -webkit-transform: scale(1.5);
-  /* Safari and Chrome */
   -o-transform: scale(1.5);
-  /* Opera */
+}
+
+.inlinefav {
+  margin-top: 0.25rem;
+  margin-left: 0.7em;
+  display: flex;
 }
 
 .red-delete-item {

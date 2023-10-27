@@ -21,33 +21,35 @@
  */
 
 
-import React, { useContext, useMemo, useState, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { FaCopy, FaEllipsisV, FaEye, FaRedo, FaStar } from 'react-icons/fa';
-import { useUser } from '../../contexts/UserContext';
+import { FaCopy, FaEllipsisV, FaEye, FaRedo } from 'react-icons/fa';
+import { LuStar } from 'react-icons/lu';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
+import { useUser } from '../../contexts/UserContext';
 import '../../index.css';
+import { CapacityGroupProp } from '../../interfaces/capacitygroup_interfaces';
 import { EventType } from '../../interfaces/event_interfaces';
+import {
+  FavoriteType,
+  SingleCapacityGroupFavoriteResponse
+} from "../../interfaces/favorite_interface";
 import { getUserGreeting } from '../../interfaces/user_interface';
 import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
 import Search from '../common/Search';
 import CapacityGroupsTable from './CapacityGroupsTable';
-import {
-  FavoriteType,
-  SingleCapacityGroupFavoriteResponse
-} from "../../interfaces/Favorite_interface";
-import {FavoritesContext} from "../../contexts/FavoritesContextProvider";
 
 
 const CapacityGroupsList: React.FC = () => {
   const { user } = useUser();
   const { capacitygroups, isLoading, fetchCapacityGroupsWithRetry } = useContext(CapacityGroupContext)!;
-
+  const [filteredCapacityGroups, setFilteredCapacityGroups] = useState<CapacityGroupProp[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState('');
-  const [sortOrder, setSortOrder] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
   const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
   const [favoriteCapacityGroups, setFavoriteCapacityGroups] = useState<string[]>([]);
@@ -94,11 +96,13 @@ const CapacityGroupsList: React.FC = () => {
   }, [capacitygroups]);
 
 
-  const filteredcapacitygroups = useMemo(() => {
-    let sortedcapacitygroups = [...capacitygroups];
+  const isCapacityGroupFavorite = (capacityGroupID: string) => favoriteCapacityGroups.includes(capacityGroupID);
+
+  useMemo(() => {
+    let filteredcapacitygroups = [...capacitygroups];
 
     if (searchQuery !== '') {
-      sortedcapacitygroups = sortedcapacitygroups.filter((capacitygroup) =>
+      filteredcapacitygroups = filteredcapacitygroups.filter((capacitygroup) =>
         capacitygroup.internalId.toString().includes(searchQuery.toLowerCase()) ||
         capacitygroup.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         capacitygroup.customerBPNL.toString().includes(searchQuery.toLowerCase()) ||
@@ -110,8 +114,21 @@ const CapacityGroupsList: React.FC = () => {
       );
     }
 
+    // Separate favorited and unfavorited demands
+    const favoriteCapacityGroups = filteredcapacitygroups.filter((capacitygroup) => isCapacityGroupFavorite(capacitygroup.internalId));
+    const unfavoritedCapacityGroups = filteredcapacitygroups.filter((capacitygroup) => !isCapacityGroupFavorite(capacitygroup.internalId));
+
+    // Sort favorited demands by changedAt timestamp in descending order
+    //favoriteCapacityGroups.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
+
+    // Sort unfavorited demands by changedAt timestamp in descending order
+    //unfavoritedCapacityGroups.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
+
+    // Concatenate favorited and unfavorited demands
+    const sortedCapacityGroups = [...favoriteCapacityGroups, ...unfavoritedCapacityGroups];
+
     if (sortColumn !== '') {
-      sortedcapacitygroups.sort((a, b) => {
+      sortedCapacityGroups.sort((a, b) => {
         const aValue = String(a[sortColumn]);
         const bValue = String(b[sortColumn]);
 
@@ -120,21 +137,21 @@ const CapacityGroupsList: React.FC = () => {
 
       if (sortOrder === 'desc') {
         // Reverse the array if the sort order is descending
-        sortedcapacitygroups.reverse();
+        sortedCapacityGroups.reverse();
       }
     }
 
-    return sortedcapacitygroups;
+    setFilteredCapacityGroups(sortedCapacityGroups);
   }, [capacitygroups, searchQuery, sortColumn, sortOrder]);
 
   const slicedcapacitygroups = useMemo(() => {
     const indexOfLastCapacityGroup = currentPage * capacitygroupsPerPage;
     const indexOfFirstCapacityGroup = indexOfLastCapacityGroup - capacitygroupsPerPage;
-    return filteredcapacitygroups.slice(indexOfFirstCapacityGroup, indexOfLastCapacityGroup);
-  }, [filteredcapacitygroups, currentPage, capacitygroupsPerPage]);
+    return filteredCapacityGroups.slice(indexOfFirstCapacityGroup, indexOfLastCapacityGroup);
+  }, [filteredCapacityGroups, currentPage, capacitygroupsPerPage]);
 
-  const totalPagesNum = useMemo(() => Math.ceil(filteredcapacitygroups.length / capacitygroupsPerPage), [
-    filteredcapacitygroups,
+  const totalPagesNum = useMemo(() => Math.ceil(filteredCapacityGroups.length / capacitygroupsPerPage), [
+    filteredCapacityGroups,
     capacitygroupsPerPage,
   ]);
 
@@ -143,19 +160,26 @@ const CapacityGroupsList: React.FC = () => {
       slicedcapacitygroups.map((capacitygroup) => (
         <tr key={capacitygroup.internalId}>
           <td>
-            <FaStar
+            <span className='inlinefav'>
+              <LuStar
                 className={favoriteCapacityGroups.includes(capacitygroup.internalId) ? "text-warning" : "text-muted"}
                 opacity={favoriteCapacityGroups.includes(capacitygroup.internalId) ? "1" : "0.2"}
                 onClick={() => toggleFavorite(capacitygroup.internalId)}
                 size={25}
-            />
+              />
+            </span>
           </td>
           <td>
-            <Button href={`/details/${capacitygroup.internalId}`} target='new-tab' variant="outline-primary" >
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <FaEye size={20} />
-              </div>
-            </Button>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip id={`tooltip-copy-${capacitygroup.internalId}-open`}>Go to Details</Tooltip>}
+            >
+              <Button href={`/details/${capacitygroup.internalId}`} target='new-tab' variant="outline-primary" >
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <FaEye size={20} />
+                </div>
+              </Button>
+            </OverlayTrigger>
           </td>
           <td>
             <OverlayTrigger
@@ -193,14 +217,14 @@ const CapacityGroupsList: React.FC = () => {
                 Down
               </span>
             ) :
-                capacitygroup.linkStatus === EventType.GENERAL_EVENT ? (
-                    <span className="badge rounded-pill text-bg-success" id="tag-ok">
-                General
-              </span>
-                )
+              capacitygroup.linkStatus === EventType.GENERAL_EVENT ? (
+                <span className="badge rounded-pill text-bg-success" id="tag-ok">
+                  General
+                </span>
+              )
                 : (
-              <span className="badge rounded-pill text-bg-secondary">N/A</span>
-            )}
+                  <span className="badge rounded-pill text-bg-secondary">N/A</span>
+                )}
           </td>
           <td>
             <Dropdown>
@@ -256,7 +280,7 @@ const CapacityGroupsList: React.FC = () => {
               pages={totalPagesNum}
               setCurrentPage={setCurrentPage}
               currentItems={slicedcapacitygroups}
-              items={filteredcapacitygroups}
+              items={filteredCapacityGroups}
             />
             <div className="col-sm">
               <div className="float-end">

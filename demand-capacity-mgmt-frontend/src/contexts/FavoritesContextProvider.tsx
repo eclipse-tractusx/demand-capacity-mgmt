@@ -22,13 +22,12 @@
 
 
 import React, { createContext, useEffect, useState } from 'react';
-import { FavoriteResponse } from '../interfaces/Favorite_interface';
+import { FavoritePayload, FavoriteResponse, FavoriteType } from '../interfaces/favorite_interface';
 import createAPIInstance from "../util/Api";
 import { useUser } from './UserContext';
-import { FavoritePayload,FavoriteType } from  '../interfaces/Favorite_interface';
 
 interface FavoritesContextData {
-    favorites: FavoriteResponse | null | undefined;
+    favorites: FavoriteResponse | null;
     fetchFavorites: () => Promise<void>;
     // If you've added a refresh function
     refresh?: () => void;
@@ -37,11 +36,11 @@ interface FavoritesContextData {
     fetchFavoritesByType: (type: string) => Promise<FavoriteResponse>;
 }
 
+
 export const FavoritesContext = createContext<FavoritesContextData | undefined>(undefined);
 
-
 const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-    const [favorites, setFavorites] = useState<FavoriteResponse | undefined>(undefined);
+    const [favorites, setFavorites] = useState<FavoriteResponse | null>(null);
 
     const { access_token } = useUser();
 
@@ -50,7 +49,6 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
     const fetchFavorites = async () => {
         try {
             const response = await api.get('/favorite');
-            console.log('Fetched data:', response.data);
             setFavorites(response.data);
         } catch (error) {
             console.error('Error fetching event history:', error);
@@ -60,7 +58,6 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
     const fetchFavoritesByType = async (type: string): Promise<FavoriteResponse> => {
         try {
             const response = await api.get(`/favorite/${type}`);
-            console.log('Fetched favorites by type:', response.data);
             setFavorites(response.data);
             return response.data;
         } catch (error) {
