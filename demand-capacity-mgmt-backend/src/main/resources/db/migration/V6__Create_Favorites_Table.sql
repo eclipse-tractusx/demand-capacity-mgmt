@@ -25,5 +25,6 @@ SET search_path TO public;
      id serial primary key,
      user_id uuid,
      favorite_id uuid,
+     favorited_at timestamp,
      f_type varchar(30)
  );
