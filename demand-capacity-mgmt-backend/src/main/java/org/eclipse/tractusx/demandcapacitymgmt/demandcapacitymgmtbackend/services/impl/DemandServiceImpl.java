@@ -24,6 +24,14 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import jakarta.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -39,15 +47,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.D
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @Service
@@ -87,7 +86,7 @@ public class DemandServiceImpl implements DemandService {
         materialDemandEntity = materialDemandRepository.save(materialDemandEntity);
         postLogs(materialDemandEntity.getId().toString(), "Material Demand created", EventType.GENERAL_EVENT, userID);
         statusesService.addOrSubtractTodos(true, userID);
-        statusManager.calculateBottleneck(userID,true);
+        statusManager.calculateBottleneck(userID, true);
         return convertDemandResponseDto(materialDemandEntity);
     }
 
@@ -168,7 +167,7 @@ public class DemandServiceImpl implements DemandService {
             );
         demand = materialDemandRepository.save(demand);
         postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT, userID);
-        statusManager.calculateBottleneck(userID,true);
+        statusManager.calculateBottleneck(userID, true);
         return convertDemandResponseDto(demand);
     }
 
@@ -185,7 +184,7 @@ public class DemandServiceImpl implements DemandService {
         linkedCapacityGroupMaterialDemandRepository.deleteByMaterialDemandID(demand.getId());
         materialDemandRepository.delete(demand);
         statusesService.addOrSubtractTodos(false, userID);
-        statusManager.calculateBottleneck(userID,true);
+        statusManager.calculateBottleneck(userID, true);
     }
 
     @Override
@@ -271,7 +270,7 @@ public class DemandServiceImpl implements DemandService {
         List<MaterialDemandEntity> oldMaterialDemands = getAllDemands();
         oldMaterialDemands.removeIf(md -> md.getId().equals(mdID));
         statusesService.addOrSubtractTodos(true, userID);
-        statusManager.calculateBottleneck(userID,true);
+        statusManager.calculateBottleneck(userID, true);
     }
 
     private MaterialDemandEntity getDemandEntity(String demandId) {

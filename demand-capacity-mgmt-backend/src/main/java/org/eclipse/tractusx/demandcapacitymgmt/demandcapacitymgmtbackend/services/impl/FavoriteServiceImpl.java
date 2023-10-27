@@ -23,6 +23,12 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -30,13 +36,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -93,7 +92,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             }
             case EVENT -> {
                 List<EventFavoriteResponse> favoriteResponses = new ArrayList<>();
-                for(FavoriteEntity fav : favoriteResponseList){
+                for (FavoriteEntity fav : favoriteResponseList) {
                     favoriteResponses.add(convertToEventDto(fav));
                 }
                 FavoriteResponse response = new FavoriteResponse();
@@ -183,17 +182,17 @@ public class FavoriteServiceImpl implements FavoriteService {
         } else return null;
     }
 
-    private EventFavoriteResponse convertToEventDto(FavoriteEntity entity){
+    private EventFavoriteResponse convertToEventDto(FavoriteEntity entity) {
         LoggingHistoryEntity eEntity = eventRepository.findByLogID(entity.getFavoriteId());
-            EventFavoriteResponse eventEntity = new EventFavoriteResponse();
-            eventEntity.setEventType(eEntity.getEventType().toString());
-            eventEntity.setDescription(eEntity.getDescription());
-            eventEntity.setUserAccount(eEntity.getUserAccount());
-            eventEntity.setId(String.valueOf(eEntity.getId()));
-            eventEntity.setLogID(eEntity.getLogID().toString());
-            eventEntity.setTimeCreated(eEntity.getTime_created().toString());
-            eventEntity.setFavoritedAt(entity.getFavorited_at().toString());
-            return eventEntity;
+        EventFavoriteResponse eventEntity = new EventFavoriteResponse();
+        eventEntity.setEventType(eEntity.getEventType().toString());
+        eventEntity.setDescription(eEntity.getDescription());
+        eventEntity.setUserAccount(eEntity.getUserAccount());
+        eventEntity.setId(String.valueOf(eEntity.getId()));
+        eventEntity.setLogID(eEntity.getLogID().toString());
+        eventEntity.setTimeCreated(eEntity.getTime_created().toString());
+        eventEntity.setFavoritedAt(entity.getFavorited_at().toString());
+        return eventEntity;
     }
 
     @Override

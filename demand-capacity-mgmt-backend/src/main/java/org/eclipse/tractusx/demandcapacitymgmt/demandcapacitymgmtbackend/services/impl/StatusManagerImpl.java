@@ -22,6 +22,11 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -30,12 +35,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusManager;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -58,7 +57,7 @@ public class StatusManagerImpl implements StatusManager {
         int accumulatedDegradations = 0;
 
         for (CapacityGroupEntity cgs : capacityGroups) {
-            EventType eventType = processCapacityGroup(userID, cgs,postLog);
+            EventType eventType = processCapacityGroup(userID, cgs, postLog);
 
             if (eventType == EventType.STATUS_IMPROVEMENT) {
                 accumulatedImprovements++;
@@ -72,7 +71,7 @@ public class StatusManagerImpl implements StatusManager {
         statusesRepository.save(status);
     }
 
-    private EventType processCapacityGroup(String userID, CapacityGroupEntity cgs,boolean postLog) {
+    private EventType processCapacityGroup(String userID, CapacityGroupEntity cgs, boolean postLog) {
         List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(
             cgs.getId()
         );
@@ -91,7 +90,7 @@ public class StatusManagerImpl implements StatusManager {
         EventType eventType = determineEventType(cgs, aggregatedTotalDemand);
         cgs.setLinkStatus(eventType);
         capacityGroupRepository.save(cgs);
-        logEvent(eventType, userID,postLog);
+        logEvent(eventType, userID, postLog,cgs.getId().toString());
         return eventType;
     }
 
@@ -139,10 +138,11 @@ public class StatusManagerImpl implements StatusManager {
         }
     }
 
-    private void logEvent(EventType eventType, String userID,boolean postLog) {
+    private void logEvent(EventType eventType, String userID, boolean postLog,String cgID) {
         if (postLog) {
             LoggingHistoryEntity logEntity = new LoggingHistoryEntity();
             logEntity.setObjectType(EventObjectType.CAPACITY_GROUP);
+            logEntity.setCapacityGroupId(UUID.fromString(cgID));
             logEntity.setEventType(eventType);
             logEntity.setUserAccount(getUser(userID).getUsername());
             logEntity.setTime_created(Timestamp.valueOf(LocalDateTime.now()));
