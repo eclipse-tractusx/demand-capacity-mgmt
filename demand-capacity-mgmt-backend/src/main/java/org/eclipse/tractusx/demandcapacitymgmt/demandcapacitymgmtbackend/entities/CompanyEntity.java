@@ -23,11 +23,12 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import jakarta.persistence.*;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "company_base_data")
@@ -65,4 +66,7 @@ public class CompanyEntity {
 
     @Column(name = "edc_url")
     private String edcUrl;
+
+    @Column(name = "counter")
+    private long count;
 }
