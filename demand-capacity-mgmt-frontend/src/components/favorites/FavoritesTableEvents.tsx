@@ -40,7 +40,7 @@ const FavoritesTableEvents: React.FC<FavoriteTableEventsProps> = ({ events }) =>
     const [sortField, setSortField] = useState<string>('changedAt');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [eventsPerPage, setEventsPerPage] = useState<number>(20);
+    const [eventsPerPage, setEventsPerPage] = useState<number>(5);
 
     const { deleteFavorite, fetchFavorites } = useContext(FavoritesContext)!;
 
@@ -171,7 +171,7 @@ const FavoritesTableEvents: React.FC<FavoriteTableEventsProps> = ({ events }) =>
                     <Pagination
                         pages={totalPagesNum}
                         setCurrentPage={setCurrentPage}
-                        currentItems={currentEvents}
+                        currentItems={sortedData}
                         items={events}
                     />
                     <div className="col-sm">

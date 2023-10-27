@@ -28,7 +28,7 @@ import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/de
 import { EventType } from '../../interfaces/event_interfaces';
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import DemandDetailsModal from '../demands/DemandDetailsModal';
-import DemandListTable from '../demands/DemandListTable';
+import DemandListTable from '../demands/DemandListTableHeaders';
 import { LoadingMessage } from './../common/LoadingMessages';
 import Pagination from './../common/Pagination';
 

@@ -27,7 +27,9 @@ import { LuStar } from "react-icons/lu";
 import Creatable from 'react-select/creatable';
 import { EventsContext } from "../../contexts/EventsContextProvider";
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
+import CustomOption from "../../interfaces/customoption_interface";
 import { EventProp } from "../../interfaces/event_interfaces";
+import { FavoriteType } from "../../interfaces/favorite_interface";
 import DangerConfirmationModal, { ConfirmationAction } from "../common/DangerConfirmationModal";
 import { LoadingMessage } from "../common/LoadingMessages";
 import EventsTable from "../events/EventsTable";
@@ -46,7 +48,7 @@ function EventsPage() {
     const handleUserInputChange = (newValue: string | undefined) => {
         setUserInput(newValue || '');
 
-        // Filter events based on userInput (id, capacityGroupId, or objectId)
+        // Filter events based on userInput (id, capacityGroupId, objectId, eventType, or description)
         const filteredEvents: EventProp[] = events.filter((event) => {
             if (newValue) {
                 const lowerCaseValue = newValue.toLowerCase();
@@ -58,7 +60,9 @@ function EventsPage() {
                     (isNumber && event.id.toString().includes(lowerCaseValue)) ||
                     (!isNumber &&
                         ((event.capacityGroupId && event.capacityGroupId.toString().includes(lowerCaseValue)) ||
-                            (event.id && event.id.toString().includes(lowerCaseValue))))
+                            (event.id && event.id.toString().includes(lowerCaseValue)) ||
+                            (event.eventType && event.eventType.toLowerCase().includes(lowerCaseValue)) ||
+                            (event.eventDescription && event.eventDescription.toLowerCase().includes(lowerCaseValue))))
                 );
             }
             return true; // Show all events if userInput is empty
@@ -66,6 +70,7 @@ function EventsPage() {
 
         setFilteredEvents(filteredEvents);
     };
+
 
     const handleRefreshClick = () => {
         fetchEvents(); // Call your fetchEvents function to refresh the data
@@ -112,7 +117,7 @@ function EventsPage() {
             try {
                 setLoading(true);
                 let eventOptions: any[] = [];
-                const response = await fetchFavoritesByType('EVENT');
+                const response = await fetchFavoritesByType(FavoriteType.EVENT);
                 eventOptions = response?.events?.map((event: any) => {
                     // Create a short timestamp (you can adjust the format as per your requirement)
                     const options: Intl.DateTimeFormatOptions = {
@@ -176,6 +181,7 @@ function EventsPage() {
                                     <div className="col-sm-6">
                                         <Creatable
                                             isClearable
+                                            isSearchable
                                             formatCreateLabel={(userInput) => `Search for ${userInput}`}
                                             placeholder={
                                                 <div>
@@ -185,6 +191,9 @@ function EventsPage() {
                                             options={options}
                                             // Handle user input changes and call the filtering function
                                             onChange={(selectedOption) => handleUserInputChange(selectedOption?.value)}
+                                            components={{
+                                                Option: (props: any) => <CustomOption {...props} isFavorite={props.data.isFavorite} />,
+                                            }}
                                         />
                                     </div>
                                     <div className="col-sm-6">

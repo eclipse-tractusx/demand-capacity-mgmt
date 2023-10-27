@@ -23,20 +23,17 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { Button, Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import {
-    FaArrowDown,
-    FaArrowUp,
-    FaCopy,
-    FaEye
+    FaCopy
 } from 'react-icons/fa';
 import { LuStarOff } from "react-icons/lu";
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
-import { SingleCapacityGroupFavoriteResponse } from '../../interfaces/favorite_interface';
+import { CompanyDtoFavoriteResponse } from '../../interfaces/favorite_interface';
 import Pagination from '../common/Pagination';
-interface FavoriteTableMaterialDemandsProps {
-    favcapacitygroups: SingleCapacityGroupFavoriteResponse[];
+interface FavoriteTableCompaniesProps {
+    favcompanies: CompanyDtoFavoriteResponse[];
 }
 
-const FavoritesTableCapacityGroup: React.FC<FavoriteTableMaterialDemandsProps> = ({ favcapacitygroups }) => {
+const FavoriteTableCompanies: React.FC<FavoriteTableCompaniesProps> = ({ favcompanies }) => {
     const [sortField, setSortField] = useState<string>('changedAt');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -44,33 +41,29 @@ const FavoritesTableCapacityGroup: React.FC<FavoriteTableMaterialDemandsProps> =
 
     const { deleteFavorite, fetchFavorites } = useContext(FavoritesContext)!;
 
-    const handleSort = (field: string) => {
-        if (sortField === field) {
-            setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc') as 'asc' | 'desc');
-        } else {
-            setSortField(field);
-            setSortOrder('desc');
-        }
-    };
+    const handleSort = useCallback((field: string) => {
+        setSortField(field);
+        setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc') as 'asc' | 'desc');
+    }, []);
 
 
     const sortedData = useMemo(() => {
-        const sortedArray = [...favcapacitygroups].sort((a, b) => {
+        const sortedArray = [...favcompanies].sort((a, b) => {
             let comparison = 0;
-            // if (sortField === 'changedAt' && a && b.changedAt) {
+            // if (sortField === 'changedAt' && a.changedAt && b.changedAt) {
             //     const dateA = new Date(a.changedAt).getTime();
             //     const dateB = new Date(b.changedAt).getTime();
             //     comparison = dateB - dateA; // Most recent first
-            // } else 
-            if (sortField !== 'timestamp' && a[sortField as keyof SingleCapacityGroupFavoriteResponse] && b[sortField as keyof SingleCapacityGroupFavoriteResponse]) {
-                const fieldA = a[sortField as keyof SingleCapacityGroupFavoriteResponse] as string;
-                const fieldB = b[sortField as keyof SingleCapacityGroupFavoriteResponse] as string;
+            // }
+            if (sortField !== 'changedAt' && a[sortField as keyof CompanyDtoFavoriteResponse] && b[sortField as keyof CompanyDtoFavoriteResponse]) {
+                const fieldA = a[sortField as keyof CompanyDtoFavoriteResponse];
+                const fieldB = b[sortField as keyof CompanyDtoFavoriteResponse];
                 comparison = fieldA.localeCompare(fieldB);
             }
             return sortOrder === 'asc' ? comparison : -comparison;
         });
         return sortedArray;
-    }, [favcapacitygroups, sortField, sortOrder]);
+    }, [favcompanies, sortField, sortOrder]);
 
     const indexOfLastEvent = currentPage * eventsPerPage;
     const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
@@ -86,7 +79,7 @@ const FavoritesTableCapacityGroup: React.FC<FavoriteTableMaterialDemandsProps> =
                 console.error('Error Unfavoriting:', error);
             }
         },
-        [favcapacitygroups]
+        [favcompanies]
     );
 
     return (
@@ -97,30 +90,20 @@ const FavoritesTableCapacityGroup: React.FC<FavoriteTableMaterialDemandsProps> =
                         <tr>
                             <th></th>
                             <th></th>
-                            <th></th>
-                            <th>
-                                Capacity Group Name {sortField === 'timestamp' ? (sortOrder === 'asc' ? <FaArrowUp /> :
-                                    <FaArrowDown />) : '-'}
-                            </th>
-                            <th>
-                                Customer BPNL  {sortField === 'eventId' ? (sortOrder === 'asc' ? <FaArrowUp /> :
-                                    <FaArrowDown />) : '-'}
-                            </th>
-                            <th >
-                                Supplier BPNL   {sortField === 'objectId' ? (sortOrder === 'asc' ? <FaArrowUp /> :
-                                    <FaArrowDown />) : '-'}
-                            </th>
+                            <th> Company BPN</th>
+                            <th> Company Name</th>
+                            <th> Company Country</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {favcapacitygroups.map((cg, index) => (
+                        {favcompanies.map((companies, index) => (
                             <tr key={index}>
                                 <td>
                                     <span className='inlinefav'>
                                         <LuStarOff
                                             opacity={0.7}
                                             color='red'
-                                            onClick={() => handleUnfavorite(cg.capacityGroupId)}
+                                            onClick={() => handleUnfavorite(companies.id)}
                                             size={25}
                                         />
                                     </span>
@@ -129,36 +112,19 @@ const FavoritesTableCapacityGroup: React.FC<FavoriteTableMaterialDemandsProps> =
                                 <td>
                                     <OverlayTrigger
                                         placement="top"
-                                        overlay={<Tooltip id={`tooltip-copy-${cg.capacityGroupId}`}>Open details</Tooltip>}
-                                    >
-                                        <Button
-                                            variant="outline-primary"
-                                            onClick={() => {
-                                                const url = `/details/${cg.capacityGroupId}`;
-                                                window.open(url, '_blank'); // Opens a new tab with the specified URL
-                                            }}
-                                        >
-                                            <FaEye />
-                                        </Button>
-                                    </OverlayTrigger>
-                                </td>
-                                <td>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip id={`tooltip-copy-${cg.capacityGroupId}`}>{cg.capacityGroupId}</Tooltip>}>
+                                        overlay={<Tooltip id={`tooltip-copy-${companies.id}`}>{companies.id}</Tooltip>}>
                                         <Button
                                             variant="outline-info"
                                             onClick={() => {
                                                 // Function to copy the internalId to the clipboard
-                                                navigator.clipboard.writeText(cg.capacityGroupId.toString());
+                                                navigator.clipboard.writeText(companies.id.toString());
                                             }}
                                         ><FaCopy />
-                                        </Button>
-                                    </OverlayTrigger>
+                                        </Button></OverlayTrigger>
                                 </td>
-                                <td>{cg.capacityGroupName}</td>
-                                <td>{cg.customer}</td>
-                                <td>{cg.supplier}</td>
+                                <td>{companies.bpn}</td>
+                                <td>{companies.companyName}</td>
+                                <td>{companies.country}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -169,8 +135,8 @@ const FavoritesTableCapacityGroup: React.FC<FavoriteTableMaterialDemandsProps> =
                     <Pagination
                         pages={totalPagesNum}
                         setCurrentPage={setCurrentPage}
-                        currentItems={sortedData}
-                        items={favcapacitygroups}
+                        currentItems={currentEvents}
+                        items={sortedData}
                     />
                     <div className="col-sm">
                         <div className="float-end">
@@ -200,7 +166,7 @@ const FavoritesTableCapacityGroup: React.FC<FavoriteTableMaterialDemandsProps> =
     );
 };
 
-export default FavoritesTableCapacityGroup;
+export default FavoriteTableCompanies;
 
 
 
