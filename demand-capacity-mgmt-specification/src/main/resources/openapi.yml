@@ -771,6 +771,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CompanyDto'
+  /company/top:
+    get:
+      tags:
+        - company
+      summary: company
+      operationId: getTopCompanies
+      responses:
+        200:
+          description: CompanyResponse
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CompanyDto'
 
   /unitmeasure:
     get:
@@ -1428,6 +1443,8 @@ components:
           type: string
         myCompany:
           type: string
+        favorited_at:
+          type: string
 
     EventFavoriteResponse:
       type: object
@@ -1443,6 +1460,8 @@ components:
         userAccount:
           type: string
         description:
+          type: string
+        favorited_at:
           type: string
 
     MaterialDemandFavoriteResponse:
@@ -1464,6 +1483,8 @@ components:
           type: string
         changedAt:
           type: string
+        favorited_at:
+          type: string
 
     SingleCapacityGroupFavoriteResponse:
       type: object
@@ -1477,6 +1498,8 @@ components:
         capacityGroupId:
           type: string
         capacityGroupName:
+          type: string
+        favorited_at:
           type: string
 
     UnitMeasure:
