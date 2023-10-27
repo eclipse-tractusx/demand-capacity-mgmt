@@ -76,18 +76,18 @@ public class StatusManagerImpl implements StatusManager {
             cgs.getId()
         );
 
-        double aggregatedTotalDemand = 0.0;
+        double aggregatedAverageDemand = 0.0;
 
         for (LinkedCapacityGroupMaterialDemandEntity entity : matchedEntities) {
             Optional<MaterialDemandEntity> materialDemand = materialDemandRepository.findById(
                 entity.getMaterialDemandID()
             );
             if (materialDemand.isPresent()) {
-                aggregatedTotalDemand += calculateTotalDemand(materialDemand.get().getDemandSeries());
+                aggregatedAverageDemand  += calculateAverageDemand(materialDemand.get().getDemandSeries());
             }
         }
 
-        EventType eventType = determineEventType(cgs, aggregatedTotalDemand);
+        EventType eventType = determineEventType(cgs, aggregatedAverageDemand);
         cgs.setLinkStatus(eventType);
         capacityGroupRepository.save(cgs);
         logEvent(eventType, userID, postLog,cgs.getId().toString());
@@ -115,12 +115,18 @@ public class StatusManagerImpl implements StatusManager {
             );
     }
 
-    private double calculateTotalDemand(List<DemandSeries> matchedDemandSeries) {
-        return matchedDemandSeries
-            .stream()
-            .flatMap(demand -> demand.getDemandSeriesValues().stream())
-            .mapToDouble(DemandSeriesValues::getDemand)
-            .sum();
+    private double calculateAverageDemand(List<DemandSeries> matchedDemandSeries) {
+        double totalDemand = matchedDemandSeries
+                .stream()
+                .flatMap(demand -> demand.getDemandSeriesValues().stream())
+                .mapToDouble(DemandSeriesValues::getDemand)
+                .sum();
+        long count = matchedDemandSeries
+                .stream()
+                .mapToLong(demand -> demand.getDemandSeriesValues().size())
+                .sum();
+
+        return count == 0 ? 0 : totalDemand / count;
     }
 
     private EventType determineEventType(CapacityGroupEntity capacityGroup, double totalDemand) {
