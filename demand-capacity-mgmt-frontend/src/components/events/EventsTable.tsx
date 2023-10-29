@@ -28,7 +28,8 @@ import {
     FaArrowUp,
     FaCopy,
     FaEllipsisV,
-    FaTrashAlt
+    FaTrashAlt,
+    FaUndo
 } from 'react-icons/fa';
 import { LuStar } from 'react-icons/lu';
 import { EventsContext } from '../../contexts/EventsContextProvider';
@@ -215,13 +216,17 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
                         {currentEvents.map((event, index) => (
                             <tr key={index}>
                                 <td>
-                                    <span className='inlinefav'>
-                                        <LuStar
-                                            className={favoriteEvents.includes(event.logID) ? "text-warning" : "text-muted"}
-                                            opacity={favoriteEvents.includes(event.logID) ? "1" : "0.2"}
-                                            onClick={() => toggleFavorite(event.logID)}
-                                            size={25}
-                                        /></span>
+                                    {!isArchive && (
+                                        <span className='inlinefav'>
+                                            <LuStar
+                                                className={favoriteEvents.includes(event.logID) ? "text-warning" : "text-muted"}
+                                                opacity={favoriteEvents.includes(event.logID) ? "1" : "0.2"}
+                                                onClick={() => toggleFavorite(event.logID)}
+                                                size={25}
+                                            />
+                                        </span>
+                                    )}
+
                                 </td>
                                 <td>{new Date(event.timeCreated).toLocaleString()}</td>
                                 <td><OverlayTrigger
@@ -270,15 +275,27 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
                                             <span><FaEllipsisV /></span>
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu>
-                                            <Dropdown.Item onClick={() => handleArchiveClick(event)}><FaArchive
-                                                className='text-muted' /> Archive</Dropdown.Item>
+                                            {isArchive ? (
+                                                <Dropdown.Item onClick={() => handleDeleteButtonClick(event.id.toString())}>
+                                                    <FaUndo className='text-muted' /> Unarchive
+                                                </Dropdown.Item>
+                                            ) : (
+                                                <Dropdown.Item onClick={() => handleArchiveClick(event)}>
+                                                    <FaArchive className='text-muted' /> Archive
+                                                </Dropdown.Item>
+                                            )}
                                             <Dropdown.Item onClick={() => {
                                                 navigator.clipboard.writeText(event.id.toString())
                                             }}><FaCopy /> Copy ID</Dropdown.Item>
-                                            <Dropdown.Item className="red-delete-item"
-                                                onClick={() => handleDeleteButtonClick(event.id.toString())}><FaTrashAlt /> Delete</Dropdown.Item>
+                                            {isArchive ? null : (
+                                                <Dropdown.Item className="red-delete-item"
+                                                    onClick={() => handleDeleteButtonClick(event.id.toString())}>
+                                                    <FaTrashAlt /> Delete
+                                                </Dropdown.Item>
+                                            )}
                                         </Dropdown.Menu>
                                     </Dropdown>
+
                                 </td>
                             </tr>
                         ))}

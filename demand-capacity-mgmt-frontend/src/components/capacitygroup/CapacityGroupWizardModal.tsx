@@ -24,10 +24,14 @@ import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { FaSearch } from 'react-icons/fa';
+import { LuStar } from 'react-icons/lu';
 import Select from 'react-select';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import { FavoritesContext } from '../../contexts/FavoritesContextProvider';
 import { UnitsofMeasureContext } from '../../contexts/UnitsOfMeasureContextProvider';
+import CustomOption from '../../interfaces/customoption_interface';
 import { DemandProp } from '../../interfaces/demand_interfaces';
+import { FavoriteType } from '../../interfaces/favorite_interface';
 import { LoadingCustomMessage } from '../common/LoadingMessages';
 import StepBreadcrumbs from './../common/StepsBreadCrumbs';
 
@@ -46,10 +50,12 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   const [isNameInputShaking, setIsNameInputShaking] = useState(false);
   const [isActualCapacityInputShaking, setIsActualCapacityInputShaking] = useState(false);
   const [isMaximumCapacityShaking, setIsMaximumCapacityShaking] = useState(false);
-  const [selectedDemands, setSelectedDemands] = useState<DemandProp[]>([]);
+  const [selectedDemands, setSelectedDemands] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const context = useContext(CapacityGroupContext);
+  const { fetchFavoritesByType } = useContext(FavoritesContext)!;
+
   const [createdgroupid, setCreatedgroupid] = useState('');
 
 
@@ -187,6 +193,80 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
     setDefaultActualCapacity(numericValue);
   };
 
+  const [options, setOptions] = useState<any[]>([]); // State to store options for Creatable component
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const favoriteIdsSet = new Set<string>(); // Set to store unique favorite material demand IDs
+        let materialDemandOptions: any[] = [];
+
+        // Fetch material demands from favorites
+        const favoritesResponse = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
+        const favoriteMaterialDemands = favoritesResponse?.materialDemands || [];
+
+        // Filter and map favorite material demands to options, ensuring uniqueness based on IDs
+        const favoriteOptions = favoriteMaterialDemands
+          .filter((md: any) => {
+            if (favoriteIdsSet.has(md.id)) {
+              return false; // Skip duplicate favorites
+            }
+            favoriteIdsSet.add(md.id); // Add favorite ID to set
+            return true; // Include only unique favorites
+          })
+          .map((md: any) => {
+            const label = (
+              <div>
+                <LuStar size={12} className="text-warning" />  {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
+              </div>
+            );
+            return {
+              value: md.id,
+              label: label,
+            };
+          });
+
+        // Fetch material demands from demands prop
+        const demandMaterialDemands = demands || [];
+
+        // Filter demand material demands to exclude those with IDs present in favorites
+        const filteredDemandOptions = demandMaterialDemands.filter((md: any) => {
+          // Exclude demand if its ID is present in favorites
+          if (favoriteIdsSet.has(md.id)) {
+            return false;
+          }
+          // Include demand if its ID is not in favorites
+          return true;
+        });
+
+        // Map demand material demands to options
+        const demandOptions = filteredDemandOptions.map((md: any) => {
+          const label = (
+            <div>
+              {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
+            </div>
+          );
+          return {
+            value: md,
+            label: label,
+          };
+        });
+
+        // Combine favorite options and demand options
+        materialDemandOptions = [...favoriteOptions, ...demandOptions];
+
+        setOptions(materialDemandOptions); // Update options state with combined material demands
+      } catch (error) {
+        console.error('Error fetching filtered capacity groups:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+    console.log(demands);
+  }, [demands]);
+
+
   return (
     <>
       <Modal
@@ -282,17 +362,8 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                   )}
                   <Container className="mt-4">
                     <Select
-                      options={demands?.filter(demand => {
-                        // Filter out demands that are in checkedDemands or selectedDemands
-                        return (
-                          !checkedDemands?.some(checkedDemand => checkedDemand.id === demand.id) &&
-                          !selectedDemands.some(selectedDemand => selectedDemand.id === demand.id)
-                        );
-                      }).map(demand => ({
-                        value: demand,
-                        label: `${demand.id} - ${demand.materialDescriptionCustomer} - ${demand.materialNumberCustomer}`
-                      }))}
-                      value={null} //Just so that we dont get stuck on the data that was selected
+                      options={options}
+                      value={null} //Just so that we don't get stuck on the data that was selected
                       onChange={selectedOption => {
                         if (selectedOption) {
                           setSelectedDemands([...selectedDemands, selectedOption.value]);
@@ -300,6 +371,9 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                       }}
                       isSearchable
                       placeholder={<><FaSearch /> Search for demands...</>}
+                      components={{
+                        Option: CustomOption, // Use the CustomOption component for rendering options
+                      }}
                     />
                     {selectedDemands.length > 0 && (
                       <Row>
@@ -316,7 +390,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                                 <p key={index}>
                                   <strong>Description:</strong> {demand ? demand.materialDescriptionCustomer : 'Not selected'}
                                   <br />
-                                  <strong>Customer:</strong> {demand ? demand.customer.companyName : 'Not selected'}
+                                  <strong>Customer:</strong> {demand?.customer?.companyName || 'Not selected'}
                                   <br />
                                   <strong>Material Number Customer:</strong> {demand ? demand.materialNumberCustomer : 'Not selected'}
                                   <br />
@@ -372,7 +446,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                                 <p>
                                   <strong>Description:</strong> {demand ? demand.materialDescriptionCustomer : 'Not selected'}
                                   <br />
-                                  <strong>Customer:</strong> {demand ? demand.customer.companyName : 'Not selected'}
+                                  <strong>Customer:</strong> {demand?.customer?.companyName || 'Not selected'}
                                   <br />
                                   <strong>Material Number Customer:</strong> {demand ? demand.materialNumberCustomer : 'Not selected'}
                                   <br />

@@ -155,10 +155,11 @@ public class FavoriteServiceImpl implements FavoriteService {
             CompanyEntity sEntity = materialDemand.getSupplierId();
             response.setCustomer(cEntity.getId().toString());
             response.setSupplier(sEntity.getId().toString());
+            response.setMaterialDescriptionCustomer(materialDemand.getMaterialDescriptionCustomer());
             response.setMaterialNumberCustomer(materialDemand.getMaterialNumberCustomer());
             response.setMaterialNumberSupplier(materialDemand.getMaterialNumberSupplier());
             response.setChangedAt(materialDemand.getChangedAt().toString());
-            response.setUnitOfMeasure(materialDemand.getUnitMeasure().getCxSymbol());
+            response.setUnitOfMeasure(materialDemand.getUnitMeasure().getId().toString());
             response.setFavoritedAt(entity.getFavorited_at().toString());
 
             return response;
