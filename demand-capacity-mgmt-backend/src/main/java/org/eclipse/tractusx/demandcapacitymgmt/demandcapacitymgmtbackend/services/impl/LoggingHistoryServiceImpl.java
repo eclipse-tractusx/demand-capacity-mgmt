@@ -119,10 +119,10 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         String materialDemandID = loggingHistoryRequest.getMaterialDemandId();
         String capacityGroupID = loggingHistoryRequest.getCapacityGroupId();
 
-        if (null != materialDemandID && !materialDemandID.isEmpty()) {
+        if (null != materialDemandID && !materialDemandID.isEmpty() && !materialDemandID.equalsIgnoreCase("null")) {
             loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
         }
-        if (null != capacityGroupID && !capacityGroupID.isEmpty()) {
+        if (null != capacityGroupID && !capacityGroupID.isEmpty() && !capacityGroupID.equalsIgnoreCase("null")) {
             loggingHistoryEntity.setCapacityGroupId(UUID.fromString(loggingHistoryRequest.getCapacityGroupId()));
         }
         loggingHistoryEntity.setUserAccount(loggingHistoryRequest.getUserAccount());
@@ -140,7 +140,7 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         String materialDemandID = loggingHistoryRequest.getMaterialDemandId();
         String capacityGroupID = loggingHistoryRequest.getCapacityGroupId();
 
-        if (null != materialDemandID && !materialDemandID.isEmpty()) {
+        if (null != materialDemandID && !materialDemandID.isBlank() && !materialDemandID.equalsIgnoreCase("null")) {
             loggingHistoryEntity.setMaterialDemandId(UUID.fromString(loggingHistoryRequest.getMaterialDemandId()));
         }
         if (null != capacityGroupID && !capacityGroupID.isEmpty() && !capacityGroupID.equalsIgnoreCase("null")) {
@@ -272,8 +272,12 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         responseDto.setEventDescription(loggingHistoryEntity.getDescription());
         responseDto.setUserAccount(loggingHistoryEntity.getUserAccount());
         responseDto.setEventType(String.valueOf(loggingHistoryEntity.getEventType()));
-        responseDto.setCapacityGroupId(String.valueOf(loggingHistoryEntity.getCapacityGroupId()));
-        responseDto.setMaterialDemandId(String.valueOf(loggingHistoryEntity.getMaterialDemandId()));
+        if (loggingHistoryEntity.getCapacityGroupId() == null) {
+            responseDto.setCapacityGroupId(null);
+        } else responseDto.setCapacityGroupId(loggingHistoryEntity.getCapacityGroupId().toString());
+        if (loggingHistoryEntity.getMaterialDemandId() == null) {
+            responseDto.setMaterialDemandId(null);
+        } else responseDto.setMaterialDemandId(loggingHistoryEntity.getMaterialDemandId().toString());
         responseDto.setObjectType(String.valueOf(loggingHistoryEntity.getObjectType()));
         responseDto.setTimeCreated(String.valueOf(loggingHistoryEntity.getTime_created()));
 
@@ -290,10 +294,13 @@ public class LoggingHistoryServiceImpl implements LoggingHistoryService {
         responseDto.setEventDescription(archivedLogEntity.getDescription());
         responseDto.setUserAccount(archivedLogEntity.getUserAccount());
         responseDto.setEventType(archivedLogEntity.getEventType().toString());
-        if (archivedLogEntity.getCapacityGroupId() != null) {
-            responseDto.setCapacityGroupId(archivedLogEntity.getCapacityGroupId().toString());
-        }
-        responseDto.setMaterialDemandId(Objects.requireNonNull(archivedLogEntity.getMaterialDemandId()).toString());
+        if (archivedLogEntity.getCapacityGroupId() == null) {
+            responseDto.setCapacityGroupId(null);
+        } else responseDto.setCapacityGroupId(archivedLogEntity.getCapacityGroupId().toString());
+
+        if (archivedLogEntity.getMaterialDemandId() == null) {
+            responseDto.setMaterialDemandId(null);
+        } else responseDto.setMaterialDemandId(archivedLogEntity.getMaterialDemandId().toString());
         responseDto.setObjectType(archivedLogEntity.getObjectType().toString());
         responseDto.setTimeCreated(archivedLogEntity.getTime_created().toString());
 

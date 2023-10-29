@@ -105,6 +105,10 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public List<CompanyDto> getTopCompanies() {
         List<CompanyEntity> companyEntityList = companyRepository.findTop5ByOrderByCountDesc();
-        return companyEntityList.stream().filter(c -> c.getCount() >= 0).map(this::convertEntityToDto).collect(Collectors.toList());
+        return companyEntityList
+            .stream()
+            .filter(c -> c.getCount() >= 0)
+            .map(this::convertEntityToDto)
+            .collect(Collectors.toList());
     }
 }

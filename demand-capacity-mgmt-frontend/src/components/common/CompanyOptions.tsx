@@ -91,7 +91,7 @@ const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName, on
   );
 
   if (loading) {
-    return <div>Loading options...</div>;
+    return <div>Loading companies...</div>;
   }
 
   return (

@@ -45,6 +45,7 @@ function EventsPage() {
     const [filteredEvents, setFilteredEvents] = useState<EventProp[]>(events);
 
 
+
     const handleUserInputChange = (newValue: string | undefined) => {
         setUserInput(newValue || '');
 
@@ -105,8 +106,6 @@ function EventsPage() {
                     filteredEvents = events; // Show all events if userInput is empty
                 }
                 setFilteredEvents(filteredEvents);
-
-                console.log(filteredEvents)
 
             } catch (error) {
                 console.error('Error fetching events:', error);

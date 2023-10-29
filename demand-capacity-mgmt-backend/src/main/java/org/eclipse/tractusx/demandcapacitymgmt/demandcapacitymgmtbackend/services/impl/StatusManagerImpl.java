@@ -83,14 +83,14 @@ public class StatusManagerImpl implements StatusManager {
                 entity.getMaterialDemandID()
             );
             if (materialDemand.isPresent()) {
-                aggregatedAverageDemand  += calculateAverageDemand(materialDemand.get().getDemandSeries());
+                aggregatedAverageDemand += calculateAverageDemand(materialDemand.get().getDemandSeries());
             }
         }
 
         EventType eventType = determineEventType(cgs, aggregatedAverageDemand);
         cgs.setLinkStatus(eventType);
         capacityGroupRepository.save(cgs);
-        logEvent(eventType, userID, postLog,cgs.getId().toString());
+        logEvent(eventType, userID, postLog, cgs.getId().toString());
         return eventType;
     }
 
@@ -117,14 +117,11 @@ public class StatusManagerImpl implements StatusManager {
 
     private double calculateAverageDemand(List<DemandSeries> matchedDemandSeries) {
         double totalDemand = matchedDemandSeries
-                .stream()
-                .flatMap(demand -> demand.getDemandSeriesValues().stream())
-                .mapToDouble(DemandSeriesValues::getDemand)
-                .sum();
-        long count = matchedDemandSeries
-                .stream()
-                .mapToLong(demand -> demand.getDemandSeriesValues().size())
-                .sum();
+            .stream()
+            .flatMap(demand -> demand.getDemandSeriesValues().stream())
+            .mapToDouble(DemandSeriesValues::getDemand)
+            .sum();
+        long count = matchedDemandSeries.stream().mapToLong(demand -> demand.getDemandSeriesValues().size()).sum();
 
         return count == 0 ? 0 : totalDemand / count;
     }
@@ -144,7 +141,7 @@ public class StatusManagerImpl implements StatusManager {
         }
     }
 
-    private void logEvent(EventType eventType, String userID, boolean postLog,String cgID) {
+    private void logEvent(EventType eventType, String userID, boolean postLog, String cgID) {
         if (postLog) {
             LoggingHistoryEntity logEntity = new LoggingHistoryEntity();
             logEntity.setObjectType(EventObjectType.CAPACITY_GROUP);

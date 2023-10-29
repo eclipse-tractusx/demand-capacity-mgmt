@@ -29,7 +29,6 @@ import { useUser } from './UserContext';
 interface FavoritesContextData {
     favorites: FavoriteResponse | null;
     fetchFavorites: () => Promise<void>;
-    // If you've added a refresh function
     refresh?: () => void;
     addFavorite: (favoriteID: string, fType: FavoriteType) => Promise<void>;
     deleteFavorite: (favoriteID: string) => Promise<void>;
@@ -94,17 +93,10 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
         fetchFavorites();
     };
 
-    const contextValue = {
-        favorites,
-        fetchFavorites,
-        refresh,
-        fetchFavoritesByType,
-        addFavorite,
-        deleteFavorite
-    };
+
 
     return (
-        <FavoritesContext.Provider value={contextValue}>
+        <FavoritesContext.Provider value={{ favorites, fetchFavorites, refresh, fetchFavoritesByType, addFavorite, deleteFavorite }}>
             {props.children}
         </FavoritesContext.Provider>
     );
