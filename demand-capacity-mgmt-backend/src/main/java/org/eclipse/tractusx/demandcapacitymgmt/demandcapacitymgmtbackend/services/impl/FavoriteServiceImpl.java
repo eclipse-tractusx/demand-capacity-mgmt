@@ -163,9 +163,11 @@ public class FavoriteServiceImpl implements FavoriteService {
             response.setCustomer(convertToCompanyDto(cEntity));
             response.setSupplier(convertToCompanyDto(sEntity));
 
-            LinkedCapacityGroupMaterialDemandEntity lcgm = linkedMaterialDemandRepository.findByMaterialDemandID(cEntity.getId());
-            if(lcgm != null){
-             response.setStatus(EventType.LINKED.toString());
+            LinkedCapacityGroupMaterialDemandEntity lcgm = linkedMaterialDemandRepository.findByMaterialDemandID(
+                cEntity.getId()
+            );
+            if (lcgm != null) {
+                response.setStatus(EventType.LINKED.toString());
             } else response.setStatus(EventType.TODO.toString());
             response.setMaterialDescriptionCustomer(materialDemand.getMaterialDescriptionCustomer());
             response.setMaterialNumberCustomer(materialDemand.getMaterialNumberCustomer());
@@ -195,7 +197,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         } else return null;
     }
 
-    private CompanyDto convertToCompanyDto(CompanyEntity entity){
+    private CompanyDto convertToCompanyDto(CompanyEntity entity) {
         CompanyDto dto = new CompanyDto();
         dto.setStreet(entity.getStreet());
         dto.setNumber(entity.getNumber());

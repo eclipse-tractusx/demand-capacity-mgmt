@@ -23,23 +23,22 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
 import jakarta.persistence.Cacheable;
-import java.util.List;
-import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.UUID;
 
 @Repository
 @Cacheable(false)
 public interface MaterialDemandRepository extends JpaRepository<MaterialDemandEntity, UUID> {
-    @Query("select m from MaterialDemandEntity m where m.linkStatus = ?1 and m.supplierId.id = ?2")
-    List<MaterialDemandEntity> findByLinkStatusAndSupplierId_Id(@NonNull EventType linkStatus, UUID id);
+    List<MaterialDemandEntity> findBySupplierId_Id(UUID id);
     @Query("select m from MaterialDemandEntity m where m.customerId.id = ?1")
     List<MaterialDemandEntity> findByCustomerId_Id(UUID id);
+
     List<MaterialDemandEntity> findAllByStatus(MaterialDemandStatus status);
 
     @Query(
