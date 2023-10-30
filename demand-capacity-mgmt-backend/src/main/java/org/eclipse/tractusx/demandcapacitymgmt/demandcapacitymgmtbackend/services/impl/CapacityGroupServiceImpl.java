@@ -23,14 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -44,6 +36,15 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @Service
@@ -79,7 +80,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             if (helperEntity.isPresent()) {
                 MaterialDemandEntity materialDemandEntity = helperEntity.get();
                 materialDemandEntity.setLinkStatus(EventType.LINKED);
-                statusesService.addOrSubtractTodos(false, userID);
                 materialDemandRepository.save(materialDemandEntity);
                 matchedMaterialDemands.addAll(materialDemandEntity.getDemandSeries());
             }
@@ -88,8 +88,10 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             capacityGroupEntity.setLinkStatus(EventType.GENERAL_EVENT);
             capacityGroupRepository.save(capacityGroupEntity);
         }
+        statusManager.calculateTodos(userID);
         return convertCapacityGroupDto(capacityGroupEntity);
     }
+
 
     private void postLogs(String capacityGroupId, String userID) {
         AtomicBoolean isFavorited = new AtomicBoolean(false);
@@ -124,7 +126,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 MaterialDemandEntity materialDemand = materialDemandEntity.get();
                 materialDemand.setLinkStatus(EventType.LINKED);
                 materialDemandEntities.add(materialDemand);
-                statusesService.addOrSubtractTodos(false, userID);
             }
         }
 
@@ -160,11 +161,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             if (materialDemandEntity.isPresent()) {
                 MaterialDemandEntity demandEntity = materialDemandEntity.get();
                 demandEntity.setLinkStatus(EventType.LINKED);
-                statusesService.addOrSubtractTodos(false, userID);
                 materialDemandRepository.save(demandEntity);
             }
         }
         statusManager.calculateBottleneck(userID, true);
+        statusManager.calculateTodos(userID);
     }
 
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest request) {

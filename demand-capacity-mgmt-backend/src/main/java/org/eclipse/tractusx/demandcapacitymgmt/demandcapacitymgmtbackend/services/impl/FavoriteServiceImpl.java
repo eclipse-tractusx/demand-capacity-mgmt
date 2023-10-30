@@ -141,9 +141,9 @@ public class FavoriteServiceImpl implements FavoriteService {
             scgfv.setId(capacityGroup.getId().toString());
             scgfv.setCapacityGroupId(capacityGroup.getId().toString());
             scgfv.setCapacityGroupName(capacityGroup.getCapacityGroupName());
-            scgfv.setCustomer(capacityGroup.getCustomer().getBpn());
+            scgfv.setCustomer(convertToCompanyDto(capacityGroup.getCustomer()));
             scgfv.setStatus(capacityGroup.getLinkStatus().toString());
-            scgfv.setSupplier(capacityGroup.getSupplier().getBpn());
+            scgfv.setSupplier(convertToCompanyDto(capacityGroup.getSupplier()));
             scgfv.setFavoritedAt(entity.getFavorited_at().toString());
             return scgfv;
         } else return null;
@@ -156,14 +156,17 @@ public class FavoriteServiceImpl implements FavoriteService {
 
             MaterialDemandFavoriteResponse response = new MaterialDemandFavoriteResponse();
             response.setId(materialDemand.getId().toString());
+
             CompanyEntity cEntity = materialDemand.getCustomerId();
             CompanyEntity sEntity = materialDemand.getSupplierId();
-            response.setCustomer(cEntity.getId().toString());
+
+            response.setCustomer(convertToCompanyDto(cEntity));
+            response.setSupplier(convertToCompanyDto(sEntity));
+
             LinkedCapacityGroupMaterialDemandEntity lcgm = linkedMaterialDemandRepository.findByMaterialDemandID(cEntity.getId());
             if(lcgm != null){
              response.setStatus(EventType.LINKED.toString());
             } else response.setStatus(EventType.TODO.toString());
-            response.setSupplier(sEntity.getId().toString());
             response.setMaterialDescriptionCustomer(materialDemand.getMaterialDescriptionCustomer());
             response.setMaterialNumberCustomer(materialDemand.getMaterialNumberCustomer());
             response.setMaterialNumberSupplier(materialDemand.getMaterialNumberSupplier());
@@ -190,6 +193,19 @@ public class FavoriteServiceImpl implements FavoriteService {
             companyFavoriteResponse.setFavoritedAt(entity.getFavorited_at().toString());
             return companyFavoriteResponse;
         } else return null;
+    }
+
+    private CompanyDto convertToCompanyDto(CompanyEntity entity){
+        CompanyDto dto = new CompanyDto();
+        dto.setStreet(entity.getStreet());
+        dto.setNumber(entity.getNumber());
+        dto.setId(entity.getId().toString());
+        dto.setBpn(entity.getBpn());
+        dto.setMyCompany(entity.getMyCompany());
+        dto.setCountry(entity.getCountry());
+        dto.setCompanyName(entity.getCompanyName());
+        dto.setZipCode(entity.getZipCode());
+        return dto;
     }
 
     private EventFavoriteResponse convertToEventDto(FavoriteEntity entity) {
