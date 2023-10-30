@@ -25,7 +25,7 @@ import Select, { ActionMeta, OptionTypeBase } from 'react-select';
 import { CompanyContext } from '../../contexts/CompanyContextProvider';
 import { FavoritesContext } from '../../contexts/FavoritesContextProvider';
 import CustomOption from '../../interfaces/customoption_interface';
-import { CompanyDtoFavoriteResponse, FavoriteType } from '../../interfaces/favorite_interface';
+import { CompanyDtoFavoriteResponse, FavoriteType } from '../../interfaces/Favorite_interface';
 
 
 interface CompanyOptionsProps {

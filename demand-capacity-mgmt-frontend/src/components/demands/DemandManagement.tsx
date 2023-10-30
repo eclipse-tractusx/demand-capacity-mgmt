@@ -40,7 +40,7 @@ import { EventType } from '../../interfaces/event_interfaces';
 import {
     FavoriteType,
     MaterialDemandFavoriteResponse
-} from "../../interfaces/favorite_interface";
+} from "../../interfaces/Favorite_interface";
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import { LoadingMessage } from '../common/LoadingMessages';
 import DemandManagementTable from './DemandManagementTable';

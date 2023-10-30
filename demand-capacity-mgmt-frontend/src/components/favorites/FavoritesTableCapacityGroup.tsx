@@ -30,7 +30,7 @@ import {
 } from 'react-icons/fa';
 import { LuStarOff } from "react-icons/lu";
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
-import { SingleCapacityGroupFavoriteResponse } from '../../interfaces/favorite_interface';
+import { SingleCapacityGroupFavoriteResponse } from '../../interfaces/Favorite_interface';
 import Pagination from '../common/Pagination';
 interface FavoriteTableMaterialDemandsProps {
     favcapacitygroups: SingleCapacityGroupFavoriteResponse[];

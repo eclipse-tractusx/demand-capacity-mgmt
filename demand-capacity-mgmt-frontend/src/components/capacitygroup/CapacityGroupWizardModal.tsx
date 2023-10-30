@@ -31,7 +31,7 @@ import { FavoritesContext } from '../../contexts/FavoritesContextProvider';
 import { UnitsofMeasureContext } from '../../contexts/UnitsOfMeasureContextProvider';
 import CustomOption from '../../interfaces/customoption_interface';
 import { DemandProp } from '../../interfaces/demand_interfaces';
-import { FavoriteType } from '../../interfaces/favorite_interface';
+import { FavoriteType } from '../../interfaces/Favorite_interface';
 import { LoadingCustomMessage } from '../common/LoadingMessages';
 import StepBreadcrumbs from './../common/StepsBreadCrumbs';
 

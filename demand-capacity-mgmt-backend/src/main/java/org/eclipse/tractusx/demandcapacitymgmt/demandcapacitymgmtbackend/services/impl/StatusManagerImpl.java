@@ -24,6 +24,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
@@ -35,6 +36,8 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -58,13 +61,9 @@ public class StatusManagerImpl implements StatusManager {
         int accumulatedDegradations = 0;
 
         for (CapacityGroupEntity cgs : capacityGroups) {
-            EventType eventType = processCapacityGroup(userID, cgs, postLog);
-
-            if (eventType == EventType.STATUS_IMPROVEMENT) {
-                accumulatedImprovements++;
-            } else if (eventType == EventType.STATUS_REDUCTION) {
-                accumulatedDegradations++;
-            }
+            Pair<Integer, Integer> weeklyResults = processCapacityGroup(userID, cgs, postLog);
+            accumulatedImprovements += weeklyResults.getKey();
+            accumulatedDegradations += weeklyResults.getValue();
         }
 
         updateAndLogStatus(userID, postLog, accumulatedImprovements, accumulatedDegradations);
@@ -102,38 +101,37 @@ public class StatusManagerImpl implements StatusManager {
         return status;
     }
 
-    private EventType processCapacityGroup(String userID, CapacityGroupEntity cgs, boolean postLog) {
-        double aggregatedAverageDemand = calculateAggregatedAverageDemand(cgs);
+    private Pair<Integer, Integer> processCapacityGroup(String userID, CapacityGroupEntity cgs, boolean postLog) {
+        List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(cgs.getId());
 
-        EventType eventType = determineEventType(cgs, aggregatedAverageDemand);
-        cgs.setLinkStatus(eventType);
-        capacityGroupRepository.save(cgs);
-        logEvent(eventType, userID, postLog, null, cgs.getId());
-        return eventType;
+        int weeklyImprovements = 0;
+        int weeklyDegradations = 0;
+
+        for (LinkedCapacityGroupMaterialDemandEntity entity : matchedEntities) {
+            Optional<MaterialDemandEntity> materialDemand = materialDemandRepository.findById(entity.getMaterialDemandID());
+            if (materialDemand.isPresent()) {
+                Map<LocalDate, Double> weeklyDemands = getWeeklyDemands(materialDemand.get().getDemandSeries());
+                for (Map.Entry<LocalDate, Double> entry : weeklyDemands.entrySet()) {
+                    EventType eventType = determineEventType(cgs, entry.getValue());
+                    if (eventType == EventType.STATUS_IMPROVEMENT) weeklyImprovements++;
+                    else if (eventType == EventType.STATUS_REDUCTION) weeklyDegradations++;
+
+                    // Update status of capacity group based on each week's evaluation
+                    cgs.setLinkStatus(eventType);
+                    capacityGroupRepository.save(cgs);
+                    logEvent(eventType, userID, postLog, null, cgs.getId());
+                }
+            }
+        }
+
+        return Pair.of(weeklyImprovements, weeklyDegradations);
     }
 
-    private double calculateAggregatedAverageDemand(CapacityGroupEntity cgs) {
-        return matchedDemandsRepository.findByCapacityGroupID(cgs.getId()).stream()
-                .map(entity -> materialDemandRepository.findById(entity.getMaterialDemandID()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .mapToDouble(demand -> calculateAverageDemand(demand.getDemandSeries()))
-                .sum();
-    }
-
-    private double calculateAverageDemand(List<DemandSeries> matchedDemandSeries) {
-        double totalDemand = matchedDemandSeries.stream()
+    private Map<LocalDate, Double> getWeeklyDemands(List<DemandSeries> matchedDemandSeries) {
+        return matchedDemandSeries.stream()
                 .flatMap(demand -> demand.getDemandSeriesValues().stream())
                 .filter(value -> !value.getCalendarWeek().isBefore(TWO_WEEKS_FROM_NOW))
-                .mapToDouble(DemandSeriesValues::getDemand)
-                .sum();
-
-        long count = matchedDemandSeries.stream()
-                .flatMap(demand -> demand.getDemandSeriesValues().stream())
-                .filter(value -> !value.getCalendarWeek().isBefore(TWO_WEEKS_FROM_NOW))
-                .count();
-
-        return count == 0 ? 0 : totalDemand / count;
+                .collect(Collectors.groupingBy(DemandSeriesValues::getCalendarWeek, Collectors.summingDouble(DemandSeriesValues::getDemand)));
     }
 
     private void logEvent(EventType eventType, String userID, boolean postLog, String descriptionOverride, UUID cgID) {

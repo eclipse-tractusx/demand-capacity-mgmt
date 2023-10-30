@@ -30,7 +30,7 @@ import {
 import { LuStarOff } from "react-icons/lu";
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import { eventTypeIcons } from '../../interfaces/event_interfaces';
-import { EventFavoriteResponse } from '../../interfaces/favorite_interface';
+import { EventFavoriteResponse } from '../../interfaces/Favorite_interface';
 import Pagination from '../common/Pagination';
 interface FavoriteTableEventsProps {
     events: EventFavoriteResponse[];
