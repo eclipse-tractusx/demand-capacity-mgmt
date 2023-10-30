@@ -64,9 +64,10 @@ public class StatusManagerImpl implements StatusManager {
             Pair<Integer, Integer> weeklyResults = processCapacityGroup(userID, cgs, postLog);
             accumulatedImprovements += weeklyResults.getKey();
             accumulatedDegradations += weeklyResults.getValue();
-        }
 
-        updateAndLogStatus(userID, postLog, accumulatedImprovements, accumulatedDegradations);
+
+            updateAndLogStatus(userID, postLog, accumulatedImprovements, accumulatedDegradations, cgs.getId());
+        }
     }
 
     private Optional<UserEntity> getUser(String userID) {
@@ -77,20 +78,21 @@ public class StatusManagerImpl implements StatusManager {
         return statusesRepository.findByUserID(UUID.fromString(userID));
     }
 
-    private void updateAndLogStatus(String userID, boolean postLog, int improvements, int degradations) {
+    private void updateAndLogStatus(String userID, boolean postLog, int improvements, int degradations, UUID cgID) {
         StatusesEntity status = getStatus(userID).orElseGet(() -> createInitialStatus(userID));
 
         if (improvements > 0) {
-            logEvent(EventType.STATUS_IMPROVEMENT, userID, postLog, "Status improved for " + improvements + " weeks", null);
+            logEvent(EventType.STATUS_IMPROVEMENT, userID, postLog, "Status improved for " + improvements + " weeks", cgID);
         }
         if (degradations > 0) {
-            logEvent(EventType.STATUS_REDUCTION, userID, postLog, "Status degraded for " + degradations + " weeks", null);
+            logEvent(EventType.STATUS_REDUCTION, userID, postLog, "Status degraded for " + degradations + " weeks", cgID);
         }
 
         status.setStatusImprovementCount(improvements);
         status.setStatusDegradationCount(degradations);
         statusesRepository.save(status);
     }
+
 
     private StatusesEntity createInitialStatus(String userID) {
         StatusesEntity status = new StatusesEntity();
@@ -152,7 +154,7 @@ public class StatusManagerImpl implements StatusManager {
 
         LoggingHistoryEntity logEntity = new LoggingHistoryEntity();
         logEntity.setObjectType(EventObjectType.CAPACITY_GROUP);
-        Optional.ofNullable(cgID).ifPresent(logEntity::setCapacityGroupId);
+        logEntity.setCapacityGroupId(cgID);
         logEntity.setEventType(eventType);
         logEntity.setUserAccount(getUser(userID).map(UserEntity::getUsername).orElse("Unknown"));
         logEntity.setTime_created(Timestamp.valueOf(LocalDateTime.now()));
