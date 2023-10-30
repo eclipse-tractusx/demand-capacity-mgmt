@@ -23,19 +23,21 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
+import org.springframework.stereotype.Service;
+
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.FavoriteType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
-import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
@@ -46,6 +48,8 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private final CapacityGroupRepository capacityGroupRepository;
     private final MaterialDemandRepository materialDemandRepository;
+
+    private final LinkedCapacityGroupMaterialDemandRepository linkedMaterialDemandRepository;
     private final CompanyRepository companyRepository;
 
     private final LoggingHistoryRepository eventRepository;
@@ -138,6 +142,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             scgfv.setCapacityGroupId(capacityGroup.getId().toString());
             scgfv.setCapacityGroupName(capacityGroup.getCapacityGroupName());
             scgfv.setCustomer(capacityGroup.getCustomer().getBpn());
+            scgfv.setStatus(capacityGroup.getLinkStatus().toString());
             scgfv.setSupplier(capacityGroup.getSupplier().getBpn());
             scgfv.setFavoritedAt(entity.getFavorited_at().toString());
             return scgfv;
@@ -154,6 +159,10 @@ public class FavoriteServiceImpl implements FavoriteService {
             CompanyEntity cEntity = materialDemand.getCustomerId();
             CompanyEntity sEntity = materialDemand.getSupplierId();
             response.setCustomer(cEntity.getId().toString());
+            LinkedCapacityGroupMaterialDemandEntity lcgm = linkedMaterialDemandRepository.findByMaterialDemandID(cEntity.getId());
+            if(lcgm != null){
+             response.setStatus(EventType.LINKED.toString());
+            } else response.setStatus(EventType.TODO.toString());
             response.setSupplier(sEntity.getId().toString());
             response.setMaterialDescriptionCustomer(materialDemand.getMaterialDescriptionCustomer());
             response.setMaterialNumberCustomer(materialDemand.getMaterialNumberCustomer());
