@@ -28,6 +28,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusManager;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,38 @@ public class StatusManagerImpl implements StatusManager {
     private final LoggingHistoryRepository loggingRepository;
 
     private static final LocalDate TWO_WEEKS_FROM_NOW = LocalDate.now().plusWeeks(2);
+
+    @Override
+    public void calculateTodos(String userID) {
+        userRepository.findById(UUID.fromString(userID)).ifPresent(user -> {
+            List<MaterialDemandEntity> demands = fetchDemandsBasedOnRole(user, userID);
+
+            StatusesEntity statusesEntity = statusesRepository
+                    .findByUserID(UUID.fromString(userID))
+                    .orElseGet(() -> generateNewEntity(userID));
+
+            statusesEntity.setTodosCount(demands.size());
+            statusesRepository.save(statusesEntity);
+        });
+    }
+
+    private StatusesEntity generateNewEntity(String userID) {
+        return StatusesEntity.builder().userID(UUID.fromString(userID)).build();
+    }
+    private List<MaterialDemandEntity> fetchDemandsBasedOnRole(UserEntity user, String userID) {
+        List<MaterialDemandEntity> demands = new ArrayList<>();
+
+        if (user.getRole().equals(Role.CUSTOMER)) {
+            demands = materialDemandRepository.findByCustomerId_Id(UUID.fromString(userID))
+                    .stream()
+                    .filter(d -> d.getDemandSeries().stream().allMatch(series -> series.getDemandSeriesValues().stream().allMatch(value -> value.getDemand() == 0)))
+                    .collect(Collectors.toList());
+        } else if (user.getRole().equals(Role.SUPPLIER)) {
+            demands = materialDemandRepository.findByLinkStatusAndSupplierId_Id(EventType.UN_LINKED, UUID.fromString(userID));
+        }
+        return demands;
+    }
+
 
     @Override
     public void calculateBottleneck(String userID, boolean postLog) {

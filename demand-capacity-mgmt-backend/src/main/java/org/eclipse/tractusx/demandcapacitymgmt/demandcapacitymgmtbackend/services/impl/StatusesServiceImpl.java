@@ -24,8 +24,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusesResponse;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusesEntity;
@@ -33,6 +31,9 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Lazy
 @RequiredArgsConstructor
@@ -92,17 +93,6 @@ public class StatusesServiceImpl implements StatusesService {
 
     @Override
     public void addOrSubtractTodos(boolean add, String userID) {
-        UUID userUUID = UUID.fromString(userID);
-        StatusesEntity statusesEntity = statusesRepository
-            .findByUserID(userUUID)
-            .orElseGet(() -> generateNewEntity(userID));
-        int adjustment = add ? 1 : -1;
-        int newTodosCount = statusesEntity.getTodosCount() + adjustment;
-        statusesEntity.setTodosCount(Math.max(newTodosCount, 0));
-        statusesRepository.save(statusesEntity);
-    }
-
-    private StatusesEntity generateNewEntity(String userID) {
-        return StatusesEntity.builder().userID(UUID.fromString(userID)).build();
+        //TODO REMOVE DEPRECATED METHOD, IMPLEMENTED NOW WITH STATUSMANAGER CALCULATETODOS
     }
 }
