@@ -57,8 +57,8 @@ public class StatusManagerImpl implements StatusManager {
         userRepository
                 .findById(UUID.fromString(userID))
                 .ifPresent(
-                        user -> {
-                            List<MaterialDemandEntity> demands = fetchDemandsBasedOnRole(user, userID);
+                    user -> {
+                        List<MaterialDemandEntity> demands = fetchDemandsBasedOnRole(user, userID);
 
                             StatusesEntity statusesEntity = statusesRepository
                                     .findByUserID(UUID.fromString(userID))
@@ -66,7 +66,7 @@ public class StatusManagerImpl implements StatusManager {
 
                             statusesEntity.setTodosCount(demands.size());
                             statusesRepository.save(statusesEntity);
-                        }
+                    }
                 );
     }
 
@@ -77,13 +77,13 @@ public class StatusManagerImpl implements StatusManager {
     private List<MaterialDemandEntity> fetchDemandsBasedOnRole(UserEntity user, String userID) {
         List<MaterialDemandEntity> demands = new ArrayList<>();
 
-        if (user.getRole().equals(Role.CUSTOMER)) {
-            demands = materialDemandRepository.findByCustomerId_Id(UUID.fromString(userID))
+        if (user.getRole().equals(Role.SUPPLIER)) {
+            demands = materialDemandRepository.findAll() //TODO SUPPLIER AQUI findbysupplierID
                     .stream()
                     .filter(d -> d.getDemandSeries().stream().allMatch(series -> series.getDemandSeriesValues().stream().allMatch(value -> value.getDemand() == 0)))
                     .collect(Collectors.toList());
-        } else if (user.getRole().equals(Role.SUPPLIER)) {
-            demands = materialDemandRepository.findBySupplierId_Id(UUID.fromString(userID))
+        } else if (user.getRole().equals(Role.CUSTOMER)) {
+            demands = materialDemandRepository.findAll() //TODO CUSTOMER AQUI findbycustomerID
                     .stream()
                     .filter(d -> d.getLinkStatus() == EventType.UN_LINKED)
                     .collect(Collectors.toList());
