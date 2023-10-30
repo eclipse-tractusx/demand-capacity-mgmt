@@ -107,25 +107,38 @@ public class StatusManagerImpl implements StatusManager {
         int weeklyImprovements = 0;
         int weeklyDegradations = 0;
 
+        boolean hasDegradation = false;
+
         for (LinkedCapacityGroupMaterialDemandEntity entity : matchedEntities) {
             Optional<MaterialDemandEntity> materialDemand = materialDemandRepository.findById(entity.getMaterialDemandID());
             if (materialDemand.isPresent()) {
                 Map<LocalDate, Double> weeklyDemands = getWeeklyDemands(materialDemand.get().getDemandSeries());
                 for (Map.Entry<LocalDate, Double> entry : weeklyDemands.entrySet()) {
                     EventType eventType = determineEventType(cgs, entry.getValue());
-                    if (eventType == EventType.STATUS_IMPROVEMENT) weeklyImprovements++;
-                    else if (eventType == EventType.STATUS_REDUCTION) weeklyDegradations++;
 
-                    // Update status of capacity group based on each week's evaluation
-                    cgs.setLinkStatus(eventType);
-                    capacityGroupRepository.save(cgs);
-                    logEvent(eventType, userID, postLog, null, cgs.getId());
+                    if (eventType == EventType.STATUS_REDUCTION) {
+                        hasDegradation = true; // Flag if there's a degradation
+                        weeklyDegradations++;
+                    } else if (eventType == EventType.STATUS_IMPROVEMENT) {
+                        weeklyImprovements++;
+                    }
+
+                    logEvent(eventType, userID, postLog, null, cgs.getId()); // Log each week's event
                 }
             }
         }
 
+        // Set the Capacity Group's status
+        if (hasDegradation) {
+            cgs.setLinkStatus(EventType.STATUS_REDUCTION);
+        } else {
+            cgs.setLinkStatus(EventType.STATUS_IMPROVEMENT);
+        }
+        capacityGroupRepository.save(cgs);
+
         return Pair.of(weeklyImprovements, weeklyDegradations);
     }
+
 
     private Map<LocalDate, Double> getWeeklyDemands(List<DemandSeries> matchedDemandSeries) {
         return matchedDemandSeries.stream()
