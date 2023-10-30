@@ -30,7 +30,7 @@ import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import { EventType } from '../../interfaces/event_interfaces';
-import { FavoriteType, MaterialDemandFavoriteResponse } from "../../interfaces/favorite_interface";
+import { FavoriteType, MaterialDemandFavoriteResponse } from "../../interfaces/Favorite_interface";
 import CapacityGroupAddToExisting from '../capacitygroup/CapacityGroupAddToExisting';
 import CapacityGroupWizardModal from '../capacitygroup/CapacityGroupWizardModal';
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';

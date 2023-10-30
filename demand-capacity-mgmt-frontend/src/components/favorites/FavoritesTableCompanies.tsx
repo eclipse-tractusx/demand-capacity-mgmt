@@ -27,7 +27,7 @@ import {
 } from 'react-icons/fa';
 import { LuStarOff } from "react-icons/lu";
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
-import { CompanyDtoFavoriteResponse } from '../../interfaces/favorite_interface';
+import { CompanyDtoFavoriteResponse } from '../../interfaces/Favorite_interface';
 import Pagination from '../common/Pagination';
 interface FavoriteTableCompaniesProps {
     favcompanies: CompanyDtoFavoriteResponse[];

@@ -29,7 +29,7 @@ import { EventsContext } from "../../contexts/EventsContextProvider";
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import CustomOption from "../../interfaces/customoption_interface";
 import { EventProp } from "../../interfaces/event_interfaces";
-import { FavoriteType } from "../../interfaces/favorite_interface";
+import { FavoriteType } from "../../interfaces/Favorite_interface";
 import DangerConfirmationModal, { ConfirmationAction } from "../common/DangerConfirmationModal";
 import { LoadingMessage } from "../common/LoadingMessages";
 import EventsTable from "../events/EventsTable";

@@ -34,7 +34,7 @@ import { EventType } from '../../interfaces/event_interfaces';
 import {
   FavoriteType,
   SingleCapacityGroupFavoriteResponse
-} from "../../interfaces/favorite_interface";
+} from "../../interfaces/Favorite_interface";
 import { getUserGreeting } from '../../interfaces/user_interface';
 import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
