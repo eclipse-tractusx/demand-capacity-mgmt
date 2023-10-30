@@ -77,12 +77,12 @@ public class StatusManagerImpl implements StatusManager {
     private List<MaterialDemandEntity> fetchDemandsBasedOnRole(UserEntity user, String userID) {
         List<MaterialDemandEntity> demands = new ArrayList<>();
 
-        if (user.getRole().equals(Role.SUPPLIER)) {
+        if (user.getRole().equals(Role.CUSTOMER)) {
             demands = materialDemandRepository.findAll() //TODO SUPPLIER AQUI findbysupplierID
                     .stream()
                     .filter(d -> d.getDemandSeries().stream().allMatch(series -> series.getDemandSeriesValues().stream().allMatch(value -> value.getDemand() == 0)))
                     .collect(Collectors.toList());
-        } else if (user.getRole().equals(Role.CUSTOMER)) {
+        } else if (user.getRole().equals(Role.SUPPLIER)) {
             demands = materialDemandRepository.findAll() //TODO CUSTOMER AQUI findbycustomerID
                     .stream()
                     .filter(d -> d.getLinkStatus() == EventType.UN_LINKED)
