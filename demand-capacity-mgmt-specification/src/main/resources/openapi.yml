@@ -1477,6 +1477,8 @@ components:
           type: string
         customer:
           type: string
+        status:
+          type: string
         supplier:
           type: string
         unitOfMeasure:
@@ -1496,6 +1498,8 @@ components:
         supplier:
           type: string
         capacityGroupId:
+          type: string
+        status:
           type: string
         capacityGroupName:
           type: string

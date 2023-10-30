@@ -35,6 +35,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LinkedCapacityGroupMaterialDemandRepository
     extends JpaRepository<LinkedCapacityGroupMaterialDemandEntity, UUID> {
+    LinkedCapacityGroupMaterialDemandEntity findByMaterialDemandID(UUID materialDemandID);
     List<LinkedCapacityGroupMaterialDemandEntity> findByCapacityGroupID(@NonNull UUID capacityGroupID);
 
     @Query("select count(l) from LinkedCapacityGroupMaterialDemandEntity l where l.materialDemandID = ?1")
