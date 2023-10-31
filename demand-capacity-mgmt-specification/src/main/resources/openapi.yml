@@ -918,6 +918,7 @@ components:
       enum:
         - CUSTOMER
         - SUPPLIER
+        - ADMIN
     TokenResponse:
       type: object
       properties:
@@ -1476,10 +1477,10 @@ components:
         materialNumberSupplier:
           type: string
         customer:
-          type: string
-        status:
-          type: string
+          $ref: '#/components/schemas/CompanyDto'
         supplier:
+          $ref: '#/components/schemas/CompanyDto'
+        status:
           type: string
         unitOfMeasure:
           type: string
@@ -1494,9 +1495,9 @@ components:
         id:
           type: string
         customer:
-          type: string
+          $ref: '#/components/schemas/CompanyDto'
         supplier:
-          type: string
+          $ref: '#/components/schemas/CompanyDto'
         capacityGroupId:
           type: string
         status:

@@ -79,7 +79,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             if (helperEntity.isPresent()) {
                 MaterialDemandEntity materialDemandEntity = helperEntity.get();
                 materialDemandEntity.setLinkStatus(EventType.LINKED);
-                statusesService.addOrSubtractTodos(false, userID);
                 materialDemandRepository.save(materialDemandEntity);
                 matchedMaterialDemands.addAll(materialDemandEntity.getDemandSeries());
             }
@@ -88,6 +87,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             capacityGroupEntity.setLinkStatus(EventType.GENERAL_EVENT);
             capacityGroupRepository.save(capacityGroupEntity);
         }
+        statusManager.calculateTodos(userID);
         return convertCapacityGroupDto(capacityGroupEntity);
     }
 
@@ -124,7 +124,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
                 MaterialDemandEntity materialDemand = materialDemandEntity.get();
                 materialDemand.setLinkStatus(EventType.LINKED);
                 materialDemandEntities.add(materialDemand);
-                statusesService.addOrSubtractTodos(false, userID);
             }
         }
 
@@ -160,11 +159,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             if (materialDemandEntity.isPresent()) {
                 MaterialDemandEntity demandEntity = materialDemandEntity.get();
                 demandEntity.setLinkStatus(EventType.LINKED);
-                statusesService.addOrSubtractTodos(false, userID);
                 materialDemandRepository.save(demandEntity);
             }
         }
         statusManager.calculateBottleneck(userID, true);
+        statusManager.calculateTodos(userID);
     }
 
     private CapacityGroupEntity enrichCapacityGroup(CapacityGroupRequest request) {

@@ -92,17 +92,6 @@ public class StatusesServiceImpl implements StatusesService {
 
     @Override
     public void addOrSubtractTodos(boolean add, String userID) {
-        UUID userUUID = UUID.fromString(userID);
-        StatusesEntity statusesEntity = statusesRepository
-            .findByUserID(userUUID)
-            .orElseGet(() -> generateNewEntity(userID));
-        int adjustment = add ? 1 : -1;
-        int newTodosCount = statusesEntity.getTodosCount() + adjustment;
-        statusesEntity.setTodosCount(Math.max(newTodosCount, 0));
-        statusesRepository.save(statusesEntity);
-    }
-
-    private StatusesEntity generateNewEntity(String userID) {
-        return StatusesEntity.builder().userID(UUID.fromString(userID)).build();
+        //TODO REMOVE DEPRECATED METHOD, IMPLEMENTED NOW WITH STATUSMANAGER CALCULATETODOS
     }
 }

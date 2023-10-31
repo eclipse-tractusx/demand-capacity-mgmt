@@ -25,11 +25,11 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.uuid.Logger;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectTokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.Role;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.TokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
-import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
@@ -45,6 +45,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -229,11 +231,9 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
 
         Object rolesObject = realmAccessMap.get("roles");
 
-        if (rolesObject instanceof List<?>) {
-            List<?> list = (List<?>) rolesObject;
+        if (rolesObject instanceof List<?> list) {
             for (Object roleObj : list) {
-                if (roleObj instanceof String) {
-                    String roleStr = (String) roleObj;
+                if (roleObj instanceof String roleStr) {
                     try {
                         org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role role = org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role.valueOf(
                             roleStr
@@ -241,7 +241,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
                         newUserEntity.setRole(role);
                         break;
                     } catch (IllegalArgumentException e) {
-                        throw new RuntimeException("Illegal Role detected! User must have one of the role types");
+                        Logger.logError("Incompatible role! User must have one of the 3 role types 'ADMIN','CUSTOMER','SUPPLIER'");
                     }
                 }
             }
@@ -261,6 +261,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         user.setRefreshToken(refreshToken);
         user.setExpiresIn(expiresIn);
         statusManager.calculateBottleneck(user.getUserID(), false);
+        statusManager.calculateTodos(user.getUserID());
         return user;
     }
 

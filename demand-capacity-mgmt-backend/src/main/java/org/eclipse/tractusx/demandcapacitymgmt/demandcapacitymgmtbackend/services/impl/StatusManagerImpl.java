@@ -22,26 +22,29 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusManager;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class StatusManagerImpl implements StatusManager {
 
+    private static final LocalDate TWO_WEEKS_FROM_NOW = LocalDate.now().plusWeeks(2);
     private final MaterialDemandRepository materialDemandRepository;
     private final CapacityGroupRepository capacityGroupRepository;
     private final StatusesRepository statusesRepository;
@@ -49,7 +52,45 @@ public class StatusManagerImpl implements StatusManager {
     private final LinkedCapacityGroupMaterialDemandRepository matchedDemandsRepository;
     private final LoggingHistoryRepository loggingRepository;
 
-    private static final LocalDate TWO_WEEKS_FROM_NOW = LocalDate.now().plusWeeks(2);
+    @Override
+    public void calculateTodos(String userID) {
+        userRepository
+                .findById(UUID.fromString(userID))
+                .ifPresent(
+                    user -> {
+                        List<MaterialDemandEntity> demands = fetchDemandsBasedOnRole(user, userID);
+
+                            StatusesEntity statusesEntity = statusesRepository
+                                    .findByUserID(UUID.fromString(userID))
+                                    .orElseGet(() -> generateNewEntity(userID));
+
+                            statusesEntity.setTodosCount(demands.size());
+                            statusesRepository.save(statusesEntity);
+                    }
+                );
+    }
+
+    private StatusesEntity generateNewEntity(String userID) {
+        return StatusesEntity.builder().userID(UUID.fromString(userID)).build();
+    }
+
+    private List<MaterialDemandEntity> fetchDemandsBasedOnRole(UserEntity user, String userID) {
+        List<MaterialDemandEntity> demands = new ArrayList<>();
+
+        if (user.getRole().equals(Role.CUSTOMER)) {
+            demands = materialDemandRepository.findAll() //TODO SUPPLIER AQUI findbysupplierID
+                    .stream()
+                    .filter(d -> d.getDemandSeries().stream().allMatch(series -> series.getDemandSeriesValues().stream().allMatch(value -> value.getDemand() == 0)))
+                    .collect(Collectors.toList());
+        } else if (user.getRole().equals(Role.SUPPLIER)) {
+            demands = materialDemandRepository.findAll() //TODO CUSTOMER AQUI findbycustomerID
+                    .stream()
+                    .filter(d -> d.getLinkStatus() == EventType.UN_LINKED)
+                    .collect(Collectors.toList());
+        }
+        return demands;
+    }
+
 
     @Override
     public void calculateBottleneck(String userID, boolean postLog) {
@@ -81,20 +122,20 @@ public class StatusManagerImpl implements StatusManager {
 
         if (improvements > 0) {
             logEvent(
-                EventType.STATUS_IMPROVEMENT,
-                userID,
-                postLog,
-                "Status improved for " + improvements + " weeks",
-                cgID
+                    EventType.STATUS_IMPROVEMENT,
+                    userID,
+                    postLog,
+                    "Status improved for " + improvements + " weeks",
+                    cgID
             );
         }
         if (degradations > 0) {
             logEvent(
-                EventType.STATUS_REDUCTION,
-                userID,
-                postLog,
-                "Status degraded for " + degradations + " weeks",
-                cgID
+                    EventType.STATUS_REDUCTION,
+                    userID,
+                    postLog,
+                    "Status degraded for " + degradations + " weeks",
+                    cgID
             );
         }
 
@@ -114,7 +155,7 @@ public class StatusManagerImpl implements StatusManager {
 
     private Pair<Integer, Integer> processCapacityGroup(String userID, CapacityGroupEntity cgs, boolean postLog) {
         List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(
-            cgs.getId()
+                cgs.getId()
         );
 
         int weeklyImprovements = 0;
@@ -124,7 +165,7 @@ public class StatusManagerImpl implements StatusManager {
 
         for (LinkedCapacityGroupMaterialDemandEntity entity : matchedEntities) {
             Optional<MaterialDemandEntity> materialDemand = materialDemandRepository.findById(
-                entity.getMaterialDemandID()
+                    entity.getMaterialDemandID()
             );
             if (materialDemand.isPresent()) {
                 Map<LocalDate, Double> weeklyDemands = getWeeklyDemands(materialDemand.get().getDemandSeries());
@@ -156,15 +197,15 @@ public class StatusManagerImpl implements StatusManager {
 
     private Map<LocalDate, Double> getWeeklyDemands(List<DemandSeries> matchedDemandSeries) {
         return matchedDemandSeries
-            .stream()
-            .flatMap(demand -> demand.getDemandSeriesValues().stream())
-            .filter(value -> !value.getCalendarWeek().isBefore(TWO_WEEKS_FROM_NOW))
-            .collect(
-                Collectors.groupingBy(
-                    DemandSeriesValues::getCalendarWeek,
-                    Collectors.summingDouble(DemandSeriesValues::getDemand)
-                )
-            );
+                .stream()
+                .flatMap(demand -> demand.getDemandSeriesValues().stream())
+                .filter(value -> !value.getCalendarWeek().isBefore(TWO_WEEKS_FROM_NOW))
+                .collect(
+                        Collectors.groupingBy(
+                                DemandSeriesValues::getCalendarWeek,
+                                Collectors.summingDouble(DemandSeriesValues::getDemand)
+                        )
+                );
     }
 
     private void logEvent(EventType eventType, String userID, boolean postLog, String descriptionOverride, UUID cgID) {
@@ -179,7 +220,7 @@ public class StatusManagerImpl implements StatusManager {
         logEntity.setLogID(UUID.randomUUID());
 
         logEntity.setDescription(
-            Optional.ofNullable(descriptionOverride).orElseGet(() -> getEventDescription(eventType))
+                Optional.ofNullable(descriptionOverride).orElseGet(() -> getEventDescription(eventType))
         );
         if (logEntity.getDescription() != null) {
             loggingRepository.save(logEntity);
