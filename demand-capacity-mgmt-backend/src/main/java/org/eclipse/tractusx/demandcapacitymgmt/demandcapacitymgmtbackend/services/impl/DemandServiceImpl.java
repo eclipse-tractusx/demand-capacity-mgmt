@@ -85,8 +85,8 @@ public class DemandServiceImpl implements DemandService {
         materialDemandEntity.setLinkStatus(EventType.UN_LINKED);
         materialDemandEntity = materialDemandRepository.save(materialDemandEntity);
         postLogs(materialDemandEntity.getId().toString(), "Material Demand created", EventType.GENERAL_EVENT, userID);
-        statusesService.addOrSubtractTodos(true, userID);
         statusManager.calculateBottleneck(userID, true);
+        statusManager.calculateTodos(userID);
         return convertDemandResponseDto(materialDemandEntity);
     }
 
@@ -168,6 +168,7 @@ public class DemandServiceImpl implements DemandService {
         demand = materialDemandRepository.save(demand);
         postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT, userID);
         statusManager.calculateBottleneck(userID, true);
+        statusManager.calculateTodos(userID);
         return convertDemandResponseDto(demand);
     }
 
@@ -183,8 +184,8 @@ public class DemandServiceImpl implements DemandService {
         postLogs(demandId, "Material Demand deleted", EventType.UN_LINKED, userID);
         linkedCapacityGroupMaterialDemandRepository.deleteByMaterialDemandID(demand.getId());
         materialDemandRepository.delete(demand);
-        statusesService.addOrSubtractTodos(false, userID);
         statusManager.calculateBottleneck(userID, true);
+        statusManager.calculateTodos(userID);
     }
 
     @Override
@@ -269,8 +270,8 @@ public class DemandServiceImpl implements DemandService {
         linkedCapacityGroupMaterialDemandRepository.deleteByCapacityGroupIDAndMaterialDemandID(cgID, mdID);
         List<MaterialDemandEntity> oldMaterialDemands = getAllDemands();
         oldMaterialDemands.removeIf(md -> md.getId().equals(mdID));
-        statusesService.addOrSubtractTodos(true, userID);
         statusManager.calculateBottleneck(userID, true);
+        statusManager.calculateTodos(userID);
     }
 
     private MaterialDemandEntity getDemandEntity(String demandId) {
