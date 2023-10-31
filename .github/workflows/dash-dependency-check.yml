@@ -46,6 +46,7 @@ jobs:
           fail_on_out_of_date: true
           fail_on_rejected: true
           fail_on_restricted: true
+          
   check-dependencies-backend:
     runs-on: ubuntu-latest
     steps:
@@ -59,7 +60,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Generate dependencies file
-        run: cd backend && mvn dependency:list -DskipTests -Dmaven.javadoc.skip=true -DappendOutput=true -DoutputFile=maven.dependencies
+        run: cd demand-capacity-mgmt-backend && mvn dependency:list -DskipTests -Dmaven.javadoc.skip=true -DappendOutput=true -DoutputFile=maven.dependencies
 
       - name: Run dash
         id: run-dash
