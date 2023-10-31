@@ -31,6 +31,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.footer {
+  color: #333;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -327,4 +336,37 @@ code {
 
 .spin-on-hover:hover {
   animation: spin 1s ease-in-out infinite;
+}
+
+/* Admin Panel */
+.tabs-column {
+  background-color: #f0f0f0;
+  height: 80vh;
+  padding: 15px;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+
+.admin-nav-link {
+  position: relative;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  /* Add a bottom border to create the line effect */
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+  /* Add a soft shadow to create a separation effect */
+  color: #333 !important;
+  /* Dark grey text color */
+  margin-right: -0.7rem;
+}
+
+.admin-nav-link:last-child {
+  border-bottom: none;
+  /* Remove the bottom border for the last nav-link */
+}
+
+.admin-nav-link.active {
+  background-color: #94cb2d !important;
+  /* Yellow background color for active tab */
+  color: #fff !important;
+  /* White text color for active tab */
 }

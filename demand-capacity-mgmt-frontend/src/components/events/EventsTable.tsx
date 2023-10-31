@@ -35,7 +35,7 @@ import { LuStar } from 'react-icons/lu';
 import { EventsContext } from '../../contexts/EventsContextProvider';
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import { EventProp, eventTypeIcons } from '../../interfaces/event_interfaces';
-import { EventFavoriteResponse, FavoriteType } from "../../interfaces/Favorite_interface";
+import { EventFavoriteResponse, FavoriteType } from "../../interfaces/favorite_interfaces";
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import Pagination from '../common/Pagination';
 

@@ -23,6 +23,12 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -31,13 +37,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -159,9 +158,11 @@ public class FavoriteServiceImpl implements FavoriteService {
             CompanyEntity cEntity = materialDemand.getCustomerId();
             CompanyEntity sEntity = materialDemand.getSupplierId();
             response.setCustomer(cEntity.getId().toString());
-            LinkedCapacityGroupMaterialDemandEntity lcgm = linkedMaterialDemandRepository.findByMaterialDemandID(cEntity.getId());
-            if(lcgm != null){
-             response.setStatus(EventType.LINKED.toString());
+            LinkedCapacityGroupMaterialDemandEntity lcgm = linkedMaterialDemandRepository.findByMaterialDemandID(
+                cEntity.getId()
+            );
+            if (lcgm != null) {
+                response.setStatus(EventType.LINKED.toString());
             } else response.setStatus(EventType.TODO.toString());
             response.setSupplier(sEntity.getId().toString());
             response.setMaterialDescriptionCustomer(materialDemand.getMaterialDescriptionCustomer());

@@ -31,7 +31,7 @@ import { FavoritesContext } from '../../contexts/FavoritesContextProvider';
 import { UnitsofMeasureContext } from '../../contexts/UnitsOfMeasureContextProvider';
 import CustomOption from '../../interfaces/customoption_interface';
 import { DemandProp } from '../../interfaces/demand_interfaces';
-import { FavoriteType } from '../../interfaces/Favorite_interface';
+import { FavoriteType } from '../../interfaces/favorite_interfaces';
 import { LoadingCustomMessage } from '../common/LoadingMessages';
 import StepBreadcrumbs from './../common/StepsBreadCrumbs';
 
@@ -221,7 +221,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               </div>
             );
             return {
-              value: md.id,
+              value: md,
               label: label,
             };
           });
@@ -255,6 +255,8 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
         // Combine favorite options and demand options
         materialDemandOptions = [...favoriteOptions, ...demandOptions];
 
+        console.log(materialDemandOptions);
+
         setOptions(materialDemandOptions); // Update options state with combined material demands
       } catch (error) {
         console.error('Error fetching filtered capacity groups:', error);
@@ -263,7 +265,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
       }
     };
     fetchData();
-    console.log(demands);
+
   }, [demands]);
 
 
@@ -394,7 +396,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                                   <br />
                                   <strong>Material Number Customer:</strong> {demand ? demand.materialNumberCustomer : 'Not selected'}
                                   <br />
-                                  <strong>Unit of Measure:</strong> <span>{getUnitMeasureDescription(demand.unitMeasureId.id)}</span>
+                                  <strong>Unit of Measure:</strong> <span>{getUnitMeasureDescription(demand.unitMeasureId?.id ?? demand.unitMeasureId)}</span>
                                 </p>
                               </div>
                             </div>
@@ -450,7 +452,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                                   <br />
                                   <strong>Material Number Customer:</strong> {demand ? demand.materialNumberCustomer : 'Not selected'}
                                   <br />
-                                  <strong>Unit of Measure:</strong> {getUnitMeasureDescription(demand.unitMeasureId.id)}
+                                  <strong>Unit of Measure:</strong> {getUnitMeasureDescription(demand.unitMeasureId?.id ?? demand.unitMeasureId)}
                                 </p>
                               </div>
                             </div>
