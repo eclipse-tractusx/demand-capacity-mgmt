@@ -918,6 +918,7 @@ components:
       enum:
         - CUSTOMER
         - SUPPLIER
+        - ADMIN
     TokenResponse:
       type: object
       properties:
