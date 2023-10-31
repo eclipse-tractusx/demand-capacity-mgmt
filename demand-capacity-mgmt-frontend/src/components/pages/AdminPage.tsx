@@ -26,6 +26,7 @@ import { useEffect, useState } from 'react';
 import { Col, Nav, Row, Tab, TabContent } from 'react-bootstrap';
 import { FaBell, FaClock, FaCogs, FaFingerprint, FaHeartbeat, FaKey } from 'react-icons/fa';
 import { FcEngineering } from 'react-icons/fc';
+import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
 import { LoadingMessage } from '../common/LoadingMessages';
 
@@ -34,11 +35,13 @@ const AdminPage = () => {
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('general');
 
+    const navigate = useNavigate()
 
     useEffect(() => {
-        console.log(user)
-    }, []);
-
+        if (user?.role !== 'ADMIN') {
+            navigate('/error');
+        }
+    }, [user]);
 
     if (loading) {
         return <LoadingMessage />; // Show loading spinner when data is loading
