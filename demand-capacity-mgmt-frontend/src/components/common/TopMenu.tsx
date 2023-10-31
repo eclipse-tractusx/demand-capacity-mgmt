@@ -21,9 +21,11 @@
  */
 
 import { useEffect, useState } from 'react';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import { FaUserShield } from 'react-icons/fa';
 import { FiLogOut, FiSettings } from 'react-icons/fi';
 import { useNavigate } from "react-router-dom";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
@@ -104,8 +106,28 @@ function TopMenuLinks() {
             <br />
             <span className='font-weight-light small-menu-text'>Role: <span className='text-capitalize'>{user?.role.toLowerCase()}</span></span>
           </Navbar.Text>
-          <Nav.Link href="#settings" className="p-3 navbar-nav nav-item"><FiSettings /></Nav.Link>
-          <Nav.Link onClick={handleLogout} className="p-2 navbar-nav nav-item"><FiLogOut /></Nav.Link>
+          <OverlayTrigger
+            placement="bottom"
+            overlay={<Tooltip id="tooltip">User Settings</Tooltip>}
+          >
+            <Nav.Link href="#settings" className="p-3 navbar-nav nav-item"><FiSettings /></Nav.Link>
+          </OverlayTrigger>
+          {user?.role === 'ADMIN' && (
+            <OverlayTrigger
+              placement="bottom"
+              overlay={<Tooltip id="tooltip">Admin Dashboard</Tooltip>}
+            >
+              <Nav.Link href="admin" className="p-3 navbar-nav nav-item">
+                <FaUserShield />
+              </Nav.Link>
+            </OverlayTrigger>
+          )}
+          <OverlayTrigger
+            placement="bottom"
+            overlay={<Tooltip id="tooltip">Logout</Tooltip>}
+          >
+            <Nav.Link onClick={handleLogout} className="p-2 navbar-nav nav-item"><FiLogOut /></Nav.Link>
+          </OverlayTrigger>
         </Navbar.Collapse>
       </Container>
     </Navbar>
