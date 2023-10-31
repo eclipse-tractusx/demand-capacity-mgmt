@@ -217,31 +217,33 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         newUserEntity.setEmail(Optional.ofNullable(decodedJWT.getClaim("email")).map(Claim::asString).orElse(""));
         newUserEntity.setName(Optional.ofNullable(decodedJWT.getClaim("given_name")).map(Claim::asString).orElse(""));
         newUserEntity.setLastName(
-            Optional.ofNullable(decodedJWT.getClaim("family_name")).map(Claim::asString).orElse("")
+                Optional.ofNullable(decodedJWT.getClaim("family_name")).map(Claim::asString).orElse("")
         );
         newUserEntity.setUsername(
-            Optional.ofNullable(decodedJWT.getClaim("preferred_username")).map(Claim::asString).orElse("")
+                Optional.ofNullable(decodedJWT.getClaim("preferred_username")).map(Claim::asString).orElse("")
         );
 
         Claim rolesClaim = decodedJWT.getClaim("realm_access");
         Map<String, Object> realmAccessMap = Optional
-            .ofNullable(rolesClaim)
-            .map(Claim::asMap)
-            .orElse(Collections.emptyMap());
+                .ofNullable(rolesClaim)
+                .map(Claim::asMap)
+                .orElse(Collections.emptyMap());
 
         Object rolesObject = realmAccessMap.get("roles");
 
-        if (rolesObject instanceof List<?> list) {
+        if (rolesObject instanceof List<?>) {
+            List<?> list = (List<?>) rolesObject;
             for (Object roleObj : list) {
-                if (roleObj instanceof String roleStr) {
+                if (roleObj instanceof String) {
+                    String roleStr = (String) roleObj;
                     try {
                         org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role role = org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role.valueOf(
-                            roleStr
+                                roleStr
                         );
                         newUserEntity.setRole(role);
                         break;
                     } catch (IllegalArgumentException e) {
-                        Logger.logError("Incompatible role! User must have one of the 3 role types 'ADMIN','CUSTOMER','SUPPLIER'");
+                        Logger.logError("Incompatible role! User must have one of the 3 role types 'ADMIN','");
                     }
                 }
             }
