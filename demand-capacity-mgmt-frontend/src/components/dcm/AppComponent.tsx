@@ -28,6 +28,7 @@ import EventsContextProvider from '../../contexts/EventsContextProvider';
 import FavoritesContextProvider from "../../contexts/FavoritesContextProvider";
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
 import QuickAcessItems from '../common/QuickAcessItems';
+import AdminPage from '../pages/AdminPage';
 import AlertsPage from '../pages/AlertsPage';
 import AuthenticationComponent from '../pages/AuthenticationPage';
 import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
@@ -153,6 +154,18 @@ const AppComponent: React.FC = () => {
                             </Layout>
                         </FavoritesContextProvider>
                     </DemandContextProvider>
+                </AuthenticatedRoute>
+            } />
+
+            <Route path="/admin" element={
+                <AuthenticatedRoute>
+                    <FavoritesContextProvider>
+                        <DemandContextProvider>
+                            <Layout>
+                                <AdminPage />
+                            </Layout>
+                        </DemandContextProvider>
+                    </FavoritesContextProvider>
                 </AuthenticatedRoute>
             } />
         </Routes>

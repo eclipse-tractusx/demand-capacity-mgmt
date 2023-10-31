@@ -22,7 +22,7 @@
 
 
 import React, { createContext, useEffect, useState } from 'react';
-import { FavoritePayload, FavoriteResponse, FavoriteType } from '../interfaces/Favorite_interface';
+import { FavoritePayload, FavoriteResponse, FavoriteType } from '../interfaces/favorite_interfaces';
 import createAPIInstance from "../util/Api";
 import { useUser } from './UserContext';
 

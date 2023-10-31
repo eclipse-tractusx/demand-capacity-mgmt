@@ -22,6 +22,11 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,12 +36,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusManager;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -65,7 +64,6 @@ public class StatusManagerImpl implements StatusManager {
             accumulatedImprovements += weeklyResults.getKey();
             accumulatedDegradations += weeklyResults.getValue();
 
-
             updateAndLogStatus(userID, postLog, accumulatedImprovements, accumulatedDegradations, cgs.getId());
         }
     }
@@ -82,17 +80,28 @@ public class StatusManagerImpl implements StatusManager {
         StatusesEntity status = getStatus(userID).orElseGet(() -> createInitialStatus(userID));
 
         if (improvements > 0) {
-            logEvent(EventType.STATUS_IMPROVEMENT, userID, postLog, "Status improved for " + improvements + " weeks", cgID);
+            logEvent(
+                EventType.STATUS_IMPROVEMENT,
+                userID,
+                postLog,
+                "Status improved for " + improvements + " weeks",
+                cgID
+            );
         }
         if (degradations > 0) {
-            logEvent(EventType.STATUS_REDUCTION, userID, postLog, "Status degraded for " + degradations + " weeks", cgID);
+            logEvent(
+                EventType.STATUS_REDUCTION,
+                userID,
+                postLog,
+                "Status degraded for " + degradations + " weeks",
+                cgID
+            );
         }
 
         status.setStatusImprovementCount(improvements);
         status.setStatusDegradationCount(degradations);
         statusesRepository.save(status);
     }
-
 
     private StatusesEntity createInitialStatus(String userID) {
         StatusesEntity status = new StatusesEntity();
@@ -104,7 +113,9 @@ public class StatusManagerImpl implements StatusManager {
     }
 
     private Pair<Integer, Integer> processCapacityGroup(String userID, CapacityGroupEntity cgs, boolean postLog) {
-        List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(cgs.getId());
+        List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(
+            cgs.getId()
+        );
 
         int weeklyImprovements = 0;
         int weeklyDegradations = 0;
@@ -112,7 +123,9 @@ public class StatusManagerImpl implements StatusManager {
         boolean hasDegradation = false;
 
         for (LinkedCapacityGroupMaterialDemandEntity entity : matchedEntities) {
-            Optional<MaterialDemandEntity> materialDemand = materialDemandRepository.findById(entity.getMaterialDemandID());
+            Optional<MaterialDemandEntity> materialDemand = materialDemandRepository.findById(
+                entity.getMaterialDemandID()
+            );
             if (materialDemand.isPresent()) {
                 Map<LocalDate, Double> weeklyDemands = getWeeklyDemands(materialDemand.get().getDemandSeries());
                 for (Map.Entry<LocalDate, Double> entry : weeklyDemands.entrySet()) {
@@ -141,12 +154,17 @@ public class StatusManagerImpl implements StatusManager {
         return Pair.of(weeklyImprovements, weeklyDegradations);
     }
 
-
     private Map<LocalDate, Double> getWeeklyDemands(List<DemandSeries> matchedDemandSeries) {
-        return matchedDemandSeries.stream()
-                .flatMap(demand -> demand.getDemandSeriesValues().stream())
-                .filter(value -> !value.getCalendarWeek().isBefore(TWO_WEEKS_FROM_NOW))
-                .collect(Collectors.groupingBy(DemandSeriesValues::getCalendarWeek, Collectors.summingDouble(DemandSeriesValues::getDemand)));
+        return matchedDemandSeries
+            .stream()
+            .flatMap(demand -> demand.getDemandSeriesValues().stream())
+            .filter(value -> !value.getCalendarWeek().isBefore(TWO_WEEKS_FROM_NOW))
+            .collect(
+                Collectors.groupingBy(
+                    DemandSeriesValues::getCalendarWeek,
+                    Collectors.summingDouble(DemandSeriesValues::getDemand)
+                )
+            );
     }
 
     private void logEvent(EventType eventType, String userID, boolean postLog, String descriptionOverride, UUID cgID) {
@@ -160,7 +178,9 @@ public class StatusManagerImpl implements StatusManager {
         logEntity.setTime_created(Timestamp.valueOf(LocalDateTime.now()));
         logEntity.setLogID(UUID.randomUUID());
 
-        logEntity.setDescription(Optional.ofNullable(descriptionOverride).orElseGet(() -> getEventDescription(eventType)));
+        logEntity.setDescription(
+            Optional.ofNullable(descriptionOverride).orElseGet(() -> getEventDescription(eventType))
+        );
         if (logEntity.getDescription() != null) {
             loggingRepository.save(logEntity);
         }
