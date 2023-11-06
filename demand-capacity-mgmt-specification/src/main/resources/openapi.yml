@@ -145,7 +145,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoggingHistoryResponse'
-
     delete:
       tags:
         - loggingHistory
@@ -171,6 +170,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LoggingHistoryResponse'
+
+  /addressBook:
+    get:
+      tags:
+        - addressBook
+      summary: get companies
+      operationId: getAddressBook
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
 
 
   /loggingHistory/filterLogs:
@@ -1464,6 +1483,14 @@ components:
           type: string
         favorited_at:
           type: string
+
+    AddressBookRequest:
+      type: object
+      properties:
+        query:
+          type: string
+        directQuery:
+          type: boolean
 
     MaterialDemandFavoriteResponse:
       type: object
