@@ -62,7 +62,6 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
     const fetchFavorites = async () => {
         try {
             const favorites = await fetchFavoritesByType(FavoriteType.EVENT);
-            console.log(favorites)
             if (favorites && favorites.events) {
                 setFavoriteEvents(favorites.events.map((fav: EventFavoriteResponse) => fav.logID));
             }

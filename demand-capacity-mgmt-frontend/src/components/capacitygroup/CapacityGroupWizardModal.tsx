@@ -64,6 +64,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
 
   // Function to get the unit measure description based on id
   const getUnitMeasureDescription = (unitMeasureId: string) => {
+    console.log(unitMeasureId)
     const unitMeasure = unitsofmeasureContext?.unitsofmeasure.find(unit => unit.id === unitMeasureId);
     return unitMeasure ? `${unitMeasure.dimension} - ${unitMeasure.description} (${unitMeasure.unSymbol})` : 'N/A';
   };
@@ -130,15 +131,18 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
     return { earliestDate, latestDate };
   };
 
+
   function areUnitMeasureIdsEqual(demands: DemandProp[]): boolean {
     if (demands.length <= 1) {
       return true; // If there's only one or zero demands, they are equal.
     }
 
-    const firstUnitMeasureId = demands[0].unitMeasureId;
-    return demands.every((demand) => demand.unitMeasureId.id === firstUnitMeasureId.id);
+    const firstUnitMeasureId = demands[0].unitMeasureId?.id ?? demands[0].unitMeasureId;
+    return demands.every((demand) => {
+      const demandId = demand.unitMeasureId?.id ?? demand.unitMeasureId;
+      return demandId === firstUnitMeasureId;
+    });
   }
-
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -235,7 +239,11 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
           if (favoriteIdsSet.has(md.id)) {
             return false;
           }
-          // Include demand if its ID is not in favorites
+          // Exclude demand if its linkStatus is neither 'TODO' nor 'UNLINKED'
+          if (md.linkStatus !== 'TODO' && md.linkStatus !== 'UNLINKED') {
+            return false;
+          }
+          // else
           return true;
         });
 
@@ -396,7 +404,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                                   <br />
                                   <strong>Material Number Customer:</strong> {demand ? demand.materialNumberCustomer : 'Not selected'}
                                   <br />
-                                  <strong>Unit of Measure:</strong> <span>{getUnitMeasureDescription(demand.unitMeasureId?.id ?? demand.unitMeasureId)}</span>
+                                  <strong>Unit of Measure:</strong> <span>{getUnitMeasureDescription(demand.unitMeasureId?.id ?? demand.unitOfMeasure)}</span>
                                 </p>
                               </div>
                             </div>
@@ -452,7 +460,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
                                   <br />
                                   <strong>Material Number Customer:</strong> {demand ? demand.materialNumberCustomer : 'Not selected'}
                                   <br />
-                                  <strong>Unit of Measure:</strong> {getUnitMeasureDescription(demand.unitMeasureId?.id ?? demand.unitMeasureId)}
+                                  <strong>Unit of Measure:</strong> {getUnitMeasureDescription(demand.unitMeasureId?.id ?? demand.unitOfMeasure)}
                                 </p>
                               </div>
                             </div>
