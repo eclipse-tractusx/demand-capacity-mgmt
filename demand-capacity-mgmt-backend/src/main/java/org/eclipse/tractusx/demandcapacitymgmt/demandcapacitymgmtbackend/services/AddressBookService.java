@@ -33,4 +33,6 @@ public interface AddressBookService {
     List<AddressBookRecordEntity> getRecords(AddressBookRequest request);
 
     AddressBookRecordEntity postRecord(AddressBookRequest request);
+
+    void deleteRecord(AddressBookRequest request);
 }

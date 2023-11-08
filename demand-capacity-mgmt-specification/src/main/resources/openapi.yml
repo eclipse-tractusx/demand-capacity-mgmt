@@ -183,13 +183,31 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/AddressBookResponse'
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/AddressBookRequest'
+  get:
+    tags:
+      - addressBook
+    summary: get companies
+    operationId: getAddressBook
+    responses:
+      200:
+        description: General greeting
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookResponse'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AddressBookRequest'
 
 
   /loggingHistory/filterLogs:
@@ -1492,6 +1510,25 @@ components:
         directQuery:
           type: boolean
 
+    AddressBookResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        name:
+          type: string
+        contact:
+          type: string
+        email:
+          type: string
+        function:
+          type: string
+        picture:
+          type: string
+          format: byte
+
     MaterialDemandFavoriteResponse:
       type: object
       properties:
@@ -1532,6 +1569,22 @@ components:
         capacityGroupName:
           type: string
         favorited_at:
+          type: string
+
+    AddressBookFavoriteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        name:
+          type: string
+        contact:
+          type: string
+        email:
+          type: string
+        function:
           type: string
 
     UnitMeasure:
@@ -1811,3 +1864,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EventFavoriteResponse'
+        addressBooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressBookFavoriteResponse'

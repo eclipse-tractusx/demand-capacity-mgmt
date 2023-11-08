@@ -24,9 +24,12 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposi
 
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AddressBookRecordEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface AddressBookRepository extends JpaRepository<AddressBookRecordEntity, UUID> {}
+public interface AddressBookRepository extends JpaRepository<AddressBookRecordEntity, UUID> {
+    List<AddressBookRecordEntity> findByNameOrCompanyId(@NonNull String name, @NonNull UUID companyId);}

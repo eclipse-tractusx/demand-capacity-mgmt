@@ -20,12 +20,16 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
 
-public enum FavoriteType {
-    CAPACITY_GROUP,
-    COMPANY_BASE_DATA,
-    MATERIAL_DEMAND,
-    EVENT,
-    ADDRESS_BOOK
+import eclipse.tractusx.demand_capacity_mgmt_specification.api.AddressBookApi;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
+import org.springframework.http.ResponseEntity;
+
+public class AddressBookController implements AddressBookApi {
+
+    @Override
+    public ResponseEntity<String> getAddressBook(AddressBookRequest addressBookRequest) throws Exception {
+        return null;
+    }
 }

@@ -22,61 +22,38 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AddressBookRecordEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.AddressBookRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.AddressBookService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.GoldenRecordManager;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-@RequiredArgsConstructor
-@Service
 @Slf4j
-public class AddressBookServiceImpl implements AddressBookService {
+@Service
+@RequiredArgsConstructor
+public class GoldenRecordManagerImpl implements GoldenRecordManager {
 
     private final AddressBookRepository repository;
 
-    private final GoldenRecordManager goldenRecordManager;
-
+    //TODO ACTUAL PROPER IMPLEMENTATION
     @Override
-    public AddressBookRecordEntity getRecord(AddressBookRequest request) {
-        if(Boolean.FALSE.equals(request.getDirectQuery())){
-            Optional<AddressBookRecordEntity> entity = repository.findById(UUID.fromString(request.getQuery()));
-            if(entity.isPresent()){
-                return entity.get();
-            }
-        } else {
-            //TODO GOLDEN RECORD IMPL
-            return null;
-        }
+    public AddressBookRecordEntity queryGoldenRecord(String recordQuery) {
         return null;
     }
 
     @Override
-    public List<AddressBookRecordEntity> getRecords(AddressBookRequest request) {
-        List<AddressBookRecordEntity> records;
-        if(Boolean.TRUE.equals(request.getDirectQuery())){
-            return null;
-        } else {
-            records = repository.findByNameOrCompanyId(request.getQuery(), UUID.fromString(request.getQuery()));
-            return records;
-        }
+    public AddressBookRecordEntity createRecord(String query) {
+        AddressBookRecordEntity recordEntity = new AddressBookRecordEntity();
+        recordEntity.setCompanyId(UUID.fromString(query));
+        recordEntity.setName("TEST NAME");
+        recordEntity.setContact("TEST CONTACT");
+        recordEntity.setEmail("TEST EMAIL");
+        recordEntity.setPicture("yeetus".getBytes());
+        repository.save(recordEntity);
+        return recordEntity;
     }
 
-    @Override
-    public AddressBookRecordEntity postRecord(AddressBookRequest request) {
-        AddressBookRecordEntity entity = goldenRecordManager.createRecord(request.getQuery());
-        return entity;
-    }
-
-    @Override
-    public void deleteRecord(AddressBookRequest request) {
-        repository.deleteById(UUID.fromString(request.getQuery()));
-    }
 }
