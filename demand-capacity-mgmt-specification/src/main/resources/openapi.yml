@@ -170,8 +170,61 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LoggingHistoryResponse'
-
   /addressBook:
+    get:
+      tags:
+        - addressBook
+      summary: get all companies
+      operationId: getAllAddressBooks
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressBookResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+    post:
+      tags:
+        - addressBook
+      summary: post a record
+      operationId: postAddressBook
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBookResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+    delete:
+      tags:
+        - addressBook
+      summary: delete a record
+      operationId: deleteAddressBook
+      responses:
+        201:
+          description: General greeting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+
+  /addressBook/query:
     get:
       tags:
         - addressBook
@@ -190,24 +243,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AddressBookRequest'
-  get:
-    tags:
-      - addressBook
-    summary: get companies
-    operationId: getAddressBook
-    responses:
-      200:
-        description: General greeting
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddressBookResponse'
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AddressBookRequest'
 
 
   /loggingHistory/filterLogs:
