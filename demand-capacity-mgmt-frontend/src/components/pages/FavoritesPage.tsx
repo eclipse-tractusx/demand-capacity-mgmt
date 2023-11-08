@@ -28,6 +28,7 @@ import FavoritesTableCapacityGroup from "../favorites/FavoritesTableCapacityGrou
 import FavoriteTableCompanies from "../favorites/FavoritesTableCompanies";
 import FavoritesTableEvents from "../favorites/FavoritesTableEvents";
 import FavoriteTableMaterialDemands from "../favorites/FavoritesTableMaterialDemands";
+import FavoritesTableAddressBook from "../favorites/FavoritesTableAddressBook";
 
 const FavoritesPage: React.FC = () => {
     const { favorites } = useContext(FavoritesContext)!;
@@ -64,6 +65,11 @@ const FavoritesPage: React.FC = () => {
                         <Tab eventKey="Events" title="Events">
                             <FavoritesTableEvents
                                 events={favorites?.events || []}
+                            />
+                        </Tab>
+                        <Tab eventKey="AddressBook" title="Address Book">
+                            <FavoritesTableAddressBook
+                                favaddressbook={favorites?.addressBooks || []}
                             />
                         </Tab>
                     </Tabs>
