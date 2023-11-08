@@ -27,6 +27,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequ
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.AddressBookService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.ResponseEntity;
@@ -42,9 +43,12 @@ public class AddressBookController implements AddressBookApi {
 
     @Override
     public ResponseEntity<Void> deleteAddressBook(AddressBookRequest addressBookRequest) throws Exception {
-        String userID = UserUtil.getUserID(request);
-        service.deleteRecord(addressBookRequest);
-        return ResponseEntity.status(201).build();
+        if(UserUtil.getUserRole(request).equals(Role.ADMIN)){
+            service.deleteRecord(addressBookRequest);
+            return ResponseEntity.status(201).build();
+        }
+        return ResponseEntity.status(401).build();
+
     }
 
     @Override
