@@ -24,12 +24,41 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.AddressBookApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.AddressBookService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+@RestController
+@AllArgsConstructor
 public class AddressBookController implements AddressBookApi {
 
+    private final AddressBookService service;
+    private HttpServletRequest request;
+
     @Override
-    public ResponseEntity<String> getAddressBook(AddressBookRequest addressBookRequest) throws Exception {
-        return null;
+    public ResponseEntity<Void> deleteAddressBook(AddressBookRequest addressBookRequest) throws Exception {
+        String userID = UserUtil.getUserID(request);
+        service.deleteRecord(addressBookRequest);
+        return ResponseEntity.status(201).build();
+    }
+
+    @Override
+    public ResponseEntity<AddressBookResponse> getAddressBook(AddressBookRequest addressBookRequest) throws Exception {
+        return ResponseEntity.status(200).body(service.getRecord(addressBookRequest));
+    }
+
+    @Override
+    public ResponseEntity<List<AddressBookResponse>> getAllAddressBooks(AddressBookRequest addressBookRequest) throws Exception {
+        return ResponseEntity.status(200).body(service.getRecords(addressBookRequest));
+    }
+
+    @Override
+    public ResponseEntity<AddressBookResponse> postAddressBook(AddressBookRequest addressBookRequest) throws Exception {
+        return ResponseEntity.status(200).body(service.postRecord(addressBookRequest));
     }
 }
