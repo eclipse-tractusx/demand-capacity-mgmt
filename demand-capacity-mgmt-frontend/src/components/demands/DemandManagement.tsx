@@ -43,7 +43,7 @@ import {
 } from "../../interfaces/favorite_interfaces";
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import { LoadingMessage } from '../common/LoadingMessages';
-import DemandManagementTable from './DemandManagementTable';
+import DemandManagementTable from './DemandManagementTableHeaders';
 
 const DemandManagement: React.FC = () => {
     const [showEditModal, setIsEditModalOpen] = useState(false);
