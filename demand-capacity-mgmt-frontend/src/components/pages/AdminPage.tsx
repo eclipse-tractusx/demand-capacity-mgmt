@@ -23,9 +23,9 @@
 
 
 import { useEffect, useState } from 'react';
-import { Col, Nav, Row, Tab, TabContent } from 'react-bootstrap';
-import { FaBell, FaClock, FaCogs, FaFingerprint, FaHeartbeat, FaKey } from 'react-icons/fa';
-import { FcEngineering } from 'react-icons/fc';
+import { Button, Col, Modal, Nav, Row, Tab, TabContent } from 'react-bootstrap';
+import { FaBell, FaClock, FaCogs, FaFingerprint, FaHeartbeat, FaKey, FaQuestion } from 'react-icons/fa';
+import { FcEngineering, FcQuestions } from 'react-icons/fc';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
 import { LoadingMessage } from '../common/LoadingMessages';
@@ -34,6 +34,7 @@ const AdminPage = () => {
     const { user } = useUser();
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('general');
+    const [showHelpModal, setShowHelpModal] = useState(false);
 
     const navigate = useNavigate()
 
@@ -47,11 +48,24 @@ const AdminPage = () => {
         return <LoadingMessage />; // Show loading spinner when data is loading
     }
 
+    const handleHelpModalClose = () => setShowHelpModal(false);
+    const handleQuestionButtonClick = () => setShowHelpModal(true);
+
     return (<>
         <div className='container mt-4'>
-            <div style={{ display: "flex" }}>
-                <FcEngineering size={35} />
-                <h3 className="icon-text-padding"> Admin Dashboard</h3>
+
+            <div className="row">
+                <div className="col-sm-6">
+                    <div style={{ display: "flex" }}>
+                        <FcEngineering size={35} />
+                        <h3 className="icon-text-padding"> Admin Dashboard</h3>
+                    </div>
+                </div>
+                <div className="col-sm-6 d-flex justify-content-end align-items-center">
+                    <Button className='btn btn-primary' onClick={handleQuestionButtonClick} >
+                        <FaQuestion />
+                    </Button>
+                </div>
             </div>
             <br />
             <Row>
@@ -128,6 +142,22 @@ const AdminPage = () => {
             </Row>
 
         </div >
+
+        <Modal show={showHelpModal} onHide={handleHelpModalClose}>
+            <Modal.Header closeButton>
+                <Modal.Title><FcQuestions size={35} /> Help</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p><a href="https://portal.cofinity-x.com/">Cat-X Portal Core</a></p>
+                <p><a href="https://catena-x.net/fileadmin/user_upload/Standard-Bibliothek/Update_September23/CX-0010-BusinessPartnerNumber_v2.0.0.pdf">Cat-X CX-0010 Business Partner Number Standards</a></p>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handleHelpModalClose}>
+                    Close
+                </Button>
+            </Modal.Footer>
+        </Modal>
+
     </>
     );
 };
