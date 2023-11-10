@@ -24,14 +24,13 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookResponse;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AddressBookRecordEntity;
 
 import java.util.List;
 
 public interface AddressBookService {
     AddressBookResponse getRecord(AddressBookRequest request);
 
-    List<AddressBookResponse> getRecords(AddressBookRequest request);
+    List<AddressBookResponse> getRecords();
 
     AddressBookResponse postRecord(AddressBookRequest request);
 
