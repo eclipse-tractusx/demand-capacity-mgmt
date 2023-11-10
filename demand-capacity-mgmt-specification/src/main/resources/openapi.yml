@@ -185,12 +185,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AddressBookResponse'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddressBookRequest'
     post:
       tags:
         - addressBook

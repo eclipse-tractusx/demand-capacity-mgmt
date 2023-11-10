@@ -61,18 +61,14 @@ public class AddressBookServiceImpl implements AddressBookService {
     }
 
     @Override
-    public List<AddressBookResponse> getRecords(AddressBookRequest request) {
+    public List<AddressBookResponse> getRecords() {
         List<AddressBookRecordEntity> records;
-        if(Boolean.TRUE.equals(request.getDirectQuery())){
-            return null;
-        } else {
-            records = repository.findByNameOrCompanyId(request.getQuery(), UUID.fromString(request.getQuery()));
+            records = repository.findAll();
             List<AddressBookResponse> response = new ArrayList<>();
             for(AddressBookRecordEntity ent : records){
                 response.add(convertEntityToDto(ent));
             }
             return response;
-        }
     }
 
     @Override
