@@ -34,6 +34,7 @@ import {
 import { LuStar } from 'react-icons/lu';
 import { EventsContext } from '../../contexts/EventsContextProvider';
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
+import { useUser } from '../../contexts/UserContext';
 import { EventProp, eventTypeIcons } from '../../interfaces/event_interfaces';
 import { EventFavoriteResponse, FavoriteType } from "../../interfaces/favorite_interfaces";
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
@@ -45,6 +46,7 @@ interface EventsTableProps {
 }
 
 const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
+    const { user } = useUser();
     const eventsContext = useContext(EventsContext)!;
     const [sortField, setSortField] = useState<string>('timestamp');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -286,9 +288,8 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
                                             <Dropdown.Item onClick={() => {
                                                 navigator.clipboard.writeText(event.id.toString())
                                             }}><FaCopy /> Copy ID</Dropdown.Item>
-                                            {isArchive ? null : (
-                                                <Dropdown.Item className="red-delete-item"
-                                                    onClick={() => handleDeleteButtonClick(event.id.toString())}>
+                                            {isArchive !== null && user?.role === 'ADMIN' && (
+                                                <Dropdown.Item className="red-delete-item" onClick={() => handleDeleteButtonClick(event.id.toString())}>
                                                     <FaTrashAlt /> Delete
                                                 </Dropdown.Item>
                                             )}

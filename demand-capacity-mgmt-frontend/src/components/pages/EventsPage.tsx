@@ -27,6 +27,7 @@ import { LuStar } from "react-icons/lu";
 import Creatable from 'react-select/creatable';
 import { EventsContext } from "../../contexts/EventsContextProvider";
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
+import { useUser } from "../../contexts/UserContext";
 import CustomOption from "../../interfaces/customoption_interface";
 import { EventProp } from "../../interfaces/event_interfaces";
 import { FavoriteType } from "../../interfaces/favorite_interfaces";
@@ -35,6 +36,7 @@ import { LoadingMessage } from "../common/LoadingMessages";
 import EventsTable from "../events/EventsTable";
 
 function EventsPage() {
+    const { user } = useUser();
     const [activeTab, setActiveTab] = useState("Events");
     const [userInput, setUserInput] = useState('');
     const { events, archiveEvents, fetchEvents, fetchFilteredEvents, deleteAllEvents } = useContext(EventsContext)!;
@@ -200,9 +202,10 @@ function EventsPage() {
                                             <Button className='mx-1' variant="primary" onClick={handleRefreshClick}>
                                                 <FaRedo className="spin-on-hover" />
                                             </Button>
-                                            <Button variant="danger" onClick={handleNukeClick}>
-                                                Clear all
-                                            </Button>
+                                            {user?.role === 'ADMIN' && (
+                                                <Button variant="danger" onClick={handleNukeClick}>
+                                                    Clear all
+                                                </Button>)}
                                         </div>
                                     </div>
                                 </div>
