@@ -37,10 +37,8 @@ import { logout } from "../../util/Auth";
 import InfoMenu from "../menu/InfoMenu";
 
 function TopMenuLinks() {
-  const { refresh_token } = useUser();
-  const { user } = useUser();
+  const { user, refresh_token, setUser } = useUser();
   const navigate = useNavigate();
-  const { setUser } = useUser();
   const [collapsed, setCollapsed] = useState(() => {
     // Load the state from local storage, defaulting to false if it doesn't exist
     return localStorage.getItem('navbarCollapsed') === 'true';
