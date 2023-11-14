@@ -126,6 +126,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/IntrospectTokenResponse'
 
+  /user:
+    put:
+      tags:
+        - userOperations
+      summary: edit a user
+      operationId: update an user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        201:
+          description: General Greeting
+
   /loggingHistory:
     post:
       tags:
@@ -892,6 +908,24 @@ paths:
 
 components:
   schemas:
+    UserRequest:
+      type: object
+      properties:
+        userID:
+          type: string
+        name:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        companyID:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+
     User:
       type: object
       properties:
@@ -904,6 +938,8 @@ components:
         email:
           type: string
         username:
+          type: string
+        companyID:
           type: string
         role:
           $ref: '#/components/schemas/Role'
