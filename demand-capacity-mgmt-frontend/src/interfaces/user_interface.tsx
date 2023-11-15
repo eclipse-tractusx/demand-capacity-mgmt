@@ -26,6 +26,7 @@ export interface User {
     lastName: string;
     email: string;
     username: string;
+    companyID: string;
     role: string;
     access_token: string;
     refresh_token: string;
@@ -37,14 +38,34 @@ export function getUserGreeting(user: User | null): string {
     const hours = currentTime.getHours();
     if (user) {
         if (hours < 12) {
-            return `Good morning, ${user.username}`;
+            return `Good morning, ${getUserName(user)}`;
         } else if (hours < 18) {
-            return `Good afternoon, ${user.username}`;
+            return `Good afternoon, ${getUserName(user)}`;
         } else {
-            return `Good evening, ${user.username}`;
+            return `Good evening, ${getUserName(user)}`;
         }
     } else {
         // Handle the case when user is null
         return 'Welcome!';
     }
 }
+
+export function getUserName(user: User | null): string {
+    if (user?.name && user.lastName) {
+        if (user.lastName.length <= 6) {
+            return `${user.name.charAt(0).toUpperCase()}${user.name.slice(1)} ${user.lastName.charAt(0).toUpperCase()}${user.lastName.slice(1)}`;
+        } else {
+            return `${user.name.charAt(0).toUpperCase()}${user.name.slice(1)}.${user.lastName.charAt(0).toUpperCase()}`;
+        }
+    } else if (user?.name) {
+        return `${user.name.charAt(0).toUpperCase()}${user.name.slice(1)}`;
+    } else if (user?.username) {
+        return user.username.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) => index === 0 ? letter.toUpperCase() : letter.toLowerCase());
+    }
+    return '';
+}
+
+
+
+
+
