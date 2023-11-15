@@ -82,7 +82,6 @@ const DemandList: React.FC<{
     const fetchFavorites = async () => {
       try {
         const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
-        console.log(favorites)
         if (favorites && favorites.materialDemands) {
           setFavoriteDemands(favorites.materialDemands.map((fav: MaterialDemandFavoriteResponse) => fav.id));
         }

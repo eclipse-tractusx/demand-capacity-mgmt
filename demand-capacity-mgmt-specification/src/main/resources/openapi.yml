@@ -126,6 +126,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/IntrospectTokenResponse'
 
+  /user:
+    put:
+      tags:
+        - userOperations
+      summary: edit a user
+      operationId: update an user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        201:
+          description: General Greeting
+
   /loggingHistory:
     post:
       tags:
@@ -145,7 +161,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoggingHistoryResponse'
-
     delete:
       tags:
         - loggingHistory
@@ -171,6 +186,73 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LoggingHistoryResponse'
+  /addressBook:
+    get:
+      tags:
+        - addressBook
+      summary: get all companies
+      operationId: getAllAddressBooks
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressBookResponse'
+    post:
+      tags:
+        - addressBook
+      summary: post a record
+      operationId: postAddressBook
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBookResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+    delete:
+      tags:
+        - addressBook
+      summary: delete a record
+      operationId: deleteAddressBook
+      responses:
+        201:
+          description: General greeting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+
+  /addressBook/query:
+    get:
+      tags:
+        - addressBook
+      summary: get companies
+      operationId: getAddressBook
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBookResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
 
 
   /loggingHistory/filterLogs:
@@ -963,6 +1045,24 @@ paths:
 
 components:
   schemas:
+    UserRequest:
+      type: object
+      properties:
+        userID:
+          type: string
+        name:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        companyID:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+
     User:
       type: object
       properties:
@@ -975,6 +1075,8 @@ components:
         email:
           type: string
         username:
+          type: string
+        companyID:
           type: string
         role:
           $ref: '#/components/schemas/Role'
@@ -1627,6 +1729,33 @@ components:
         favorited_at:
           type: string
 
+    AddressBookRequest:
+      type: object
+      properties:
+        query:
+          type: string
+        directQuery:
+          type: boolean
+
+    AddressBookResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        name:
+          type: string
+        contact:
+          type: string
+        email:
+          type: string
+        function:
+          type: string
+        picture:
+          type: string
+          format: byte
+
     MaterialDemandFavoriteResponse:
       type: object
       properties:
@@ -1667,6 +1796,22 @@ components:
         capacityGroupName:
           type: string
         favorited_at:
+          type: string
+
+    AddressBookFavoriteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        name:
+          type: string
+        contact:
+          type: string
+        email:
+          type: string
+        function:
           type: string
 
     UnitMeasure:
@@ -1946,3 +2091,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EventFavoriteResponse'
+        addressBooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressBookFavoriteResponse'

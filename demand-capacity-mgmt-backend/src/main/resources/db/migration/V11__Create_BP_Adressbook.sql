@@ -20,12 +20,15 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
+SET search_path TO public;
 
-public enum FavoriteType {
-    CAPACITY_GROUP,
-    COMPANY_BASE_DATA,
-    MATERIAL_DEMAND,
-    EVENT,
-    ADDRESS_BOOK
-}
+CREATE TABLE IF NOT EXISTS address_book
+(
+    id uuid DEFAULT uuid_generate_v4() primary key,
+    company_id uuid,
+    name varchar(100),
+    contact varchar(50),
+    email varchar(150),
+    function varchar(100),
+    picture bytea
+);

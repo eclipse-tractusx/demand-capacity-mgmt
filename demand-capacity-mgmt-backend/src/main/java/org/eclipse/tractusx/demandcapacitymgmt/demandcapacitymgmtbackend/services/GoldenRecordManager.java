@@ -20,12 +20,12 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
-public enum FavoriteType {
-    CAPACITY_GROUP,
-    COMPANY_BASE_DATA,
-    MATERIAL_DEMAND,
-    EVENT,
-    ADDRESS_BOOK
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AddressBookRecordEntity;
+
+public interface GoldenRecordManager {
+    AddressBookRecordEntity queryGoldenRecord(String recordQuery);
+
+    AddressBookRecordEntity createRecord(String query);
 }

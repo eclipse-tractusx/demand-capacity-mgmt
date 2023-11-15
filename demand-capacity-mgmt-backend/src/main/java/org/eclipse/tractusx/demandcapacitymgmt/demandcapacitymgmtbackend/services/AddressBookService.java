@@ -20,12 +20,19 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
-public enum FavoriteType {
-    CAPACITY_GROUP,
-    COMPANY_BASE_DATA,
-    MATERIAL_DEMAND,
-    EVENT,
-    ADDRESS_BOOK
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookResponse;
+
+import java.util.List;
+
+public interface AddressBookService {
+    AddressBookResponse getRecord(AddressBookRequest request);
+
+    List<AddressBookResponse> getRecords();
+
+    AddressBookResponse postRecord(AddressBookRequest request);
+
+    void deleteRecord(AddressBookRequest request);
 }

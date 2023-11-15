@@ -24,8 +24,6 @@ import Nav from "react-bootstrap/Nav";
 import { FaArrowDown, FaArrowUp, FaHome, FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useInfoMenu } from "../../contexts/InfoMenuContextProvider";
-//Events, Capacitity groups, material demands
-
 
 
 function InfoMenu() {

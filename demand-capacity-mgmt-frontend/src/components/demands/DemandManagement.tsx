@@ -36,6 +36,7 @@ import EditForm from './DemandEditForm';
 
 import { LuStar } from 'react-icons/lu';
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
+import { useUser } from '../../contexts/UserContext';
 import { EventType } from '../../interfaces/event_interfaces';
 import {
     FavoriteType,
@@ -43,9 +44,10 @@ import {
 } from "../../interfaces/favorite_interfaces";
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import { LoadingMessage } from '../common/LoadingMessages';
-import DemandManagementTable from './DemandManagementTable';
+import DemandManagementTable from './DemandManagementTableHeaders';
 
 const DemandManagement: React.FC = () => {
+    const { user } = useUser();
     const [showEditModal, setIsEditModalOpen] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -76,7 +78,6 @@ const DemandManagement: React.FC = () => {
     const fetchFavorites = async () => {
         try {
             const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
-            console.log(favorites)
             if (favorites && favorites.materialDemands) {
                 setFavoriteDemands(favorites.materialDemands.map((fav: MaterialDemandFavoriteResponse) => fav.id));
             }
@@ -310,8 +311,8 @@ const DemandManagement: React.FC = () => {
                             <span className="badge rounded-pill bg-secondary text-white">N/A</span>
                         )}
                     </td>
-                    <td>
-                        <Button onClick={() => handleEdit(demand)} variant="outline-secondary">Edit</Button>
+                    <td>{user?.role === 'CUSTOMER' && (
+                        <Button onClick={() => handleEdit(demand)} variant="outline-secondary">Edit</Button>)}
                     </td>
                     <td>
                         <Dropdown>
@@ -342,10 +343,11 @@ const DemandManagement: React.FC = () => {
                         <DemandsSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </div>
                     <div className="col-sm-6 d-flex justify-content-end align-items-center">
-                        <Button className="btn btn-success me-1" data-toggle="modal"
-                            onClick={() => setShowAddModal(true)}>
-                            <span>New Material Demand</span>
-                        </Button>
+                        {user?.role === 'CUSTOMER' && (
+                            <Button className="btn btn-success me-1" data-toggle="modal"
+                                onClick={() => setShowAddModal(true)}>
+                                <span>New Material Demand</span>
+                            </Button>)}
                         <Button className='btn btn-primary' onClick={handleRefreshClick}>
                             <FaRedo className="spin-on-hover" />
                         </Button>
