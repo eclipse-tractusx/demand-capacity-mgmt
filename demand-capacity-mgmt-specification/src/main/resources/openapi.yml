@@ -141,6 +141,20 @@ paths:
       responses:
         201:
           description: General Greeting
+    get:
+      tags:
+        - userOperations
+      summary: get all users
+      operationId: fetch all users
+      responses:
+        200:
+          description: General Greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
 
   /loggingHistory:
     post:
@@ -975,6 +989,24 @@ paths:
 components:
   schemas:
     UserRequest:
+      type: object
+      properties:
+        userID:
+          type: string
+        name:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        companyID:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+
+    UserResponse:
       type: object
       properties:
         userID:
