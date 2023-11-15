@@ -48,7 +48,7 @@ const CapacityGroupsTable: React.FC<CapacityGroupsTableProps> = ({ sortColumn, s
             {sortColumn === 'name' && sortOrder === 'desc' && <BiCaretDown />}
           </th>
           <th onClick={() => handleSort('customerBPNL')}>
-            Customber BPNL
+            Customer BPNL
             {sortColumn === 'customerBPNL' && sortOrder === 'asc' && <BiCaretUp />}
             {sortColumn === 'customerBPNL' && sortOrder === 'desc' && <BiCaretDown />}
           </th>
@@ -66,11 +66,6 @@ const CapacityGroupsTable: React.FC<CapacityGroupsTableProps> = ({ sortColumn, s
             # of Materials
             {sortColumn === 'numberOfMaterials' && sortOrder === 'asc' && <BiCaretUp />}
             {sortColumn === 'numberOfMaterials' && sortOrder === 'desc' && <BiCaretDown />}
-          </th>
-          <th onClick={() => handleSort('favoritedBy')}>
-            Favorited by
-            {sortColumn === 'favoritedBy' && sortOrder === 'asc' && <BiCaretUp />}
-            {sortColumn === 'favoritedBy' && sortOrder === 'desc' && <BiCaretDown />}
           </th>
           <th onClick={() => handleSort('status')}>
             Status

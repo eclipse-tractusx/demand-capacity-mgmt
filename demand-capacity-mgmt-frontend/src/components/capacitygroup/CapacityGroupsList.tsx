@@ -168,7 +168,7 @@ const CapacityGroupsList: React.FC = () => {
               />
             </span>
           </td>
-          <td>
+          <td><center>
             <OverlayTrigger
               placement="top"
               overlay={<Tooltip id={`tooltip-copy-${capacitygroup.internalId}-open`}>Go to Details</Tooltip>}
@@ -179,8 +179,9 @@ const CapacityGroupsList: React.FC = () => {
                 </div>
               </Button>
             </OverlayTrigger>
+          </center>
           </td>
-          <td>
+          <td><center>
             <OverlayTrigger
               placement="top"
               overlay={<Tooltip id={`tooltip-copy-${capacitygroup.internalId}`}>{capacitygroup.internalId}</Tooltip>}
@@ -194,14 +195,13 @@ const CapacityGroupsList: React.FC = () => {
               >
                 <FaCopy />
               </Button>
-            </OverlayTrigger>
+            </OverlayTrigger></center>
           </td>
           <td>{capacitygroup.name}</td>
           <td>{capacitygroup.customerBPNL}</td>
           <td>{capacitygroup.customerName}</td>
           <td>{capacitygroup.supplierBNPL}</td>
           <td>{capacitygroup.numberOfMaterials}</td>
-          <td>{capacitygroup.favoritedBy}</td>
           <td>
             {capacitygroup.linkStatus === EventType.TODO ? (
               <span className="badge rounded-pill text-bg-warning" id="tag-warning">
@@ -296,7 +296,11 @@ const CapacityGroupsList: React.FC = () => {
                         htmlSize={10}
                         max={100}
                         value={capacitygroupsPerPage}
-                        onChange={(e) => setcapacitygroupsPerPage(Number(e.target.value))}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          const newValue = value === '' ? 1 : Math.max(1, parseInt(value)); // Ensure it's not empty and not less than 1
+                          setcapacitygroupsPerPage(newValue);
+                        }}
                       />
                     </Col>
                   </Form.Group>

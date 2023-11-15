@@ -24,7 +24,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button, Col, Modal, Nav, Row, Tab, TabContent } from 'react-bootstrap';
-import { FaBell, FaClock, FaCogs, FaFingerprint, FaHeartbeat, FaKey, FaQuestion } from 'react-icons/fa';
+import { FaBell, FaClock, FaCogs, FaFingerprint, FaHeartbeat, FaKey, FaQuestion, FaUsers } from 'react-icons/fa';
 import { FcEngineering, FcQuestions } from 'react-icons/fc';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
@@ -78,7 +78,7 @@ const AdminPage = () => {
                         </Nav.Item>
                         <Nav.Item>
                             <Nav.Link className='admin-nav-link' eventKey="tab2" active={activeTab === 'tab2'} onClick={() => setActiveTab('tab2')}>
-                                Tab
+                                <FaUsers /> Users
                             </Nav.Link>
                         </Nav.Item>
                         <Nav.Item>
@@ -119,7 +119,7 @@ const AdminPage = () => {
                             <h3>General Settings</h3>
                         </Tab.Pane>
                         <Tab.Pane eventKey="tab2" className={`tab-pane fade ${activeTab === 'tab2' ? 'show active' : ''}`}>
-                            <h3>Tab 2 Content</h3>
+                            <h3>User Management</h3>
                         </Tab.Pane>
                         <Tab.Pane eventKey="alerts" className={`tab-pane fade ${activeTab === 'alerts' ? 'show active' : ''}`}>
                             <h3>Alerts Content</h3>
@@ -129,7 +129,6 @@ const AdminPage = () => {
                         </Tab.Pane>
                         <Tab.Pane eventKey="api" className={`tab-pane fade ${activeTab === 'api' ? 'show active' : ''}`}>
                             <h3>Api Content</h3>
-
                         </Tab.Pane>
                         <Tab.Pane eventKey="scheduledactions" className={`tab-pane fade ${activeTab === 'scheduledactions' ? 'show active' : ''}`}>
                             <h3>Scheduled Actions Content</h3>
