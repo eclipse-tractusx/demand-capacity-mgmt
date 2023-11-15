@@ -60,6 +60,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final LoggingHistoryService loggingHistoryService;
     private final FavoriteService favoriteService;
     private final StatusManagerImpl statusManager;
+    private final AlertService alertService;
 
     @Override
     public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest, String userID) {
@@ -88,6 +89,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             capacityGroupRepository.save(capacityGroupEntity);
         }
         statusManager.calculateTodos(userID);
+
         return convertCapacityGroupDto(capacityGroupEntity);
     }
 
