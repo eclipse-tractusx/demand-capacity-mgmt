@@ -238,7 +238,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
                         newUserEntity.setRole(role);
                         break;
                     } catch (IllegalArgumentException e) {
-                        Logger.logError("Incompatible role! User must have one of the 3 role types 'ADMIN','");
+                        Logger.logError("Incompatible role! User must have one of the 3 role types 'ADMIN','CUSTOMER','SUPPLIER'");
                     }
                 }
             }
@@ -257,8 +257,9 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         user.setAccessToken(accessToken);
         user.setRefreshToken(refreshToken);
         user.setExpiresIn(expiresIn);
-        //        statusManager.calculateBottleneck(user.getUserID(), false);
-        //        statusManager.calculateTodos(user.getUserID());
+        user.setCompanyID(user.getCompanyID());
+        statusManager.calculateBottleneck(user.getUserID(), false);
+        statusManager.calculateTodos(user.getUserID());
         return user;
     }
 
@@ -271,6 +272,6 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
     }
 
     private String logoutTokenUrl() {
-        return String.format("%s/auth/realms/%s/protocol/openid-connect/logout", keycloakBaseUrl, realm);
+        return String.format("%s/realms/%s/protocol/openid-connect/logout", keycloakBaseUrl, realm);
     }
 }

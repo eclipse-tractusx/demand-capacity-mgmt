@@ -108,7 +108,6 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const updateDemand = async (updatedDemand: Demand) => {
     try {
-      console.log(updatedDemand)
       await api.put(`/demand/${updatedDemand.id}`, updatedDemand);
       fetchDemandProps();
     } catch (error) {

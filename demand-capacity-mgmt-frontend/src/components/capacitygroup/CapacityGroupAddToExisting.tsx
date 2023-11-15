@@ -51,7 +51,6 @@ const CapacityGroupAddToExisting: React.FC<CapacityGroupAddToExistingProps> = ({
   const handleLinkToCapacityGroup = () => {
     if (selectedCapacityGroup?.value && checkedDemands && checkedDemands.length > 0) {
       const demandIds = checkedDemands.map((demand) => {
-        console.log(demand.id , "ssssssssss");
         return demand.id
 
       });

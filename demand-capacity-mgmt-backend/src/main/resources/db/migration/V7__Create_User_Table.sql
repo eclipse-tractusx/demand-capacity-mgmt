@@ -28,5 +28,6 @@ create table if not exists dcm_users
     last_name varchar(150),
     email varchar(150),
     username varchar(50),
+    companyID uuid,
     role varchar(50)
 )

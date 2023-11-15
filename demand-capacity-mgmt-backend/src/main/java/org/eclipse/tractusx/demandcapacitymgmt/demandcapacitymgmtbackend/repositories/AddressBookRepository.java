@@ -20,18 +20,16 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AddressBookRecordEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface CapacityGroupService {
-    CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest, String userID);
-
-    void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest, String userID);
-
-    SingleCapacityGroup getCapacityGroupById(String CapacityGroupId);
-    List<CapacityGroupDefaultViewResponse> getAll(String userID, Role role);
-}
+@Repository
+public interface AddressBookRepository extends JpaRepository<AddressBookRecordEntity, UUID> {
+    List<AddressBookRecordEntity> findByNameOrCompanyId(@NonNull String name, @NonNull UUID companyId);}
