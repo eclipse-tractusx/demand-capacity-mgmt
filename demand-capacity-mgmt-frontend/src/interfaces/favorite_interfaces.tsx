@@ -35,18 +35,29 @@ export interface SingleCapacityGroupFavoriteResponse {
     capacityGroupName: string;
 }
 
+export interface AddressBookFavoriteResponse{
+    id:string
+    companyId:string
+    name:string
+    contact:string
+    email:string
+    function:string
+}
+
 export interface FavoriteResponse {
     capacityGroups: SingleCapacityGroupFavoriteResponse[];
     materialDemands: MaterialDemandFavoriteResponse[];
     companies: CompanyDtoFavoriteResponse[];
     events: EventFavoriteResponse[];
+    addressBooks: AddressBookFavoriteResponse[];
 }
 
 export enum FavoriteType {
     CAPACITY_GROUP = 'CAPACITY_GROUP',
     COMPANY_BASE_DATA = 'COMPANY_BASE_DATA',
     MATERIAL_DEMAND = 'MATERIAL_DEMAND',
-    EVENT = 'EVENT'
+    EVENT = 'EVENT',
+    ADDRESS_BOOK = 'ADDRESS_BOOK'
 }
 
 export interface FavoritePayload {

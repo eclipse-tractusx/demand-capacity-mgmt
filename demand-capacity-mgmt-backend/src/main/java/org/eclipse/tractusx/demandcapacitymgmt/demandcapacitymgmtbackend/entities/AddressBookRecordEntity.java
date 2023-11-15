@@ -20,12 +20,46 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
-public enum FavoriteType {
-    CAPACITY_GROUP,
-    COMPANY_BASE_DATA,
-    MATERIAL_DEMAND,
-    EVENT,
-    ADDRESS_BOOK
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.UUID;
+
+@Entity
+@Table(name = "address_book")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AddressBookRecordEntity {
+
+    @Id
+    @GeneratedValue
+    @Column(columnDefinition = "uuid", updatable = false, name = "id")
+    private UUID id;
+
+    @Column(name = "company_id")
+    private UUID companyId;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "contact")
+    private String contact;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "function")
+    private String function;
+
+    @Column(name = "picture")
+    private byte[] picture;
+
 }
