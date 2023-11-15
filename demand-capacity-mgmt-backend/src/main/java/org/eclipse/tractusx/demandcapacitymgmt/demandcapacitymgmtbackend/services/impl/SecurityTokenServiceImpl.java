@@ -243,7 +243,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
                         newUserEntity.setRole(role);
                         break;
                     } catch (IllegalArgumentException e) {
-                        Logger.logError("Incompatible role! User must have one of the 3 role types 'ADMIN','");
+                        Logger.logError("Incompatible role! User must have one of the 3 role types 'ADMIN','CUSTOMER','SUPPLIER'");
                     }
                 }
             }
