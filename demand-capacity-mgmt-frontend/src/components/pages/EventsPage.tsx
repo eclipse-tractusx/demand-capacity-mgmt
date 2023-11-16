@@ -199,8 +199,10 @@ function EventsPage() {
                                     </div>
                                     <div className="col-sm-6">
                                         <div className="float-end ms-3">
-                                            <Button className='mx-1' variant="primary" onClick={handleRefreshClick}>
-                                                <FaRedo className="spin-on-hover" />
+                                            <Button className='float-end spin-on-hover' variant="primary" onClick={handleRefreshClick}>
+                                                <span className="button-content">
+                                                    <FaRedo className="icon" />
+                                                </span>
                                             </Button>
                                             {user?.role === 'ADMIN' && (
                                                 <Button variant="danger" onClick={handleNukeClick}>
