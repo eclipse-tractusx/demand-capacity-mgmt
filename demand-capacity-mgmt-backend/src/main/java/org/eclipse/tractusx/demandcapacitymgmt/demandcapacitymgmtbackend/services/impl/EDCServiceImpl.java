@@ -258,5 +258,18 @@ public class EDCServiceImpl implements EDCService {
                 .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
     }
 
+    @Override
+    public Mono<EndpointDataReferenceEntry> getEDRSByParameters(String agreementId, String assetId, String providerId) {
+        return webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder.path("/edrs")
+                        .queryParam("agreementId", agreementId)
+                        .queryParam("assetId", assetId)
+                        .queryParam("providerId", providerId)
+                        .build())
+                .retrieve()
+                .bodyToMono(EndpointDataReferenceEntry.class);
+    }
+
 
 }
