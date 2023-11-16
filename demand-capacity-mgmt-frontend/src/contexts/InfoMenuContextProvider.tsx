@@ -23,7 +23,7 @@
 
 import React, { FunctionComponent, createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-import { InfoMenuData } from '../interfaces/InfoMenu_interfaces';
+import { InfoMenuData } from "../interfaces/infomenu_interfaces";
 import createAPIInstance from "../util/Api";
 import { CapacityGroupContext } from './CapacityGroupsContextProvider';
 import { DemandContext } from './DemandContextProvider';

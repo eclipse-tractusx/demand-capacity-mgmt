@@ -67,7 +67,6 @@ const CapacityGroupsList: React.FC = () => {
   const fetchFavorites = async () => {
     try {
       const favorites = await fetchFavoritesByType(FavoriteType.CAPACITY_GROUP);
-      console.log(favorites)
       if (favorites && favorites.capacityGroups) {
         setFavoriteCapacityGroups(favorites.capacityGroups.map((fav: SingleCapacityGroupFavoriteResponse) => fav.id));
       }

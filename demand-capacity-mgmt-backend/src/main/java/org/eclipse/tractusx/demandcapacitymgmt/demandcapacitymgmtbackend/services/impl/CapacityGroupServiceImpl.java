@@ -23,6 +23,18 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -31,19 +43,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CapacityGroupRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.DemandSeriesRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.LinkedCapacityGroupMaterialDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
-import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
@@ -61,6 +60,8 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final FavoriteService favoriteService;
     private final StatusManagerImpl statusManager;
     private final AlertService alertService;
+
+    private final UserRepository userRepository;
 
     @Override
     public CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest, String userID) {
@@ -224,11 +225,22 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     }
 
     @Override
-    public List<CapacityGroupDefaultViewResponse> getAll(String userID) {
-        List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupRepository.findByUserID(
-            UUID.fromString(userID)
-        );
-        return convertCapacityGroupEntity(capacityGroupEntityList);
+    public List<CapacityGroupDefaultViewResponse> getAll(String userID, Role role) {
+        if(role.equals(Role.SUPPLIER)){
+            List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupRepository.findByUserID(
+                    UUID.fromString(userID)
+            );
+            return convertCapacityGroupEntity(capacityGroupEntityList);
+        }
+        else if(role.equals(Role.CUSTOMER)) {
+            String companyID = String.valueOf(userRepository.findById(UUID.fromString(userID)).get().getCompanyID());
+            List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupRepository.findByCustomer_Id(UUID.fromString(companyID));
+            return convertCapacityGroupEntity(capacityGroupEntityList);
+        }
+        else {
+            List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupRepository.findAll();
+            return convertCapacityGroupEntity(capacityGroupEntityList);
+        }
     }
 
     private CapacityGroupEntity getCapacityGroupEntity(String capacityGroupId) {

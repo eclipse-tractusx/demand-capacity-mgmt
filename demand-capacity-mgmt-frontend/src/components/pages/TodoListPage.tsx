@@ -26,6 +26,7 @@ import { FaMagic, FaRedo } from "react-icons/fa";
 import { FcTodoList } from "react-icons/fc";
 import { DemandContext } from "../../contexts/DemandContextProvider";
 import { EventsContext } from "../../contexts/EventsContextProvider";
+import { useUser } from "../../contexts/UserContext";
 import { EventProp, EventType } from "../../interfaces/event_interfaces";
 import { LoadingMessage } from "../common/LoadingMessages";
 import DemandsSearch from "../common/Search";
@@ -41,6 +42,7 @@ function TodoListPage() {
   const { fetchFilteredEvents } = useContext(EventsContext)!;
   const [filteredEvents, setFilteredEvents] = useState<EventProp[]>([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -110,19 +112,22 @@ function TodoListPage() {
                       <Button className='btn btn-primary float-end ms-2' onClick={handleRefreshClick}>
                         <FaRedo className="spin-on-hover" />
                       </Button>
-                      <Button
-                        className="btn btn-success float-end ms-2"
-                        onClick={() => setShowAddToExisting(true)}
-                      >
-                        <span>Add to existing</span>
-                      </Button>
-                      <Button
-                        className="btn btn-success float-end"
-                        onClick={() => setShowWizard(true)}
-                      >
-                        <span><FaMagic /> Capacity Group Wizard</span>
-                      </Button>
-
+                      {user?.role === 'SUPPLIER' && (
+                        <>
+                          <Button
+                            className="btn btn-success float-end ms-2"
+                            onClick={() => setShowAddToExisting(true)}
+                          >
+                            <span>Add to existing</span>
+                          </Button>
+                          <Button
+                            className="btn btn-success float-end"
+                            onClick={() => setShowWizard(true)}
+                          >
+                            <span><FaMagic /> Capacity Group Wizard</span>
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
