@@ -166,7 +166,6 @@ public class DemandServiceImpl implements DemandService {
                 }
             );
 
-
         triggerDemandAlertsIfNeeded(demandId, userID, demand);
 
         demand = materialDemandRepository.save(demand);
@@ -189,10 +188,6 @@ public class DemandServiceImpl implements DemandService {
                         .forEach(
                             demandSeriesValues -> {
                                 newDemandValues.add(demandSeriesValues.getDemand());
-
-                                System.out.println(
-                                    "sajaaaaaaa" + demandId + " " + "to" + demandSeriesValues.getDemand()
-                                );
                             }
                         );
                 }
@@ -216,7 +211,13 @@ public class DemandServiceImpl implements DemandService {
 
         for (int i = 0; i < newDemandValues.size(); i++) {
             if (!Objects.equals(oldDemandValues.get(i), newDemandValues.get(i))) {
-                alertService.triggerDemandAlertsIfNeeded(userID, true, oldDemandValues.get(i), newDemandValues.get(i));
+                alertService.triggerDemandAlertsIfNeeded(
+                    userID,
+                    true,
+                    oldDemandValues.get(i),
+                    newDemandValues.get(i),
+                    demandId
+                );
             }
         }
     }

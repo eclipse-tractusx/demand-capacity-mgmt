@@ -32,7 +32,8 @@ public interface AlertService {
         String userID,
         boolean isMaterialDemandChange,
         double oldDemandValue,
-        double newDemandValue
+        double newDemandValue,
+        String materialDemandId
     );
     List<AlertResponse> getAlerts(String userID);
     List<TriggeredAlertResponse> getTriggeredAlerts(String userID);
