@@ -22,14 +22,12 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
-
 import jakarta.persistence.*;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @Entity
 @Table(name = "address_book")
@@ -61,5 +59,4 @@ public class AddressBookRecordEntity {
 
     @Column(name = "picture")
     private byte[] picture;
-
 }

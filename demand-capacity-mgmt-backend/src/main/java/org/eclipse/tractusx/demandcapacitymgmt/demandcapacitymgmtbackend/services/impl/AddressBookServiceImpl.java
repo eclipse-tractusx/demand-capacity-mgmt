@@ -24,6 +24,10 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AddressBookRecordEntity;
@@ -31,11 +35,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.AddressBookService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.GoldenRecordManager;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -48,9 +47,9 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     @Override
     public AddressBookResponse getRecord(AddressBookRequest request) {
-        if(Boolean.FALSE.equals(request.getDirectQuery())){
+        if (Boolean.FALSE.equals(request.getDirectQuery())) {
             Optional<AddressBookRecordEntity> entity = repository.findById(UUID.fromString(request.getQuery()));
-            if(entity.isPresent()){
+            if (entity.isPresent()) {
                 return convertEntityToDto(entity.get());
             }
         } else {
@@ -63,12 +62,12 @@ public class AddressBookServiceImpl implements AddressBookService {
     @Override
     public List<AddressBookResponse> getRecords() {
         List<AddressBookRecordEntity> records;
-            records = repository.findAll();
-            List<AddressBookResponse> response = new ArrayList<>();
-            for(AddressBookRecordEntity ent : records){
-                response.add(convertEntityToDto(ent));
-            }
-            return response;
+        records = repository.findAll();
+        List<AddressBookResponse> response = new ArrayList<>();
+        for (AddressBookRecordEntity ent : records) {
+            response.add(convertEntityToDto(ent));
+        }
+        return response;
     }
 
     @Override
@@ -81,8 +80,7 @@ public class AddressBookServiceImpl implements AddressBookService {
         repository.deleteById(UUID.fromString(request.getQuery()));
     }
 
-
-    private AddressBookResponse convertEntityToDto(AddressBookRecordEntity entity){
+    private AddressBookResponse convertEntityToDto(AddressBookRecordEntity entity) {
         AddressBookResponse response = new AddressBookResponse();
         response.setId(entity.getId().toString());
         response.setContact(entity.getContact());
