@@ -52,5 +52,7 @@ public interface EDCService {
 
     Mono<AssetRequest> createAASRequest(AssetRequest dto);
 
+    Mono<EndpointDataReferenceEntry> getEDRSByParameters(String agreementId, String assetId, String providerId);
+
 
 }
