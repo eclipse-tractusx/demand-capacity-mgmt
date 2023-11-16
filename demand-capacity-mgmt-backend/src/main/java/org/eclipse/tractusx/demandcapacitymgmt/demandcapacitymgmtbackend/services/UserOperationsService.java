@@ -2,7 +2,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UserRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UserResponse;
-
 import java.util.List;
 
 public interface UserOperationsService {

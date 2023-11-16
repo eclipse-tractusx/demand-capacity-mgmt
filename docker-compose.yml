@@ -28,10 +28,10 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+      - 5432:5432
     volumes:
       - db:/var/lib/postgresql/data
-      - ./keycloak/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
 
   keycloak:
     build:
