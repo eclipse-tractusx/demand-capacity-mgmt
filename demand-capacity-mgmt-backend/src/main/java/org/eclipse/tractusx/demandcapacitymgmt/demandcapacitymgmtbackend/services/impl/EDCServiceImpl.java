@@ -246,5 +246,17 @@ public class EDCServiceImpl implements EDCService {
                 .bodyToMono(Void.class);
     }
 
+    @Override
+    public Mono<AssetRequest> createAASRequest(AssetRequest dto) {
+        return webClient
+                .post()
+                .uri(uriBuilder -> uriBuilder.path("/aas/request").build())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(dto))
+                .retrieve()
+                .bodyToMono(AssetRequest.class)
+                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
+    }
+
 
 }
