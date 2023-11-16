@@ -21,9 +21,9 @@
 spring:
   security:
     oauth2:
-      resourceserver:
+      resource-server:
         jwt:
-          issuer-uri: http://localhost:8888/auth/realms/dcm
+          issuer-uri: http://localhost:8888/realms/dcm
 
   datasource:
     url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}

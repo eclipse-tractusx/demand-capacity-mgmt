@@ -53,6 +53,8 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private final LoggingHistoryRepository eventRepository;
 
+    private final AddressBookRepository addressBookRepository;
+
     @Override
     public FavoriteResponse getAllFavorites(String userID) {
         List<FavoriteEntity> favoriteEntities = favoriteRepository.findByUserID(UUID.fromString(userID));
@@ -102,6 +104,15 @@ public class FavoriteServiceImpl implements FavoriteService {
                 response.setEvents(favoriteResponses);
                 return response;
             }
+            case ADDRESS_BOOK -> {
+                List<AddressBookFavoriteResponse> favoriteResponses = new ArrayList<>();
+                for(FavoriteEntity fav : favoriteResponseList){
+                    favoriteResponses.add(convertToAddressBookDto(fav));
+                }
+                FavoriteResponse response = new FavoriteResponse();
+                response.setAddressBooks(favoriteResponses);
+                return response;
+            }
         }
         return new FavoriteResponse();
     }
@@ -113,6 +124,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         List<MaterialDemandFavoriteResponse> materialDemandList = new ArrayList<>();
         List<CompanyDtoFavoriteResponse> companyList = new ArrayList<>();
         List<EventFavoriteResponse> eventsList = new ArrayList<>();
+        List<AddressBookFavoriteResponse> addressBookList = new ArrayList<>();
 
         for (FavoriteEntity entity : favoriteEntities) {
             switch (entity.getType()) {
@@ -120,6 +132,7 @@ public class FavoriteServiceImpl implements FavoriteService {
                 case MATERIAL_DEMAND -> materialDemandList.add(convertToMaterialDemandResponse(entity));
                 case COMPANY_BASE_DATA -> companyList.add(convertToCompanyDto(entity));
                 case EVENT -> eventsList.add(convertToEventDto(entity));
+                case ADDRESS_BOOK -> addressBookList.add(convertToAddressBookDto(entity));
             }
         }
 
@@ -128,8 +141,24 @@ public class FavoriteServiceImpl implements FavoriteService {
         response.setMaterialDemands(materialDemandList);
         response.setCompanies(companyList);
         response.setEvents(eventsList);
+        response.setAddressBooks(addressBookList);
 
         return response;
+    }
+
+    private AddressBookFavoriteResponse convertToAddressBookDto(FavoriteEntity entity){
+        Optional<AddressBookRecordEntity> recordEntity = addressBookRepository.findById(entity.getFavoriteId());
+        if(recordEntity.isPresent()){
+            AddressBookRecordEntity record = recordEntity.get();
+            AddressBookFavoriteResponse response = new AddressBookFavoriteResponse();
+            response.setName(record.getName());
+            response.setId(record.getId().toString());
+            response.setContact(record.getContact());
+            response.setEmail(record.getEmail());
+            response.setCompanyId(response.getCompanyId());
+            response.setFunction(record.getFunction());
+            return response;
+        } else return null;
     }
 
     private SingleCapacityGroupFavoriteResponse convertToSingleCapacityGroup(FavoriteEntity entity) {

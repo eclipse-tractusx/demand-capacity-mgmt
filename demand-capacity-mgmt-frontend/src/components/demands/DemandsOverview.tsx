@@ -32,6 +32,7 @@ import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSe
 
 import { format, getISOWeek, } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../contexts/UserContext';
 import { LoadingGatheringDataMessage } from '../common/LoadingMessages';
 
 interface WeeklyViewProps {
@@ -88,6 +89,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
   const currentYear = new Date().getFullYear();
   const [editMode, setEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useUser();
 
   const { getDemandbyId } = useContext(DemandContext)!;
   const [demandData, setDemandData] = useState<DemandProp>();
@@ -356,26 +358,27 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
         <div className="col-6 border d-flex align-items-center justify-content-center">
           {demandData?.id} - {demandData?.materialDescriptionCustomer}
         </div>
+
         <div className="col d-flex justify-content-end">
-          <br />
-          <ButtonGroup className="mb-2 align-middle">
-            <ToggleButton
-              id="toggle-edit"
-              type="checkbox"
-              variant="info"
-              name="edit"
-              value="0"
-              checked={editMode}
-              onChange={() => setEditMode(!editMode)}
-            >Edit
-            </ToggleButton>
-            <Button variant="info" name="save" onClick={handleSave} disabled={!editMode}>
-              Save
-            </Button>
-            <Button variant="info" name="revert" onClick={handleRevert} disabled={!editMode}>
-              Revert Changes
-            </Button>
-          </ButtonGroup>
+          <br />        {user?.role === 'CUSTOMER' && (
+            <ButtonGroup className="mb-2 align-middle">
+              <ToggleButton
+                id="toggle-edit"
+                type="checkbox"
+                variant="info"
+                name="edit"
+                value="0"
+                checked={editMode}
+                onChange={() => setEditMode(!editMode)}
+              >Edit
+              </ToggleButton>
+              <Button variant="info" name="save" onClick={handleSave} disabled={!editMode}>
+                Save
+              </Button>
+              <Button variant="info" name="revert" onClick={handleRevert} disabled={!editMode}>
+                Revert Changes
+              </Button>
+            </ButtonGroup>)}
         </div>
       </div>
       <br />
