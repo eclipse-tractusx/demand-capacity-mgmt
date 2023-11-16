@@ -353,8 +353,10 @@ const DemandManagement: React.FC = () => {
                                 onClick={() => setShowAddModal(true)}>
                                 <span>New Material Demand</span>
                             </Button>)}
-                        <Button className='btn btn-primary' onClick={handleRefreshClick}>
-                            <FaRedo className="spin-on-hover" />
+                        <Button className='float-end spin-on-hover' variant="primary" onClick={handleRefreshClick}>
+                            <span className="button-content">
+                                <FaRedo className="icon" />
+                            </span>
                         </Button>
                     </div>
                 </div>

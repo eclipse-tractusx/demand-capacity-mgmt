@@ -318,6 +318,9 @@ code {
 }
 
 
+.spin-on-hover:hover .button-content {
+  animation: spin 0.7s ease-in-out infinite;
+}
 
 @keyframes spin {
   0% {
@@ -329,14 +332,16 @@ code {
   }
 }
 
-.spin-on-hover {
-  animation: spin 1s ease-in-out;
+.button-content {
+  display: inline-block;
   transform-origin: center;
+  /* Ensure the span takes the size of its content */
 }
 
-.spin-on-hover:hover {
-  animation: spin 1s ease-in-out infinite;
+.icon {
+  /* Any specific styling for your icon */
 }
+
 
 /* Admin Panel */
 .tabs-column {
