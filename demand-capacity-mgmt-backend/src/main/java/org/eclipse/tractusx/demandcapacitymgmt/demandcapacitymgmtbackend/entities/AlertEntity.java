@@ -1,11 +1,9 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import jakarta.persistence.*;
+import java.util.List;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.AlertThresholdType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.AlertsMonitoredObjects;
 
@@ -18,8 +16,8 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 public class AlertEntity {
 
     @Id
-    //    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @GeneratedValue
+    @Column(columnDefinition = "uuid", updatable = false, name = "id")
     private UUID id;
 
     @Column(name = "user_id")
@@ -44,4 +42,10 @@ public class AlertEntity {
 
     @Column(name = "description")
     private String description;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "alert_id")
+    private List<DedicatedAlertEntity> dedicatedAlerts;
 }

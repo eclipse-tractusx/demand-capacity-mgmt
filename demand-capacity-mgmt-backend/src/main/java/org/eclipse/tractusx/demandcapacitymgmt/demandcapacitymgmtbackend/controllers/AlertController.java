@@ -56,7 +56,7 @@ public class AlertController implements AlertsApi {
     @Override
     public ResponseEntity<List<AlertResponse>> getAlerts() throws Exception {
         String userID = UserUtil.getUserID(request);
-        return ResponseEntity.status(HttpStatus.OK).body(alertService.getAlerts(userID)); // ResponseEntity.status(HttpStatus.OK).body(alertService.getAlerts(userID));
+        return ResponseEntity.status(HttpStatus.OK).body(alertService.getAlerts(userID));
     }
 
     @Override

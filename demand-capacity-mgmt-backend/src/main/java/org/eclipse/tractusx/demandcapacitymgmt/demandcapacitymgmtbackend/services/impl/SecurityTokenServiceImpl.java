@@ -94,12 +94,14 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue(formData)
             .retrieve()
-             .onStatus(
-                     HttpStatusCode::is4xxClientError,
-                     response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
-             ).onStatus(
-                     HttpStatusCode::is5xxServerError,
-                        response -> Mono.error(new RuntimeException("5xx error calling Keycloak")))
+            .onStatus(
+                HttpStatusCode::is4xxClientError,
+                response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
+            )
+            .onStatus(
+                HttpStatusCode::is5xxServerError,
+                response -> Mono.error(new RuntimeException("5xx error calling Keycloak"))
+            )
             .bodyToMono(Void.class)
             .block();
     }
@@ -119,13 +121,13 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
             .bodyValue(formData)
             .retrieve()
             .onStatus(
-                    HttpStatusCode::is4xxClientError,
-                    response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
-                        )
-                        .onStatus(
-                            HttpStatusCode::is5xxServerError,
-                            response -> Mono.error(new RuntimeException("5xx error calling Keycloak"))
-                        )
+                HttpStatusCode::is4xxClientError,
+                response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
+            )
+            .onStatus(
+                HttpStatusCode::is5xxServerError,
+                response -> Mono.error(new RuntimeException("5xx error calling Keycloak"))
+            )
             .bodyToMono(TokenResponse.class)
             .block();
     }
@@ -143,13 +145,14 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue(formData)
             .retrieve()
-                .onStatus(
-                        HttpStatusCode::is4xxClientError,
-                        response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
-                ).onStatus(
-                        HttpStatusCode::is5xxServerError,
-                        response -> Mono.error(new RuntimeException("5xx error calling Keycloak"))
-                )
+            .onStatus(
+                HttpStatusCode::is4xxClientError,
+                response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
+            )
+            .onStatus(
+                HttpStatusCode::is5xxServerError,
+                response -> Mono.error(new RuntimeException("5xx error calling Keycloak"))
+            )
             .bodyToMono(TokenResponse.class)
             .block();
     }
@@ -162,13 +165,14 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue("client_id=" + clientId + "&client_secret=" + clientSecret + "&token=" + token)
             .retrieve()
-                .onStatus(
-                        HttpStatusCode::is4xxClientError,
-                        response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
-                ).onStatus(
-                        HttpStatusCode::is5xxServerError,
-                        response -> Mono.error(new RuntimeException("5xx error calling Keycloak"))
-                )
+            .onStatus(
+                HttpStatusCode::is4xxClientError,
+                response -> Mono.error(new RuntimeException("4xx error calling Keycloak"))
+            )
+            .onStatus(
+                HttpStatusCode::is5xxServerError,
+                response -> Mono.error(new RuntimeException("5xx error calling Keycloak"))
+            )
             .bodyToMono(IntrospectTokenResponse.class)
             .block();
     }
@@ -257,8 +261,8 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         user.setAccessToken(accessToken);
         user.setRefreshToken(refreshToken);
         user.setExpiresIn(expiresIn);
-        //        statusManager.calculateBottleneck(user.getUserID(), false);
-        //        statusManager.calculateTodos(user.getUserID());
+        statusManager.calculateBottleneck(user.getUserID(), false);
+        statusManager.calculateTodos(user.getUserID());
         return user;
     }
 

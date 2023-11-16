@@ -21,13 +21,11 @@
  */
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.AlertRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.AlertResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.TriggeredAlertRequest;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.TriggeredAlertResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.AlertThresholdType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.AlertsMonitoredObjects;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.AlertsRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.TriggeredAlertsRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.AlertService;
@@ -56,12 +55,14 @@ public class AlertServiceImpl implements AlertService {
         alertsRepository.save(alertEntity);
         return convertAlertsResponseDto(alertEntity);
     }
+
     @Override
     public void triggerDemandAlertsIfNeeded(
         String userID,
         boolean isMaterialDemandChange,
         double oldValue,
-        double newValue
+        double newValue,
+        String materialDemandId
     ) {
         List<AlertEntity> alerts = alertsRepository.findAll(); // TODO : only bring my alerts
         alerts.forEach(
@@ -76,17 +77,8 @@ public class AlertServiceImpl implements AlertService {
                 triggeredAlertEntity.setThreshold(alertEntity.getThreshold());
                 LocalDateTime currentLocalDateTime = LocalDateTime.now();
                 triggeredAlertEntity.setCreated(Timestamp.valueOf(currentLocalDateTime).toString());
-                //triggeredAlertEntity.setTriggerTimesInThreeMonths(alertEntity.getTriggerTimesInThreeMonths());
-                //triggeredAlertEntity.setTriggerTimes(alertEntity.getTriggerTimes());
-
-                if (
-                    alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.ALL_DEMANDS) ||
-                    (
-                        alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.ALL_CAPACITIES) &&
-                        !isMaterialDemandChange
-                    ) ||
-                    alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.ALL_OBJECTS)
-                ) {
+                // TODO : Adjust trigger times
+                if (isGlobalAlert(isMaterialDemandChange, alertEntity)) {
                     if (alertEntity.getType().equals(AlertThresholdType.RELATIVE)) {
                         double threshold = alertEntity.getThreshold();
                         double demandDelta = threshold * oldValue;
@@ -100,30 +92,49 @@ public class AlertServiceImpl implements AlertService {
                         }
                     }
                 } else if (alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.DEDICATED)) {
-                    if (alertEntity.getType().equals(AlertThresholdType.ABSOLUTE)) {
-                        double threshold = alertEntity.getThreshold();
-                        if (
-                            threshold >= 0 &&
-                            (newValue - oldValue >= threshold) ||
-                            (threshold < 0 && (newValue - oldValue <= threshold))
-                        ) {
-                            // TODO : adjust the demand description , trigger times here
-                            triggeredAlertsRepository.save(triggeredAlertEntity);
-                        }
-                    } else {
-                        double threshold = alertEntity.getThreshold();
-                        double demandDelta = alertEntity.getThreshold() * oldValue;
-                        if (
-                            threshold >= 0 &&
-                            (newValue - oldValue >= demandDelta) ||
-                            (threshold < 0 && (newValue - oldValue <= demandDelta))
-                        ) {
-                            // TODO : adjust the demand description , trigger times here
-                            triggeredAlertsRepository.save(triggeredAlertEntity);
-                        }
-                    }
+                    alertEntity
+                        .getDedicatedAlerts()
+                        .forEach(
+                            dedicatedAlert -> {
+                                if (Objects.equals(materialDemandId, dedicatedAlert.getObjectId().toString())) {
+                                    if (alertEntity.getType().equals(AlertThresholdType.ABSOLUTE)) {
+                                        double threshold = alertEntity.getThreshold();
+                                        if (
+                                            threshold >= 0 &&
+                                            (newValue - oldValue >= threshold) ||
+                                            (threshold < 0 && (newValue - oldValue <= threshold))
+                                        ) {
+                                            // TODO : adjust the demand description , trigger times here
+                                            triggeredAlertsRepository.save(triggeredAlertEntity);
+                                        }
+                                    } else {
+                                        double threshold = alertEntity.getThreshold();
+                                        double demandDelta = alertEntity.getThreshold() * oldValue;
+                                        if (
+                                            threshold >= 0 &&
+                                            (newValue - oldValue >= demandDelta) ||
+                                            (threshold < 0 && (newValue - oldValue <= demandDelta))
+                                        ) {
+                                            // TODO : adjust the demand description , trigger times here
+                                            triggeredAlertsRepository.save(triggeredAlertEntity);
+                                        }
+                                    }
+                                }
+                            }
+                        );
                 }
             }
+        );
+    }
+
+    private static boolean isGlobalAlert(boolean isMaterialDemandChange, AlertEntity alertEntity) {
+        return (
+            alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.ALL_DEMANDS) ||
+            (
+                alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.ALL_CAPACITIES) &&
+                !isMaterialDemandChange
+            ) ||
+            alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.ALL_OBJECTS)
         );
     }
 
@@ -175,6 +186,12 @@ public class AlertServiceImpl implements AlertService {
     }
 
     private AlertResponse convertAlertsResponseDto(AlertEntity alertEntity) {
+        List<DedicatedAlert> dedicatedAlerts = alertEntity
+            .getDedicatedAlerts()
+            .stream()
+            .map(this::enrichDedicateAlertResponse)
+            .toList();
+
         AlertResponse responseDto = new AlertResponse();
         responseDto.setType(alertEntity.getType().name());
         responseDto.setAlertId("" + alertEntity.getId());
@@ -184,10 +201,20 @@ public class AlertServiceImpl implements AlertService {
         responseDto.setMonitoredObjects(alertEntity.getMonitoredObjects().name());
         responseDto.setThreshold(String.valueOf(alertEntity.getThreshold()));
         responseDto.setUser(alertEntity.getUserID().toString());
+        responseDto.setDedicatedAlerts(dedicatedAlerts);
         return responseDto;
     }
 
+    DedicatedAlert enrichDedicateAlertResponse(DedicatedAlertEntity alertEntity) {
+        DedicatedAlert dedicatedAlert = new DedicatedAlert();
+        dedicatedAlert.setId(alertEntity.getId().toString());
+        dedicatedAlert.setType(alertEntity.getType().toString());
+        dedicatedAlert.setObjectId(alertEntity.getObjectId().toString());
+        return dedicatedAlert;
+    }
+
     private TriggeredAlertResponse convertTriggeredAlertsResponseDto(TriggeredAlertEntity alertEntity) {
+        //TODO: Set triggerTimes
         TriggeredAlertResponse responseDto = new TriggeredAlertResponse();
         responseDto.setType(alertEntity.getType().name());
         responseDto.setAlertId("" + alertEntity.getId());
@@ -196,13 +223,26 @@ public class AlertServiceImpl implements AlertService {
         responseDto.setDescription(alertEntity.getDescription());
         responseDto.setMonitoredObjects(alertEntity.getMonitoredObjects().name());
         responseDto.setThreshold(String.valueOf(alertEntity.getThreshold()));
-        //        responseDto.setTriggerTimes(alertEntity.getTriggerTimes());
-        //        responseDto.setTriggerTimesInThreeMonths(alertEntity.getTriggerTimesInThreeMonths());
         responseDto.setUser(alertEntity.getUserID().toString());
         return responseDto;
     }
 
+    DedicatedAlertEntity convertDedicatedAlertsDtoToEntity(DedicatedAlert dedicatedAlert) {
+        return DedicatedAlertEntity
+            .builder()
+            .id(UUID.fromString(dedicatedAlert.getId()))
+            .type(EventObjectType.valueOf(dedicatedAlert.getType()))
+            .objectId(UUID.fromString(dedicatedAlert.getObjectId()))
+            .build();
+    }
+
     private AlertEntity convertDtoToEntity(AlertRequest alertRequest) {
+        List<DedicatedAlertEntity> dedicatedAlertEntities = alertRequest
+            .getDedicatedAlerts()
+            .stream()
+            .map(this::convertDedicatedAlertsDtoToEntity)
+            .toList();
+
         return AlertEntity
             .builder()
             .id(UUID.randomUUID())
@@ -213,6 +253,7 @@ public class AlertServiceImpl implements AlertService {
             .threshold(Double.parseDouble(alertRequest.getThreshold().toString()))
             .userID(UUID.fromString(alertRequest.getUser()))
             .type(AlertThresholdType.valueOf(alertRequest.getType()))
+            .dedicatedAlerts(dedicatedAlertEntities)
             .build();
     }
 }

@@ -1049,6 +1049,10 @@ components:
           type: string
         user:
           type: string
+        dedicatedAlerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DedicatedAlert'
 
 
     TriggeredAlertRequest:
@@ -1075,6 +1079,7 @@ components:
         user:
           type: string
 
+
     AlertResponse:
       type: object
       properties:
@@ -1094,6 +1099,21 @@ components:
           type: string
         user:
           type: string
+        dedicatedAlerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DedicatedAlert'
+
+    DedicatedAlert:
+      type: object
+      properties:
+        id:
+          type: string
+        objectId:
+          type: string
+        type:
+          type: string
+
 
 
     TriggeredAlertResponse:
