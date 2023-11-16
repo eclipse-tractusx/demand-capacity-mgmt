@@ -50,5 +50,7 @@ public interface EDCService {
 
     Mono<Void> deleteEDR(String edrId);
 
+    Mono<AssetRequest> createAASRequest(AssetRequest dto);
+
 
 }
