@@ -19,7 +19,7 @@
 #   ********************************************************************************
 
 apiVersion: v2
-name: edc
+name: dcm-edc
 description: A Helm chart for deploying an EDC for the DCM environment
 type: application
 version: 0.0.3
