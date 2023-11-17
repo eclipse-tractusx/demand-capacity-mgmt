@@ -59,6 +59,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final LoggingHistoryService loggingHistoryService;
     private final FavoriteService favoriteService;
     private final StatusManagerImpl statusManager;
+    private final AlertService alertService;
 
     private final UserRepository userRepository;
 
@@ -89,6 +90,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             capacityGroupRepository.save(capacityGroupEntity);
         }
         statusManager.calculateTodos(userID);
+
         return convertCapacityGroupDto(capacityGroupEntity);
     }
 
