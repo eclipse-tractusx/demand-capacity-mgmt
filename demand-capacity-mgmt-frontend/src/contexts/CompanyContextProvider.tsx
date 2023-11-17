@@ -75,7 +75,9 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
     fetchCompanies();
     fetchTopCompanies();
-  }, [access_token]);
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [access_token]);
 
 
   const findCompanyByCompanyID = (companyID: string | undefined): Company | undefined => {

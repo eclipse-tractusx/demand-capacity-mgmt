@@ -19,7 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Button, Tab, Tabs } from "react-bootstrap";
 import { FaFilter, FaRedo } from "react-icons/fa";
 import { FcTimeline } from "react-icons/fc";
@@ -93,16 +93,24 @@ function EventsPage() {
     };
 
 
+    const fetchFavoritesByTypeRef = useRef(fetchFavoritesByType);
+    const userInputRef = useRef(userInput);
+
+    useEffect(() => {
+        userInputRef.current = userInput;
+    }, [userInput]);
+
     useEffect(() => {
         const fetchData = async () => {
+            const fetchFavoritesByType = fetchFavoritesByTypeRef.current;
             try {
                 setLoading(true);
                 let filteredEvents: EventProp[] = [];
-                if (userInput !== '') {
+                if (userInputRef.current !== '') {
                     filteredEvents = await fetchFilteredEvents({
-                        material_demand_id: userInput,
-                        capacity_group_id: userInput,
-                        event: userInput,
+                        material_demand_id: userInputRef.current,
+                        capacity_group_id: userInputRef.current,
+                        event: userInputRef.current,
                     });
                 } else {
                     filteredEvents = events; // Show all events if userInput is empty
@@ -152,7 +160,7 @@ function EventsPage() {
         };
 
         fetchData();
-    }, [fetchFilteredEvents]);
+    }, [events, fetchFilteredEvents, fetchFavoritesByTypeRef, userInputRef]);
 
 
 

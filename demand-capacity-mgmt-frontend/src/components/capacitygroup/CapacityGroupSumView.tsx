@@ -127,7 +127,10 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     }));
   };
 
-  const demandSumsByWeek: Record<number, number> = {};
+  const demandSumsByWeek = useMemo(() => {
+    return {} as Record<number, number>; // Initialize your object here
+  }, []);
+
   const computedDemandSums: Record<number, number> = useMemo(() => {
 
     // Populate demandSumsByWeek
@@ -159,7 +162,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     }
 
     return computedSums;
-  }, [capacityGroup, materialDemands]);
+  }, [capacityGroup, materialDemands, demandSumsByWeek]);
 
 
   const demandSums = useMemo(() => {
@@ -193,7 +196,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     }
 
     return computedDemandSums;
-  }, [capacityGroup, materialDemands]);
+  }, [capacityGroup, materialDemands, computedDemandSums, demandSumsByWeek]);
 
   // Calculate demand sums for each demand name
   const demandSumsByDemandAndWeek: Record<string, Record<number, number>> = {};
@@ -249,7 +252,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
       });
     }
     return capacityMap;
-  }, [computedDemandSums]);
+  }, [capacityGroup]);
 
 
   // Calculate deltaMap directly based on demandSumsByWeek and actualCapacityMap
@@ -284,7 +287,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     });
 
     return calculatedDeltaMap;
-  }, [computedDemandSums]); // Empty dependency array ensures that this useMemo runs only once
+  }, [computedDemandSums, actualCapacityMap, monthsCurrentYear, monthsNextYear, monthsPreviousYear]); // Empty dependency array ensures that this useMemo runs only once
 
 
   // Function to get the beginning and end dates of the week

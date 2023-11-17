@@ -94,6 +94,7 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, isArchive }) => {
 
     useEffect(() => {
         fetchFavorites();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [events]);
 
     const sortedData = useMemo(() => {
