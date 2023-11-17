@@ -1,9 +1,9 @@
 dependencies:
 - name: tractusx-connector
   repository: https://eclipse-tractusx.github.io/charts/dev
-  version: 0.5.1
+  version: 0.5.3
 - name: opensearch
   repository: https://opensearch-project.github.io/helm-charts/
   version: 2.4.0
-digest: sha256:9721ae92b27d5f3191da6b62f3e17214959a1407e8d4b50a5843aa29c052abea
-generated: "2023-11-17T10:29:15.4445907Z"
+digest: sha256:d3d5eba849e53a6b2eeff83cb5f377eb2a53c7fbff53c1ced87e1e39cf3d543c
+generated: "2023-11-17T11:39:39.8838587Z"
