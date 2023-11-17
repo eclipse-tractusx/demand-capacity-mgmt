@@ -27,7 +27,7 @@ appVersion: 0.0.2
 dependencies:
   - name: tractusx-connector
     alias: txdc
-    version: 0.5.1
+    version: 0.5.3
     repository: https://eclipse-tractusx.github.io/charts/dev
   - name: opensearch
     version: 2.4.0
