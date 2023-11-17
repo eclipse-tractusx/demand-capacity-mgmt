@@ -32,7 +32,7 @@ import { LoadingMessage } from '../common/LoadingMessages';
 
 const AdminPage = () => {
     const { user } = useUser();
-    const [loading, setLoading] = useState(false);
+    const [loading] = useState(false);
     const [activeTab, setActiveTab] = useState('general');
     const [showHelpModal, setShowHelpModal] = useState(false);
 
@@ -42,7 +42,7 @@ const AdminPage = () => {
         if (user?.role !== 'ADMIN') {
             navigate('/error');
         }
-    }, [user]);
+    }, [navigate, user]);
 
     if (loading) {
         return <LoadingMessage />; // Show loading spinner when data is loading

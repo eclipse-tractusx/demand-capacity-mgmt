@@ -80,22 +80,14 @@ const DemandList: React.FC<{
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
     //const [listedDemands, setListedDemands] = useState<DemandProp[]>([]);
 
-    const fetchFavorites = async () => {
-      try {
-        const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
-        if (favorites && favorites.materialDemands) {
-          setFavoriteDemands(favorites.materialDemands.map((fav: MaterialDemandFavoriteResponse) => fav.id));
-        }
-      } catch (error) {
-        console.error('Error fetching favorites by type in DemandList:', error);
-      }
-    };
+
 
     useEffect(() => {
       setShowWizardModal(showWizard || false);
       fetchDemandProps();
       fetchFavorites();
       setCurrentPage(1);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showWizard, searchQuery]);
 
     const handleSort = (column: string | null) => {
@@ -160,7 +152,21 @@ const DemandList: React.FC<{
 
     const handleCloseDetails = () => setShowDetailsModal(false);
 
-    const isDemandFavorited = (demandId: string) => favoriteDemands.includes(demandId);
+    const isDemandFavorited = useMemo(() => {
+      const isFavorited = (demandId: string) => favoriteDemands.includes(demandId);
+      return isFavorited;
+    }, [favoriteDemands]);
+
+    const fetchFavorites = useCallback(async () => {
+      try {
+        const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
+        if (favorites && favorites.materialDemands) {
+          setFavoriteDemands(favorites.materialDemands.map((fav: MaterialDemandFavoriteResponse) => fav.id));
+        }
+      } catch (error) {
+        console.error('Error fetching favorites by type in DemandList:', error);
+      }
+    }, [fetchFavoritesByType, setFavoriteDemands]);
 
     const filteredDemands = useMemo(() => {
       let filteredDemands = [...demandprops];
@@ -220,7 +226,7 @@ const DemandList: React.FC<{
       }
       // Return the sortedDemands instead of filteredDemands
       return sortedDemands;
-    }, [demandprops, searchQuery, sortColumn, sortOrder, eventTypes]);
+    }, [demandprops, searchQuery, isDemandFavorited, sortColumn, sortOrder, eventTypes]);
 
     const slicedDemands = useMemo(() => {
       const indexOfLastDemand = currentPage * demandsPerPage;
@@ -248,17 +254,17 @@ const DemandList: React.FC<{
       [filteredDemands]
     );
 
-    const toggleFavorite = async (demandId: string) => {
+    const toggleFavorite = useCallback(async (demandId: string) => {
       if (favoriteDemands.includes(demandId)) {
-        await deleteFavorite(demandId)
+        await deleteFavorite(demandId);
         setFavoriteDemands(prev => prev.filter(id => id !== demandId));
       } else {
-        await addFavorite(demandId, FavoriteType.MATERIAL_DEMAND)
+        await addFavorite(demandId, FavoriteType.MATERIAL_DEMAND);
         setFavoriteDemands(prev => [...prev, demandId]);
       }
       fetchFavorites();
       fetchDemandProps();
-    };
+    }, [favoriteDemands, deleteFavorite, addFavorite, fetchFavorites, fetchDemandProps]);
 
 
     const demandItems = useMemo(
@@ -365,7 +371,7 @@ const DemandList: React.FC<{
             </td>
           </tr>
         )),
-      [slicedDemands, selectedDemands, handleCheckboxChange]
+      [slicedDemands, favoriteDemands, toggleFavorite, selectedDemands, handleCheckboxChange]
     );
 
 

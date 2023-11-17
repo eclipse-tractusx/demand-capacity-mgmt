@@ -19,7 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -199,60 +199,32 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   };
 
   const [options, setOptions] = useState<any[]>([]); // State to store options for Creatable component
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const favoriteIdsSet = new Set<string>(); // Set to store unique favorite material demand IDs
-        let materialDemandOptions: any[] = [];
 
-        // Fetch material demands from favorites
-        const favoritesResponse = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
-        const favoriteMaterialDemands = favoritesResponse?.materialDemands || [];
+  const fetchFavoritesByTypeRef = useRef(fetchFavoritesByType);
+  const fetchData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const favoriteIdsSet = new Set<string>(); // Set to store unique favorite material demand IDs
+      const fetchFavoritesByType = fetchFavoritesByTypeRef.current;
+      let materialDemandOptions: any[] = [];
 
-        // Filter and map favorite material demands to options, ensuring uniqueness based on IDs
-        const favoriteOptions = favoriteMaterialDemands
-          .filter((md: any) => {
-            if (favoriteIdsSet.has(md.id)) {
-              return false; // Skip duplicate favorites
-            }
-            favoriteIdsSet.add(md.id); // Add favorite ID to set
-            return true; // Include only unique favorites
-          })
-          .map((md: any) => {
-            const label = (
-              <div>
-                <LuStar size={12} className="text-warning" />  {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
-              </div>
-            );
-            return {
-              value: md,
-              label: label,
-            };
-          });
+      // Fetch material demands from favorites
+      const favoritesResponse = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
+      const favoriteMaterialDemands = favoritesResponse?.materialDemands || [];
 
-        // Fetch material demands from demands prop
-        const demandMaterialDemands = demands || [];
-
-        // Filter demand material demands to exclude those with IDs present in favorites
-        const filteredDemandOptions = demandMaterialDemands.filter((md: any) => {
-          // Exclude demand if its ID is present in favorites
+      // Filter and map favorite material demands to options, ensuring uniqueness based on IDs
+      const favoriteOptions = favoriteMaterialDemands
+        .filter((md: any) => {
           if (favoriteIdsSet.has(md.id)) {
-            return false;
+            return false; // Skip duplicate favorites
           }
-          // Exclude demand if its linkStatus is neither 'TODO' nor 'UNLINKED'
-          if (md.linkStatus !== 'TODO' && md.linkStatus !== 'UNLINKED') {
-            return false;
-          }
-          // else
-          return true;
-        });
-
-        // Map demand material demands to options
-        const demandOptions = filteredDemandOptions.map((md: any) => {
+          favoriteIdsSet.add(md.id); // Add favorite ID to set
+          return true; // Include only unique favorites
+        })
+        .map((md: any) => {
           const label = (
             <div>
-              {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
+              <LuStar size={12} className="text-warning" />  {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
             </div>
           );
           return {
@@ -261,20 +233,50 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
           };
         });
 
-        // Combine favorite options and demand options
-        materialDemandOptions = [...favoriteOptions, ...demandOptions];
+      // Fetch material demands from demands prop
+      const demandMaterialDemands = demands || [];
 
-        setOptions(materialDemandOptions); // Update options state with combined material demands
-      } catch (error) {
-        console.error('Error fetching filtered capacity groups:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      // Filter demand material demands to exclude those with IDs present in favorites
+      const filteredDemandOptions = demandMaterialDemands.filter((md: any) => {
+        // Exclude demand if its ID is present in favorites
+        if (favoriteIdsSet.has(md.id)) {
+          return false;
+        }
+        // Exclude demand if its linkStatus is neither 'TODO' nor 'UNLINKED'
+        if (md.linkStatus !== 'TODO' && md.linkStatus !== 'UNLINKED') {
+          return false;
+        }
+        // else
+        return true;
+      });
+
+      // Map demand material demands to options
+      const demandOptions = filteredDemandOptions.map((md: any) => {
+        const label = (
+          <div>
+            {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
+          </div>
+        );
+        return {
+          value: md,
+          label: label,
+        };
+      });
+
+      // Combine favorite options and demand options
+      materialDemandOptions = [...favoriteOptions, ...demandOptions];
+
+      setOptions(materialDemandOptions); // Update options state with combined material demands
+    } catch (error) {
+      console.error('Error fetching filtered capacity groups:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [demands, fetchFavoritesByTypeRef]);
+
+  useEffect(() => {
     fetchData();
-
-  }, [demands]);
-
+  }, [fetchData]);
 
   return (
     <>
@@ -288,7 +290,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
           <Modal.Title>Capacity Group Wizard</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {isLoading && <> <LoadingCustomMessage message='Creating..' /></>}
+          {isLoading && <> <LoadingCustomMessage message='Please Wait..' /></>}
           {isSuccess ? (
             <div className="alert alert-success" role="alert">
               Capacity group created !

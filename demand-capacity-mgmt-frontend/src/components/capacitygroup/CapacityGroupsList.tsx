@@ -21,7 +21,7 @@
  */
 
 
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaEye, FaRedo } from 'react-icons/fa';
 import { LuStar } from 'react-icons/lu';
@@ -66,7 +66,7 @@ const CapacityGroupsList: React.FC = () => {
       setSortOrder('asc');
     }
   };
-  const fetchFavorites = async () => {
+  const fetchFavorites = useCallback(async () => {
     try {
       const favorites = await fetchFavoritesByType(FavoriteType.CAPACITY_GROUP);
       if (favorites && favorites.capacityGroups) {
@@ -75,13 +75,14 @@ const CapacityGroupsList: React.FC = () => {
     } catch (error) {
       console.error('Error fetching favorites by type in DemandList:', error);
     }
-  };
-  const handleRefreshClick = async () => {
+  }, [fetchFavoritesByType]);
+
+  const handleRefreshClick = useCallback(async () => {
     await fetchCapacityGroupsWithRetry();
     await fetchFavorites();
-  };
+  }, [fetchCapacityGroupsWithRetry, fetchFavorites]);
 
-  const toggleFavorite = async (capacityGroupID: string) => {
+  const toggleFavorite = useCallback(async (capacityGroupID: string) => {
     if (favoriteCapacityGroups.includes(capacityGroupID)) {
       await deleteFavorite(capacityGroupID)
       setFavoriteCapacityGroups(prev => prev.filter(id => id !== capacityGroupID));
@@ -90,14 +91,19 @@ const CapacityGroupsList: React.FC = () => {
       setFavoriteCapacityGroups(prev => [...prev, capacityGroupID]);
     }
     handleRefreshClick();
-  };
+  }, [favoriteCapacityGroups, handleRefreshClick, addFavorite, deleteFavorite]);
+
+
 
   useEffect(() => {
     fetchFavorites();
-  }, [capacitygroups]);
+  }, [capacitygroups, fetchFavorites]);
 
 
-  const isCapacityGroupFavorite = (capacityGroupID: string) => favoriteCapacityGroups.includes(capacityGroupID);
+  const isCapacityGroupFavorite = useMemo(() => {
+    const isFavorited = (capacityGroupID: string) => favoriteCapacityGroups.includes(capacityGroupID);
+    return isFavorited;
+  }, [favoriteCapacityGroups]);
 
   useMemo(() => {
     let filteredcapacitygroups = [...capacitygroups];
@@ -119,12 +125,6 @@ const CapacityGroupsList: React.FC = () => {
     const favoriteCapacityGroups = filteredcapacitygroups.filter((capacitygroup) => isCapacityGroupFavorite(capacitygroup.internalId));
     const unfavoritedCapacityGroups = filteredcapacitygroups.filter((capacitygroup) => !isCapacityGroupFavorite(capacitygroup.internalId));
 
-    // Sort favorited demands by changedAt timestamp in descending order
-    //favoriteCapacityGroups.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
-
-    // Sort unfavorited demands by changedAt timestamp in descending order
-    //unfavoritedCapacityGroups.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
-
     // Concatenate favorited and unfavorited demands
     const sortedCapacityGroups = [...favoriteCapacityGroups, ...unfavoritedCapacityGroups];
 
@@ -143,7 +143,7 @@ const CapacityGroupsList: React.FC = () => {
     }
 
     setFilteredCapacityGroups(sortedCapacityGroups);
-  }, [capacitygroups, searchQuery, sortColumn, sortOrder]);
+  }, [capacitygroups, isCapacityGroupFavorite, searchQuery, sortColumn, sortOrder]);
 
   const slicedcapacitygroups = useMemo(() => {
     const indexOfLastCapacityGroup = currentPage * capacitygroupsPerPage;
@@ -240,7 +240,7 @@ const CapacityGroupsList: React.FC = () => {
           </td>
         </tr>
       )),
-    [slicedcapacitygroups]
+    [slicedcapacitygroups, favoriteCapacityGroups, toggleFavorite]
   );
 
   return (

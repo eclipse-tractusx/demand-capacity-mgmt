@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Col, Dropdown, Form, Modal, Row } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaInfoCircle, FaRedo, FaSearch, FaTrashAlt } from 'react-icons/fa';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
@@ -69,12 +69,7 @@ const DemandManagement: React.FC = () => {
     const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
     const [favoriteDemands, setFavoriteDemands] = useState<string[]>([]);
 
-    const handleRefreshClick = async () => {
-        await fetchDemandProps(); // Call your fetchEvents function to refresh the data
-        await fetchFavorites();
-    };
-
-    const fetchFavorites = async () => {
+    const fetchFavorites = useCallback(async () => {
         try {
             const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
             if (favorites && favorites.materialDemands) {
@@ -83,9 +78,14 @@ const DemandManagement: React.FC = () => {
         } catch (error) {
             console.error('Error fetching favorites by type in DemandList:', error);
         }
-    };
+    }, [fetchFavoritesByType, setFavoriteDemands]);
 
-    const toggleFavorite = async (demandID: string) => {
+    const handleRefreshClick = useCallback(async () => {
+        await fetchDemandProps();
+        await fetchFavorites();
+    }, [fetchDemandProps, fetchFavorites]);
+
+    const toggleFavorite = useCallback(async (demandID: string) => {
         if (favoriteDemands.includes(demandID)) {
             await deleteFavorite(demandID)
             setFavoriteDemands(prev => prev.filter(id => id !== demandID));
@@ -94,16 +94,13 @@ const DemandManagement: React.FC = () => {
             setFavoriteDemands(prev => [...prev, demandID]);
         }
         handleRefreshClick();
-    };
+    }, [favoriteDemands, handleRefreshClick, addFavorite, deleteFavorite]);
 
+    const fetchFavoritesRef = useRef(fetchFavorites);
     useEffect(() => {
-        fetchFavorites();
-    }, []);
-
-    useEffect(() => {
-        fetchFavorites();
+        fetchFavoritesRef.current();
         fetchDemandProps();
-    }, [searchQuery]);
+    }, [searchQuery, fetchDemandProps]);
 
 
     const handleSort = (column: string | null) => {
@@ -167,7 +164,10 @@ const DemandManagement: React.FC = () => {
         }
     };
 
-    const isDemandFavorited = (demandId: string) => favoriteDemands.includes(demandId);
+    const isDemandFavorited = useMemo(() => {
+        const isFavorited = (demandId: string) => favoriteDemands.includes(demandId);
+        return isFavorited;
+    }, [favoriteDemands]);
 
     const filteredDemands = useMemo(() => {
         let filteredDemands = [...demandprops];
@@ -222,7 +222,7 @@ const DemandManagement: React.FC = () => {
         }
 
         return sortedDemands;
-    }, [demandprops, searchQuery, sortColumn, sortOrder]);
+    }, [demandprops, isDemandFavorited, searchQuery, sortColumn, sortOrder]);
 
 
 
@@ -337,7 +337,7 @@ const DemandManagement: React.FC = () => {
                     </td>
                 </tr>
             )),
-        [slicedDemands]
+        [slicedDemands, favoriteDemands, toggleFavorite, user]
     );
 
     return (
