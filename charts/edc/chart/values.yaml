@@ -49,6 +49,9 @@ txdc:
   serviceAccount:
     create: false
 
+  participant:
+    id: "BPNL00DEMAND0001"
+
 opensearch:
   enabled: true
   replicas: 1
