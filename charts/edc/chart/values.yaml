@@ -37,9 +37,6 @@ txdc:
     hashicorp:
       enabled: true
       url: "https://vault.demo.catena-x.net"
-      token: ""
-      paths:
-        secret: "/v1/edc"
       healthCheck:
         enabled: true
         standbyOk: true
@@ -51,6 +48,22 @@ txdc:
 
   participant:
     id: "BPNL00DEMAND0001"
+
+  controlplane:
+    ssi:
+      miw:
+        # -- MIW URL
+        url: "https://managed-identity-wallets-new.int.demo.catena-x.net"
+        # -- The BPN of the issuer authority
+        authorityId: "BPNL00DEMAND0001"
+      oauth:
+        # -- The URL (of KeyCloak), where access tokens can be obtained
+        tokenurl: "https://centralidp.int.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token"
+        client:
+          # -- The client ID for KeyCloak
+          id: "sa631"
+          # -- The alias under which the client secret is stored in the vault.
+          secretAlias: "value-added-service/dcm/dev/client"
 
 opensearch:
   enabled: true
