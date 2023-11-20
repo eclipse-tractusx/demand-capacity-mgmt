@@ -65,6 +65,10 @@ txdc:
           id: "sa631"
           # -- The alias under which the client secret is stored in the vault.
           secretAlias: "value-added-service/dcm/dev/client"
+    endpoints:
+      management:
+        authKey: "something"
+
 
 opensearch:
   enabled: true
