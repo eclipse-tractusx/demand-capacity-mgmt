@@ -1932,6 +1932,10 @@ components:
           type: number
         calendarWeek:
           type: string
+        ruled:
+          type: boolean
+        weekColor:
+          type: string
 
 
     FavoriteRequest:
