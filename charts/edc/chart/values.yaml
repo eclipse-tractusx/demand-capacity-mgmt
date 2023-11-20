@@ -37,6 +37,7 @@ txdc:
     hashicorp:
       enabled: true
       url: "https://vault.demo.catena-x.net"
+      token: "s.EatmWQLX7uzZaJHgdxOHX1Yq"
       healthCheck:
         enabled: true
         standbyOk: true
