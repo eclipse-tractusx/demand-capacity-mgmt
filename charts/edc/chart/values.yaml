@@ -105,11 +105,6 @@ txdc:
       # -- Explicitly declared url for reaching the public api (e.g. if ingresses not used)
       public: ""
 
-  postgresql:
-    enabled: true
-    jdbcUrl: "jdbc:postgresql://txdc-postgres:5432/edc"
-    username: *psqlUsername
-    password: *psqlPassword
   vault:
     hashicorp:
       enabled: true
