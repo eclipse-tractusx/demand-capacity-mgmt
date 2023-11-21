@@ -67,7 +67,7 @@ txdc:
           secretAlias: "value-added-service/dcm/dev/client"
     endpoints:
       management:
-        authKey: "something"
+        authKey: "value-added-service/dcm/dev/authKey"
 
 
 opensearch:
