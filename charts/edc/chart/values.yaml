@@ -18,14 +18,11 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
-postgres:
-  enabled: true
-  auth:
-    password: &psqlPassword "psql_password"
-    username: &psqlUsername "postgresql_sandbox_user"
-    database: edc
-  persistence:
-    enabled: true
+postgresql:
+  jdbcUrl: "jdbc:postgresql://edc-dcm-postgres:5432/edc"
+  fullnameOverride: "edc-dcm-postgres"
+  username: user
+  password: password
 
 txdc:
 
