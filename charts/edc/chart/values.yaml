@@ -28,6 +28,86 @@ postgres:
     enabled: true
 
 txdc:
+
+  install:
+    daps: false
+    postgresql: true
+    vault: false
+
+  participant:
+    id: "BPNL00DEMAND0001"
+
+  controlplane:
+    internationalDataSpaces:
+      id: TXDC-DCM
+      description: Tractus-X Eclipse IDS Data Space Connector for DCM
+      title: ""
+      maintainer: ""
+      curator: ""
+      catalogId: TXDC-DCM-Catalog
+    endpoints:
+      # -- data management api, used by internal users, can be added to an ingress and must not be internet facing
+      management:
+        # -- authentication key, must be attached to each 'X-Api-Key' request header
+        authKey: "value-added-service/dcm/dev/authKey"
+    ## Ingress declaration to expose the network service.
+    ingresses:
+      ## Public / Internet facing Ingress
+      - enabled: true
+        # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
+        hostname: "dcm-edc.int.demo.catena-x.net"
+        className: "nginx"
+        # -- EDC endpoints exposed by this ingress resource
+        endpoints:
+          - management
+          - control
+          - protocol
+        # -- TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource
+        tls:
+          # -- Enables TLS on the ingress resource
+          enabled: true
+          # -- If present overwrites the default secret name
+          secretName: tls-secret
+    url:
+      # -- Explicitly declared url for reaching the ids api (e.g. if ingresses not used)
+      ids: ""
+
+    ssi:
+      miw:
+        # -- MIW URL
+        url: "https://managed-identity-wallets-new.int.demo.catena-x.net"
+        # -- The BPN of the issuer authority
+        authorityId: "BPNL00DEMAND0001"
+      oauth:
+        # -- The URL (of KeyCloak), where access tokens can be obtained
+        tokenurl: "https://centralidp.int.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token"
+        client:
+          # -- The client ID for KeyCloak
+          id: "sa631"
+          # -- The alias under which the client secret is stored in the vault.
+          secretAlias: "value-added-service/dcm/dev/client"
+  dataplane:
+    ## Ingress declaration to expose the network service.
+    ingresses:
+      ## Public / Internet facing Ingress
+      - enabled: true
+        # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
+        hostname: "dcm-edc.int.demo.catena-x.net"
+        # -- EDC endpoints exposed by this ingress resource
+        endpoints:
+          - public
+        # -- Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use
+        className: "nginx"
+        # -- TLS [tls class](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) applied to the ingress resource
+        tls:
+          # -- Enables TLS on the ingress resource
+          enabled: true
+          # -- If present overwrites the default secret name
+          secretName: tls-secret
+    url:
+      # -- Explicitly declared url for reaching the public api (e.g. if ingresses not used)
+      public: ""
+
   postgresql:
     enabled: true
     jdbcUrl: "jdbc:postgresql://txdc-postgres:5432/edc"
@@ -43,32 +123,9 @@ txdc:
         standbyOk: true
 
   backendService:
-    httpProxyTokenReceiverUrl: "http://txdc-backend"
+    httpProxyTokenReceiverUrl: "http://edc-dcm-backend.int.demo.catena-x.net"
   serviceAccount:
     create: false
-
-  participant:
-    id: "BPNL00DEMAND0001"
-
-  controlplane:
-    ssi:
-      miw:
-        # -- MIW URL
-        url: "https://managed-identity-wallets-new.int.demo.catena-x.net"
-        # -- The BPN of the issuer authority
-        authorityId: "BPNL00DEMAND0001"
-      oauth:
-        # -- The URL (of KeyCloak), where access tokens can be obtained
-        tokenurl: "https://centralidp.int.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token"
-        client:
-          # -- The client ID for KeyCloak
-          id: "sa631"
-          # -- The alias under which the client secret is stored in the vault.
-          secretAlias: "value-added-service/dcm/dev/client"
-    endpoints:
-      management:
-        authKey: "value-added-service/dcm/dev/authKey"
-
 
 opensearch:
   enabled: true
