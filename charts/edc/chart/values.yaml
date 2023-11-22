@@ -46,7 +46,7 @@ txdc:
       # -- data management api, used by internal users, can be added to an ingress and must not be internet facing
       management:
         # -- authentication key, must be attached to each 'X-Api-Key' request header
-        authKey: <path:value-added-service/dcm/dev/authKey#authKey>
+        authKey: vault:/value-added-service/dcm/dev/authKey:authKey
     ## Ingress declaration to expose the network service.
     ingresses:
       ## Public / Internet facing Ingress
@@ -82,7 +82,7 @@ txdc:
           # -- The client ID for KeyCloak
           id: "sa631"
           # -- The alias under which the client secret is stored in the vault.
-          secretAlias: <path:value-added-service/dcm/dev/client#secret>
+          secretAlias: vault:/value-added-service/dcm/dev/client:secret>
 
   dataplane:
     ## Ingress declaration to expose the network service.
@@ -110,7 +110,7 @@ txdc:
     hashicorp:
       enabled: true
       url: "https://vault.demo.catena-x.net"
-      token: <path:value-added-service/dcm/dev/vault-token#vault-token>
+      token: "s.EatmWQLX7uzZaJHgdxOHX1Yq"
       healthCheck:
         enabled: true
         standbyOk: true
