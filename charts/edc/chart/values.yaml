@@ -110,7 +110,7 @@ txdc:
     hashicorp:
       enabled: true
       url: "https://vault.demo.catena-x.net"
-      token: "s.EatmWQLX7uzZaJHgdxOHX1Yq"
+      token: <path:value-added-service/dcm/dev/vault-token#vault-token>
       healthCheck:
         enabled: true
         standbyOk: true
