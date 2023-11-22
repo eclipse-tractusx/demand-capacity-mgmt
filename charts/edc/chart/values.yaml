@@ -46,7 +46,7 @@ txdc:
       # -- data management api, used by internal users, can be added to an ingress and must not be internet facing
       management:
         # -- authentication key, must be attached to each 'X-Api-Key' request header
-        authKey: "ZWRjX2RjbV9hZXNfZW5ja2V5Cg=="
+        authKey: "value-added-service/dcm/dev/authKey"
     ## Ingress declaration to expose the network service.
     ingresses:
       ## Public / Internet facing Ingress
@@ -82,7 +82,7 @@ txdc:
           # -- The client ID for KeyCloak
           id: "sa631"
           # -- The alias under which the client secret is stored in the vault.
-          secretAlias: "ourCIA79VM2YcE85xLkbA61b9VJG4PYq"
+          secretAlias: "value-added-service/dcm/dev/client/secret"
 
   dataplane:
     ## Ingress declaration to expose the network service.
