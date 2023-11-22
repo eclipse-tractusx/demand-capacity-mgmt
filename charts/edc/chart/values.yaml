@@ -82,7 +82,7 @@ txdc:
           # -- The client ID for KeyCloak
           id: "sa631"
           # -- The alias under which the client secret is stored in the vault.
-          secretAlias: "value-added-service/dcm/dev/client#secret"
+          secretAlias: "miw-oem-secret"
 
   dataplane:
     ## Ingress declaration to expose the network service.
@@ -111,6 +111,8 @@ txdc:
       enabled: true
       url: "https://vault.demo.catena-x.net"
       token: "s.EatmWQLX7uzZaJHgdxOHX1Yq"
+      paths:
+        secret: /v1/cgi-dcm-foss
       healthCheck:
         enabled: true
         standbyOk: true
