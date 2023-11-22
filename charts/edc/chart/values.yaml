@@ -82,7 +82,7 @@ txdc:
           # -- The client ID for KeyCloak
           id: "sa631"
           # -- The alias under which the client secret is stored in the vault.
-          secretAlias: "value-added-service/dcm/dev/client/secret"
+          secretAlias: "value-added-service/dcm/dev/client"
 
   dataplane:
     ## Ingress declaration to expose the network service.
