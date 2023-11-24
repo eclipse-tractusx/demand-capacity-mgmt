@@ -56,7 +56,6 @@ txdc:
         className: "nginx"
         # -- EDC endpoints exposed by this ingress resource
         endpoints:
-          - api
           - management
           - control
           - protocol
