@@ -3,12 +3,11 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.UserOperationsApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UserRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UserResponse;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UserOperationsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -26,6 +25,4 @@ public class UserController implements UserOperationsApi {
         service.updateUser(userRequest);
         return ResponseEntity.status(201).build();
     }
-
-
 }

@@ -23,9 +23,8 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
-
 import java.util.List;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 
 public interface CapacityGroupService {
     CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest, String userID);

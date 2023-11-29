@@ -5,13 +5,13 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.uuid.Logger;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UserRepository;
 
-import java.util.*;
-
 public class UserUtil {
+
     public static String getUserID(HttpServletRequest request) {
         try {
             DecodedJWT decodedJWT = JWT.decode(Objects.requireNonNull(getTokenFromHeader(request)));
@@ -34,9 +34,9 @@ public class UserUtil {
             DecodedJWT decodedJWT = JWT.decode(Objects.requireNonNull(getTokenFromHeader(request)));
             Claim rolesClaim = decodedJWT.getClaim("realm_access");
             Map<String, Object> realmAccessMap = Optional
-                    .ofNullable(rolesClaim)
-                    .map(Claim::asMap)
-                    .orElse(Collections.emptyMap());
+                .ofNullable(rolesClaim)
+                .map(Claim::asMap)
+                .orElse(Collections.emptyMap());
 
             Object rolesObject = realmAccessMap.get("roles");
 
@@ -46,11 +46,11 @@ public class UserUtil {
                     if (roleObj instanceof String) {
                         String roleStr = (String) roleObj;
                         try {
-                            return Role.valueOf(
-                                    roleStr
-                            );
+                            return Role.valueOf(roleStr);
                         } catch (IllegalArgumentException e) {
-                            Logger.logError("Incompatible role! User must have one of the 3 role types 'ADMIN','CUSTOMER','SUPPLIER'");
+                            Logger.logError(
+                                "Incompatible role! User must have one of the 3 role types 'ADMIN','CUSTOMER','SUPPLIER'"
+                            );
                         }
                     }
                 }
