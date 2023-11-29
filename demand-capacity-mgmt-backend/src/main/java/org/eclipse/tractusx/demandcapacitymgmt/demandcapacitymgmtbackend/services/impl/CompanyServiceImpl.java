@@ -48,18 +48,39 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final LoggingHistoryService loggingHistoryService;
 
+
+
     @Override
-    public CompanyEntity createCompany() {
-        postLogs();
-        return null;
+    public CompanyEntity createCompany(CompanyDto companyDto) {
+        CompanyEntity entity = new CompanyEntity();
+        entity.setCompanyName(companyDto.getCompanyName());
+        entity.setBpn(companyDto.getBpn());
+        entity.setMyCompany(companyDto.getMyCompany());
+        entity.setCountry(companyDto.getCountry());
+        entity.setId(UUID.fromString(companyDto.getId()));
+        entity.setStreet(companyDto.getStreet());
+        entity.setNumber(companyDto.getNumber());
+        entity.setZipCode(companyDto.getZipCode());
+        companyRepository.save(entity);
+        postLogs(companyDto.getId(), "post");
+
+        return entity;
     }
 
-    private void postLogs() {
+    private void postLogs(String companyId, String action) {
         LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
         loggingHistoryRequest.setObjectType(EventObjectType.COMPANY.name());
         loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
-        loggingHistoryRequest.setEventDescription("Company Created");
+        loggingHistoryRequest.setIsFavorited(false);
+        if ("post".equals(action)) {
+            loggingHistoryRequest.setEventDescription("Company Created - ID: " + companyId);
+        } else if ("delete".equals(action)) {
+            loggingHistoryRequest.setEventDescription("Company Deleted - ID: " + companyId);
+        }
+
+
         loggingHistoryService.createLog(loggingHistoryRequest);
+
     }
 
     @Override
@@ -73,6 +94,21 @@ public class CompanyServiceImpl implements CompanyService {
             );
         } else company.get().setCount(company.get().getCount() + 1);
         return company.get();
+    }
+
+    @Override
+    public void deleteCompany(UUID id) {
+        Optional<CompanyEntity> company = companyRepository.findById(id);
+        if (company.isEmpty()) {
+            throw new NotFoundException(
+                404,
+                "Company not found in DB",
+                new ArrayList<>(List.of("ID provided - : " + id))
+            );
+        } else {
+            companyRepository.delete(company.get());
+            postLogs(id.toString(), "delete");
+        }
     }
 
     @Override

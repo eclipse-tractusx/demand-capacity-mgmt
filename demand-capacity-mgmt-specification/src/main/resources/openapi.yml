@@ -1798,9 +1798,13 @@ components:
           type: string
         name:
           type: string
-        contact:
+        landLine:
+          type: string
+        cellPhone:
           type: string
         email:
+          type: string
+        department:
           type: string
         function:
           type: string
@@ -1859,9 +1863,13 @@ components:
           type: string
         name:
           type: string
-        contact:
+        landLine:
+          type: string
+        cellPhone:
           type: string
         email:
+          type: string
+        department:
           type: string
         function:
           type: string
