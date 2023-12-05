@@ -29,8 +29,3 @@ dependencies:
     alias: txdc
     version: 0.5.1
     repository: https://eclipse-tractusx.github.io/charts/dev
-  - name: opensearch
-    version: 2.4.0
-    repository: https://opensearch-project.github.io/helm-charts/
-    alias: opensearch
-    condition: opensearch.enabled
