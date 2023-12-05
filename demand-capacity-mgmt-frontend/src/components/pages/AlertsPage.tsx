@@ -20,52 +20,48 @@
  *    ********************************************************************************
  */
 
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FcHighPriority } from "react-icons/fc";
-import { EventsContext } from "../../contexts/EventsContextProvider";
-import { EventProp, EventType } from "../../interfaces/event_interfaces";
-import { LoadingMessage } from "../common/LoadingMessages";
-import EventsTable from "../events/EventsTable";
+import {LoadingCustomMessage, LoadingMessage} from "../common/LoadingMessages";
+import RulesModal from "../alerts/RulesModal";
+import TriggeredAlertsTable from "../alerts/TriggeredAlertsTable";
+import  {AlertsContext} from "../../contexts/AlertsContextProvider";
 
 
 function AlertsPage() {
-    const { fetchFilteredEvents } = useContext(EventsContext)!;
-    const [filteredEvents, setFilteredEvents] = useState<EventProp[]>([]);
     const [loading, setLoading] = useState(false);
+    const [showRulesModal, setShowRulesModal] = useState(false);
+    const {triggeredAlerts, fetchTriggeredAlertsWithRetry } = useContext(AlertsContext)!;
+
+    const openRulesModalClick = () => {
+        setShowRulesModal(true);
+    };
+    const hideRulesModal = () => {
+        setShowRulesModal(false);
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                // Fetch events based on the selected event type
-                const filteredEvents = await fetchFilteredEvents({
-                    event: EventType.ALERT,
-                });
-                setFilteredEvents(filteredEvents);
-            } catch (error) {
-                console.error('Error fetching filtered events:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData(); // Call the fetchData function when the component mounts
-    }, [fetchFilteredEvents]);
+        fetchTriggeredAlertsWithRetry();
+    }, []);
 
     if (loading) {
         return <LoadingMessage />; // Show loading spinner when data is loading
     }
-
     return (
         <>
             <br />
             <div className="container-xl">
-                <div style={{ display: "flex", }}>
-                    <FcHighPriority size={35} /><h3 className="icon-text-padding">Alerts</h3>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                        <FcHighPriority size={35} />
+                        <h3 className="icon-text-padding">Alerts</h3>
+                    </div>
+                    <RulesModal showRulesModal={showRulesModal} hideRulesModal={hideRulesModal}/>
+                    <button className="rules-button" onClick={openRulesModalClick}>Rules</button>
                 </div>
                 <div className="table">
                     <div className="table-wrapper">
-                        <EventsTable events={filteredEvents} isArchive={false} />
+                        <TriggeredAlertsTable triggeredAlerts={triggeredAlerts} />
                     </div>
                 </div>
             </div>
