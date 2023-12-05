@@ -33,6 +33,7 @@ import { addWeeks, formatISO, getISOWeek, subWeeks } from 'date-fns';
 import { startOfDay } from 'date-fns/esm';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { FaRegCalendarCheck } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
 import { generateWeeksForDateRange, getISOWeekMonday } from '../../util/WeeksUtils';
@@ -82,15 +83,19 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
 
   const handleStartDateChange = (date: Date | null) => {
     if (date) {
+      const adjustedEndDate = endDate && date.getTime() > endDate.getTime() ? date : endDate;
       setStartDate(date);
-      setWeeksForDateRange(generateWeeksForDateRange(date, endDate));
+      setEndDate(adjustedEndDate);
+      setWeeksForDateRange(generateWeeksForDateRange(date, adjustedEndDate));
     }
   };
 
   const handleEndDateChange = (date: Date | null) => {
     if (date) {
+      const adjustedStartDate = startDate && date.getTime() < startDate.getTime() ? date : startDate;
+      setStartDate(adjustedStartDate);
       setEndDate(date);
-      setWeeksForDateRange(generateWeeksForDateRange(startDate, date));
+      setWeeksForDateRange(generateWeeksForDateRange(adjustedStartDate, date));
     }
   };
 
@@ -147,12 +152,12 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
     });
 
     setDemandValuesMap(newDemandValuesMap);
-    console.log(demandValuesMap)
   }, [demandData]);
 
-  useEffect(() => { //TODO DELETE
+  /*useEffect(() => { 
     console.log(demandValuesMap)
-  }, [demandValuesMap]);
+    console.log(weeksForDateRange)
+  }, [demandValuesMap]);*/
 
 
   const handleSave = async () => {
@@ -285,33 +290,38 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
               </Button>
             </ButtonGroup>)}
         </div>
-        <div className="col-12 p-3 d-flex align-items-center">
-          <span className="mr-2"></span>
-
-          <DatePicker
-            selected={startDate}
-            onChange={(date) => handleStartDateChange(date)}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-            placeholderText="Select a Start Date"
-            showYearDropdown
-            showMonthDropdown
-            showWeekNumbers
-          />
-          <span className="mx-2">-</span>
-          <DatePicker
-            selected={endDate}
-            onChange={(date) => handleEndDateChange(date)}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            minDate={startDate}
-            placeholderText="Select a End Date"
-            showMonthDropdown
-            showYearDropdown
-            showWeekNumbers
-          />
+        <div className="data-range-container">
+          <div className="pop-out-section">
+            <div className="text-muted p-1"> <FaRegCalendarCheck /> Data Range</div>
+            <div className="col-12 p-1 d-flex form-group align-items-center">
+              <DatePicker
+                className="form-control"
+                selected={startDate}
+                onChange={(date) => handleStartDateChange(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                placeholderText="Select a Start Date"
+                showYearDropdown
+                showMonthDropdown
+                showWeekNumbers
+              />
+              <span className="mx-3">-</span>
+              <DatePicker
+                className="form-control"
+                selected={endDate}
+                onChange={(date) => handleEndDateChange(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                placeholderText="Select a End Date"
+                showMonthDropdown
+                showYearDropdown
+                showWeekNumbers
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -321,12 +331,40 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
             <thead>
               <tr>
                 <th className="empty-header-cell"></th>
-                {weeksForDateRange.map((monthData) => (
-                  <th key={`${monthData.name}-${monthData.year}-${monthData.monthIndex}`} colSpan={monthData.weeks.length} className="header-cell">
-                    {monthData.name} {monthData.year}
+
+                {weeksForDateRange.reduce((acc: { year: number; weeks: number }[], monthData) => {
+                  const existingYearIndex = acc.findIndex((data) => data.year === monthData.year);
+                  if (existingYearIndex === -1) {
+                    acc.push({ year: monthData.year as number, weeks: monthData.weeks.length as number });
+                  } else {
+                    acc[existingYearIndex].weeks += monthData.weeks.length;
+                  }
+                  return acc;
+                }, []).map((yearData, index) => (
+                  <th
+                    key={`year-${yearData.year}`}
+                    colSpan={yearData.weeks}
+                    className="header-cell"
+                  >
+                    {yearData.year}
                   </th>
                 ))}
               </tr>
+              <tr>
+                <th className="empty-header-cell"></th>
+                {/* Render headers based on data */}
+                {weeksForDateRange.map((monthData) => (
+                  <th
+                    key={`${monthData.name}-${monthData.year}`}
+                    colSpan={monthData.weeks.length}
+                    className="header-cell"
+                  >
+                    {monthData.name}
+                  </th>
+                ))}
+              </tr>
+
+
               <tr>
                 <th className="empty-header-cell"></th>
                 {weeksForDateRange.reduce<number[]>((acc, curr) => acc.concat(curr.weeks), []).map((week) => {

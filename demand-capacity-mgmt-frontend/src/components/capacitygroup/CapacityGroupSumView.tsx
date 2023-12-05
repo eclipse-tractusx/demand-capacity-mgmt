@@ -20,92 +20,53 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { addWeeks, formatISO, getISOWeek, startOfDay, subWeeks } from 'date-fns';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import DatePicker from 'react-datepicker';
+import { FaArrowDown, FaArrowRight, FaRegCalendarCheck } from 'react-icons/fa';
 import '../../../src/index.css';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
-
-import { addDays, addMonths, addWeeks, format, getISOWeek, startOfMonth } from 'date-fns';
-import { FaArrowDown, FaArrowRight } from 'react-icons/fa';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import { DemandProp } from "../../interfaces/demand_interfaces";
+import { generateWeeksForDateRange, getISOWeekMonday } from '../../util/WeeksUtils';
 
 interface WeeklyViewProps {
   capacityGroup: SingleCapacityGroup | null | undefined;
   materialDemands: DemandProp[] | null;
 }
 
-
-function getISOWeekMonday(year: number, isoWeek: number): Date {
-  const january4 = new Date(year, 0, 4);
-  const diff = (isoWeek - 1) * 7 + (1 - january4.getDay());
-  return addDays(january4, diff);
-}
-
-function getWeeksInMonth(year: number, monthIndex: number): number[] {
-  const firstDayOfMonth = startOfMonth(new Date(year, monthIndex));
-  const nextMonth = startOfMonth(addMonths(firstDayOfMonth, 1));
-
-  let weeks = [];
-  let currentDay = firstDayOfMonth;
-
-  while (currentDay < nextMonth) {
-    weeks.push(getISOWeek(currentDay));
-    currentDay = addWeeks(currentDay, 1);
-  }
-
-  return weeks;
-}
-
 const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materialDemands }) => {
 
   const { demandcategories } = useContext(DemandCategoryContext) || {};
-  const currentYear = new Date().getFullYear();
 
-  const monthsCurrentYear = Array.from({ length: 12 }, (_, monthIndex) => {
-    const monthStart = new Date(currentYear, monthIndex, 1);
-    const monthName = format(monthStart, 'MMM');
-    const weeks = getWeeksInMonth(currentYear, monthIndex);
+  const currentDate = startOfDay(new Date());
+  const defaultStartDateString = formatISO(subWeeks(currentDate, 8), { representation: 'date' });
+  const defaultEndDateString = formatISO(addWeeks(currentDate, 53), { representation: 'date' });
 
+  const [startDate, setStartDate] = useState<Date>(new Date(defaultStartDateString));
+  const [endDate, setEndDate] = useState<Date>(new Date(defaultEndDateString));
+  const [weeksForDateRange, setWeeksForDateRange] = useState<
+    { name: string; year: number; weeks: number[]; monthIndex: number }[]
+  >([]);
 
-    return {
-      name: monthName,
-      year: currentYear,
-      weeks: weeks,
-      monthIndex: monthIndex,
-    };
-  });
+  const handleStartDateChange = (date: Date | null) => {
+    if (date) {
+      const adjustedEndDate = endDate && date.getTime() > endDate.getTime() ? date : endDate;
+      setStartDate(date);
+      setEndDate(adjustedEndDate);
+      setWeeksForDateRange(generateWeeksForDateRange(date, adjustedEndDate));
+    }
+  };
 
-  const monthsPreviousYear = Array.from({ length: 1 }, (_, monthIndex) => {
-    const monthStart = new Date(currentYear - 1, monthIndex + 11, 1);
-    const monthName = format(monthStart, 'MMM');
-    const weeks = getWeeksInMonth(currentYear - 1, monthIndex + 11);
-
-    return {
-      name: monthName,
-      year: currentYear - 1,
-      weeks: weeks,
-      monthIndex: monthIndex + 11,
-    };
-  });
-
-  const monthsNextYear = Array.from({ length: 1 }, (_, monthIndex) => {
-    const monthStart = new Date(currentYear + 1, monthIndex, 1);
-    const monthName = format(monthStart, 'MMM');
-    const weeks = getWeeksInMonth(currentYear + 1, monthIndex);
-
-    return {
-      name: monthName,
-      year: currentYear + 1,
-      weeks: weeks,
-      monthIndex: monthIndex,
-    };
-  });
-
-  const totalWeeksPreviousYear = monthsPreviousYear.reduce((total, month) => total + month.weeks.length, 0);
-  const totalWeeksCurrentYear = monthsCurrentYear.reduce((total, month) => total + month.weeks.length, 0);
-  const totalWeeksNextYear = monthsNextYear.reduce((total, month) => total + month.weeks.length, 0);
-
+  const handleEndDateChange = (date: Date | null) => {
+    if (date) {
+      const adjustedStartDate = startDate && date.getTime() < startDate.getTime() ? date : startDate;
+      setStartDate(adjustedStartDate);
+      setEndDate(date);
+      setWeeksForDateRange(generateWeeksForDateRange(adjustedStartDate, date));
+    }
+  };
 
   //Mapping of categories
   const idToNumericIdMap: Record<string, number> = {};
@@ -216,31 +177,10 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     });
   }
 
-  /*To focus on the first value on the table*/
-  const firstNonZeroDemandRef = useRef<HTMLTableDataCellElement>(null);
 
   useEffect(() => {
-    let firstNonZeroDemandWeek: number | null = null;
-
-    // Iterate over demandSums object to find the first non-zero demand week
-    for (const week in demandSums) {
-      if (demandSums[week] !== 0) {
-        firstNonZeroDemandWeek = parseInt(week);
-        break;
-      }
-    }
-
-    if (firstNonZeroDemandWeek !== null) {
-      const cellElement = document.getElementById(`cell-${firstNonZeroDemandWeek}`);
-
-      // Check if the element exists before focusing
-      if (cellElement && firstNonZeroDemandRef.current) {
-        // Focus on the first non-zero demand sum cell
-        cellElement.focus();
-        cellElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-      }
-    }
-  }, [demandSums]);
+    setWeeksForDateRange(generateWeeksForDateRange(startDate, endDate));
+  }, [startDate, endDate]);
 
   // Batch update actualCapacityMap
   const actualCapacityMap: Record<number, number> = useMemo(() => {
@@ -259,26 +199,8 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
   const deltaMap: Record<number, Record<number, number>> = useMemo(() => {
     const calculatedDeltaMap: Record<number, Record<number, number>> = {};
 
-    // Calculate deltas for the previous year
-    monthsPreviousYear.forEach((month) => {
-      calculatedDeltaMap[month.year] = calculatedDeltaMap[month.year] || {};
-      month.weeks.forEach((week) => {
-        calculatedDeltaMap[month.year][week] =
-          (actualCapacityMap[week] || 0) - (computedDemandSums[week] || 0);
-      });
-    });
-
-    // Calculate deltas for the current year
-    monthsCurrentYear.forEach((month) => {
-      calculatedDeltaMap[month.year] = calculatedDeltaMap[month.year] || {};
-      month.weeks.forEach((week) => {
-        calculatedDeltaMap[month.year][week] =
-          (actualCapacityMap[week] || 0) - (computedDemandSums[week] || 0);
-      });
-    });
-
     // Calculate deltas for the next year
-    monthsNextYear.forEach((month) => {
+    weeksForDateRange.forEach((month) => {
       calculatedDeltaMap[month.year] = calculatedDeltaMap[month.year] || {};
       month.weeks.forEach((week) => {
         calculatedDeltaMap[month.year][week] =
@@ -287,120 +209,128 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     });
 
     return calculatedDeltaMap;
-  }, [computedDemandSums, actualCapacityMap, monthsCurrentYear, monthsNextYear, monthsPreviousYear]); // Empty dependency array ensures that this useMemo runs only once
+  }, [computedDemandSums, actualCapacityMap]); // Empty dependency array ensures that this useMemo runs only once
 
 
   // Function to get the beginning and end dates of the week
   const getWeekDates = (year: number, month: string, week: number) => {
     const startDate = getISOWeekMonday(year, week);
 
-    const endDate = new Date(startDate);
+    const endDate = new Date(startDate.toDate());
     endDate.setDate(endDate.getDate() + 6); // Assuming weeks end on Saturdays
 
     return {
-      startDate: startDate.toDateString(),
+      startDate: startDate.toString(),
       endDate: endDate.toDateString(),
     };
   };
 
   return (
     <div className='container'>
+      <div className="data-range-container">
+        <div className="pop-out-section">
+          <div className="text-muted p-1"> <FaRegCalendarCheck /> Data Range</div>
+          <div className="col-12 p-1 d-flex form-group align-items-center">
+            <DatePicker
+              className="form-control"
+              selected={startDate}
+              onChange={(date) => handleStartDateChange(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              placeholderText="Select a Start Date"
+              showYearDropdown
+              showMonthDropdown
+              showWeekNumbers
+            />
+            <span className="mx-3">-</span>
+            <DatePicker
+              className="form-control"
+              selected={endDate}
+              onChange={(date) => handleEndDateChange(date)}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+              placeholderText="Select a End Date"
+              showMonthDropdown
+              showYearDropdown
+              showWeekNumbers
+            />
+          </div>
+        </div>
+      </div>
       <div className="table-container">
         <div className="container">
           <table className="vertical-table">
             <thead>
               <tr>
                 <th className="empty-header-cell"></th>
-                <th colSpan={totalWeeksPreviousYear} className="header-cell">
-                  {currentYear - 1}
-                </th>
-                <th colSpan={totalWeeksCurrentYear} className="header-cell">
-                  {currentYear}
-                </th>
-                <th colSpan={totalWeeksNextYear} className="header-cell">
-                  {currentYear + 1}
-                </th>
-              </tr>
-              <tr>
-                <th className="empty-header-cell"></th>
-                {monthsPreviousYear.map((month) => (
-                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                    {month.name}
-                  </th>
-                ))}
-                {monthsCurrentYear.map((month) => (
-                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                    {month.name}
-                  </th>
-                ))}
-                {monthsNextYear.map((month) => (
-                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                    {month.name}
+
+                {weeksForDateRange.reduce((acc: { year: number; weeks: number }[], monthData) => {
+                  const existingYearIndex = acc.findIndex((data) => data.year === monthData.year);
+                  if (existingYearIndex === -1) {
+                    acc.push({ year: monthData.year as number, weeks: monthData.weeks.length as number });
+                  } else {
+                    acc[existingYearIndex].weeks += monthData.weeks.length;
+                  }
+                  return acc;
+                }, []).map((yearData, index) => (
+                  <th
+                    key={`year-${yearData.year}`}
+                    colSpan={yearData.weeks}
+                    className="header-cell"
+                  >
+                    {yearData.year}
                   </th>
                 ))}
               </tr>
               <tr>
                 <th className="empty-header-cell"></th>
-                {monthsPreviousYear.map((month) =>
-                  month.weeks.map((week) => (
-                    <th key={month.name + week} className="header-cell week-header-cell">
+                {/* Render headers based on data */}
+                {weeksForDateRange.map((monthData) => (
+                  <th
+                    key={`${monthData.name}-${monthData.year}`}
+                    colSpan={monthData.weeks.length}
+                    className="header-cell"
+                  >
+                    {monthData.name}
+                  </th>
+                ))}
+              </tr>
+
+
+              <tr>
+                <th className="empty-header-cell"></th>
+                {weeksForDateRange.reduce<number[]>((acc, curr) => acc.concat(curr.weeks), []).map((week) => {
+                  // Find the relevant monthData for the current week
+                  const monthData = weeksForDateRange.find((month) => month.weeks.includes(week));
+
+                  if (!monthData) {
+                    // Handle the case where monthData is not found
+                    return null;
+                  }
+
+                  return (
+                    <th className="header-cell week-header-cell">
                       <OverlayTrigger
                         placement="top"
                         overlay={
-                          <Tooltip id={`week-tooltip-${month.year}-${week}`}>
-                            {`Week ${week} - ${getWeekDates(month.year, month.name, week).startDate} to ${getWeekDates(
-                              month.year,
-                              month.name,
+                          <Tooltip id={`week-tooltip-${week}`}>
+                            {`Week ${week} - ${getWeekDates(monthData.year, monthData.name, week).startDate} to ${getWeekDates(
+                              monthData.year,
+                              monthData.name,
                               week
                             ).endDate}`}
                           </Tooltip>
                         }
                       >
-                        <span>{week}</span>
+                        <span id={`week-${week}`} className=''>{week}</span>
                       </OverlayTrigger>
                     </th>
-                  ))
-                )}
-                {monthsCurrentYear.map((month) =>
-                  month.weeks.map((week) => (
-                    <th key={month.name + week} className="header-cell week-header-cell">
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip id={`week-tooltip-${month.year}-${week}`}>
-                            {`Week ${week} - ${getWeekDates(month.year, month.name, week).startDate} to ${getWeekDates(
-                              month.year,
-                              month.name,
-                              week
-                            ).endDate}`}
-                          </Tooltip>
-                        }
-                      >
-                        <span>{week}</span>
-                      </OverlayTrigger>
-                    </th>
-                  ))
-                )}
-                {monthsNextYear.map((month) =>
-                  month.weeks.map((week) => (
-                    <th key={month.name + week} className="header-cell week-header-cell">
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip id={`week-tooltip-${month.year}-${week}`}>
-                            {`Week ${week} - ${getWeekDates(month.year, month.name, week).startDate} to ${getWeekDates(
-                              month.year,
-                              month.name,
-                              week
-                            ).endDate}`}
-                          </Tooltip>
-                        }
-                      >
-                        <span>{week}</span>
-                      </OverlayTrigger>
-                    </th>
-                  ))
-                )}
+
+                  );
+                })}
               </tr>
 
               <tr>
@@ -409,17 +339,15 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                     {expandedDemandRows['total'] ? <FaArrowDown /> : <FaArrowRight />} Demands (Sum)
                   </div>
                 </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
+                {weeksForDateRange.map((month) =>
                   month.weeks.map((week) => (
                     <td
                       key={`demand-${week}`}
                       className={`data-cell ${demandSums[week] !== 0 ? 'non-zero-demand-cell' : ''}`}
                       // Assign an ID to each cell to identify it for focusing
                       id={`cell-${week}`}
-                      // Use the created ref directly without the need for a ternary operator
-                      ref={demandSums[week] !== 0 ? firstNonZeroDemandRef : undefined}
                     >
-                      {demandSums[week] !== 0 ? demandSums[week] : '-'} {/*Todo Stylize */}
+                      {demandSums[week] !== 0 ? demandSums[week] : '-'} {/* Todo Stylize */}
                     </td>
                   ))
                 )}
@@ -439,7 +367,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                               {expandedDemandRows[demand.id] ? <FaArrowDown /> : <FaArrowRight />} {demand.materialDescriptionCustomer}
                             </div>
                           </th>
-                          {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
+                          {weeksForDateRange.map((month) =>
                             month.weeks.map((week) => {
                               const demandSum =
                                 demandSumsByDemandAndWeek[demand.materialDescriptionCustomer]?.[week] || null;
@@ -461,7 +389,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                                       {demandSeries.demandCategory.demandCategoryName}
                                     </div>
                                   </th>
-                                  {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
+                                  {weeksForDateRange.map((month) =>
                                     month.weeks.map((week) => {
                                       const demandValue = demandSeries.demandSeriesValues.find(
                                         (demandValue) => getISOWeek(new Date(demandValue.calendarWeek)) === week
@@ -485,76 +413,12 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
               )}
               <tr>
                 <th className="sticky-header-cell">
-                  <div className="sticky-header-content">-</div>
-                </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                  month.weeks.map((week) => (
-                    <td key={`empty-${week}`} className="data-cell">
-                      {' '}
-                    </td>
-                  ))
-                )}
-              </tr>
-              <tr>
-                <th className="sticky-header-cell">
-                  <div className="sticky-header-content">Actual Capacity</div>
-                </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                  month.weeks.map((week) => {
-                    const matchingCapacity = capacityGroup?.capacities.find((capacity) => {
-                      const capacityWeek = new Date(capacity.calendarWeek);
-                      return getISOWeek(capacityWeek) === week;
-                    });
-                    const actualCapacity = matchingCapacity?.actualCapacity ?? '-';
-
-                    return (
-                      <td key={`actual-capacity-${week}`} className="data-cell">
-                        {actualCapacity.toString()}
-                      </td>
-                    );
-                  })
-                )}
-              </tr>
-              <tr>
-                <th className="sticky-header-cell">
-                  <div className="sticky-header-content">Maximum Capacity</div>
-                </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                  month.weeks.map((week) => {
-                    const matchingCapacity = capacityGroup?.capacities.find((capacity) => {
-                      const capacityWeek = new Date(capacity.calendarWeek);
-                      return getISOWeek(capacityWeek) === week;
-                    });
-                    const maximumCapacity = matchingCapacity?.maximumCapacity ?? '-';
-
-                    return (
-                      <td key={`actual-capacity-${week}`} className="data-cell">
-                        {maximumCapacity.toString()}
-                      </td>
-                    );
-                  })
-                )}
-              </tr>
-              <tr>
-                <th className="sticky-header-cell">
-                  <div className="sticky-header-content">-</div>
-                </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                  month.weeks.map((week) => (
-                    <td key={`empty-${week}`} className="data-cell">
-                      {' '}
-                    </td>
-                  ))
-                )}
-              </tr>
-              <tr>
-                <th className="sticky-header-cell">
                   <div className="sticky-header-content">Delta</div>
                 </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
+                {weeksForDateRange.map((month) =>
                   month.weeks.map((week) => (
                     <td
-                      key={`delta-${month.year}-${week}`}
+                      key={`delta-${week}`}
                       className={`data-cell ${deltaMap[month.year]?.[week] < 0 ? 'bg-light-red' : deltaMap[month.year]?.[week] > 0 ? 'bg-light-green' : ''}`}
                     >
                       {deltaMap[month.year][week] > 0 ? `+${deltaMap[month.year][week]}` : deltaMap[month.year][week]}
