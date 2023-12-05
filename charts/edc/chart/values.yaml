@@ -52,7 +52,7 @@ txdc:
       ## Public / Internet facing Ingress
       - enabled: true
         # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
-        hostname: "dcm-provider-edc.int.demo.catena-x.net"
+        hostname: "dcm-edc.int.demo.catena-x.net"
         className: "nginx"
         # -- EDC endpoints exposed by this ingress resource
         endpoints:
@@ -90,7 +90,7 @@ txdc:
       ## Public / Internet facing Ingress
       - enabled: true
         # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
-        hostname: "dcm-consumer-edc.int.demo.catena-x.net"
+        hostname: "dcm-edc.int.demo.catena-x.net"
         # -- EDC endpoints exposed by this ingress resource
         endpoints:
           - public
@@ -119,4 +119,4 @@ txdc:
 
   backendService:
     httpProxyTokenReceiverUrl: "http://edc-dcm-backend.int.demo.catena-x.net"
-  
+
