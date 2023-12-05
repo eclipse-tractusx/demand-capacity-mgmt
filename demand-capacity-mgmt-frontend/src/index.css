@@ -182,7 +182,6 @@ code {
   position: sticky;
   padding: 0;
   left: 0;
-  z-index: 1;
 }
 
 .sticky-header-content {
