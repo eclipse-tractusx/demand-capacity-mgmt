@@ -166,7 +166,7 @@ public class DemandServiceImpl implements DemandService {
                 }
             );
 
-        triggerDemandAlertsIfNeeded(demandId, userID, demand);
+        //triggerDemandAlertsIfNeeded(demandId, userID, demand);
 
         demand = materialDemandRepository.save(demand);
         postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT, userID);
