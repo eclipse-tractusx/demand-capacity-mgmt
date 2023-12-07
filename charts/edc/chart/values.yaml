@@ -46,7 +46,8 @@ txdc:
       # -- data management api, used by internal users, can be added to an ingress and must not be internet facing
       management:
         # -- authentication key, must be attached to each 'X-Api-Key' request header
-        authKey: "value-added-service/dcm/dev/authKey"
+        authKey: <path:cgi-dcm-foss/data/value-added-service/dcm/dec/authKey#authKey>
+
     ## Ingress declaration to expose the network service.
     ingresses:
       ## Public / Internet facing Ingress
@@ -110,7 +111,7 @@ txdc:
     hashicorp:
       enabled: true
       url: "https://vault.demo.catena-x.net"
-      token: "s.EatmWQLX7uzZaJHgdxOHX1Yq"
+      token: <path:cgi-dcm-foss/data/value-added-service/dcm/dev#vault-token>
       paths:
         secret: /v1/cgi-dcm-foss
       healthCheck:
