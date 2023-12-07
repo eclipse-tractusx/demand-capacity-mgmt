@@ -93,3 +93,17 @@ export const generateWeeksForDateRange = (start: Date, end: Date) => {
 
     return weeks;
 };
+
+
+// Function to get the beginning and end dates of the week
+export const getWeekDates = (year: number, month: string, week: number) => {
+    const startDate = getISOWeekMonday(year, week);
+
+    const endDate = new Date(startDate.toDate());
+    endDate.setDate(endDate.getDate() + 6); // Assuming weeks end on Saturdays
+
+    return {
+        startDate: startDate.toString(),
+        endDate: endDate.toDateString(),
+    };
+};
