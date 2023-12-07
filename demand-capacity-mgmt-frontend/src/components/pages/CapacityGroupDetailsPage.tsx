@@ -122,7 +122,9 @@ function CapacityGroupDetailsPage() {
           >
             <Tab eventKey="overview" title="Overview">
               <CapacityGroupSumView capacityGroup={capacityGroup} materialDemands={materialDemands} />
-              <CapacityGroupChronogram capacityGroup={capacityGroup} materialDemands={materialDemands} />
+              <div id='chart-container'>
+                <CapacityGroupChronogram capacityGroup={capacityGroup} materialDemands={materialDemands} />
+              </div>
             </Tab>
             <Tab eventKey="materials" title="Materials">
               <DemandContextProvider>

@@ -169,10 +169,29 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
         return () => clearInterval(interval);
     }, [data]);
 
+    const [containerWidth, setContainerWidth] = useState(0);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const container = document.getElementById('chart-container');
+            if (container) {
+                setContainerWidth(container.clientWidth);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initial width
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+
     return (
-        <div>
+        <div className="container">
             <ComposedChart
-                width={1300}
+                width={containerWidth}
                 height={500}
                 data={data}
 
@@ -234,7 +253,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
             {/* Mini preview AreaChart */}
             <BarChart
-                width={1300}
+                width={containerWidth}
                 height={100}  // Adjust height as needed
                 data={data}
                 margin={{
