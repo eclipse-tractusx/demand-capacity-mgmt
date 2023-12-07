@@ -46,7 +46,7 @@ txdc:
       # -- data management api, used by internal users, can be added to an ingress and must not be internet facing
       management:
         # -- authentication key, must be attached to each 'X-Api-Key' request header
-        authKey: <path:cgi-dcm-foss/data/value-added-service/dcm/dec/authKey#authKey>
+        authKey: <path:cgi-dcm-foss/data/value-added-service/dcm/dev/authKey#authKey>
 
     ## Ingress declaration to expose the network service.
     ingresses:
