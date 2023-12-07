@@ -194,7 +194,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
   }, [startDate, endDate]);
 
   return (
-    <div className='container'>
+    <div className='container-xl'>
       <div className="data-range-container">
         <div className="pop-out-section">
           <div className="text-muted p-1"> <FaRegCalendarCheck /> Data Range</div>
