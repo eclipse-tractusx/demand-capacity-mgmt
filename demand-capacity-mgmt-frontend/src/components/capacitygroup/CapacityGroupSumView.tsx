@@ -29,7 +29,7 @@ import '../../../src/index.css';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import { DemandProp } from "../../interfaces/demand_interfaces";
-import { generateWeeksForDateRange, getISOWeekMonday } from '../../util/WeeksUtils';
+import { generateWeeksForDateRange, getWeekDates } from '../../util/WeeksUtils';
 
 interface WeeklyViewProps {
   capacityGroup: SingleCapacityGroup | null | undefined;
@@ -88,79 +88,43 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
     }));
   };
 
-  const demandSumsByWeek = useMemo(() => {
-    return {} as Record<number, number>; // Initialize your object here
-  }, []);
+  const { demandSums, computedSums } = useMemo(() => {
+    const demandSums: Record<number, Record<number, number>> = {};
+    const computedSums: Record<number, Record<number, number>> = {};
 
-  const computedDemandSums: Record<number, number> = useMemo(() => {
-
-    // Populate demandSumsByWeek
     if (capacityGroup && materialDemands) {
       materialDemands.forEach((demand) => {
         demand.demandSeries?.forEach((demandSeries) => {
           demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+            const year = new Date(demandSeriesValue.calendarWeek).getFullYear();
             const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
-            demandSumsByWeek[week] = (demandSumsByWeek[week] || 0) + demandSeriesValue.demand;
-          });
-        });
-      });
-    }
 
-    const computedSums: Record<number, number> = {};
-
-    for (const week in demandSumsByWeek) {
-      computedSums[week] = 0;
-      materialDemands?.forEach((demand) => {
-        demand.demandSeries?.forEach((demandSeries) => {
-          demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
-            const seriesWeek = getISOWeek(new Date(demandSeriesValue.calendarWeek));
-            if (seriesWeek.toString() === week) {
-              computedSums[week] += demandSeriesValue.demand;
+            // Populate demandSums
+            if (!demandSums[year]) {
+              demandSums[year] = {};
             }
-          });
-        });
-      });
-    }
+            demandSums[year][week] = (demandSums[year][week] || 0) + demandSeriesValue.demand;
 
-    return computedSums;
-  }, [capacityGroup, materialDemands, demandSumsByWeek]);
-
-
-  const demandSums = useMemo(() => {
-
-
-    // Populate demandSumsByWeek
-    if (capacityGroup && materialDemands) {
-      materialDemands.forEach((demand) => {
-        demand.demandSeries?.forEach((demandSeries) => {
-          demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
-            const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
-            demandSumsByWeek[week] = (demandSumsByWeek[week] || 0) + demandSeriesValue.demand;
-          });
-        });
-      });
-    }
-
-    // Iterate over demandSumsByWeek to populate computedDemandSums
-    for (const week in demandSumsByWeek) {
-      computedDemandSums[week] = 0;
-      materialDemands?.forEach((demand) => {
-        demand.demandSeries?.forEach((demandSeries) => {
-          demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
-            const seriesWeek = getISOWeek(new Date(demandSeriesValue.calendarWeek));
-            if (seriesWeek.toString() === week) {
-              computedDemandSums[week] += demandSeriesValue.demand;
+            // Populate computedSums
+            if (!computedSums[year]) {
+              computedSums[year] = {};
             }
+            if (!computedSums[year][week]) {
+              computedSums[year][week] = 0;
+            }
+            computedSums[year][week] += demandSeriesValue.demand;
           });
         });
       });
     }
 
-    return computedDemandSums;
-  }, [capacityGroup, materialDemands, computedDemandSums, demandSumsByWeek]);
+    return { demandSums, computedSums };
+  }, [capacityGroup, materialDemands]);
+
+
 
   // Calculate demand sums for each demand name
-  const demandSumsByDemandAndWeek: Record<string, Record<number, number>> = {};
+  const demandSumsByDemandAndWeek: Record<string, Record<number, Record<number, number>>> = {};
 
   if (capacityGroup && materialDemands) {
     materialDemands.forEach((demand) => {
@@ -169,26 +133,33 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
 
       demand.demandSeries?.forEach((demandSeries) => {
         demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+          const year = new Date(demandSeriesValue.calendarWeek).getFullYear();
           const week = getISOWeek(new Date(demandSeriesValue.calendarWeek));
-          const demandSum = demandSeriesValue.demand;
-          demandSumsByDemandAndWeek[demandName][week] = (demandSumsByDemandAndWeek[demandName][week] || 0) + demandSum;
+
+          if (!demandSumsByDemandAndWeek[demandName][year]) {
+            demandSumsByDemandAndWeek[demandName][year] = {};
+          }
+
+          demandSumsByDemandAndWeek[demandName][year][week] = (demandSumsByDemandAndWeek[demandName][year][week] || 0) + demandSeriesValue.demand;
         });
       });
     });
   }
 
 
-  useEffect(() => {
-    setWeeksForDateRange(generateWeeksForDateRange(startDate, endDate));
-  }, [startDate, endDate]);
-
-  // Batch update actualCapacityMap
-  const actualCapacityMap: Record<number, number> = useMemo(() => {
-    const capacityMap: Record<number, number> = {};
+  // Batch update actualCapacityMap with year mapping
+  const actualCapacityMap: Record<number, Record<number, number>> = useMemo(() => {
+    const capacityMap: Record<number, Record<number, number>> = {};
     if (capacityGroup && capacityGroup.capacities) {
       capacityGroup.capacities.forEach((capacity) => {
+        const year = new Date(capacity.calendarWeek).getFullYear();
         const week = getISOWeek(new Date(capacity.calendarWeek));
-        capacityMap[week] = capacity.actualCapacity;
+
+        if (!capacityMap[year]) {
+          capacityMap[year] = {};
+        }
+
+        capacityMap[year][week] = capacity.actualCapacity;
       });
     }
     return capacityMap;
@@ -199,31 +170,28 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
   const deltaMap: Record<number, Record<number, number>> = useMemo(() => {
     const calculatedDeltaMap: Record<number, Record<number, number>> = {};
 
-    // Calculate deltas for the next year
+    // Calculate deltas for each month in weeksForDateRange
     weeksForDateRange.forEach((month) => {
-      calculatedDeltaMap[month.year] = calculatedDeltaMap[month.year] || {};
+      calculatedDeltaMap[month.year] = calculatedDeltaMap[month.year] || {}; // Set up year if not present
+
+      // Ensure the correct assignment of capacity and demand sums by week
       month.weeks.forEach((week) => {
         calculatedDeltaMap[month.year][week] =
-          (actualCapacityMap[week] || 0) - (computedDemandSums[week] || 0);
+          (actualCapacityMap[month.year]?.[week] || 0) -
+          (computedSums[month.year]?.[week] || 0);
       });
     });
 
     return calculatedDeltaMap;
-  }, [computedDemandSums, actualCapacityMap]); // Empty dependency array ensures that this useMemo runs only once
+  }, [computedSums, actualCapacityMap, weeksForDateRange]);
 
 
-  // Function to get the beginning and end dates of the week
-  const getWeekDates = (year: number, month: string, week: number) => {
-    const startDate = getISOWeekMonday(year, week);
 
-    const endDate = new Date(startDate.toDate());
-    endDate.setDate(endDate.getDate() + 6); // Assuming weeks end on Saturdays
 
-    return {
-      startDate: startDate.toString(),
-      endDate: endDate.toDateString(),
-    };
-  };
+  useEffect(() => {
+    setWeeksForDateRange(generateWeeksForDateRange(startDate, endDate));
+    console.log('Dates generated')
+  }, [startDate, endDate]);
 
   return (
     <div className='container'>
@@ -340,18 +308,24 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                   </div>
                 </th>
                 {weeksForDateRange.map((month) =>
-                  month.weeks.map((week) => (
-                    <td
-                      key={`demand-${week}`}
-                      className={`data-cell ${demandSums[week] !== 0 ? 'non-zero-demand-cell' : ''}`}
-                      // Assign an ID to each cell to identify it for focusing
-                      id={`cell-${week}`}
-                    >
-                      {demandSums[week] !== 0 ? demandSums[week] : '-'} {/* Todo Stylize */}
-                    </td>
-                  ))
+                  month.weeks.map((week) => {
+                    const demandSum = demandSums[month.year]?.[week] || 0;
+                    const computedSum = computedSums[month.year]?.[week] || 0;
+
+                    return (
+                      <td
+                        key={`demand-${week}`}
+                        className={`data-cell ${computedSum !== 0 ? 'non-zero-demand-cell' : ''}`}
+                        // Assign an ID to each cell to identify it for focusing
+                        id={`cell-${week}`}
+                      >
+                        {demandSum !== 0 ? computedSum : '-'}
+                      </td>
+                    );
+                  })
                 )}
               </tr>
+
               {expandedDemandRows['total'] && (
                 <>
                   {capacityGroup &&
@@ -370,7 +344,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                           {weeksForDateRange.map((month) =>
                             month.weeks.map((week) => {
                               const demandSum =
-                                demandSumsByDemandAndWeek[demand.materialDescriptionCustomer]?.[week] || null;
+                                demandSumsByDemandAndWeek[demand.materialDescriptionCustomer]?.[month.year]?.[week] || null;
                               return (
                                 <td key={`demandSeries-${week}-${demand.id}`} className="data-cell">
                                   <strong>{demandSum !== null ? (demandSum || 0) : '-'}</strong>
@@ -391,13 +365,21 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                                   </th>
                                   {weeksForDateRange.map((month) =>
                                     month.weeks.map((week) => {
-                                      const demandValue = demandSeries.demandSeriesValues.find(
-                                        (demandValue) => getISOWeek(new Date(demandValue.calendarWeek)) === week
-                                      );
+                                      const demandValue = demandSeries.demandSeriesValues.find((demandValue) => {
+                                        const valueDate = new Date(demandValue.calendarWeek);
+                                        const valueYear = valueDate.getFullYear();
+                                        const valueWeek = getISOWeek(valueDate);
+                                        return valueYear === month.year && valueWeek === week;
+                                      });
+
                                       const demandSum = demandValue?.demand || null;
+
                                       return (
-                                        <td key={`demandSeries-${week}-${demandSeries.demandCategory.id}`} className="data-cell">
-                                          {demandSum !== null ? (demandSum || 0) : '-'}
+                                        <td
+                                          key={`demandSeries-${week}-${demandSeries.demandCategory.id}`}
+                                          className="data-cell"
+                                        >
+                                          {demandSum !== null ? demandSum || 0 : '-'}
                                         </td>
                                       );
                                     })
@@ -407,25 +389,105 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
                             ))}
                           </>
                         )}
+
                       </React.Fragment>
                     ))}
                 </>
               )}
               <tr>
                 <th className="sticky-header-cell">
+                  <div className="sticky-header-content">-</div>
+                </th>
+
+                {weeksForDateRange
+                  .reduce<number[]>((acc, curr) => acc.concat(curr.weeks), [])
+                  .map((weekNumber) => (
+                    <td className="data-cell">
+                      {' '}
+                    </td>
+                  ))}
+              </tr>
+              <tr>
+                <th className="sticky-header-cell">
+                  <div className="sticky-header-content">Actual Capacity</div>
+                </th>
+                {weeksForDateRange.map((month) =>
+                  month.weeks.map((week) => {
+                    const matchingCapacity = capacityGroup?.capacities.find((capacity) => {
+                      const capacityWeek = new Date(capacity.calendarWeek);
+                      return getISOWeek(capacityWeek) === week && capacityWeek.getFullYear() === month.year;
+                    });
+                    const actualCapacity = matchingCapacity?.actualCapacity ?? '-';
+
+                    return (
+                      <td key={`actual-capacity-${month.year}-${week}`} className="data-cell">
+                        {actualCapacity.toString()}
+                      </td>
+                    );
+                  })
+                )}
+              </tr>
+              <tr>
+                <th className="sticky-header-cell">
+                  <div className="sticky-header-content">Maximum Capacity</div>
+                </th>
+                {weeksForDateRange.map((month) =>
+                  month.weeks.map((week) => {
+                    const matchingCapacity = capacityGroup?.capacities.find((capacity) => {
+                      const capacityWeek = new Date(capacity.calendarWeek);
+                      return getISOWeek(capacityWeek) === week && capacityWeek.getFullYear() === month.year;
+                    });
+                    const maximumCapacity = matchingCapacity?.maximumCapacity ?? '-';
+
+                    return (
+                      <td key={`maximum-capacity-${month.year}-${week}`} className="data-cell">
+                        {maximumCapacity.toString()}
+                      </td>
+                    );
+                  })
+                )}
+              </tr>
+              <tr>
+                <th className="sticky-header-cell">
+                  <div className="sticky-header-content">-</div>
+                </th>
+                {weeksForDateRange
+                  .reduce<number[]>((acc, curr) => acc.concat(curr.weeks), [])
+                  .map((weekNumber) => (
+                    <td className="data-cell">
+                      {' '}
+                    </td>
+                  ))}
+              </tr>
+
+              <tr>
+                <th className="sticky-header-cell">
                   <div className="sticky-header-content">Delta</div>
                 </th>
                 {weeksForDateRange.map((month) =>
-                  month.weeks.map((week) => (
-                    <td
-                      key={`delta-${week}`}
-                      className={`data-cell ${deltaMap[month.year]?.[week] < 0 ? 'bg-light-red' : deltaMap[month.year]?.[week] > 0 ? 'bg-light-green' : ''}`}
-                    >
-                      {deltaMap[month.year][week] > 0 ? `+${deltaMap[month.year][week]}` : deltaMap[month.year][week]}
-                    </td>
-                  ))
+                  month.weeks.map((week) => {
+                    const deltaValue = deltaMap[month.year]?.[week];
+                    const deltaClass =
+                      deltaValue !== undefined && deltaValue !== null
+                        ? deltaValue < 0
+                          ? 'bg-light-red'
+                          : deltaValue > 0
+                            ? 'bg-light-green'
+                            : ''
+                        : '';
+
+                    return (
+                      <td
+                        key={`delta-${month.year}-${week}`}
+                        className={`data-cell ${deltaClass}`}
+                      >
+                        {typeof deltaValue === 'number' && deltaValue > 0 ? `+${deltaValue}` : deltaValue ?? '-'}
+                      </td>
+                    );
+                  })
                 )}
               </tr>
+
             </thead>
           </table>
         </div>
