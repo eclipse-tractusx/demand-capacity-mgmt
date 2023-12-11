@@ -30,6 +30,11 @@ export function getYearOfWeek(date: moment.Moment): number {
     return date.add(3, 'days').year();
 }
 
+export const getWeekNumber = (date: Date) => {
+    const momentDate = moment(date);
+    return momentDate.isoWeek();
+};
+
 export function getWeeksInMonth(year: number, monthIndex: number, knownNextMonthWeeks?: Set<number>): number[] {
     const weeks: Set<number> = new Set();
 
