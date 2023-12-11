@@ -45,6 +45,7 @@ public class UserOperationsServiceImpl implements UserOperationsService {
     @Override
     public UserResponse createUser(UserRequest request) {
         UserEntity user = new UserEntity();
+        user.setId(UUID.fromString(request.getUserID()));
         user.setRole(Role.valueOf(request.getRole().name()));
         user.setUsername(request.getUsername());
         user.setName(request.getName());
