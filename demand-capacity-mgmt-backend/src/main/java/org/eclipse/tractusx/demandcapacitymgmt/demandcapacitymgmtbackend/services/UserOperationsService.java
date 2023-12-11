@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserOperationsService {
     UserResponse createUser(UserRequest request);
-    void updateUser(UserRequest request);
+    UserResponse updateUser(String userID, UserRequest request);
 
     void deleteUser(String userId);
 

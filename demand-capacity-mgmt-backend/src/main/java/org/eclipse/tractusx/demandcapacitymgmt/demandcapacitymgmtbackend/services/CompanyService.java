@@ -28,7 +28,7 @@ import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyEntity;
 
 public interface CompanyService {
-    CompanyEntity createCompany(CompanyDto companyDto);
+    CompanyDto createCompany(CompanyDto companyDto);
 
     CompanyEntity getCompanyById(UUID id);
 

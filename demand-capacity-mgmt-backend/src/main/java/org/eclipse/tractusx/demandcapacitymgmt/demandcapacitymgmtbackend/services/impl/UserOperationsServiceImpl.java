@@ -36,10 +36,9 @@ public class UserOperationsServiceImpl implements UserOperationsService {
             loggingHistoryRequest.setEventDescription("User Created - ID: " + userId);
         } else if ("delete".equals(action)) {
             loggingHistoryRequest.setEventDescription("User Deleted - ID: " + userId);
-        }
-         else if ("put".equals(action)) {
+        } else if ("put".equals(action)) {
             loggingHistoryRequest.setEventDescription("User Updated - ID: " + userId);
-         }
+        }
         loggingHistoryService.createLog(loggingHistoryRequest);
     }
 
@@ -59,19 +58,20 @@ public class UserOperationsServiceImpl implements UserOperationsService {
     }
 
     @Override
-    public void updateUser(UserRequest request) {
-        Optional<UserEntity> userEntity = repository.findById(UUID.fromString(request.getUserID()));
-        if (userEntity.isPresent()) {
-            UserEntity user = userEntity.get();
-            user.setRole(Role.valueOf(request.getRole().name()));
-            user.setUsername(request.getUsername());
-            user.setName(request.getName());
-            user.setLastName(request.getLastName());
-            user.setEmail(request.getEmail());
-            user.setCompanyID(UUID.fromString(request.getCompanyID()));
-            repository.save(user);
-            postLogs(request.getUserID(), "put");
-        }
+    public UserResponse updateUser(String userID, UserRequest request) {
+        Optional<UserEntity> userEntity = repository.findById(UUID.fromString(userID));
+
+        UserEntity user = userEntity.get();
+        user.setRole(Role.valueOf(request.getRole().name()));
+        user.setUsername(request.getUsername());
+        user.setName(request.getName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setCompanyID(UUID.fromString(request.getCompanyID()));
+        repository.save(user);
+        postLogs(request.getUserID(), "put");
+
+        return convertToDto(user);
     }
 
     @Override

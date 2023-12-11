@@ -48,10 +48,8 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final LoggingHistoryService loggingHistoryService;
 
-
-
     @Override
-    public CompanyEntity createCompany(CompanyDto companyDto) {
+    public CompanyDto createCompany(CompanyDto companyDto) {
         CompanyEntity entity = new CompanyEntity();
         entity.setCompanyName(companyDto.getCompanyName());
         entity.setBpn(companyDto.getBpn());
@@ -64,7 +62,7 @@ public class CompanyServiceImpl implements CompanyService {
         companyRepository.save(entity);
         postLogs(companyDto.getId(), "post");
 
-        return entity;
+        return convertEntityToDto(entity);
     }
 
     private void postLogs(String companyId, String action) {
@@ -78,9 +76,7 @@ public class CompanyServiceImpl implements CompanyService {
             loggingHistoryRequest.setEventDescription("Company Deleted - ID: " + companyId);
         }
 
-
         loggingHistoryService.createLog(loggingHistoryRequest);
-
     }
 
     @Override
