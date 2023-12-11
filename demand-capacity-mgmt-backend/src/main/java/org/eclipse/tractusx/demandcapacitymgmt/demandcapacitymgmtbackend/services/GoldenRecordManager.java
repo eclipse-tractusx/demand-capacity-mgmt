@@ -28,6 +28,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 public interface GoldenRecordManager {
     AddressBookRecordEntity queryGoldenRecord(String recordQuery);
 
-    AddressBookRecordEntity createRecord(AddressBookRequest addressBookRequest);
-    AddressBookRecordEntity updateRecord(AddressBookRequest request, String id);
+    AddressBookRecordEntity createRecord(String query);
+    AddressBookRecordEntity updateRecord(String query, String id);
 }

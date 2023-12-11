@@ -28,6 +28,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import { FaAddressBook, FaUserShield } from 'react-icons/fa';
 import { FiLogOut, FiSettings } from 'react-icons/fi';
 import { useNavigate } from "react-router-dom";
+import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import EventsContextProvider from '../../contexts/EventsContextProvider';
@@ -35,7 +36,6 @@ import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
 import { useUser } from "../../contexts/UserContext";
 import { logout } from "../../util/Auth";
 import InfoMenu from "../menu/InfoMenu";
-import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 
 function TopMenuLinks() {
   const { user, refresh_token, setUser } = useUser();
@@ -90,11 +90,11 @@ function TopMenuLinks() {
             <DemandCategoryContextProvider>
               <CapacityGroupsProvider>
                 <AlertsContextProvider>
-                <EventsContextProvider>
-                  <InfoMenuProvider>
-                    <InfoMenu />
-                  </InfoMenuProvider>
-                </EventsContextProvider>
+                  <EventsContextProvider>
+                    <InfoMenuProvider>
+                      <InfoMenu />
+                    </InfoMenuProvider>
+                  </EventsContextProvider>
                 </AlertsContextProvider>
               </CapacityGroupsProvider>
             </DemandCategoryContextProvider>

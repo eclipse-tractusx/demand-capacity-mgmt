@@ -81,6 +81,11 @@ public class AddressBookServiceImpl implements AddressBookService {
     }
 
     @Override
+    public AddressBookResponse updateRecord(AddressBookRequest request, String id) {
+        return convertEntityToDto(goldenRecordManager.updateRecord(request.getQuery(), id));
+    }
+
+    @Override
     public void deleteRecord(AddressBookRequest request) {
         repository.deleteById(UUID.fromString(request.getQuery()));
     }
