@@ -22,6 +22,7 @@
 
 import React from 'react';
 import { Route, Routes } from "react-router-dom";
+import AddressBookProvider from '../../contexts/AdressBookContextProvider';
 import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
@@ -31,6 +32,7 @@ import FavoritesContextProvider from "../../contexts/FavoritesContextProvider";
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
 import QuickAcessItems from '../common/QuickAcessItems';
 import AdminPage from '../pages/AdminPage';
+import AddressBookPage from '../pages/AdressBookPage';
 import AlertsPage from '../pages/AlertsPage';
 import AuthenticationComponent from '../pages/AuthenticationPage';
 import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
@@ -93,9 +95,23 @@ const AppComponent: React.FC = () => {
                                     </AlertsContextProvider>
                                 </Layout>
                             </CapacityGroupsProvider>
-                        </DemandContextProvider >
-                    </FavoritesContextProvider >
-                </AuthenticatedRoute >
+                        </DemandContextProvider>
+                    </FavoritesContextProvider>
+                </AuthenticatedRoute>
+            } />
+
+            <Route path="/addressBook" element={
+                <AuthenticatedRoute>
+                    <FavoritesContextProvider>
+                        <DemandContextProvider>
+                            <Layout>
+                                <AddressBookProvider>
+                                    <AddressBookPage />
+                                </AddressBookProvider>
+                            </Layout>
+                        </DemandContextProvider>
+                    </FavoritesContextProvider>
+                </AuthenticatedRoute>
             } />
             < Route path="/up" element={
                 < AuthenticatedRoute >

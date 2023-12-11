@@ -28,4 +28,5 @@ public interface GoldenRecordManager {
     AddressBookRecordEntity queryGoldenRecord(String recordQuery);
 
     AddressBookRecordEntity createRecord(String query);
+    AddressBookRecordEntity updateRecord(String query, String id);
 }
