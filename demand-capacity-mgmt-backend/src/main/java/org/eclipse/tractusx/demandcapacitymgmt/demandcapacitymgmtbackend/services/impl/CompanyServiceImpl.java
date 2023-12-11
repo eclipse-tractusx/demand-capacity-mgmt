@@ -60,7 +60,7 @@ public class CompanyServiceImpl implements CompanyService {
         entity.setNumber(companyDto.getNumber());
         entity.setZipCode(companyDto.getZipCode());
         companyRepository.save(entity);
-        postLogs(companyDto.getId(), "post");
+        postLogs(entity.getId().toString(), "post");
 
         return convertEntityToDto(entity);
     }
