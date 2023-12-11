@@ -127,11 +127,12 @@ paths:
                 $ref: '#/components/schemas/IntrospectTokenResponse'
 
   /user:
-    put:
+
+    post:
       tags:
         - userOperations
-      summary: edit a user
-      operationId: update an user
+      summary: create a user
+      operationId: postUser
       requestBody:
         required: true
         content:
@@ -139,8 +140,12 @@ paths:
             schema:
               $ref: '#/components/schemas/UserRequest'
       responses:
-        201:
-          description: General Greeting
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
     get:
       tags:
         - userOperations
@@ -155,6 +160,47 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserResponse'
+
+  /user/{user_id}:
+
+    put:
+      tags:
+        - userOperations
+      summary: update user by Id
+      operationId: updateUserById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      parameters:
+        - in: 'path'
+          name: 'user_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Update of User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+    delete:
+      tags:
+        - userOperations
+      summary: delete user by Id
+      operationId: deleteUsersById
+      parameters:
+        - in: 'path'
+          name: 'user_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete user with id
 
   /loggingHistory:
     post:
@@ -924,6 +970,24 @@ paths:
           description: weekBasedCapacityGroup endpoint
 
   /company:
+    post:
+      tags:
+        - Company
+      summary: create a company
+      operationId: postCompany
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyDto'
+      responses:
+        200:
+          description: Company created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDto'
     get:
       tags:
         - company
@@ -938,6 +1002,22 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CompanyDto'
+  /company/{company_id}:
+    delete:
+      tags:
+        - Company
+      summary: delete company by Id
+      operationId: deleteCompanyById
+      parameters:
+        - in: 'path'
+          name: 'company_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete company with id
+
   /company/top:
     get:
       tags:

@@ -24,12 +24,11 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AddressBookRecordEntity;
@@ -92,7 +91,9 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     @Override
     public AddressBookResponse postRecord(AddressBookRequest request) {
-        AddressBookResponse addressBookResponse = convertEntityToDto(goldenRecordManager.createRecord(request.getQuery()));
+        AddressBookResponse addressBookResponse = convertEntityToDto(
+            goldenRecordManager.createRecord(request.getQuery())
+        );
         postLogs(addressBookResponse.getId(), "post");
         return addressBookResponse;
     }
