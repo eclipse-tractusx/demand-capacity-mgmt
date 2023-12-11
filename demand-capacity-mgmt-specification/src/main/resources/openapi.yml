@@ -323,6 +323,33 @@ paths:
             schema:
               $ref: '#/components/schemas/AddressBookRequest'
 
+
+    put:
+      tags:
+        - addressBook
+      summary: update addressBook by Id
+      operationId: updateAddressBookById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+      parameters:
+        - in: 'path'
+          name: 'address_book_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Update of addressBook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBookRequest'
+
+
   /addressBook/query:
     get:
       tags:
