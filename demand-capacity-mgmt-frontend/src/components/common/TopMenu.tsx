@@ -109,9 +109,16 @@ function TopMenuLinks() {
           </Navbar.Text>
           <OverlayTrigger
             placement="bottom"
+            overlay={<Tooltip id="tooltip">Address Books</Tooltip>}
+          >
+            <Nav.Link href="../addressBook" className="p-3 navbar-nav nav-item"><FiSettings /></Nav.Link>
+          </OverlayTrigger>
+
+          <OverlayTrigger
+            placement="bottom"
             overlay={<Tooltip id="tooltip">User Settings</Tooltip>}
           >
-            <Nav.Link href="#settings" className="p-3 navbar-nav nav-item"><FiSettings /></Nav.Link>
+            <Nav.Link href="../ad" className="p-3 navbar-nav nav-item"><FiSettings /></Nav.Link>
           </OverlayTrigger>
           {user?.role === 'ADMIN' && (
             <OverlayTrigger

@@ -56,4 +56,17 @@ public class GoldenRecordManagerImpl implements GoldenRecordManager {
         repository.save(recordEntity);
         return recordEntity;
     }
+
+    @Override
+    public AddressBookRecordEntity updateRecord(String query, String id) {
+        AddressBookRecordEntity recordEntity = new AddressBookRecordEntity();
+        recordEntity.setId(UUID.fromString(id));
+        recordEntity.setCompanyId(UUID.fromString(query));
+        recordEntity.setName("TEST NAME");
+        recordEntity.setContact("TEST CONTACT");
+        recordEntity.setEmail("TEST EMAIL");
+        recordEntity.setPicture("yeetus".getBytes());
+        repository.save(recordEntity);
+        return recordEntity;
+    }
 }

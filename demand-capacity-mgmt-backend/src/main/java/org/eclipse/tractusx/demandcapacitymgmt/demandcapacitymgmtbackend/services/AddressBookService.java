@@ -32,6 +32,7 @@ public interface AddressBookService {
     List<AddressBookResponse> getRecords();
 
     AddressBookResponse postRecord(AddressBookRequest request);
+    AddressBookResponse updateRecord(AddressBookRequest request, String id);
 
     void deleteRecord(AddressBookRequest request);
 }

@@ -51,7 +51,6 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   const maxRetries = 3;
   const api = createAPIInstance(access_token);
 
-
   const fetchCapacityGroupsWithRetry = useCallback(async () => {
     setIsLoading(true);
 
