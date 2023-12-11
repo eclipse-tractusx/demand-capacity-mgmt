@@ -130,6 +130,24 @@ code {
   font-size: small;
 }
 
+/*Data Range Selectors*/
+
+.data-range-container {
+  display: flex;
+  /* Adjust this height as needed */
+}
+
+.pop-out-section {
+  padding: 10px;
+}
+
+.text-muted {
+  color: #6c757d;
+  /* Adjust text color */
+  font-size: 14px;
+}
+
+
 /*Sum View Tables*/
 .table-container {
   overflow-x: auto;
@@ -182,7 +200,6 @@ code {
   position: sticky;
   padding: 0;
   left: 0;
-  z-index: 1;
 }
 
 .sticky-header-content {
