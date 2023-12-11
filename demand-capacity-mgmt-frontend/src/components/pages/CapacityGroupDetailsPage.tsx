@@ -51,6 +51,11 @@ function CapacityGroupDetailsPage() {
   const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
   const navigate = useNavigate()
 
+
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
+
+
   useEffect(() => {
     if (id) {
       (async () => {
@@ -90,7 +95,10 @@ function CapacityGroupDetailsPage() {
     }
   }, [id, getCapacityGroupById, fetchFilteredEvents, navigate, getDemandbyId]);
 
-
+  function updateParentDateRange(start: Date, end: Date) {
+    setStartDate(start);
+    setEndDate(end);
+  }
 
   const memoizedComponent = useMemo(() => {
     if (!capacityGroup) {
@@ -121,9 +129,17 @@ function CapacityGroupDetailsPage() {
             }}
           >
             <Tab eventKey="overview" title="Overview">
-              <CapacityGroupSumView capacityGroup={capacityGroup} materialDemands={materialDemands} />
+              <CapacityGroupSumView
+                capacityGroup={capacityGroup}
+                materialDemands={materialDemands}
+                updateParentDateRange={updateParentDateRange}
+              />
               <div id='chart-container'>
-                <CapacityGroupChronogram capacityGroup={capacityGroup} materialDemands={materialDemands} />
+                <CapacityGroupChronogram
+                  capacityGroup={capacityGroup}
+                  materialDemands={materialDemands}
+                  startDate={startDate}
+                  endDate={endDate} />
               </div>
             </Tab>
             <Tab eventKey="materials" title="Materials">
@@ -139,7 +155,7 @@ function CapacityGroupDetailsPage() {
         </div>
       </>
     );
-  }, [capacityGroup, capacityGroupEvents, materialDemands, activeTab]);
+  }, [capacityGroup, capacityGroupEvents, materialDemands, activeTab, startDate, endDate]);
 
   return memoizedComponent;
 }

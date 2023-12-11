@@ -200,9 +200,19 @@ const CapacityGroupsList: React.FC = () => {
             </OverlayTrigger></center>
           </td>
           <td>{capacitygroup.name}</td>
-          <td>{capacitygroup.customerBPNL}</td>
-          <td>{capacitygroup.customerName}</td>
-          <td>{capacitygroup.supplierBNPL}</td>
+          {user?.role === 'SUPPLIER' && (
+            <>
+              <td>{capacitygroup.customerBPNL}</td>
+              <td>{capacitygroup.customerName}</td>
+            </>
+          )}
+
+          {user?.role === 'CUSTOMER' && (
+            <>
+              <td>{capacitygroup.supplierBNPL}</td>
+            </>
+          )}
+
           <td>{capacitygroup.numberOfMaterials}</td>
           <td>
             {capacitygroup.linkStatus === EventType.TODO ? (

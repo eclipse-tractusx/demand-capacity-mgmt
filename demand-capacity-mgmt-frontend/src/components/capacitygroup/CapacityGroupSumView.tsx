@@ -34,9 +34,13 @@ import { generateWeeksForDateRange, getWeekDates } from '../../util/WeeksUtils';
 interface WeeklyViewProps {
   capacityGroup: SingleCapacityGroup | null | undefined;
   materialDemands: DemandProp[] | null;
+  updateParentDateRange: (start: Date, end: Date) => void;
 }
 
-const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materialDemands }) => {
+const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup,
+  materialDemands,
+  updateParentDateRange
+}) => {
 
   const { demandcategories } = useContext(DemandCategoryContext) || {};
 
@@ -46,6 +50,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
 
   const [startDate, setStartDate] = useState<Date>(new Date(defaultStartDateString));
   const [endDate, setEndDate] = useState<Date>(new Date(defaultEndDateString));
+
   const [weeksForDateRange, setWeeksForDateRange] = useState<
     { name: string; year: number; weeks: number[]; monthIndex: number }[]
   >([]);
@@ -186,11 +191,9 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup, materi
   }, [computedSums, actualCapacityMap, weeksForDateRange]);
 
 
-
-
   useEffect(() => {
     setWeeksForDateRange(generateWeeksForDateRange(startDate, endDate));
-    console.log('Dates generated')
+    updateParentDateRange(startDate, endDate);
   }, [startDate, endDate]);
 
   return (
