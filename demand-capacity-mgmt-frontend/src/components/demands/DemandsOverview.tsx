@@ -22,71 +22,30 @@
 
 import moment from 'moment';
 import 'moment-weekday-calc';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Button, ButtonGroup, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import '../../index.css';
 import { Demand, DemandCategory, DemandProp, DemandSeriesValue, MaterialDemandSery } from '../../interfaces/demand_interfaces';
 
-
-import { format, getISOWeek, } from 'date-fns';
+import { addWeeks, formatISO, getISOWeek, subWeeks } from 'date-fns';
+import { startOfDay } from 'date-fns/esm';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { FaRegCalendarCheck } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
+import { generateWeeksForDateRange, getISOWeekMonday } from '../../util/WeeksUtils';
 import { LoadingGatheringDataMessage } from '../common/LoadingMessages';
 
 interface WeeklyViewProps {
   demandId: string;
 }
 
-function getISOWeekMonday(year: number, isoWeek: number): moment.Moment {
-  return moment().year(year).isoWeek(isoWeek).startOf('isoWeek');
-}
-
-function getYearOfWeek(date: moment.Moment): number {
-  return date.add(3, 'days').year();
-}
-
-
-function getWeeksInMonth(year: number, monthIndex: number, knownNextMonthWeeks?: Set<number>): number[] {
-  const weeks: Set<number> = new Set();
-
-  const firstDayOfMonth = moment().year(year).month(monthIndex).startOf('month');
-  const lastDayOfMonth = moment().year(year).month(monthIndex).endOf('month');
-  // Fetch weeks of the next month if not provided.
-  if (!knownNextMonthWeeks && monthIndex < 11) {
-    knownNextMonthWeeks = new Set(getWeeksInMonth(year, monthIndex + 1));
-  }
-
-  let currentDay = firstDayOfMonth;
-  while (currentDay <= lastDayOfMonth) {
-    const weekNum = currentDay.week();
-    const isoWeekYear = getYearOfWeek(currentDay);
-
-    // If the month is January and the week year is the previous year, skip it
-    if (monthIndex === 0 && isoWeekYear < year) {
-      currentDay = currentDay.add(1, 'days');
-      continue;
-    }
-
-    // If it's the last week of the month and it's also in the next month, skip it.
-    if (currentDay.isAfter(moment(new Date(year, monthIndex, 24))) && knownNextMonthWeeks?.has(weekNum)) {
-      currentDay = currentDay.add(1, 'days');
-      continue;
-    }
-
-    weeks.add(weekNum);
-    currentDay = currentDay.add(1, 'days');
-  }
-  return Array.from(weeks).sort((a, b) => a - b);
-}
-
-
-
 const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
   const { updateDemand } = useContext(DemandContext)!;
   const { demandcategories } = useContext(DemandCategoryContext) ?? {};
-  const currentYear = new Date().getFullYear();
   const [editMode, setEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useUser();
@@ -111,50 +70,40 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
     }
   }, [demandId, getDemandbyId, setDemandData, navigate]);
 
+
+  const currentDate = startOfDay(new Date());
+  const defaultStartDateString = formatISO(subWeeks(currentDate, 8), { representation: 'date' });
+  const defaultEndDateString = formatISO(addWeeks(currentDate, 53), { representation: 'date' });
+
+  const [startDate, setStartDate] = useState<Date>(new Date(defaultStartDateString));
+  const [endDate, setEndDate] = useState<Date>(new Date(defaultEndDateString));
+  const [weeksForDateRange, setWeeksForDateRange] = useState<
+    { name: string; year: number; weeks: number[]; monthIndex: number }[]
+  >([]);
+
+  const handleStartDateChange = (date: Date | null) => {
+    if (date) {
+      const adjustedEndDate = endDate && date.getTime() > endDate.getTime() ? date : endDate;
+      setStartDate(date);
+      setEndDate(adjustedEndDate);
+      setWeeksForDateRange(generateWeeksForDateRange(date, adjustedEndDate));
+    }
+  };
+
+  const handleEndDateChange = (date: Date | null) => {
+    if (date) {
+      const adjustedStartDate = startDate && date.getTime() < startDate.getTime() ? date : startDate;
+      setStartDate(adjustedStartDate);
+      setEndDate(date);
+      setWeeksForDateRange(generateWeeksForDateRange(adjustedStartDate, date));
+    }
+  };
+
+
   useEffect(() => {
     fetchDemandData();
-  }, [fetchDemandData]);
-
-
-  const monthsPreviousYear = Array.from({ length: 1 }, (_, monthIndex) => {
-    const monthStart = new Date(currentYear - 1, monthIndex + 11, 1);
-    const monthName = format(monthStart, 'MMM'); // <-- This line
-    let weeks = getWeeksInMonth(currentYear - 1, monthIndex + 11);
-    return {
-      name: monthName,
-      year: currentYear - 1,
-      weeks: weeks,
-      monthIndex: monthIndex + 11,
-    };
-  });
-
-  const monthsCurrentYear = Array.from({ length: 12 }, (_, monthIndex) => {
-    const monthStart = new Date(currentYear, monthIndex, 1);
-    const monthName = format(monthStart, 'MMM');
-    let weeks = getWeeksInMonth(currentYear, monthIndex);
-    return {
-      name: monthName,
-      year: currentYear,
-      weeks: weeks,
-      monthIndex: monthIndex,
-    };
-  });
-
-  const monthsNextYear = Array.from({ length: 1 }, (_, monthIndex) => {
-    const monthStart = new Date(currentYear + 1, monthIndex, 1);
-    const monthName = format(monthStart, 'MMM');
-    const weeks = getWeeksInMonth(currentYear + 1, monthIndex);
-    return {
-      name: monthName,
-      year: currentYear + 1,
-      weeks: weeks,
-      monthIndex: monthIndex,
-    };
-  });
-
-  const totalWeeksPreviousYear = monthsPreviousYear.reduce((total, month) => total + month.weeks.length, 0);
-  const totalWeeksCurrentYear = monthsCurrentYear.reduce((total, month) => total + month.weeks.length, 0);
-  const totalWeeksNextYear = monthsNextYear.reduce((total, month) => total + month.weeks.length, 0);
+    setWeeksForDateRange(generateWeeksForDateRange(startDate, endDate));
+  }, [fetchDemandData, startDate, endDate]);
 
   // Object to store the demand values based on year, month, and week
   type DemandValuesMap = Record<string, Record<number, Record<string, number>>>;
@@ -181,9 +130,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
     };
   };
 
-
-
-
   useEffect(() => {
     const newDemandValuesMap: DemandValuesMap = {};
 
@@ -192,7 +138,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
 
       series.demandSeriesValues.forEach((value) => {
         const date = moment(value.calendarWeek);
-        const year = moment().year();
+        const year = date.year();
         const week = date.week();
 
         if (!newDemandValuesMap[categoryId]) {
@@ -208,41 +154,10 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
     setDemandValuesMap(newDemandValuesMap);
   }, [demandData]);
 
-
-  const tableRef = useRef<HTMLTableElement | null>(null);
-  const [shouldScroll, setShouldScroll] = useState(false);
-
-  useEffect(() => {
-    if (shouldScroll && tableRef.current && Object.keys(demandValuesMap).length > 0) {
-      for (const categoryId in demandValuesMap) {
-        const categoryData: Record<string, Record<string, number>> = demandValuesMap[categoryId];
-        const years = Object.keys(categoryData);
-        for (const year of years) {
-          const weeksWithData = Object.keys(categoryData[year]);
-          if (weeksWithData.length > 0) {
-            const firstWeekWithData = parseInt(weeksWithData[0], 10);
-            const weekHeaderCell = tableRef.current!.querySelector(`#week-${firstWeekWithData}`);
-            if (weekHeaderCell) {
-              weekHeaderCell.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-                inline: 'center',
-              });
-            }
-          }
-        }
-      }
-      // Reset the shouldScroll state to prevent continuous scrolling
-      setShouldScroll(false);
-    }
-  }, [demandValuesMap, shouldScroll]);
-
-  // Use another useEffect to listen for changes in the tableRef
-  useEffect(() => {
-    if (tableRef.current) {
-      setShouldScroll(true);
-    }
-  }, [demandValuesMap, tableRef]);
+  /*useEffect(() => { 
+    console.log(demandValuesMap)
+    console.log(weeksForDateRange)
+  }, [demandValuesMap]);*/
 
 
   const handleSave = async () => {
@@ -257,19 +172,13 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
 
       // Check if there is data for this category in demandValuesMap
       if (demandValuesMap[categoryId]) {
-        // Loop through months and weeks to populate demandSeriesValues
-        monthsCurrentYear.forEach((month) => {
-          month.weeks.forEach((week) => {
-            const isoWeekMonday = getISOWeekMonday(month.year, week);
-            isoWeekMonday.format('YYYY-MM-dd')
-            // Get the Monday of the ISO week
-            const demand = demandValuesMap[categoryId]?.[month.year]?.[week];
-            if (demand !== undefined) {
-              demandSeriesValues.push({
-                calendarWeek: isoWeekMonday.format('YYYY-MM-DD'),
-                demand: demand,
-              });
-            }
+        Object.entries(demandValuesMap[categoryId]).forEach(([year, yearData]) => {
+          Object.entries(yearData).forEach(([week, demand]) => {
+            const isoWeekMonday = getISOWeekMonday(parseInt(year), parseInt(week));
+            demandSeriesValues.push({
+              calendarWeek: isoWeekMonday.format('YYYY-MM-DD'),
+              demand: demand,
+            });
           });
         });
 
@@ -303,6 +212,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
       unitMeasureId: demandData.unitMeasureId.id,
     };
 
+    console.log(updatedDemand)
     // Perform save operation with updatedDemandData
     if (filteredUpdatedDemandSeries.length > 0) {
       try {
@@ -380,54 +290,101 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
               </Button>
             </ButtonGroup>)}
         </div>
+        <div className="data-range-container">
+          <div className="pop-out-section">
+            <div className="text-muted p-1"> <FaRegCalendarCheck /> Data Range</div>
+            <div className="col-12 p-1 d-flex form-group align-items-center">
+              <DatePicker
+                className="form-control"
+                selected={startDate}
+                onChange={(date) => handleStartDateChange(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                placeholderText="Select a Start Date"
+                showYearDropdown
+                showMonthDropdown
+                showWeekNumbers
+              />
+              <span className="mx-3">-</span>
+              <DatePicker
+                className="form-control"
+                selected={endDate}
+                onChange={(date) => handleEndDateChange(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                placeholderText="Select a End Date"
+                showMonthDropdown
+                showYearDropdown
+                showWeekNumbers
+              />
+            </div>
+          </div>
+        </div>
       </div>
-      <br />
+
       <div className="table-container">
         <div className="container">
-          <table className="vertical-table" ref={tableRef}>
+          <table className="vertical-table">
             <thead>
               <tr>
                 <th className="empty-header-cell"></th>
-                <th colSpan={totalWeeksPreviousYear} className="header-cell">
-                  {currentYear - 1}
-                </th>
-                <th colSpan={totalWeeksCurrentYear} className="header-cell">
-                  {currentYear}
-                </th>
-                <th colSpan={totalWeeksNextYear} className="header-cell">
-                  {currentYear + 1}
-                </th>
-              </tr>
-              <tr>
-                <th className="empty-header-cell"></th>
-                {monthsPreviousYear.map((month) => (
-                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                    {month.name}
-                  </th>
-                ))}
-                {monthsCurrentYear.map((month) => (
-                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                    {month.name}
-                  </th>
-                ))}
-                {monthsNextYear.map((month) => (
-                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                    {month.name}
+
+                {weeksForDateRange.reduce((acc: { year: number; weeks: number }[], monthData) => {
+                  const existingYearIndex = acc.findIndex((data) => data.year === monthData.year);
+                  if (existingYearIndex === -1) {
+                    acc.push({ year: monthData.year as number, weeks: monthData.weeks.length as number });
+                  } else {
+                    acc[existingYearIndex].weeks += monthData.weeks.length;
+                  }
+                  return acc;
+                }, []).map((yearData, index) => (
+                  <th
+                    key={`year-${yearData.year}`}
+                    colSpan={yearData.weeks}
+                    className="header-cell"
+                  >
+                    {yearData.year}
                   </th>
                 ))}
               </tr>
               <tr>
                 <th className="empty-header-cell"></th>
-                {[monthsPreviousYear, monthsCurrentYear, monthsNextYear].reduce((acc, curr) => acc.concat(curr), []).map((month) =>
-                  month.weeks.map((week) => (
-                    <th key={month.name + week} className="header-cell week-header-cell">
+                {/* Render headers based on data */}
+                {weeksForDateRange.map((monthData) => (
+                  <th
+                    key={`${monthData.name}-${monthData.year}`}
+                    colSpan={monthData.weeks.length}
+                    className="header-cell"
+                  >
+                    {monthData.name}
+                  </th>
+                ))}
+              </tr>
+
+
+              <tr>
+                <th className="empty-header-cell"></th>
+                {weeksForDateRange.reduce<number[]>((acc, curr) => acc.concat(curr.weeks), []).map((week) => {
+                  // Find the relevant monthData for the current week
+                  const monthData = weeksForDateRange.find((month) => month.weeks.includes(week));
+
+                  if (!monthData) {
+                    // Handle the case where monthData is not found
+                    return null;
+                  }
+
+                  return (
+                    <th className="header-cell week-header-cell">
                       <OverlayTrigger
                         placement="top"
                         overlay={
-                          <Tooltip id={`week-tooltip-${month.year}-${week}`}>
-                            {`Week ${week} - ${getWeekDates(month.year, month.name, week).startDate} to ${getWeekDates(
-                              month.year,
-                              month.name,
+                          <Tooltip id={`week-tooltip-${week}`}>
+                            {`Week ${week} - ${getWeekDates(monthData.year, monthData.name, week).startDate} to ${getWeekDates(
+                              monthData.year,
+                              monthData.name,
                               week
                             ).endDate}`}
                           </Tooltip>
@@ -436,72 +393,71 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
                         <span id={`week-${week}`} className=''>{week}</span>
                       </OverlayTrigger>
                     </th>
-                  ))
-                )}
+
+                  );
+                })}
               </tr>
-              {demandcategories?.sort((a, b) => a.id.localeCompare(b.id))
-                .map((category: DemandCategory) => (
-                  <tr key={category.id}>
-                    <th className="sticky-header-cell">
-                      <div className="sticky-header-content">{category.demandCategoryName}</div>
-                    </th>
-                    {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) => (
-                      <React.Fragment key={`${category.id}-${month.name}-${month.year}`}>
-                        {month.weeks.map((week: number) => (
-                          <td key={`${category.id}-${month.name}-${week}`} className="data-cell">
-                            {editMode ? (
-                              <input
-                                className="table-data-input"
-                                type="text"
-                                defaultValue={
-                                  demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
-                                    ? demandValuesMap[category.id]?.[month.year]?.[week].toString()
-                                    : ''
+              {demandcategories?.sort((a, b) => a.id.localeCompare(b.id)).map((category: DemandCategory) => (
+                <tr key={category.id}>
+                  <th className="sticky-header-cell">
+                    <div className="sticky-header-content">{category.demandCategoryName}</div>
+                  </th>
+                  {weeksForDateRange.map((month) => (
+                    month.weeks.map((week: number, index: number) => (
+                      <td key={`${category.id}-${month.year}-${month.name}-${week}-${index}`} className="data-cell">
+                        {editMode ? (
+                          <input
+                            className="table-data-input"
+                            type="text"
+                            defaultValue={
+                              demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
+                                ? demandValuesMap[category.id]?.[month.year]?.[week].toString()
+                                : ''
+                            }
+                            onChange={(event) => {
+                              const inputValue = event.target.value;
+                              const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+
+                              setDemandValuesMap((prevDemandValuesMap) => {
+                                const categoryMap = {
+                                  ...(prevDemandValuesMap[category.id] || {}),
+                                  [month.year]: {
+                                    ...(prevDemandValuesMap[category.id]?.[month.year] || {}),
+                                  },
+                                };
+
+                                if (inputValue === '' || numericValue === '0') {
+                                  delete categoryMap[month.year]?.[week];
+
+                                  if (Object.keys(categoryMap[month.year]).length === 0) {
+                                    delete categoryMap[month.year];
+                                  }
+                                } else if (/^[0-9]\d*$/.test(numericValue)) {
+                                  categoryMap[month.year][week] = parseInt(numericValue, 10);
                                 }
-                                onChange={(event) => {
-                                  const inputValue = event.target.value;
-                                  const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
 
-                                  setDemandValuesMap((prevDemandValuesMap) => {
-                                    const categoryMap = {
-                                      ...(prevDemandValuesMap[category.id] || {}),
-                                      [month.year]: {
-                                        ...(prevDemandValuesMap[category.id]?.[month.year] || {}),
-                                      },
-                                    };
+                                return {
+                                  ...prevDemandValuesMap,
+                                  [category.id]: categoryMap,
+                                };
+                              });
+                            }}
+                          />
+                        ) : (
+                          <span>
+                            {demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
+                              ? demandValuesMap[category.id]?.[month.year]?.[week] === 0
+                                ? '0'
+                                : demandValuesMap[category.id]?.[month.year]?.[week]
+                              : ''}
+                          </span>
+                        )}
+                      </td>
+                    ))
+                  ))}
+                </tr>
+              ))}
 
-                                    if (inputValue === '' || numericValue === '0') {
-                                      delete categoryMap[month.year]?.[week];
-
-                                      if (Object.keys(categoryMap[month.year]).length === 0) {
-                                        delete categoryMap[month.year];
-                                      }
-                                    } else if (/^[0-9]\d*$/.test(numericValue)) {
-                                      categoryMap[month.year][week] = parseInt(numericValue, 10);
-                                    }
-
-                                    return {
-                                      ...prevDemandValuesMap,
-                                      [category.id]: categoryMap,
-                                    };
-                                  });
-                                }}
-                              />
-                            ) : (
-                              <span>
-                                {demandValuesMap[category.id]?.[month.year]?.[week] !== undefined
-                                  ? demandValuesMap[category.id]?.[month.year]?.[week] === 0
-                                    ? '0'
-                                    : demandValuesMap[category.id]?.[month.year]?.[week]
-                                  : ''}
-                              </span>
-                            )}
-                          </td>
-                        ))}
-                      </React.Fragment>
-                    ))}
-                  </tr>
-                ))}
             </thead>
           </table>
         </div>
