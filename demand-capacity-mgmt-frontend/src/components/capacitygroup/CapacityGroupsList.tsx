@@ -53,7 +53,7 @@ const CapacityGroupsList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
   const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
-  const { findCompanyByCompanyID } = useContext(CompanyContext)!;
+  const { findCompanyByCompanyID, findCompanyNameByBpn } = useContext(CompanyContext)!;
   const [favoriteCapacityGroups, setFavoriteCapacityGroups] = useState<string[]>([]);
 
   const handleSort = (column: string) => {
@@ -210,6 +210,7 @@ const CapacityGroupsList: React.FC = () => {
           {user?.role === 'CUSTOMER' && (
             <>
               <td>{capacitygroup.supplierBNPL}</td>
+              <td>{findCompanyNameByBpn(capacitygroup.supplierBNPL)}</td>
             </>
           )}
 
