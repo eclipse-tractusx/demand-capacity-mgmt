@@ -58,7 +58,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final StatusesService statusesService;
     private final LoggingHistoryService loggingHistoryService;
     private final FavoriteService favoriteService;
-    private final StatusManagerImpl statusManager;
+    private final BottleneckManagerImpl statusManager;
 
     private final UserRepository userRepository;
 

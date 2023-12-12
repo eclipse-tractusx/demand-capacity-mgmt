@@ -55,7 +55,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
 
     private final WebClient keycloakWebClient;
 
-    private final StatusManagerImpl statusManager;
+    private final BottleneckManagerImpl statusManager;
 
     private final UserRepository userRepository;
     private static final String CLIENT_ID = "client_id";
