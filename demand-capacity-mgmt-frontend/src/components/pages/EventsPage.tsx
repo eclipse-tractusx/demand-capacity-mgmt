@@ -19,7 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Tab, Tabs } from "react-bootstrap";
 import { FaFilter, FaRedo } from "react-icons/fa";
 import { FcTimeline } from "react-icons/fc";
@@ -93,24 +93,16 @@ function EventsPage() {
     };
 
 
-    const fetchFavoritesByTypeRef = useRef(fetchFavoritesByType);
-    const userInputRef = useRef(userInput);
-
-    useEffect(() => {
-        userInputRef.current = userInput;
-    }, [userInput]);
-
     useEffect(() => {
         const fetchData = async () => {
-            const fetchFavoritesByType = fetchFavoritesByTypeRef.current;
             try {
                 setLoading(true);
                 let filteredEvents: EventProp[] = [];
-                if (userInputRef.current !== '') {
+                if (userInput !== '') {
                     filteredEvents = await fetchFilteredEvents({
-                        material_demand_id: userInputRef.current,
-                        capacity_group_id: userInputRef.current,
-                        event: userInputRef.current,
+                        material_demand_id: userInput,
+                        capacity_group_id: userInput,
+                        event: userInput,
                     });
                 } else {
                     filteredEvents = events; // Show all events if userInput is empty
@@ -160,7 +152,7 @@ function EventsPage() {
         };
 
         fetchData();
-    }, [events, fetchFilteredEvents, fetchFavoritesByTypeRef, userInputRef]);
+    }, [fetchFilteredEvents]);
 
 
 
@@ -207,10 +199,8 @@ function EventsPage() {
                                     </div>
                                     <div className="col-sm-6">
                                         <div className="float-end ms-3">
-                                            <Button className='float-end spin-on-hover' variant="primary" onClick={handleRefreshClick}>
-                                                <span className="button-content">
-                                                    <FaRedo className="icon" />
-                                                </span>
+                                            <Button className='mx-1' variant="primary" onClick={handleRefreshClick}>
+                                                <FaRedo className="spin-on-hover" />
                                             </Button>
                                             {user?.role === 'ADMIN' && (
                                                 <Button variant="danger" onClick={handleNukeClick}>

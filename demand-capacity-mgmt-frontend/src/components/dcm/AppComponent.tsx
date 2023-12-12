@@ -23,7 +23,6 @@
 import React from 'react';
 import { Route, Routes } from "react-router-dom";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
-import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
 import EventsContextProvider from '../../contexts/EventsContextProvider';
 import FavoritesContextProvider from "../../contexts/FavoritesContextProvider";
@@ -54,13 +53,10 @@ const AppComponent: React.FC = () => {
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <CompanyContextProvider>
-                                <Layout>
-                                    <Home />
-                                    <QuickAcessItems />
-                                </Layout>
-                            </CompanyContextProvider>
-                        </DemandContextProvider>
+                            <Layout>
+                                <Home />
+                                <QuickAcessItems />
+                            </Layout></DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
 

@@ -39,7 +39,6 @@ export interface Company {
 interface CompanyContextData {
   companies: Company[];
   topCompanies: Company[];
-  findCompanyByCompanyID: (companyID: string) => Company | undefined;
 }
 
 export const CompanyContext = createContext<CompanyContextData | undefined>(undefined);
@@ -75,18 +74,12 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
     fetchCompanies();
     fetchTopCompanies();
-  },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [access_token]);
+  }, [access_token]);
 
-
-  const findCompanyByCompanyID = (companyID: string | undefined): Company | undefined => {
-    return companies.find(company => company.id === companyID);
-  };
 
 
   return (
-    <CompanyContext.Provider value={{ companies, topCompanies, findCompanyByCompanyID }}>
+    <CompanyContext.Provider value={{ companies, topCompanies }}>
       {props.children}
     </CompanyContext.Provider>
   );

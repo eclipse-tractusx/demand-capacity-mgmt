@@ -26,14 +26,6 @@ $theme-colors: (
   info: $theme1-info,
 );
 
-$container-max-widths: (
-  sm: 540px,
-  md: 720px,
-  lg: 960px,
-  xl: 1200px,
-  xxl: 1650px
-);
-
 @import '~bootstrap/scss/functions';
 @import '~bootstrap/scss/mixins';
 @import '~bootstrap/scss/root';
@@ -42,9 +34,6 @@ $container-max-widths: (
 @import '~bootstrap/scss/buttons';
 @import '~bootstrap/scss/dropdown';
 @import '~bootstrap/scss/badge';
-@import '~bootstrap/scss/bootstrap';
-
-
 
 // Override button text color
 .btn {

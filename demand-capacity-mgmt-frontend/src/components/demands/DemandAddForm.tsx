@@ -26,7 +26,6 @@ import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
-import { useUser } from '../../contexts/UserContext';
 import { Demand } from '../../interfaces/demand_interfaces';
 import CompanyOptions from '../common/CompanyOptions';
 import UnitsOfMeasureOptions from '../common/UnitsofMeasureOptions';
@@ -114,18 +113,17 @@ const useHandleSubmit = (initialFormState: Demand) => {
 };
 
 const AddForm: React.FC<AddFormProps> = () => {
-  const { user } = useUser();
   const initialFormState: Demand = {
     id: '',
     materialDescriptionCustomer: '',
     materialNumberCustomer: '',
     materialNumberSupplier: '',
-    customerId: user?.companyID || '', //This will be the ID of the company associated with the logged user
+    customerId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6', //This will be the ID of the company associated with the logged user
     supplierId: '',
     unitMeasureId: '',
     materialDemandSeries: [
       {
-        customerLocationId: user?.companyID || '',  //This will be the ID of the company associated with the logged user
+        customerLocationId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6',  //This will be the ID of the company associated with the logged user
         expectedSupplierLocationId: [],
         demandCategoryId: '',
         demandSeriesValues: [],
