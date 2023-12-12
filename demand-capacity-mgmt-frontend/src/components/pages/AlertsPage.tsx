@@ -20,18 +20,21 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
+import { FaList } from "react-icons/fa";
 import { FcHighPriority } from "react-icons/fc";
-import {LoadingCustomMessage, LoadingMessage} from "../common/LoadingMessages";
+import { AlertsContext } from "../../contexts/AlertsContextProvider";
+import ConfigureAlertModal from "../alerts/ConfigureAlertModal";
 import RulesModal from "../alerts/RulesModal";
 import TriggeredAlertsTable from "../alerts/TriggeredAlertsTable";
-import  {AlertsContext} from "../../contexts/AlertsContextProvider";
+import { LoadingMessage } from "../common/LoadingMessages";
 
 
 function AlertsPage() {
     const [loading, setLoading] = useState(false);
     const [showRulesModal, setShowRulesModal] = useState(false);
-    const {triggeredAlerts, fetchTriggeredAlertsWithRetry } = useContext(AlertsContext)!;
+    const { triggeredAlerts, fetchTriggeredAlertsWithRetry } = useContext(AlertsContext)!;
 
     const openRulesModalClick = () => {
         setShowRulesModal(true);
@@ -51,21 +54,30 @@ function AlertsPage() {
         <>
             <br />
             <div className="container-xl">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                        <FcHighPriority size={35} />
-                        <h3 className="icon-text-padding">Alerts</h3>
+                <div className="row">
+                    <div className="col-sm-6">
+                        <div style={{ display: 'flex' }}>
+                            <FcHighPriority size={35} />
+                            <h3 className="icon-text-padding">Alerts</h3>
+                        </div>
                     </div>
-                    <RulesModal showRulesModal={showRulesModal} hideRulesModal={hideRulesModal}/>
-                    <button className="rules-button" onClick={openRulesModalClick}>Rules</button>
+                    <div className="col-sm-6">
+                        <Button className='btn btn-primary float-end ms-2' onClick={openRulesModalClick}>
+                            <span><FaList /> Alert Rules</span>
+                        </Button>
+                        <ConfigureAlertModal />
+                    </div>
                 </div>
+
                 <div className="table">
                     <div className="table-wrapper">
                         <TriggeredAlertsTable triggeredAlerts={triggeredAlerts} />
                     </div>
                 </div>
             </div>
+            <RulesModal showRulesModal={showRulesModal} hideRulesModal={hideRulesModal} />
         </>
+
     );
 }
 

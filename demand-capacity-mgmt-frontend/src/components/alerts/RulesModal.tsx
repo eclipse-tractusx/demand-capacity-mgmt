@@ -1,11 +1,8 @@
-import React, {useContext, useEffect, useState} from "react";
+import React from "react";
 import Modal from "react-bootstrap/Modal";
-import {Button} from "react-bootstrap";
+import { FcAlarmClock } from "react-icons/fc";
 import ConfigureAlertModal from "./ConfigureAlertModal";
 import ConfiguredAlertsTable from "./ConfiguredAlertsTable";
-import {DemandProp, UnitMeasureId} from "../../interfaces/demand_interfaces";
-import {EventType} from "../../interfaces/event_interfaces";
-import {EventsContext} from "../../contexts/EventsContextProvider";
 
 
 type RulesModalProps = {
@@ -13,7 +10,7 @@ type RulesModalProps = {
     hideRulesModal: () => void,
 };
 
-const RulesModal: React.FC<RulesModalProps> = ({showRulesModal,hideRulesModal}) => {
+const RulesModal: React.FC<RulesModalProps> = ({ showRulesModal, hideRulesModal }) => {
     return <Modal
         show={showRulesModal}
         onHide={hideRulesModal}
@@ -21,11 +18,22 @@ const RulesModal: React.FC<RulesModalProps> = ({showRulesModal,hideRulesModal}) 
         backdrop="static"
         keyboard={false}>
         <Modal.Header closeButton>
-            <Modal.Title>Configured Alerts Wizard</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <ConfigureAlertModal/>
-            <ConfiguredAlertsTable/>
+
+            <div className="row">
+                <div className="col-sm-6">
+                    <div style={{ display: 'flex' }}>
+                        <FcAlarmClock size={35} />
+                        <h3 className="icon-text-padding">Configured Alert Rules</h3>
+                    </div>
+                </div>
+                <div className="col-sm-6">
+                    <ConfigureAlertModal />
+                </div>
+            </div>
+            <br />
+            <ConfiguredAlertsTable />
         </Modal.Body>
     </Modal>
 }
