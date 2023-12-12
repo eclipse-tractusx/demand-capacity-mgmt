@@ -106,16 +106,6 @@ code {
   transform: translate(0%, -50%);
 }
 
-.rules-button {
-  background-color: orange;
-  border-radius: 5px; /* Adjust the value for rounder or sharper corners */
-  padding: 8px 32px; /* Adjust the padding as needed */
-  color: white; /* Text color */
-  border: none; /* Remove default button border */
-  cursor: pointer;
-}
-
-
 /*Demand Management Modal*/
 .custom-modal {
   max-width: 1500px !important;
