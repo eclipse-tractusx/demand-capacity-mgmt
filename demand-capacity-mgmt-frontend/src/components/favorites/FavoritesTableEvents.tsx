@@ -39,6 +39,7 @@ interface FavoriteTableEventsProps {
 const FavoritesTableEvents: React.FC<FavoriteTableEventsProps> = ({ events }) => {
     const [sortField, setSortField] = useState<string>('changedAt');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [eventsPerPage, setEventsPerPage] = useState<number>(5);
 
@@ -71,9 +72,6 @@ const FavoritesTableEvents: React.FC<FavoriteTableEventsProps> = ({ events }) =>
         return sortedArray;
     }, [events, sortField, sortOrder]);
 
-    const indexOfLastEvent = currentPage * eventsPerPage;
-    const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
-    const currentEvents = sortedData.slice(indexOfFirstEvent, indexOfLastEvent);
     const totalPagesNum = Math.ceil(sortedData.length / eventsPerPage);
 
     const handleUnfavorite = useCallback(
@@ -85,7 +83,7 @@ const FavoritesTableEvents: React.FC<FavoriteTableEventsProps> = ({ events }) =>
                 console.error('Error Unfavoriting:', error);
             }
         },
-        [events]
+        [deleteFavorite, fetchFavorites]
     );
 
     const generateOverlay = (event: EventFavoriteResponse): React.ReactElement => {

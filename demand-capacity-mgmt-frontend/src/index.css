@@ -130,6 +130,24 @@ code {
   font-size: small;
 }
 
+/*Data Range Selectors*/
+
+.data-range-container {
+  display: flex;
+  /* Adjust this height as needed */
+}
+
+.pop-out-section {
+  padding: 10px;
+}
+
+.text-muted {
+  color: #6c757d;
+  /* Adjust text color */
+  font-size: 14px;
+}
+
+
 /*Sum View Tables*/
 .table-container {
   overflow-x: auto;
@@ -182,7 +200,6 @@ code {
   position: sticky;
   padding: 0;
   left: 0;
-  z-index: 1;
 }
 
 .sticky-header-content {
@@ -318,6 +335,9 @@ code {
 }
 
 
+.spin-on-hover:hover .button-content {
+  animation: spin 0.7s ease-in-out infinite;
+}
 
 @keyframes spin {
   0% {
@@ -329,14 +349,16 @@ code {
   }
 }
 
-.spin-on-hover {
-  animation: spin 1s ease-in-out;
+.button-content {
+  display: inline-block;
   transform-origin: center;
+  /* Ensure the span takes the size of its content */
 }
 
-.spin-on-hover:hover {
-  animation: spin 1s ease-in-out infinite;
+.icon {
+  /* Any specific styling for your icon */
 }
+
 
 /* Admin Panel */
 .tabs-column {
