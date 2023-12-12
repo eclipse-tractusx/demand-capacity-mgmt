@@ -21,12 +21,11 @@
  */
 
 
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaEye, FaRedo } from 'react-icons/fa';
 import { LuStar } from 'react-icons/lu';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
-import { CompanyContext } from '../../contexts/CompanyContextProvider';
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import { useUser } from '../../contexts/UserContext';
 import '../../index.css';
@@ -53,7 +52,6 @@ const CapacityGroupsList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
   const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
-  const { findCompanyByCompanyID } = useContext(CompanyContext)!;
   const [favoriteCapacityGroups, setFavoriteCapacityGroups] = useState<string[]>([]);
 
   const handleSort = (column: string) => {
@@ -66,7 +64,7 @@ const CapacityGroupsList: React.FC = () => {
       setSortOrder('asc');
     }
   };
-  const fetchFavorites = useCallback(async () => {
+  const fetchFavorites = async () => {
     try {
       const favorites = await fetchFavoritesByType(FavoriteType.CAPACITY_GROUP);
       if (favorites && favorites.capacityGroups) {
@@ -75,14 +73,13 @@ const CapacityGroupsList: React.FC = () => {
     } catch (error) {
       console.error('Error fetching favorites by type in DemandList:', error);
     }
-  }, [fetchFavoritesByType]);
-
-  const handleRefreshClick = useCallback(async () => {
+  };
+  const handleRefreshClick = async () => {
     await fetchCapacityGroupsWithRetry();
     await fetchFavorites();
-  }, [fetchCapacityGroupsWithRetry, fetchFavorites]);
+  };
 
-  const toggleFavorite = useCallback(async (capacityGroupID: string) => {
+  const toggleFavorite = async (capacityGroupID: string) => {
     if (favoriteCapacityGroups.includes(capacityGroupID)) {
       await deleteFavorite(capacityGroupID)
       setFavoriteCapacityGroups(prev => prev.filter(id => id !== capacityGroupID));
@@ -91,19 +88,14 @@ const CapacityGroupsList: React.FC = () => {
       setFavoriteCapacityGroups(prev => [...prev, capacityGroupID]);
     }
     handleRefreshClick();
-  }, [favoriteCapacityGroups, handleRefreshClick, addFavorite, deleteFavorite]);
-
-
+  };
 
   useEffect(() => {
     fetchFavorites();
-  }, [capacitygroups, fetchFavorites]);
+  }, [capacitygroups]);
 
 
-  const isCapacityGroupFavorite = useMemo(() => {
-    const isFavorited = (capacityGroupID: string) => favoriteCapacityGroups.includes(capacityGroupID);
-    return isFavorited;
-  }, [favoriteCapacityGroups]);
+  const isCapacityGroupFavorite = (capacityGroupID: string) => favoriteCapacityGroups.includes(capacityGroupID);
 
   useMemo(() => {
     let filteredcapacitygroups = [...capacitygroups];
@@ -125,6 +117,12 @@ const CapacityGroupsList: React.FC = () => {
     const favoriteCapacityGroups = filteredcapacitygroups.filter((capacitygroup) => isCapacityGroupFavorite(capacitygroup.internalId));
     const unfavoritedCapacityGroups = filteredcapacitygroups.filter((capacitygroup) => !isCapacityGroupFavorite(capacitygroup.internalId));
 
+    // Sort favorited demands by changedAt timestamp in descending order
+    //favoriteCapacityGroups.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
+
+    // Sort unfavorited demands by changedAt timestamp in descending order
+    //unfavoritedCapacityGroups.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
+
     // Concatenate favorited and unfavorited demands
     const sortedCapacityGroups = [...favoriteCapacityGroups, ...unfavoritedCapacityGroups];
 
@@ -143,7 +141,7 @@ const CapacityGroupsList: React.FC = () => {
     }
 
     setFilteredCapacityGroups(sortedCapacityGroups);
-  }, [capacitygroups, isCapacityGroupFavorite, searchQuery, sortColumn, sortOrder]);
+  }, [capacitygroups, searchQuery, sortColumn, sortOrder]);
 
   const slicedcapacitygroups = useMemo(() => {
     const indexOfLastCapacityGroup = currentPage * capacitygroupsPerPage;
@@ -170,7 +168,7 @@ const CapacityGroupsList: React.FC = () => {
               />
             </span>
           </td>
-          <td><center>
+          <td>
             <OverlayTrigger
               placement="top"
               overlay={<Tooltip id={`tooltip-copy-${capacitygroup.internalId}-open`}>Go to Details</Tooltip>}
@@ -181,9 +179,8 @@ const CapacityGroupsList: React.FC = () => {
                 </div>
               </Button>
             </OverlayTrigger>
-          </center>
           </td>
-          <td><center>
+          <td>
             <OverlayTrigger
               placement="top"
               overlay={<Tooltip id={`tooltip-copy-${capacitygroup.internalId}`}>{capacitygroup.internalId}</Tooltip>}
@@ -197,23 +194,14 @@ const CapacityGroupsList: React.FC = () => {
               >
                 <FaCopy />
               </Button>
-            </OverlayTrigger></center>
+            </OverlayTrigger>
           </td>
           <td>{capacitygroup.name}</td>
-          {user?.role === 'SUPPLIER' && (
-            <>
-              <td>{capacitygroup.customerBPNL}</td>
-              <td>{capacitygroup.customerName}</td>
-            </>
-          )}
-
-          {user?.role === 'CUSTOMER' && (
-            <>
-              <td>{capacitygroup.supplierBNPL}</td>
-            </>
-          )}
-
+          <td>{capacitygroup.customerBPNL}</td>
+          <td>{capacitygroup.customerName}</td>
+          <td>{capacitygroup.supplierBNPL}</td>
           <td>{capacitygroup.numberOfMaterials}</td>
+          <td>{capacitygroup.favoritedBy}</td>
           <td>
             {capacitygroup.linkStatus === EventType.TODO ? (
               <span className="badge rounded-pill text-bg-warning" id="tag-warning">
@@ -250,7 +238,7 @@ const CapacityGroupsList: React.FC = () => {
           </td>
         </tr>
       )),
-    [slicedcapacitygroups, favoriteCapacityGroups, toggleFavorite]
+    [slicedcapacitygroups]
   );
 
   return (
@@ -259,7 +247,6 @@ const CapacityGroupsList: React.FC = () => {
         <div className="row">
           <div className="col-sm-6">
             <h3>{getUserGreeting(user)}!</h3>
-            <span className='text-muted'>{findCompanyByCompanyID(user?.companyID || '')?.companyName || ''}</span>
           </div>
           <div className="col-sm-6">
             <div className="row">
@@ -267,10 +254,8 @@ const CapacityGroupsList: React.FC = () => {
                 <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
               </div>
               <div className="col-sm-1">
-                <Button className='float-end spin-on-hover' variant="primary" onClick={handleRefreshClick}>
-                  <span className="button-content">
-                    <FaRedo className="icon" />
-                  </span>
+                <Button className='float-end' variant="primary" onClick={handleRefreshClick}>
+                  <FaRedo className="spin-on-hover" />
                 </Button>
               </div>
             </div>
@@ -311,11 +296,7 @@ const CapacityGroupsList: React.FC = () => {
                         htmlSize={10}
                         max={100}
                         value={capacitygroupsPerPage}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          const newValue = value === '' ? 1 : Math.max(1, parseInt(value)); // Ensure it's not empty and not less than 1
-                          setcapacitygroupsPerPage(newValue);
-                        }}
+                        onChange={(e) => setcapacitygroupsPerPage(Number(e.target.value))}
                       />
                     </Col>
                   </Form.Group>
