@@ -20,27 +20,22 @@
  *    ********************************************************************************
  */
 
-import CapacityGroupsProvider from "../../contexts/CapacityGroupsContextProvider";
-import CapacityGroupsList from "../capacitygroup/CapacityGroupsList";
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
-function CapacityGroupPage() {
-
-    return (
-        <>
-            <div className="container-xl">
-                <br />
-                <div className="table">
-                    <div className="table-wrapper">
-                        <CapacityGroupsProvider>
-                            <CapacityGroupsList />
-                        </CapacityGroupsProvider>
-                    </div>
-                </div>
-            </div>
-        </>
-
+public interface AlertService {
+    AlertResponse configureAlert(AlertRequest alertRequest);
+    void triggerDemandAlertsIfNeeded(
+        String userID,
+        boolean isMaterialDemandChange,
+        double oldDemandValue,
+        double newDemandValue,
+        String materialDemandId
     );
+    List<AlertResponse> getAlerts(String userID);
+    List<TriggeredAlertResponse> getTriggeredAlerts(String userID);
+    TriggeredAlertResponse postTriggeredAlerts(TriggeredAlertRequest triggeredAlertRequest);
 }
-
-export default CapacityGroupPage;

@@ -109,8 +109,10 @@ function TodoListPage() {
                       />
                     </div>
                     <div className="col-sm-6">
-                      <Button className='btn btn-primary float-end ms-2' onClick={handleRefreshClick}>
-                        <FaRedo className="spin-on-hover" />
+                      <Button className='float-end spin-on-hover ms-2' variant="primary" onClick={handleRefreshClick}>
+                        <span className="button-content">
+                          <FaRedo className="icon" />
+                        </span>
                       </Button>
                       {user?.role === 'SUPPLIER' && (
                         <>

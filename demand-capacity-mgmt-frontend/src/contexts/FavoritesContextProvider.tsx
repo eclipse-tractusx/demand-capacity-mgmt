@@ -85,9 +85,12 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
         }
     }
 
+
     useEffect(() => {
         fetchFavorites();
-    }, []);  // Note the empty array, this ensures it runs only once.
+    },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []);  // Note the empty array, this ensures it runs only once.
 
     const refresh = () => {
         fetchFavorites();

@@ -20,50 +20,57 @@
  *    ********************************************************************************
  */
 import { useEffect, useRef, useState } from "react";
-import {
-    Bar,
-    BarChart,
-    Brush,
-    CartesianGrid,
-    ComposedChart,
-    Legend,
-    Line,
-    ReferenceArea,
-    Tooltip,
-    XAxis,
-    YAxis
-} from "recharts";
+import { Bar, BarChart, Brush, CartesianGrid, ComposedChart, Legend, Line, ReferenceArea, Tooltip, XAxis, YAxis } from "recharts";
 import { CapacityGroupData, SingleCapacityGroup } from "../../interfaces/capacitygroup_interfaces";
 import { DemandProp } from "../../interfaces/demand_interfaces";
+import { getWeekNumber } from "../../util/WeeksUtils";
 
 
 interface CapacityGroupChronogramProps {
-    capacityGroup: SingleCapacityGroup | null;
+    capacityGroup: SingleCapacityGroup | null | undefined;
     materialDemands: DemandProp[] | null;
+    startDate: Date;
+    endDate: Date;
 }
 
 function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
+    const { capacityGroup, materialDemands, startDate, endDate } = props;
 
     type SelectedRangeType = {
         start: string | null;
         end: string | null;
-    };
-
-
-    const [capacityGroup] = useState<SingleCapacityGroup | null>(props.capacityGroup);
-    const [demands, setDemands] = useState<DemandProp[] | null>(props.materialDemands);
-
-    useEffect(() => {
-        // Update the component's state when materialDemands prop changes
-        setDemands(props.materialDemands);
-    }, [props.materialDemands]);
-
+    }
 
     const rawCapacities = capacityGroup?.capacities || [];
+
+
+    // Generate a list of dates between the minDate and maxDate
+    const generatedDates: string[] = [];
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+        generatedDates.push(currentDate.toISOString().split('T')[0]);
+        currentDate.setDate(currentDate.getDate() + 7);
+    }
+
+    // Check for missing dates in the capacities list
+    const missingDates = generatedDates.filter(
+        (date) => !rawCapacities.find((c) => c.calendarWeek === date)
+    );
+
+    // Create capacity entries with actualCapacity and maximumCapacity as 0 for missing dates
+    const missingCapacities = missingDates.map((date) => ({
+        calendarWeek: date,
+        actualCapacity: 0,
+        maximumCapacity: 0,
+    }));
+
+    // Merge missing capacities with the original capacities list
+    const processedCapacities = [...rawCapacities, ...missingCapacities];
+
     // Calculate demand sums by week
     const demandSumsByWeek: { [key: string]: number } = {};
-    if (demands) {
-        demands.forEach((demand) => {
+    if (materialDemands) {
+        materialDemands.forEach((demand) => {
             demand.demandSeries?.forEach((demandSeries) => {
                 demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
                     const week = demandSeriesValue.calendarWeek;
@@ -73,34 +80,34 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
         });
     }
 
-    // Create a mapping of demand sums by calendarWeek
-    const demandSumsMap: { [key: string]: number } = {};
-    Object.keys(demandSumsByWeek).forEach((week) => {
-        const simplifiedDate = new Date(week).toISOString().split('T')[0];
-        demandSumsMap[simplifiedDate] = demandSumsByWeek[week];
-    });
+    const demandSumsMapRef = useRef<{ [key: string]: number }>({});
 
-    // Create data for the chart by matching calendarWeek with demand sums
-    const data: CapacityGroupData[] = rawCapacities.map((d) => {
-        const simplifiedDate = new Date(d.calendarWeek).toISOString().split('T')[0];
-        return {
-            ...d,
-            Demand: demandSumsMap[simplifiedDate] || 0,
-            dateEpoch: new Date(simplifiedDate).getTime(),
-            calendarWeek: simplifiedDate,
-        };
-    }).sort((a, b) => a.dateEpoch - b.dateEpoch);
+    useEffect(() => {
+        Object.keys(demandSumsByWeek).forEach((week) => {
+            const simplifiedDate = new Date(week).toISOString().split('T')[0];
+            demandSumsMapRef.current[simplifiedDate] = demandSumsByWeek[week];
+        });
+    }, [demandSumsByWeek, startDate, endDate]);
 
-    const getWeekNumber = (d: Date) => {
-        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const [filteredData, setFilteredData] = useState<CapacityGroupData[]>([]);
 
-        // Convert the dates to milliseconds for the arithmetic operation
-        return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    useEffect(() => {
+        if (startDate && endDate) {
+            const newData = processedCapacities.map((d) => {
+                const simplifiedDate = new Date(d.calendarWeek).toISOString().split('T')[0];
+                return {
+                    ...d,
+                    Demand: demandSumsMapRef.current[simplifiedDate] || 0,
+                    dateEpoch: new Date(simplifiedDate).getTime(),
+                    calendarWeek: simplifiedDate,
+                };
+            }).sort((a, b) => a.dateEpoch - b.dateEpoch);
 
-    };
-
+            setFilteredData(newData.filter((d) => {
+                return d.dateEpoch >= startDate.getTime() && d.dateEpoch <= endDate.getTime();
+            }));
+        }
+    }, [demandSumsMapRef, startDate, endDate]);
 
     const weekTickFormatter = (tick: string) => {
         const dateParts = tick.split("-").map((part) => parseInt(part, 10));
@@ -160,21 +167,40 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
     useEffect(() => {
         const interval = setInterval(() => {
             if (brushIndexesRef.current?.startIndex !== undefined && brushIndexesRef.current?.endIndex !== undefined) {
-                const start = data[brushIndexesRef.current.startIndex].calendarWeek;
-                const end = data[brushIndexesRef.current.endIndex].calendarWeek;
+                const start = filteredData[brushIndexesRef.current.startIndex].calendarWeek;
+                const end = filteredData[brushIndexesRef.current.endIndex].calendarWeek;
                 setSelectedRange({ start, end });
             }
         }, timer.current);
 
         return () => clearInterval(interval);
-    }, [data]);
+    }, [filteredData]);
+
+    const [containerWidth, setContainerWidth] = useState(0);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const container = document.getElementById('chart-container');
+            if (container) {
+                setContainerWidth(container.clientWidth);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initial width
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
 
     return (
-        <div>
+        <div className="container">
             <ComposedChart
-                width={1300}
+                width={containerWidth}
                 height={500}
-                data={data}
+                data={filteredData}
 
                 margin={{
                     top: 20,
@@ -234,9 +260,9 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
             {/* Mini preview AreaChart */}
             <BarChart
-                width={1300}
+                width={containerWidth}
                 height={100}  // Adjust height as needed
-                data={data}
+                data={filteredData}
                 margin={{
                     top: 5,
                     right: 80,

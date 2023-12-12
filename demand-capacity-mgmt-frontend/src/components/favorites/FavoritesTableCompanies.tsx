@@ -34,17 +34,12 @@ interface FavoriteTableCompaniesProps {
 }
 
 const FavoriteTableCompanies: React.FC<FavoriteTableCompaniesProps> = ({ favcompanies }) => {
-    const [sortField, setSortField] = useState<string>('changedAt');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    const [sortField] = useState<string>('changedAt');
+    const [sortOrder] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [eventsPerPage, setEventsPerPage] = useState<number>(5);
 
     const { deleteFavorite, fetchFavorites } = useContext(FavoritesContext)!;
-
-    const handleSort = useCallback((field: string) => {
-        setSortField(field);
-        setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc') as 'asc' | 'desc');
-    }, []);
 
 
     const sortedData = useMemo(() => {
@@ -79,7 +74,7 @@ const FavoriteTableCompanies: React.FC<FavoriteTableCompaniesProps> = ({ favcomp
                 console.error('Error Unfavoriting:', error);
             }
         },
-        [favcompanies]
+        [deleteFavorite, fetchFavorites]
     );
 
     return (

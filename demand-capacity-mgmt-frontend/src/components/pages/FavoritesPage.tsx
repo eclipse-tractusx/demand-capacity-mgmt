@@ -24,11 +24,11 @@ import { Tab, Tabs } from "react-bootstrap";
 import { BsFillBookmarkStarFill } from "react-icons/bs";
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import { LoadingMessage } from "../common/LoadingMessages";
+import FavoritesTableAddressBook from "../favorites/FavoritesTableAddressBook";
 import FavoritesTableCapacityGroup from "../favorites/FavoritesTableCapacityGroup";
 import FavoriteTableCompanies from "../favorites/FavoritesTableCompanies";
 import FavoritesTableEvents from "../favorites/FavoritesTableEvents";
 import FavoriteTableMaterialDemands from "../favorites/FavoritesTableMaterialDemands";
-import FavoritesTableAddressBook from "../favorites/FavoritesTableAddressBook";
 
 const FavoritesPage: React.FC = () => {
     const { favorites } = useContext(FavoritesContext)!;
