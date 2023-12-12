@@ -1,29 +1,6 @@
-/*
- * ******************************************************************************
- * Copyright (c) 2023 BMW AG
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
- *
- * SPDX-License-Identifier: Apache-2.0
- * *******************************************************************************
- */
-
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
@@ -31,8 +8,8 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.WeekColor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusManager;
-import org.springframework.stereotype.Service;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.BottleneckManager;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -41,9 +18,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@Service
-@Slf4j
-public class StatusManagerImpl implements StatusManager {
+@Component
+public class BottleneckDetectorUtil implements BottleneckManager {
 
     private static final LocalDate TWO_WEEKS_FROM_NOW = LocalDate.now().plusWeeks(2);
     private final MaterialDemandRepository materialDemandRepository;
@@ -225,7 +201,7 @@ public class StatusManagerImpl implements StatusManager {
         return demandSeriesValuesList.stream()
                 .filter(dsv -> dsv.getCalendarWeek().equals(week))
                 .findFirst()
-                .orElseGet(DemandSeriesValues::new); // Or handle this case as per your logic
+                .orElseGet(DemandSeriesValues::new);
     }
 
     private Map<LocalDate, Double> getWeeklyDemands(List<DemandSeries> matchedDemandSeries) {
@@ -287,5 +263,4 @@ public class StatusManagerImpl implements StatusManager {
         statusesRepository.save(status);
         return status;
     }
-
 }

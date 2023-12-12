@@ -35,11 +35,13 @@ import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
 import Home from "../pages/CapacityGroupPage";
 import DownStatusPage from '../pages/DownStatusPage';
 import ErrorPage from '../pages/ErrorPage';
+import BottlenecksPage from '../pages/BottlenecksPage'
 import EventsPage from "../pages/EventsPage";
 import FavoritesPage from "../pages/FavoritesPage";
 import TodoListPage from '../pages/TodoListPage';
 import UpStatusPage from '../pages/UpStatusPage';
 import Layout from './Layout';
+import BottlenecksContextProvider from "../../contexts/BottlenecksContextProvider";
 
 
 const AppComponent: React.FC = () => {
@@ -163,6 +165,20 @@ const AppComponent: React.FC = () => {
                         <DemandContextProvider>
                             <Layout>
                                 <AdminPage />
+                            </Layout>
+                        </DemandContextProvider>
+                    </FavoritesContextProvider>
+                </AuthenticatedRoute>
+            } />
+
+            <Route path="/bottlenecks" element={
+                <AuthenticatedRoute>
+                    <FavoritesContextProvider>
+                        <DemandContextProvider>
+                            <Layout>
+                                <BottlenecksContextProvider>
+                                    <BottlenecksPage />
+                                </BottlenecksContextProvider>
                             </Layout>
                         </DemandContextProvider>
                     </FavoritesContextProvider>

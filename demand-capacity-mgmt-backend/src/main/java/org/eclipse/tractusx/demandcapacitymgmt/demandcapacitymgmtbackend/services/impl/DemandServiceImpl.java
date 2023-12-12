@@ -71,7 +71,7 @@ public class DemandServiceImpl implements DemandService {
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
     private final HttpServletRequest request;
     private final StatusesService statusesService;
-    private final StatusManagerImpl statusManager;
+    private final BottleneckManagerImpl statusManager;
 
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest, String userID) {

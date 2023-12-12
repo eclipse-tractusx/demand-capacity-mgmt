@@ -72,6 +72,10 @@ function InfoMenu() {
                     Events
                     <span className="ms-1 badge rounded-pill text-bg-info" id="events-count">-</span>
                 </Nav.Link>
+                <Nav.Link onClick={() => handleNavigation('/bottlenecks')}>
+                    Bottlenecks
+                    <span className="ms-1 badge rounded-pill bg-light text-dark" id="bottlenecks-count">-</span>
+                </Nav.Link>
             </Nav>
         </>
     );

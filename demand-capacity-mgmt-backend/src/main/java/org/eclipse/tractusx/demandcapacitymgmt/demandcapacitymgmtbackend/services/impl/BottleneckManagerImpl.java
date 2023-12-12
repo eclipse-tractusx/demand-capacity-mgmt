@@ -20,10 +20,29 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
-public interface StatusManager {
-    void calculateBottleneck(String userID, boolean postLog);
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.BottleneckManager;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.BottleneckDetectorUtil;
+import org.springframework.stereotype.Service;
 
-    void calculateTodos(String userID);
+@RequiredArgsConstructor
+@Service
+@Slf4j
+public class BottleneckManagerImpl implements BottleneckManager {
+
+    private final BottleneckDetectorUtil bottleneckDetectorUtil;
+
+    @Override
+    public void calculateTodos(String userID) {
+        bottleneckDetectorUtil.calculateTodos(userID);
+    }
+
+    @Override
+    public void calculateBottleneck(String userID, boolean postLog) {
+        bottleneckDetectorUtil.calculateBottleneck(userID,postLog);
+    }
+
 }
