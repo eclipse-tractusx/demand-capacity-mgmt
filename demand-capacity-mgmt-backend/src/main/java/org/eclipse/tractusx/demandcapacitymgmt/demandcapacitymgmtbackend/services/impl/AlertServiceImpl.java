@@ -77,12 +77,12 @@ public class AlertServiceImpl implements AlertService {
                 triggeredAlertEntity.setCreated(Timestamp.valueOf(currentLocalDateTime).toString());
                 if (isGlobalAlert(isMaterialDemandChange, alertEntity)) {
                     if (alertEntity.getType().equals(AlertThresholdType.RELATIVE)) {
-                        double threshold = alertEntity.getThreshold();
+                        double threshold = alertEntity.getThreshold() / 100;
                         double demandDelta = threshold * oldValue;
                         if (threshold >= 0 && (newValue - oldValue >= demandDelta)) {
-                            fillTriggeredAlert(triggeredAlertEntity, "Increased by ", threshold, true, alertEntity);
+                            fillTriggeredAlert(triggeredAlertEntity, "Increased by ", alertEntity.getThreshold(), true, alertEntity);
                         } else if ((threshold < 0 && (newValue - oldValue <= demandDelta))) {
-                            fillTriggeredAlert(triggeredAlertEntity, "Decreased by ", threshold, true, alertEntity);
+                            fillTriggeredAlert(triggeredAlertEntity, "Decreased by ", alertEntity.getThreshold(), true, alertEntity);
                         }
                     }
                 } else if (alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.DEDICATED)) {

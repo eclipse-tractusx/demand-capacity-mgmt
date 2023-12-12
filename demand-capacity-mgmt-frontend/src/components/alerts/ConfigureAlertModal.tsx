@@ -15,7 +15,7 @@ import {CapacityGroupContext} from "../../contexts/CapacityGroupsContextProvider
 type ConfigureAlertModalProps = {
     refreshConfiguredAlerts: () => void,
 };
-const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfiguredAlerts}) => {
+const ConfigureAlertModal = () => {
     const [showConfigureAlertModal, setShowConfigureAlertModal] = useState(false)
     const [alertStepNumber, setAlertStepNumber] = useState(1)
     const initialFormState: ConfiguredAlertProps = {
@@ -51,43 +51,6 @@ const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfi
     const [d, setShowSuccessMessage] = useState(false);
 
     const handleFormSubmit = async (e: FormEvent) => {
-        let dedicatedAlerts1: DedicatedAlert[] = [];
-        selectedDemands.map(md => {
-            dedicatedAlerts1.push({
-                type: "MATERIAL_DEMAND",
-                objectId: md.id
-            })
-        });
-        selectedCapacityGroups.map(cg => {
-            dedicatedAlerts1.push({
-                type: "CAPACITY_GROUP",
-                objectId: cg.internalId
-            })
-        });
-        const x = dedicatedAlerts1;
-
-        setAlertDedicatedAlerts(x);
-
-        e.preventDefault();
-        const errors = {
-            monitoredObject: alertMonitoredObject.length == 0 ? 'Monitored Objects is required.' : '',
-            threshold: !alertThreshold ? 'Threshold is required.' : '',
-            type: !alertType ? 'Type is required.' : '',
-            dedicatedAlerts: (alertMonitoredObject == "DEDICATED" && x.length == 0) ? 'Dedicated Alerts is required. ' : '',
-        };
-
-        // Set error messages
-        setMonitoredObjectsError(errors.monitoredObject);
-        setThresholdError(errors.threshold);
-        setThresholdTypeError(errors.type);
-        setDedicatedAlertsError(errors.dedicatedAlerts);
-
-
-        // Check for validation failures
-        const failedValidation = Object.values(errors).some(error => error !== '');
-        if (failedValidation) {
-            return;
-        }
         let configuredAlertProps = {
             id:"",
             alertName: alertName,
@@ -97,7 +60,7 @@ const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfi
             type: alertType,
             triggerTimes:"",
             triggerTimesInThreeMonths:"",
-            dedicatedAlerts: x
+            dedicatedAlerts: alertDedicatedAlerts
         }
         try {
             await configureAlert(configuredAlertProps);
@@ -107,7 +70,7 @@ const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfi
             console.error('Error creating demand:', error);
         }
         setShowSuccessMessage(true);
-        refreshConfiguredAlerts();
+        // refreshConfiguredAlerts();
         //TODO : Saja refresh configured Alerts again
     };
 
@@ -199,12 +162,7 @@ const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfi
     }
 
     const nextButtonClicked = () => {
-        if (alertMonitoredObject != "DEDICATED" && alertStepNumber == 1) {
-            // skip the select Demands step
-            setAlertStepNumber(alertStepNumber + 2);
-        } else {
-            setAlertStepNumber(alertStepNumber + 1);
-        }
+        validateNavigation();
     }
 
     const handleMonitoredObjectsChange = (value: string) => {
@@ -213,7 +171,79 @@ const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfi
             id: value,
         }));
         setAlertMonitoredObject(value);
+
     };
+
+    const validateNavigation = () => {
+        let dedicatedAlerts1: DedicatedAlert[] = [];
+        selectedDemands.map(md => {
+            dedicatedAlerts1.push({
+                type: "MATERIAL_DEMAND",
+                objectId: md.id
+            })
+        });
+        selectedCapacityGroups.map(cg => {
+            dedicatedAlerts1.push({
+                type: "CAPACITY_GROUP",
+                objectId: cg.internalId
+            })
+        });
+        const x = dedicatedAlerts1;
+
+        setAlertDedicatedAlerts(x);
+
+        const errors = {
+            monitoredObject: alertMonitoredObject.length == 0 ? 'Monitored Objects is required.' : '',
+            threshold: alertStepNumber == 3 && !alertThreshold ? 'Threshold is required.' : '',
+            thresholdType: alertStepNumber == 3 && !alertType ? 'Threshold Type is required.' : '',
+            dedicatedAlerts: alertStepNumber == 2 && (alertMonitoredObject == "DEDICATED" && x.length == 0) ? 'Dedicated Alerts is required. ' : '',
+        };
+
+        // Set error messages
+        setMonitoredObjectsError(errors.monitoredObject);
+        setThresholdError(errors.threshold);
+        setThresholdTypeError(errors.thresholdType);
+        setDedicatedAlertsError(errors.dedicatedAlerts);
+
+
+        const numericValue = parseFloat(alertThreshold);
+        console.log("sajaadem3" + (alertStepNumber == 2 && (alertMonitoredObject == "DEDICATED" && alertDedicatedAlerts.length == 0) ));
+        console.log("sajaadem3" , alertStepNumber , alertMonitoredObject ,alertDedicatedAlerts.length );
+        let updatedThresholdError = errors.threshold;
+        if (formState.type === 'RELATIVE') {
+            // Validate for RELATIVE type
+            if (!isNaN(numericValue) && ((numericValue >= -100 && numericValue < 0) || (numericValue > 0 && numericValue <= 100))) {
+                updatedThresholdError = "";
+            } else {
+                // Display an error message or handle invalid input
+                updatedThresholdError = "For RELATIVE type, enter a number between 0 and 100 (excluding 0)";
+            }
+        } else if (formState.type === 'ABSOLUTE') {
+            // Validate for ABSOLUTE type
+            if (!isNaN(numericValue) && numericValue != 0) {
+                updatedThresholdError = "";//setThresholdError('');
+            } else {
+                // Display an error message or handle invalid input
+                updatedThresholdError = "For ABSOLUTE type, enter a numeric value (excluding 0)";
+            }
+        }
+        setThresholdError(updatedThresholdError);
+
+        if((alertStepNumber == 1 && errors.monitoredObject.length == 0 ) ||
+            (alertStepNumber == 2 && errors.dedicatedAlerts.length == 0) ||
+            // (alertStepNumber == 4 && thresholdTypeError.length == 0 && thresholdError.length == 0) ||
+            (alertStepNumber == 3 && errors.thresholdType.length == 0 && updatedThresholdError.length == 0)){
+
+            if (alertMonitoredObject != "DEDICATED" && alertStepNumber == 1) {
+                // skip the select Demands step
+                setAlertStepNumber(alertStepNumber + 2);
+            } else {
+                setAlertStepNumber(alertStepNumber + 1);
+            }
+        }
+
+
+    }
 
     const handleThresholdTypeChange = (value: string) => {
         setFormState((prevFormState) => ({
@@ -226,14 +256,17 @@ const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfi
     const handleAlertNameChange = (newValue: string) => {
         setAlertName(newValue);
     };
-
-    const handleThresholdChange = (newValue: string) => {
-        setAlertThreshold(newValue);
+    const handleThresholdChange = (newValue: any) => {
+                setAlertThreshold(newValue);
     };
+
+
 
     const handleCloseButton = () => {
         setShowConfigureAlertModal(false);
     };
+
+    console.log(formState.type, "form state type")
 
 
     return <div className="d-flex justify-content-end align-items-center">
@@ -263,7 +296,9 @@ const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfi
                             <Form.Label className="control-label required-field-label">Monitored Objects</Form.Label>
                             <AlertMonitoredObjectsOptions selectedMonitoredObjectId={formState.monitoredObjects}
                                                           onChange={handleMonitoredObjectsChange}/>
-                        </Form.Group>
+                        </Form.Group><br/>
+                        <div className="error-message">{monitoredObjectsError}</div><br/>
+
                     </div>}
 
 
@@ -361,19 +396,24 @@ const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfi
                                 </Row>
                             )}
                         </Container>
+                        <br/>
+                        <div className="error-message">{dedicatedAlertsError}</div><br/>
                     </div>
 
                     }
 
-
                     {alertStepNumber === 3 && <div className="step3"><Form.Group className="mb-3 required">
                         <Form.Label>Threshold</Form.Label>
                         <Form.Control
-                            type="text"
-                            placeholder="Threshold"
+                            type= "number"//{formState.type="RELATIVE"? "number" : "text"}
+                            placeholder={formState.type === 'RELATIVE'? '100%': formState.type === 'ABSOLUTE'? 'Unit': 'Threshold'}
                             id="threshold"
                             name="Threshold"
                             onChange={(e) => handleThresholdChange(e.target.value)}
+                            onKeyDown={ (evt) => evt.key === 'e' && evt.preventDefault()}
+                            maxLength={2}
+                            max={formState.type === 'RELATIVE'?  100: undefined}
+                            min={formState.type === 'RELATIVE'?  0: undefined}
                         />
                     </Form.Group>
 
@@ -383,7 +423,9 @@ const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfi
                                                        onChange={(e) => handleThresholdTypeChange(e.toString())}/>
                         </Form.Group>
 
-
+                        <br/>
+                        <div className="error-message">{thresholdError}</div><br/>
+                        <div className="error-message">{thresholdTypeError}</div><br/>
                     </div>}
 
                     {alertStepNumber === 4 &&
@@ -469,10 +511,6 @@ const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfi
                                     </Row>
                                 ))}
                             </Container>
-                            <div className="error-message">{monitoredObjectsError}</div><br/>
-                            <div className="error-message">{thresholdTypeError}</div><br/>
-                            <div className="error-message">{thresholdError}</div><br/>
-                            <div className="error-message">{dedicatedAlertsError}</div><br/>
                         </div>
                     }
                 </Form>
@@ -481,7 +519,8 @@ const ConfigureAlertModal : React.FC<ConfigureAlertModalProps> =  ({refreshConfi
                 {alertStepNumber === 4 && <div><Button variant="primary" onClick={handleFormSubmit}>
                     Submit
                 </Button></div>}
-                {alertStepNumber != 4 && <Button className="next-button" onClick={nextButtonClicked}>Next</Button>}
+                {alertStepNumber != 4 && <Button className="next-button" onClick={nextButtonClicked}
+                >Next</Button>}
             </Modal.Footer>
         </Modal>
     </div>
