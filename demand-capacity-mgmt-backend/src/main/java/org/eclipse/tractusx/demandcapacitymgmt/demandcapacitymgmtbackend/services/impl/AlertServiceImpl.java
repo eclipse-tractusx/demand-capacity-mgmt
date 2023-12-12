@@ -153,9 +153,12 @@ public class AlertServiceImpl implements AlertService {
     }
 
     private static boolean isGlobalAlert(boolean isMaterialDemandChange, AlertEntity alertEntity) {
-        return (alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.ALL_DEMANDS) || (
+        return (
+            alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.ALL_DEMANDS) ||
+            (
                 alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.ALL_CAPACITIES) &&
-                !isMaterialDemandChange ) ||
+                !isMaterialDemandChange
+            ) ||
             alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.ALL_OBJECTS)
         );
     }
@@ -184,7 +187,8 @@ public class AlertServiceImpl implements AlertService {
     private static void getAlertByUserId(String userID, List<AlertEntity> alerts) {
         alerts
             .stream()
-            .filter(alertEntity -> {
+            .filter(
+                alertEntity -> {
                     if (alertEntity.getUserID().toString().equals(userID)) {
                         alerts.add(alertEntity);
                     }
