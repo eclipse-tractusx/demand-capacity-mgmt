@@ -116,8 +116,6 @@ txdc:
         secret: /v1/cgi-dcm-foss
     secretNames:
       transferProxyTokenEncryptionAesKey: value-added-service/dcm/dev/DATA_ENCRYPTION_KEYS_ALIAS
-      transferProxyTokenSignerPrivateKey: value-added-service/dcm/dev/DAPS_PRIVATE_KEY
-      transferProxyTokenSignerPublicKey: value-added-service/dcm/dev/DAPS_PUBLIC_KEY
 
   backendService:
     httpProxyTokenReceiverUrl: "http://edc-dcm-backend.int.demo.catena-x.net"
