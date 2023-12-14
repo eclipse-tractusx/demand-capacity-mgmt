@@ -25,9 +25,9 @@ import { Button } from "react-bootstrap";
 import { FaList } from "react-icons/fa";
 import { FcHighPriority } from "react-icons/fc";
 import { AlertsContext } from "../../contexts/AlertsContextProvider";
+import AlertsTable from "../alerts/AlertsTable";
 import ConfigureAlertModal from "../alerts/ConfigureAlertModal";
 import RulesModal from "../alerts/RulesModal";
-import TriggeredAlertsTable from "../alerts/TriggeredAlertsTable";
 import { LoadingMessage } from "../common/LoadingMessages";
 
 
@@ -71,7 +71,7 @@ function AlertsPage() {
 
                 <div className="table">
                     <div className="table-wrapper">
-                        <TriggeredAlertsTable triggeredAlerts={triggeredAlerts} />
+                        <AlertsTable alerts={triggeredAlerts} />
                     </div>
                 </div>
             </div>
