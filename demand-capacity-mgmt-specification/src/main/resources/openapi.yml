@@ -986,8 +986,62 @@ paths:
         404:
           description: Favorite not found
 
+  /rules/:
+    get:
+      tags:
+        - rules
+      summary: Get all rules
+      operationId: getAllRules
+      responses:
+        200:
+          description: all rules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesResponse'
+
+  /rules/{id}:
+    get:
+      tags:
+        - rules
+      summary: Get a rule
+      operationId: getRule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the rule
+          schema:
+            type: integer
+      responses:
+        200:
+          description: get rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleResponse'
+        404:
+          description: loggingHistory not found
+    post:
+      tags:
+        - rules
+      summary: Update a rule
+      operationId: updateRule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the rule
+          schema:
+            $ref: '#/components/schemas/RuleRequest'
+      responses:
+        200:
+          description: updated rule
+
+
 components:
   schemas:
+
     UserRequest:
       type: object
       properties:
@@ -1006,23 +1060,26 @@ components:
         role:
           $ref: '#/components/schemas/Role'
 
-    UserResponse:
+    RuleResponse:
       type: object
       properties:
-        userID:
-          type: string
-        name:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        username:
-          type: string
-        companyID:
-          type: string
-        role:
-          $ref: '#/components/schemas/Role'
+        percentage:
+          type: integer
+        enabled:
+          type: boolean
+
+    RuleRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        enabled:
+          type: boolean
+
+    RulesResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/RuleRequest'
 
     User:
       type: object
@@ -1080,6 +1137,24 @@ components:
           type: integer
         statusDegredation:
           type: integer
+
+    UserResponse:
+      type: object
+      properties:
+        userID:
+          type: string
+        name:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        companyID:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
 
     StatusRequest:
       type: object
