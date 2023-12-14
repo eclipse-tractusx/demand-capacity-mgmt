@@ -543,13 +543,7 @@ const ConfigureAlertModal = () => {
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                {step === 4 && (
-                    <div>
-                        <Button variant="primary" onClick={handleFormSubmit}>
-                            Submit
-                        </Button>
-                    </div>
-                )}
+
 
                 {step !== 1 && (
                     <Button variant="secondary" onClick={previousButtonClicked}>
@@ -561,6 +555,14 @@ const ConfigureAlertModal = () => {
                     <Button variant="primary" onClick={nextButtonClicked}>
                         Next
                     </Button>
+                )}
+
+                {step === 4 && (
+                    <div>
+                        <Button variant="primary" onClick={handleFormSubmit}>
+                            Submit
+                        </Button>
+                    </div>
                 )}
 
             </Modal.Footer>
