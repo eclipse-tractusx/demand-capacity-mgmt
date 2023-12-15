@@ -24,18 +24,21 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AddressBookRecordEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.AddressBookRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.AddressBookService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.GoldenRecordManager;
-import org.springframework.stereotype.Service;
-
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AddressBookRecordEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.AddressBookRepository;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.AddressBookService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.GoldenRecordManager;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
@@ -43,14 +46,29 @@ import java.util.UUID;
 public class AddressBookServiceImpl implements AddressBookService {
 
     private final AddressBookRepository repository;
-
+    private final LoggingHistoryService loggingHistoryService;
     private final GoldenRecordManager goldenRecordManager;
+
+    private void postLogs(String id, String action) {
+        LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
+        loggingHistoryRequest.setObjectType(EventObjectType.ADRESS_BOOK.name());
+        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
+        loggingHistoryRequest.setIsFavorited(false);
+
+        if ("post".equals(action)) {
+            loggingHistoryRequest.setEventDescription("Address Book Created - ID: " + id);
+        } else if ("delete".equals(action)) {
+            loggingHistoryRequest.setEventDescription("AddressBook Deleted - ID: " + id);
+        }
+
+        loggingHistoryService.createLog(loggingHistoryRequest);
+    }
 
     @Override
     public AddressBookResponse getRecord(AddressBookRequest request) {
-        if(Boolean.FALSE.equals(request.getDirectQuery())){
+        if (Boolean.FALSE.equals(request.getDirectQuery())) {
             Optional<AddressBookRecordEntity> entity = repository.findById(UUID.fromString(request.getQuery()));
-            if(entity.isPresent()){
+            if (entity.isPresent()) {
                 return convertEntityToDto(entity.get());
             }
         } else {
@@ -63,31 +81,37 @@ public class AddressBookServiceImpl implements AddressBookService {
     @Override
     public List<AddressBookResponse> getRecords() {
         List<AddressBookRecordEntity> records;
-            records = repository.findAll();
-            List<AddressBookResponse> response = new ArrayList<>();
-            for(AddressBookRecordEntity ent : records){
-                response.add(convertEntityToDto(ent));
-            }
-            return response;
+        records = repository.findAll();
+        List<AddressBookResponse> response = new ArrayList<>();
+        for (AddressBookRecordEntity ent : records) {
+            response.add(convertEntityToDto(ent));
+        }
+        return response;
     }
 
     @Override
     public AddressBookResponse postRecord(AddressBookRequest request) {
-        return convertEntityToDto(goldenRecordManager.createRecord(request.getQuery()));
+        AddressBookResponse addressBookResponse = convertEntityToDto(
+            goldenRecordManager.createRecord(request.getQuery())
+        );
+        postLogs(addressBookResponse.getId(), "post");
+        return addressBookResponse;
     }
 
     @Override
     public void deleteRecord(AddressBookRequest request) {
         repository.deleteById(UUID.fromString(request.getQuery()));
+        postLogs(request.getQuery(), "delete");
     }
 
-
-    private AddressBookResponse convertEntityToDto(AddressBookRecordEntity entity){
+    private AddressBookResponse convertEntityToDto(AddressBookRecordEntity entity) {
         AddressBookResponse response = new AddressBookResponse();
         response.setId(entity.getId().toString());
-        response.setContact(entity.getContact());
+        response.setLandLine(entity.getLandLine());
+        response.setCellPhone(entity.getCellPhone());
         response.setName(entity.getName());
         response.setEmail(entity.getEmail());
+        response.setDepartment(entity.getDepartment());
         response.setFunction(entity.getFunction());
         response.setCompanyId(entity.getCompanyId().toString());
         response.setPicture(entity.getPicture());
