@@ -27,9 +27,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -64,8 +66,6 @@ public class DemandServiceImpl implements DemandService {
     private final LoggingHistoryService loggingHistoryService;
 
     private final DemandSeriesRepository demandSeriesRepository;
-
-    private final AlertService alertService;
 
     private final CapacityGroupRepository capacityGroupRepository;
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
@@ -165,61 +165,11 @@ public class DemandServiceImpl implements DemandService {
                     }
                 }
             );
-
-        //triggerDemandAlertsIfNeeded(demandId, userID, demand);
-
         demand = materialDemandRepository.save(demand);
         postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT, userID);
         statusManager.calculateBottleneck(userID, true);
         statusManager.calculateTodos(userID);
         return convertDemandResponseDto(demand);
-    }
-
-    private void triggerDemandAlertsIfNeeded(String demandId, String userID, MaterialDemandEntity demand) {
-        List<Double> oldDemandValues = new ArrayList<>(List.of());
-        List<Double> newDemandValues = new ArrayList<>(List.of());
-
-        demand
-            .getDemandSeries()
-            .forEach(
-                demandSeries -> {
-                    demandSeries
-                        .getDemandSeriesValues()
-                        .forEach(
-                            demandSeriesValues -> {
-                                newDemandValues.add(demandSeriesValues.getDemand());
-                            }
-                        );
-                }
-            );
-
-        materialDemandRepository
-            .findById(UUID.fromString(demandId))
-            .get()
-            .getDemandSeries()
-            .forEach(
-                demandSeries1 -> {
-                    demandSeries1
-                        .getDemandSeriesValues()
-                        .forEach(
-                            demandSeriesValues -> {
-                                oldDemandValues.add(demandSeriesValues.getDemand());
-                            }
-                        );
-                }
-            );
-
-        for (int i = 0; i < newDemandValues.size(); i++) {
-            if (!Objects.equals(oldDemandValues.get(i), newDemandValues.get(i))) {
-                alertService.triggerDemandAlertsIfNeeded(
-                    userID,
-                    true,
-                    oldDemandValues.get(i),
-                    newDemandValues.get(i),
-                    demandId
-                );
-            }
-        }
     }
 
     private List<MaterialDemandEntity> getAllDemands() {

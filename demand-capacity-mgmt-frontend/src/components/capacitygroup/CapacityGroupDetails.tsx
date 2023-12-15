@@ -20,17 +20,26 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
+import CapacityGroupsList from "./CapacityGroupsList";
+import CapacityGroupContext from "../../contexts/CapacityGroupsContextProvider";
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AlertEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusesEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+function CapacityGroupDetails() {
 
-public interface AlertsRepository extends JpaRepository<AlertEntity, Integer> {
-    Optional<AlertEntity> findByUserID(UUID userID);
-    List<AlertEntity> findAllByUserID(UUID userID);
-    void deleteByUserID(UUID userID);
+    return (
+        <>
+        <div className="container-xl">
+            <br />
+            <div className="table">
+                <div className="table-wrapper">
+                    <CapacityGroupContext>
+                        <CapacityGroupsList />
+                    </CapacityGroupContext>
+                </div>
+            </div>
+        </div>
+        </>
+
+    );
 }
+
+export default CapacityGroupDetails;

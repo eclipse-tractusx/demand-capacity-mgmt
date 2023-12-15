@@ -81,17 +81,35 @@ const DemandList: React.FC<{
 
 
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
-    //const [listedDemands, setListedDemands] = useState<DemandProp[]>([]);
-
-
+    const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
+    const fetchFavorites = async () => {
+      try {
+        const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
+        if (favorites && favorites.materialDemands) {
+          setFavoriteDemands(favorites.materialDemands.map((fav: MaterialDemandFavoriteResponse) => fav.id));
+        }
+      } catch (error) {
+        console.error('Error fetching favorites by type in DemandList:', error);
+      }
+    };
 
     useEffect(() => {
       setShowWizardModal(showWizard || false);
       fetchDemandProps();
       fetchFavorites();
-      setCurrentPage(1);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [showWizard, searchQuery]);
+    }, [showWizard]);
+
+
+    const filteredDemandsByEventTypes = useMemo(() => {
+      if (eventTypes.length > 0) {
+        // If eventTypes array is provided, filter demands based on the specified event types
+        return filteredDemands.filter((demand) => eventTypes.includes(demand.linkStatus));
+      } else {
+        // If no eventTypes are provided, return all filteredDemands
+        return filteredDemands;
+      }
+    }, [filteredDemands, eventTypes]);
+
 
     const handleSort = (column: string | null) => {
       if (sortColumn === column) {
@@ -155,27 +173,12 @@ const DemandList: React.FC<{
 
     const handleCloseDetails = () => setShowDetailsModal(false);
 
-    const isDemandFavorited = useMemo(() => {
-      const isFavorited = (demandId: string) => favoriteDemands.includes(demandId);
-      return isFavorited;
-    }, [favoriteDemands]);
+    const isDemandFavorited = (demandId: string) => favoriteDemands.includes(demandId);
 
-    const fetchFavorites = useCallback(async () => {
-      try {
-        const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
-        if (favorites && favorites.materialDemands) {
-          setFavoriteDemands(favorites.materialDemands.map((fav: MaterialDemandFavoriteResponse) => fav.id));
-        }
-      } catch (error) {
-        console.error('Error fetching favorites by type in DemandList:', error);
-      }
-    }, [fetchFavoritesByType, setFavoriteDemands]);
-
-    const filteredDemands = useMemo(() => {
+    useMemo(() => {
       let filteredDemands = [...demandprops];
 
       if (searchQuery !== '') {
-        setCurrentPage(1);
         filteredDemands = filteredDemands.filter((demand) =>
           demand.materialDescriptionCustomer.toLowerCase().includes(searchQuery.toLowerCase()) ||
           demand.id.toString().includes(searchQuery.toLowerCase()) ||
@@ -183,11 +186,6 @@ const DemandList: React.FC<{
           demand.materialNumberCustomer.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
           demand.materialNumberSupplier.toString().toLowerCase().includes(searchQuery.toLowerCase())
         );
-      }
-
-      // Filter by eventTypes if provided
-      if (eventTypes.length > 0) {
-        filteredDemands = filteredDemands.filter((demand) => eventTypes.includes(demand.linkStatus));
       }
 
       // Separate favorited and unfavorited demands
@@ -201,7 +199,7 @@ const DemandList: React.FC<{
       unfavoritedDemands.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
 
       // Concatenate favorited and unfavorited demands
-      let sortedDemands = [...favoritedDemands, ...unfavoritedDemands];
+      const sortedDemands = [...favoritedDemands, ...unfavoritedDemands];
 
       if (sortColumn) {
         // Sort the concatenated array by the specified column
@@ -220,6 +218,7 @@ const DemandList: React.FC<{
 
           // If the types are not string or number, return 0 (no sorting)
           return 0;
+
         });
 
         if (sortOrder === 'desc') {
@@ -227,17 +226,21 @@ const DemandList: React.FC<{
           sortedDemands.reverse();
         }
       }
-      // Return the sortedDemands instead of filteredDemands
-      return sortedDemands;
-    }, [demandprops, searchQuery, isDemandFavorited, sortColumn, sortOrder, eventTypes]);
+
+      setFilteredDemands(sortedDemands);
+    }, [demandprops, searchQuery, sortColumn, sortOrder]);
 
     const slicedDemands = useMemo(() => {
+      // Use filteredDemandsByEventTypes instead of filteredDemands for slicing and rendering
       const indexOfLastDemand = currentPage * demandsPerPage;
       const indexOfFirstDemand = indexOfLastDemand - demandsPerPage;
-      return filteredDemands.slice(indexOfFirstDemand, indexOfLastDemand);
-    }, [currentPage, demandsPerPage, filteredDemands]);
+      return filteredDemandsByEventTypes.slice(indexOfFirstDemand, indexOfLastDemand);
+    }, [filteredDemandsByEventTypes, currentPage, demandsPerPage]);
 
-    const totalPagesNum = Math.ceil(filteredDemands.length / demandsPerPage);
+    const totalPagesNum = useMemo(() => Math.ceil(filteredDemands.length / demandsPerPage), [
+      filteredDemands,
+      demandsPerPage,
+    ]);
 
     const handleCheckboxChange = useCallback(
       (event: React.ChangeEvent<HTMLInputElement>, demandId: string) => {
@@ -257,17 +260,17 @@ const DemandList: React.FC<{
       [filteredDemands]
     );
 
-    const toggleFavorite = useCallback(async (demandId: string) => {
+    const toggleFavorite = async (demandId: string) => {
       if (favoriteDemands.includes(demandId)) {
-        await deleteFavorite(demandId);
+        await deleteFavorite(demandId)
         setFavoriteDemands(prev => prev.filter(id => id !== demandId));
       } else {
-        await addFavorite(demandId, FavoriteType.MATERIAL_DEMAND);
+        await addFavorite(demandId, FavoriteType.MATERIAL_DEMAND)
         setFavoriteDemands(prev => [...prev, demandId]);
       }
       fetchFavorites();
       fetchDemandProps();
-    }, [favoriteDemands, deleteFavorite, addFavorite, fetchFavorites, fetchDemandProps]);
+    };
 
 
     const demandItems = useMemo(
@@ -385,7 +388,7 @@ const DemandList: React.FC<{
             </td>
           </tr>
         )),
-      [slicedDemands, favoriteDemands, toggleFavorite, selectedDemands, handleCheckboxChange]
+      [slicedDemands, selectedDemands, handleCheckboxChange]
     );
 
 
@@ -426,11 +429,7 @@ const DemandList: React.FC<{
                             htmlSize={10}
                             max={100}
                             value={demandsPerPage}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              const newValue = value === '' ? 1 : Math.max(1, parseInt(value)); // Ensure it's not empty and not less than 1
-                              setDemandsPerPage(newValue);
-                            }}
+                            onChange={(e) => setDemandsPerPage(Number(e.target.value))}
                           />
                         </Col>
                       </Form.Group>

@@ -41,6 +41,7 @@ interface CompanyContextData {
   topCompanies: Company[];
   findCompanyByCompanyID: (companyID: string) => Company | undefined;
   findCompanyNameByBpn: (bpn: string) => string | undefined;
+
 }
 
 export const CompanyContext = createContext<CompanyContextData | undefined>(undefined);
@@ -76,9 +77,8 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
     fetchCompanies();
     fetchTopCompanies();
-  },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [access_token]);
+  }, [access_token]);
+
 
 
   const findCompanyByCompanyID = (companyID: string | undefined): Company | undefined => {

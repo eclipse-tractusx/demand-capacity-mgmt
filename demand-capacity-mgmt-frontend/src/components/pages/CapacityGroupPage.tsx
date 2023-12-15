@@ -28,16 +28,16 @@ function CapacityGroupPage() {
 
     return (
         <>
-            <div className="container-xl">
-                <br />
-                <div className="table">
-                    <div className="table-wrapper">
-                        <CapacityGroupsProvider>
-                            <CapacityGroupsList />
-                        </CapacityGroupsProvider>
-                    </div>
+        <div className="container-xl">
+            <br />
+            <div className="table">
+                <div className="table-wrapper">
+                    <CapacityGroupsProvider>
+                        <CapacityGroupsList />
+                    </CapacityGroupsProvider>
                 </div>
             </div>
+        </div>
         </>
 
     );
