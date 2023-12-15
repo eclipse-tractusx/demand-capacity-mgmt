@@ -27,5 +27,5 @@ public enum FavoriteType {
     COMPANY_BASE_DATA,
     MATERIAL_DEMAND,
     EVENT,
-    ADDRESS_BOOK
+    ADDRESS_BOOK,
 }

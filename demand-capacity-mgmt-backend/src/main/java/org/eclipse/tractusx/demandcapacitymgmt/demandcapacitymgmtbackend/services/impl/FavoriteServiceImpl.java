@@ -107,7 +107,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             }
             case ADDRESS_BOOK -> {
                 List<AddressBookFavoriteResponse> favoriteResponses = new ArrayList<>();
-                for(FavoriteEntity fav : favoriteResponseList){
+                for (FavoriteEntity fav : favoriteResponseList) {
                     favoriteResponses.add(convertToAddressBookDto(fav));
                 }
                 FavoriteResponse response = new FavoriteResponse();
@@ -147,14 +147,16 @@ public class FavoriteServiceImpl implements FavoriteService {
         return response;
     }
 
-    private AddressBookFavoriteResponse convertToAddressBookDto(FavoriteEntity entity){
+    private AddressBookFavoriteResponse convertToAddressBookDto(FavoriteEntity entity) {
         Optional<AddressBookRecordEntity> recordEntity = addressBookRepository.findById(entity.getFavoriteId());
-        if(recordEntity.isPresent()){
+        if (recordEntity.isPresent()) {
             AddressBookRecordEntity record = recordEntity.get();
             AddressBookFavoriteResponse response = new AddressBookFavoriteResponse();
             response.setName(record.getName());
             response.setId(record.getId().toString());
-            response.setContact(record.getContact());
+            response.setLandLine(record.getLandLine());
+            response.setCellPhone(record.getCellPhone());
+            response.setDepartment(record.getDepartment());
             response.setEmail(record.getEmail());
             response.setCompanyId(response.getCompanyId());
             response.setFunction(record.getFunction());
