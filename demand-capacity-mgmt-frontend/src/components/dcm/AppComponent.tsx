@@ -40,6 +40,7 @@ import FavoritesPage from "../pages/FavoritesPage";
 import TodoListPage from '../pages/TodoListPage';
 import UpStatusPage from '../pages/UpStatusPage';
 import Layout from './Layout';
+import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 
 
 const AppComponent: React.FC = () => {
@@ -65,14 +66,15 @@ const AppComponent: React.FC = () => {
             <Route path="/details/:id" element={
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
+                        <CapacityGroupsProvider>
                         <DemandContextProvider>
                             <Layout>
-                                <CapacityGroupsProvider>
                                     <EventsContextProvider>
                                         <CapacityGroupDetailsPage />
                                     </EventsContextProvider>
-                                </CapacityGroupsProvider>
-                            </Layout></DemandContextProvider>
+                            </Layout>
+                        </DemandContextProvider>
+                        </CapacityGroupsProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
             } />
@@ -80,11 +82,13 @@ const AppComponent: React.FC = () => {
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
+                        <CapacityGroupsProvider>
                             <Layout>
-                                <EventsContextProvider>
+                                <AlertsContextProvider>
                                     <AlertsPage />
-                                </EventsContextProvider>
+                                </AlertsContextProvider>
                             </Layout>
+                        </CapacityGroupsProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
