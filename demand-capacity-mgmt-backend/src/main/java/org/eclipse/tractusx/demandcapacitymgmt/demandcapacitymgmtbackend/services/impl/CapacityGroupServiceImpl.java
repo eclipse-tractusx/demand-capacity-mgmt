@@ -23,6 +23,14 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -34,15 +42,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @Service
@@ -226,18 +225,18 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
     @Override
     public List<CapacityGroupDefaultViewResponse> getAll(String userID, Role role) {
-        if(role.equals(Role.SUPPLIER)){
+        if (role.equals(Role.SUPPLIER)) {
             List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupRepository.findByUserID(
-                    UUID.fromString(userID)
+                UUID.fromString(userID)
             );
             return convertCapacityGroupEntity(capacityGroupEntityList);
-        }
-        else if(role.equals(Role.CUSTOMER)) {
+        } else if (role.equals(Role.CUSTOMER)) {
             String companyID = String.valueOf(userRepository.findById(UUID.fromString(userID)).get().getCompanyID());
-            List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupRepository.findByCustomer_Id(UUID.fromString(companyID));
+            List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupRepository.findByCustomer_Id(
+                UUID.fromString(companyID)
+            );
             return convertCapacityGroupEntity(capacityGroupEntityList);
-        }
-        else {
+        } else {
             List<CapacityGroupEntity> capacityGroupEntityList = capacityGroupRepository.findAll();
             return convertCapacityGroupEntity(capacityGroupEntityList);
         }
