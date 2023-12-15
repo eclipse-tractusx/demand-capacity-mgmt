@@ -22,7 +22,9 @@
 
 import React from 'react';
 import { Route, Routes } from "react-router-dom";
+import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
+import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
 import EventsContextProvider from '../../contexts/EventsContextProvider';
 import FavoritesContextProvider from "../../contexts/FavoritesContextProvider";
@@ -40,7 +42,6 @@ import FavoritesPage from "../pages/FavoritesPage";
 import TodoListPage from '../pages/TodoListPage';
 import UpStatusPage from '../pages/UpStatusPage';
 import Layout from './Layout';
-import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 
 
 const AppComponent: React.FC = () => {
@@ -54,10 +55,13 @@ const AppComponent: React.FC = () => {
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
-                                <Home />
-                                <QuickAcessItems />
-                            </Layout></DemandContextProvider>
+                            <CompanyContextProvider>
+                                <Layout>
+                                    <Home />
+                                    <QuickAcessItems />
+                                </Layout>
+                            </CompanyContextProvider>
+                        </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
 
@@ -67,13 +71,13 @@ const AppComponent: React.FC = () => {
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <CapacityGroupsProvider>
-                        <DemandContextProvider>
-                            <Layout>
+                            <DemandContextProvider>
+                                <Layout>
                                     <EventsContextProvider>
                                         <CapacityGroupDetailsPage />
                                     </EventsContextProvider>
-                            </Layout>
-                        </DemandContextProvider>
+                                </Layout>
+                            </DemandContextProvider>
                         </CapacityGroupsProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
@@ -82,13 +86,13 @@ const AppComponent: React.FC = () => {
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                        <CapacityGroupsProvider>
-                            <Layout>
-                                <AlertsContextProvider>
-                                    <AlertsPage />
-                                </AlertsContextProvider>
-                            </Layout>
-                        </CapacityGroupsProvider>
+                            <CapacityGroupsProvider>
+                                <Layout>
+                                    <AlertsContextProvider>
+                                        <AlertsPage />
+                                    </AlertsContextProvider>
+                                </Layout>
+                            </CapacityGroupsProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>

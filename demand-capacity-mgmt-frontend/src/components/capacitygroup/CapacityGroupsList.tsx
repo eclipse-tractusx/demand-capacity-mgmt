@@ -26,6 +26,7 @@ import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react
 import { FaCopy, FaEllipsisV, FaEye, FaRedo } from 'react-icons/fa';
 import { LuStar } from 'react-icons/lu';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import { CompanyContext } from '../../contexts/CompanyContextProvider';
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import { useUser } from '../../contexts/UserContext';
 import '../../index.css';
@@ -52,7 +53,7 @@ const CapacityGroupsList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
   const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
-  const { findCompanyByCompanyID, findCompanyNameByBpn } = useContext(CompanyContext)!;
+  const { findCompanyNameByBpn } = useContext(CompanyContext)!;
   const [favoriteCapacityGroups, setFavoriteCapacityGroups] = useState<string[]>([]);
 
   const handleSort = (column: string) => {

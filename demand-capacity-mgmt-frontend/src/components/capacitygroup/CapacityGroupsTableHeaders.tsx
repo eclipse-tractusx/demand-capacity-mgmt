@@ -22,6 +22,7 @@
 
 import React from 'react';
 import { BiCaretDown, BiCaretUp } from 'react-icons/bi';
+import { useUser } from '../../contexts/UserContext';
 
 type CapacityGroupsTableProps = {
   sortColumn: string;
@@ -31,6 +32,9 @@ type CapacityGroupsTableProps = {
 };
 
 const CapacityGroupsTable: React.FC<CapacityGroupsTableProps> = ({ sortColumn, sortOrder, handleSort, capacitygroupsItems }) => {
+
+  const { user } = useUser();
+
   return (
     <table className="table table-striped table-hover">
       <thead>

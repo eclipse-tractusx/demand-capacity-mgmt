@@ -1,6 +1,8 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UserRequest;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
@@ -8,9 +10,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UserRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UserOperationsService;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -22,7 +21,7 @@ public class UserOperationsServiceImpl implements UserOperationsService {
     @Override
     public void updateUser(UserRequest request) {
         Optional<UserEntity> userEntity = repository.findById(UUID.fromString(request.getUserID()));
-        if(userEntity.isPresent()){
+        if (userEntity.isPresent()) {
             UserEntity user = userEntity.get();
             user.setRole(Role.valueOf(request.getRole().name()));
             user.setUsername(request.getUsername());
