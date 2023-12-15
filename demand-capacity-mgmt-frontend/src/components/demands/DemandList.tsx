@@ -28,6 +28,7 @@ import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
+import { useUser } from '../../contexts/UserContext';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import { EventType } from '../../interfaces/event_interfaces';
 import { FavoriteType, MaterialDemandFavoriteResponse } from "../../interfaces/favorite_interfaces";
@@ -56,6 +57,8 @@ const DemandList: React.FC<{
   toggleAddToExisting,
   eventTypes = []
 }) => {
+
+    const { user } = useUser();
 
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -299,7 +302,18 @@ const DemandList: React.FC<{
                 </div>
               </Button>
             </td>
-            <td>{demand.customer.bpn}</td>
+            {user?.role === 'SUPPLIER' ? (
+              <>
+                <td>{demand.customer.bpn}</td>
+                <td>{demand.customer.companyName}</td>
+              </>
+            ) : null}
+            {user?.role === 'CUSTOMER' ? (
+              <>
+                <td>{demand.supplier.bpn}</td>
+                <td>{demand.supplier.companyName}</td>
+              </>
+            ) : null}
             <td>{demand.materialNumberCustomer}</td>
             <td>{demand.materialNumberSupplier}</td>
             <td>

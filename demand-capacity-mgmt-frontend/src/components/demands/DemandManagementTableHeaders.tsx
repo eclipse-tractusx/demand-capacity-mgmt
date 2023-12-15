@@ -21,6 +21,7 @@
  */
 
 import { BiCaretDown, BiCaretUp } from 'react-icons/bi';
+import { useUser } from '../../contexts/UserContext';
 
 type DemandsTableProps = {
   sortColumn: string | null;
@@ -31,18 +32,46 @@ type DemandsTableProps = {
 
 const DemandManagementTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, handleSort, demandItems }) => {
 
+  const { user } = useUser();
+
   return (
     <table className="table table-striped table-hover">
       <thead>
         <tr>
           <th></th>
           <th></th>
-          <th onClick={() => handleSort('customer.bpn')}>
-            Company Id{' '}
-            {sortColumn === 'customer.bpn' && sortOrder === 'asc' && <BiCaretUp />}
-            {sortColumn === 'customer.bpn' && sortOrder === 'desc' && <BiCaretDown />}
-            {!sortColumn && <i className="material-icons">...</i>}
-          </th>
+          {user?.role === 'SUPPLIER' ? (
+            <>
+              <th onClick={() => handleSort('customer.bpn')}>
+                Customer BPN{' '}
+                {sortColumn === 'customer.bpn' && sortOrder === 'asc' && <BiCaretUp />}
+                {sortColumn === 'customer.bpn' && sortOrder === 'desc' && <BiCaretDown />}
+                {!sortColumn && <i className="material-icons">...</i>}
+              </th>
+              <th onClick={() => handleSort('customer.name')}>
+                Customer Name{' '}
+                {sortColumn === 'customer.name' && sortOrder === 'asc' && <BiCaretUp />}
+                {sortColumn === 'customer.name' && sortOrder === 'desc' && <BiCaretDown />}
+                {!sortColumn && <i className="material-icons">...</i>}
+              </th>
+            </>
+          ) : null}
+          {user?.role === 'CUSTOMER' ? (
+            <>
+              <th onClick={() => handleSort('supplier.bpn')}>
+                Supplier BPN{' '}
+                {sortColumn === 'supplier.bpn' && sortOrder === 'asc' && <BiCaretUp />}
+                {sortColumn === 'supplier.bpn' && sortOrder === 'desc' && <BiCaretDown />}
+                {!sortColumn && <i className="material-icons">...</i>}
+              </th>
+              <th onClick={() => handleSort('supplier.name')}>
+                Supplier Name{' '}
+                {sortColumn === 'supplier.name' && sortOrder === 'asc' && <BiCaretUp />}
+                {sortColumn === 'supplier.name' && sortOrder === 'desc' && <BiCaretDown />}
+                {!sortColumn && <i className="material-icons">...</i>}
+              </th>
+            </>
+          ) : null}
           <th onClick={() => handleSort('materialNumberCustomer')}>
             Material No. Customer{' '}
             {sortColumn === 'materialNumberCustomer' && sortOrder === 'asc' && <BiCaretUp />}
