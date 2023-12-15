@@ -52,6 +52,7 @@ const CapacityGroupsList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
   const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
+  const { findCompanyByCompanyID, findCompanyNameByBpn } = useContext(CompanyContext)!;
   const [favoriteCapacityGroups, setFavoriteCapacityGroups] = useState<string[]>([]);
 
   const handleSort = (column: string) => {
@@ -197,9 +198,21 @@ const CapacityGroupsList: React.FC = () => {
             </OverlayTrigger>
           </td>
           <td>{capacitygroup.name}</td>
-          <td>{capacitygroup.customerBPNL}</td>
-          <td>{capacitygroup.customerName}</td>
-          <td>{capacitygroup.supplierBNPL}</td>
+          {user?.role === 'SUPPLIER' && (
+            <>
+              <td>{capacitygroup.customerBPNL}</td>
+              <td>{capacitygroup.customerName}</td>
+            </>
+          )}
+
+          {user?.role === 'CUSTOMER' && (
+            <>
+              <td>{capacitygroup.supplierBNPL}</td>
+              <td>{findCompanyNameByBpn(capacitygroup.supplierBNPL)}</td>
+            </>
+          )}
+
+
           <td>{capacitygroup.numberOfMaterials}</td>
           <td>{capacitygroup.favoritedBy}</td>
           <td>

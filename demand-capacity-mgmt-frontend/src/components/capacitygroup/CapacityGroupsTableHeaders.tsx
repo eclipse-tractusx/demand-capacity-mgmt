@@ -47,21 +47,36 @@ const CapacityGroupsTable: React.FC<CapacityGroupsTableProps> = ({ sortColumn, s
             {sortColumn === 'name' && sortOrder === 'asc' && <BiCaretUp />}
             {sortColumn === 'name' && sortOrder === 'desc' && <BiCaretDown />}
           </th>
-          <th onClick={() => handleSort('customerBPNL')}>
-            Customber BPNL
-            {sortColumn === 'customerBPNL' && sortOrder === 'asc' && <BiCaretUp />}
-            {sortColumn === 'customerBPNL' && sortOrder === 'desc' && <BiCaretDown />}
-          </th>
-          <th onClick={() => handleSort('customerName')}>
-            Customer Name
-            {sortColumn === 'customerName' && sortOrder === 'asc' && <BiCaretUp />}
-            {sortColumn === 'customerName' && sortOrder === 'desc' && <BiCaretDown />}
-          </th>
-          <th onClick={() => handleSort('supplierBNPL')}>
-            Supplier BPNL
-            {sortColumn === 'supplierBNPL' && sortOrder === 'asc' && <BiCaretUp />}
-            {sortColumn === 'supplierBNPL' && sortOrder === 'desc' && <BiCaretDown />}
-          </th>
+          {user?.role === 'SUPPLIER' && (
+            <>
+              <th onClick={() => handleSort('customerBPNL')}>
+                Customer BPNL
+                {sortColumn === 'customerBPNL' && sortOrder === 'asc' && <BiCaretUp />}
+                {sortColumn === 'customerBPNL' && sortOrder === 'desc' && <BiCaretDown />}
+              </th>
+              <th onClick={() => handleSort('customerName')}>
+                Customer Name
+                {sortColumn === 'customerName' && sortOrder === 'asc' && <BiCaretUp />}
+                {sortColumn === 'customerName' && sortOrder === 'desc' && <BiCaretDown />}
+              </th>
+            </>
+          )}
+
+          {user?.role === 'CUSTOMER' && (
+            <>
+              <th onClick={() => handleSort('supplierBNPL')}>
+                Supplier BPNL
+                {sortColumn === 'supplierBNPL' && sortOrder === 'asc' && <BiCaretUp />}
+                {sortColumn === 'supplierBNPL' && sortOrder === 'desc' && <BiCaretDown />}
+              </th>
+              <th onClick={() => handleSort('supplierName')}>
+                Supplier Name
+                {sortColumn === 'supplierName' && sortOrder === 'asc' && <BiCaretUp />}
+                {sortColumn === 'supplierName' && sortOrder === 'desc' && <BiCaretDown />}
+              </th>
+            </>
+          )}
+
           <th onClick={() => handleSort('numberOfMaterials')}>
             # of Materials
             {sortColumn === 'numberOfMaterials' && sortOrder === 'asc' && <BiCaretUp />}
