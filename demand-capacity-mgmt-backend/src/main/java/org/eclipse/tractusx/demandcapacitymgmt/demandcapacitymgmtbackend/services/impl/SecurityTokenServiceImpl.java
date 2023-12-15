@@ -30,7 +30,6 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectToken
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.Role;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.TokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
-import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
@@ -46,6 +45,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -216,17 +217,17 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         newUserEntity.setEmail(Optional.ofNullable(decodedJWT.getClaim("email")).map(Claim::asString).orElse(""));
         newUserEntity.setName(Optional.ofNullable(decodedJWT.getClaim("given_name")).map(Claim::asString).orElse(""));
         newUserEntity.setLastName(
-            Optional.ofNullable(decodedJWT.getClaim("family_name")).map(Claim::asString).orElse("")
+                Optional.ofNullable(decodedJWT.getClaim("family_name")).map(Claim::asString).orElse("")
         );
         newUserEntity.setUsername(
-            Optional.ofNullable(decodedJWT.getClaim("preferred_username")).map(Claim::asString).orElse("")
+                Optional.ofNullable(decodedJWT.getClaim("preferred_username")).map(Claim::asString).orElse("")
         );
 
         Claim rolesClaim = decodedJWT.getClaim("realm_access");
         Map<String, Object> realmAccessMap = Optional
-            .ofNullable(rolesClaim)
-            .map(Claim::asMap)
-            .orElse(Collections.emptyMap());
+                .ofNullable(rolesClaim)
+                .map(Claim::asMap)
+                .orElse(Collections.emptyMap());
 
         Object rolesObject = realmAccessMap.get("roles");
 
@@ -237,7 +238,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
                     String roleStr = (String) roleObj;
                     try {
                         org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role role = org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role.valueOf(
-                            roleStr
+                                roleStr
                         );
                         newUserEntity.setRole(role);
                         break;
@@ -261,7 +262,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         user.setAccessToken(accessToken);
         user.setRefreshToken(refreshToken);
         user.setExpiresIn(expiresIn);
-        user.setCompanyID(userEntity.getCompanyID().toString());
+        user.setCompanyID(user.getCompanyID());
         statusManager.calculateBottleneck(user.getUserID(), false);
         statusManager.calculateTodos(user.getUserID());
         return user;
