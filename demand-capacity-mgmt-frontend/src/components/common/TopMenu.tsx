@@ -35,6 +35,7 @@ import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
 import { useUser } from "../../contexts/UserContext";
 import { logout } from "../../util/Auth";
 import InfoMenu from "../menu/InfoMenu";
+import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 
 function TopMenuLinks() {
   const { user, refresh_token, setUser } = useUser();
@@ -88,11 +89,13 @@ function TopMenuLinks() {
           <div className={`info-menu ${collapsed ? 'move-out' : 'move-in'}`}>
             <DemandCategoryContextProvider>
               <CapacityGroupsProvider>
+                <AlertsContextProvider>
                 <EventsContextProvider>
                   <InfoMenuProvider>
                     <InfoMenu />
                   </InfoMenuProvider>
                 </EventsContextProvider>
+                </AlertsContextProvider>
               </CapacityGroupsProvider>
             </DemandCategoryContextProvider>
           </div>
