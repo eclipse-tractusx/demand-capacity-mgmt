@@ -24,7 +24,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,12 +31,9 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AddressBookRecordEntity;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.AddressBookRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.AddressBookService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.GoldenRecordManager;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -46,23 +42,8 @@ import org.springframework.stereotype.Service;
 public class AddressBookServiceImpl implements AddressBookService {
 
     private final AddressBookRepository repository;
-    private final LoggingHistoryService loggingHistoryService;
+
     private final GoldenRecordManager goldenRecordManager;
-
-    private void postLogs(String id, String action) {
-        LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
-        loggingHistoryRequest.setObjectType(EventObjectType.ADRESS_BOOK.name());
-        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
-        loggingHistoryRequest.setIsFavorited(false);
-
-        if ("post".equals(action)) {
-            loggingHistoryRequest.setEventDescription("Address Book Created - ID: " + id);
-        } else if ("delete".equals(action)) {
-            loggingHistoryRequest.setEventDescription("AddressBook Deleted - ID: " + id);
-        }
-
-        loggingHistoryService.createLog(loggingHistoryRequest);
-    }
 
     @Override
     public AddressBookResponse getRecord(AddressBookRequest request) {
@@ -91,27 +72,20 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     @Override
     public AddressBookResponse postRecord(AddressBookRequest request) {
-        AddressBookResponse addressBookResponse = convertEntityToDto(
-            goldenRecordManager.createRecord(request.getQuery())
-        );
-        postLogs(addressBookResponse.getId(), "post");
-        return addressBookResponse;
+        return convertEntityToDto(goldenRecordManager.createRecord(request.getQuery()));
     }
 
     @Override
     public void deleteRecord(AddressBookRequest request) {
         repository.deleteById(UUID.fromString(request.getQuery()));
-        postLogs(request.getQuery(), "delete");
     }
 
     private AddressBookResponse convertEntityToDto(AddressBookRecordEntity entity) {
         AddressBookResponse response = new AddressBookResponse();
         response.setId(entity.getId().toString());
-        response.setLandLine(entity.getLandLine());
-        response.setCellPhone(entity.getCellPhone());
+        response.setContact(entity.getContact());
         response.setName(entity.getName());
         response.setEmail(entity.getEmail());
-        response.setDepartment(entity.getDepartment());
         response.setFunction(entity.getFunction());
         response.setCompanyId(entity.getCompanyId().toString());
         response.setPicture(entity.getPicture());
