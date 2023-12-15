@@ -251,7 +251,18 @@ const DemandManagement: React.FC = () => {
                             </div>
                         </Button>
                     </td>
-                    <td>{demand.customer.bpn}</td>
+                    {user?.role === 'SUPPLIER' ? (
+                        <>
+                            <td>{demand.customer.bpn}</td>
+                            <td>{demand.customer.companyName}</td>
+                        </>
+                    ) : null}
+                    {user?.role === 'CUSTOMER' ? (
+                        <>
+                            <td>{demand.supplier.bpn}</td>
+                            <td>{demand.supplier.companyName}</td>
+                        </>
+                    ) : null}
                     <td>{demand.materialNumberCustomer}</td>
                     <td>{demand.materialNumberSupplier}</td>
                     <td>

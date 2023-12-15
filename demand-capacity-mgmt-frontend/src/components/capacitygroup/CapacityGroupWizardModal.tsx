@@ -299,7 +299,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
             <>
               {step === 0 && (
                 <div>
-                  <StepBreadcrumbs currentStep={step} />
+                  <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                   <br />
                   <p>
                     Welcome to the Capacity Group Wizard, this intuitive interface will simplify this task. <br />
@@ -310,7 +310,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               {step === 1 && (
                 <Form>
                   <Form.Group>
-                    <StepBreadcrumbs currentStep={step} />
+                    <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                     <center><h5>Group Details</h5></center>
 
                     <Form.Label className="control-label required-field-label">Capacity Group Name</Form.Label>
@@ -359,7 +359,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               )}
               {step === 2 && (
                 <div>
-                  <StepBreadcrumbs currentStep={step} />
+                  <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                   <center><h5>Demand Linkage</h5></center>
                   {areUnitMeasureIdsEqual(selectedDemands) ? (
                     // No warning if unit measure IDs are equal
@@ -417,7 +417,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               )}
               {step === 3 && (
                 <div>
-                  <StepBreadcrumbs currentStep={step} />
+                  <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                   <center><h5>Review and Submit</h5></center>
                   <br />
                   <div className="row mb-2">
