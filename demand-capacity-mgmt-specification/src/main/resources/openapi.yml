@@ -1713,6 +1713,8 @@ components:
           type: string
         directQuery:
           type: boolean
+        addressBook:
+          $ref: '#/components/schemas/AddressBookDto'
 
     AddressBookResponse:
       type: object
@@ -1735,7 +1737,24 @@ components:
           type: string
         picture:
           type: string
-          format: byte
+
+    AddressBookDto:
+      type: object
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        name:
+          type: string
+        contact:
+          type: string
+        email:
+          type: string
+        function:
+          type: string
+        picture:
+          type: string
 
     MaterialDemandFavoriteResponse:
       type: object

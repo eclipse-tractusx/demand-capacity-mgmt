@@ -64,5 +64,5 @@ public class AddressBookRecordEntity {
     private String function;
 
     @Column(name = "picture")
-    private byte[] picture;
+    private String picture;
 }

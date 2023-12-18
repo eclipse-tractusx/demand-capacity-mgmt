@@ -16,6 +16,7 @@ export interface CompanyDataProps {
 export interface AddressBookCreateProps {
     query: string,
     directQuery :boolean
+    addressBook: AddressBookProps
 }
 
 export interface CompanyCreate {

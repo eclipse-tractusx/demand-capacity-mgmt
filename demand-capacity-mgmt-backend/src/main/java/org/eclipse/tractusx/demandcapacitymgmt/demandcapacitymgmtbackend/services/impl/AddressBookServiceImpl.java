@@ -72,12 +72,12 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     @Override
     public AddressBookResponse postRecord(AddressBookRequest request) {
-        return convertEntityToDto(goldenRecordManager.createRecord(request.getQuery()));
+        return convertEntityToDto(goldenRecordManager.createRecord(request));
     }
 
     @Override
     public AddressBookResponse updateRecord(AddressBookRequest request, String id) {
-        return convertEntityToDto(goldenRecordManager.updateRecord(request.getQuery(), id));
+        return convertEntityToDto(goldenRecordManager.updateRecord(request, id));
     }
 
     @Override
