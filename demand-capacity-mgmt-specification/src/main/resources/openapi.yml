@@ -999,6 +999,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RulesResponse'
+    put:
+      tags:
+        - rules
+      summary: Update a rule
+      operationId: updateRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuleRequest'
+      responses:
+        200:
+          description: updated rule
 
   /rules/{id}:
     get:
@@ -1022,21 +1036,7 @@ paths:
                 $ref: '#/components/schemas/RuleResponse'
         404:
           description: loggingHistory not found
-    post:
-      tags:
-        - rules
-      summary: Update a rule
-      operationId: updateRule
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: id of the rule
-          schema:
-            $ref: '#/components/schemas/RuleRequest'
-      responses:
-        200:
-          description: updated rule
+
 
 
 components:
@@ -1079,7 +1079,7 @@ components:
     RulesResponse:
       type: array
       items:
-        $ref: '#/components/schemas/RuleRequest'
+        $ref: '#/components/schemas/RuleResponse'
 
     User:
       type: object
