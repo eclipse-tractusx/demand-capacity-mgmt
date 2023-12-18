@@ -19,13 +19,24 @@
 #   ********************************************************************************
 
 apiVersion: v2
-name: dcm-edc
-description: A Helm chart for deploying an EDC for the DCM environment
+name: edc-new
+description: |
+  A Helm chart for Tractus-X Eclipse Data Space Connector. This chart is a test mock that can be used as edc consumer for the dcm applicatiton.
 type: application
-version: 0.0.3
-appVersion: 0.0.2
+version: 0.3.3
+appVersion: "0.5.0"
+home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+sources:
+  - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+urls:
+  - https://github.com/eclipse-tractusx/tractusx-edc/releases/download/tractusx-connector-0.5.0/tractusx-connector-0.5.0.tgz
 dependencies:
   - name: tractusx-connector
-    alias: txdc
-    version: 0.5.1
+    version: "0.5.0"
     repository: https://eclipse-tractusx.github.io/charts/dev
+    condition: enabled
+  - name: postgresql
+    alias: postgresql
+    version: 12.1.6
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
