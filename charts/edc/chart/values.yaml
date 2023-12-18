@@ -536,7 +536,7 @@ tractusx-connector:
         enabled: true
         standbyOk: true
       paths:
-        secret:  /v1/cgi-dcm-foss
+        secret: /v1/cgi-dcm-foss
         health: /v1/sys/health
     secretNames:
       transferProxyTokenSignerPrivateKey: value-added-service/dcm/dev/DAPS_PRIVATE_KEY
