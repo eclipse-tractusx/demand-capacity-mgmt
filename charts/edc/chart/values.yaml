@@ -208,7 +208,7 @@ tractusx-connector:
       ## Public / Internet facing Ingress
       - enabled: true
         # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
-        hostname: "materialpass.dev.demo.catena-x.net"
+        hostname: "dcm.dev.demo.catena-x.net"
         # -- Additional ingress annotations to add
         annotations: {}
         # -- EDC endpoints exposed by this ingress resource
@@ -438,7 +438,7 @@ tractusx-connector:
       ## Public / Internet facing Ingress
       - enabled: true
         # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
-        hostname: "materialpass.dev.demo.catena-x.net"
+        hostname: "dcm.dev.demo.catena-x.net"
         # -- Additional ingress annotations to add
         annotations: {}
         # -- EDC endpoints exposed by this ingress resource
