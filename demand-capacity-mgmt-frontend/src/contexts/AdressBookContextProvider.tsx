@@ -107,46 +107,6 @@ const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
         return [];
     }, [retryCount, setAddressBooks, setIsLoading, setRetryCount, api]);
 
-    // const fillCompanyAddressBookData = () => {
-    //     console.log("Companies:", companies);
-    //     console.log("Address Books:", addressBooks);
-    //     for (const company of companies) {
-    //         console.log("Processing company:", company);
-    //         let contacts: AddressBookProps[] = []; // Initialize contacts array here
-    //
-    //         for (const book of addressBooks.values()) {
-    //             console.log("Processing address book entry:", book);
-    //             let addressBook: AddressBookProps;
-    //
-    //             if (company.id === book.companyId) {
-    //                 addressBook = {
-    //                     id: book.id,
-    //                     companyId: book.companyId,
-    //                     email: book.email,
-    //                     picture: book.picture,
-    //                     function: book.function,
-    //                     contact: book.contact,
-    //                     name: book.name,
-    //                 };
-    //                 contacts.push(addressBook);
-    //             }
-    //         }
-    //
-    //         company.contacts = contacts;
-    //     }
-    //     setCompanies([...companies]); // Update state using setCompanies
-    //
-    // };
-
-
-    // useEffect(() => {
-    //     if (retryCount < maxRetries) {
-    //         fetchCompaniesWithRetry();
-    //         // fetchAddressBookWithRetry();
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [retryCount, maxRetries]);
-
     const createCompany = async (newCompany: CompanyCreate): Promise<CompanyDataProps | undefined> => {
         try {
             const api = createAPIInstance(access_token);

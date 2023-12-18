@@ -25,7 +25,7 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { FaUserShield } from 'react-icons/fa';
+import {FaAddressBook, FaUserShield} from 'react-icons/fa';
 import { FiLogOut, FiSettings } from 'react-icons/fi';
 import { useNavigate } from "react-router-dom";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
@@ -111,7 +111,7 @@ function TopMenuLinks() {
             placement="bottom"
             overlay={<Tooltip id="tooltip">Address Books</Tooltip>}
           >
-            <Nav.Link href="../addressBook" className="p-3 navbar-nav nav-item"><FiSettings /></Nav.Link>
+            <Nav.Link href="../addressBook" className="p-3 navbar-nav nav-item"><FaAddressBook /></Nav.Link>
           </OverlayTrigger>
 
           <OverlayTrigger

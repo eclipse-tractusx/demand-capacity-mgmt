@@ -20,14 +20,15 @@
  *    ********************************************************************************
  */
 
-import { useContext, useEffect, useState } from "react";
-import { FcHighPriority } from "react-icons/fc";
+import React, { useContext, useEffect, useState } from "react";
+import {FcAddressBook, FcHighPriority} from "react-icons/fc";
 import { EventsContext } from "../../contexts/EventsContextProvider";
 import { EventProp, EventType } from "../../interfaces/event_interfaces";
 import { LoadingMessage } from "../common/LoadingMessages";
 import EventsTable from "../events/EventsTable";
 import BoardView from "../addessBook/BoardView";
 import {AddressBookContext} from "../../contexts/AdressBookContextProvider";
+import {FaAddressBook} from "react-icons/fa";
 
 
 function AddressBookPage() {
@@ -37,7 +38,7 @@ function AddressBookPage() {
             <br />
             <div className="container-xl">
                 <div style={{ display: "flex", }}>
-                    <FcHighPriority size={35} /><h3 className="icon-text-padding">Address Books</h3>
+                    <FaAddressBook size={35} className='clip_board_icon'/><h3 className="icon-text-padding">Address Books</h3>
                 </div>
                 <div className="table">
                     <div className="table-wrapper">

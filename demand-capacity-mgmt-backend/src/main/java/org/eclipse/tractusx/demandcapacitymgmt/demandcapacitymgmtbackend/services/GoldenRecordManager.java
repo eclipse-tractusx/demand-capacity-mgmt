@@ -22,11 +22,12 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AddressBookRecordEntity;
 
 public interface GoldenRecordManager {
     AddressBookRecordEntity queryGoldenRecord(String recordQuery);
 
-    AddressBookRecordEntity createRecord(String query);
-    AddressBookRecordEntity updateRecord(String query, String id);
+    AddressBookRecordEntity createRecord(AddressBookRequest addressBookRequest);
+    AddressBookRecordEntity updateRecord(AddressBookRequest request, String id);
 }

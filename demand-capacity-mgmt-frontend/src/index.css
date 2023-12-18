@@ -359,6 +359,35 @@ code {
   text-decoration-thickness: 4px;
 }
 
+.clip_board_icon{
+  color: #94cb2d !important;
+}
+
+.border-bottom {
+  border-top: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6; /* Add a line to the bottom of each row */
+}
+
+
+.clip_board_icon:hover {
+  color: orange !important;
+}
+
+.custom-table {
+  background-color: transparent !important;
+}
+
+.custom-table tbody tr {
+  background-color: transparent;
+}
+.custom-table tbody tr:not(:last-child) {
+  border-bottom: 1px solid #dee2e6; /* Add a line between rows */
+}
+
+.fixed-width {
+  width: 100px; /* Set a fixed width for each td */
+}
+
 /*Shake Animation*/
 .shake-input {
   animation: shake 0.5s;
