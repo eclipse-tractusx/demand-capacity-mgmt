@@ -104,11 +104,13 @@ const AppComponent: React.FC = () => {
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
+                            <CompanyContextProvider>
                                 <AddressBookProvider>
-                                    <AddressBookPage />
+                                    <Layout>
+                                        <AddressBookPage />
+                                    </Layout>
                                 </AddressBookProvider>
-                            </Layout>
+                            </CompanyContextProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>

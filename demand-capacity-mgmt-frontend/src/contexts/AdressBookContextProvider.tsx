@@ -20,27 +20,22 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useState } from 'react';
+import {
+    AddressBookCreateProps,
+    AddressBookProps
+} from "../interfaces/addressbook_interfaces";
 import createAPIInstance from "../util/Api";
 import { useUser } from './UserContext';
-import {
-    AddressBookProps,
-    AddressBookCreateProps,
-    CompanyCreate,
-    CompanyDataProps
-} from "../interfaces/addressbook_interfaces";
-import {FavoriteResponse} from "../interfaces/favorite_interfaces";
 
 
 interface AddressBookContextData {
-    companies: CompanyDataProps[];
     addressBooks: AddressBookProps[];
-    fetchCompaniesWithRetry: () => Promise<CompanyDataProps[]>; // Fix the return type here
     fetchAddressBookWithRetry: () => Promise<AddressBookProps[]>;
     isLoading: boolean;
-    createCompany: (newCompany: CompanyCreate) => Promise<CompanyDataProps | undefined>;
     createAddressBook: (newAddressBook: AddressBookCreateProps) => Promise<AddressBookProps | undefined>;
-    updateAddressBook: (companyId:string, newAddressBook: AddressBookCreateProps) => Promise<AddressBookProps | undefined>;
+    updateAddressBook: (companyId: string, newAddressBook: AddressBookCreateProps) => Promise<AddressBookProps | undefined>;
+    getAddressBooksByCompanyId: (companyId: string) => AddressBookProps[];
 }
 
 export const AddressBookContext = createContext<AddressBookContextData | undefined>(undefined);
@@ -48,40 +43,13 @@ export const AddressBookContext = createContext<AddressBookContextData | undefin
 
 const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
     const { access_token } = useUser();
-    const [companies, setCompanies] = useState<CompanyDataProps[]>([]);
     const [addressBooks, setAddressBooks] = useState<AddressBookProps[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
     const maxRetries = 3;
     const api = createAPIInstance(access_token);
 
-
-    const fetchCompaniesWithRetry = useCallback(async (): Promise<CompanyDataProps[]> =>{
-        setIsLoading(true);
-
-        try {
-            const response = await api.get('/company', {});
-            const result: CompanyDataProps[] = await response.data;
-
-            setCompanies((prevCompanies) => [...prevCompanies, ...result]);
-            await fetchAddressBookWithRetry();
-            return result;
-        } catch (error) {
-            console.error(`Error fetching companies (Retry ${retryCount + 1}):`, error);
-
-            if (retryCount < maxRetries - 1) {
-                await new Promise((resolve) => setTimeout(resolve, 30000));
-                setRetryCount((prevRetryCount) => prevRetryCount + 1);
-            } else {
-                setRetryCount(0);
-            }
-        } finally {
-            setIsLoading(false);
-        }
-        return [];
-    }, [retryCount, setCompanies, setIsLoading, setRetryCount, api]);
-
-    const fetchAddressBookWithRetry = useCallback(async  (): Promise<AddressBookProps[]> => {
+    const fetchAddressBookWithRetry = useCallback(async (): Promise<AddressBookProps[]> => {
         setIsLoading(true);
 
         try {
@@ -107,16 +75,6 @@ const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
         return [];
     }, [retryCount, setAddressBooks, setIsLoading, setRetryCount, api]);
 
-    const createCompany = async (newCompany: CompanyCreate): Promise<CompanyDataProps | undefined> => {
-        try {
-            const api = createAPIInstance(access_token);
-            const response = await api.post('/comppany', newCompany);
-            return response.data;
-        } catch (error) {
-            console.error('Error creating company:', error);
-        }
-    };
-
     const createAddressBook = async (newAddressBook: AddressBookCreateProps): Promise<AddressBookProps | undefined> => {
         try {
             const api = createAPIInstance(access_token);
@@ -127,7 +85,7 @@ const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
         }
     };
 
-    const updateAddressBook = async (companyId: String,newAddressBook: AddressBookCreateProps): Promise<AddressBookProps | undefined> => {
+    const updateAddressBook = async (companyId: String, newAddressBook: AddressBookCreateProps): Promise<AddressBookProps | undefined> => {
         try {
             const api = createAPIInstance(access_token);
             const response = await api.put('/addressBook/${companyId}', newAddressBook);
@@ -137,10 +95,12 @@ const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
         }
     };
 
-
+    const getAddressBooksByCompanyId = (companyId: string): AddressBookProps[] => {
+        return addressBooks.filter((addressBook) => addressBook.companyId === companyId);
+    };
 
     return (
-        <AddressBookContext.Provider value={{ companies, addressBooks, fetchCompaniesWithRetry, fetchAddressBookWithRetry, isLoading , createCompany, createAddressBook,updateAddressBook }}>
+        <AddressBookContext.Provider value={{ addressBooks, fetchAddressBookWithRetry, isLoading, createAddressBook, updateAddressBook, getAddressBooksByCompanyId }}>
             {props.children}
         </AddressBookContext.Provider>
     );
