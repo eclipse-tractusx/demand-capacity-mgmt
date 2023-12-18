@@ -32,7 +32,7 @@ postgresql:
     username: "user"
     password: "password"
 
-    
+
 txdc:
   enabled: true
   install:
@@ -518,16 +518,6 @@ txdc:
     url:
       # -- Explicitly declared url for reaching the public api (e.g. if ingresses not used)
       public: ""
-
-  postgresql:
-    jdbcUrl: "jdbc:postgresql://postgresql:5432/edc"
-    fullnameOverride: "postgresql"
-    username: "user"
-    password: "password"
-    auth:
-      database: "edc"
-      username: "user"
-      password: "password"
 
   vault:
     fullnameOverride: "vault"
