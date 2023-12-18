@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { CompanyData } from '../interfaces/company_interfaces';
 import createAPIInstance from "../util/Api";
 import { useUser } from "./UserContext";
@@ -38,7 +38,35 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   const { access_token } = useUser();
   const [companies, setCompanies] = useState<CompanyData[]>([]);
   const [topCompanies, setTopCompanies] = useState<CompanyData[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 3; //TODO set back to 3
   const api = createAPIInstance(access_token);
+
+  const fetchCompaniesWithRetry = useCallback(async (): Promise<CompanyData[]> => {
+    setIsLoading(true);
+
+    try {
+      const response = await api.get('/company', {});
+      const result: CompanyData[] = await response.data;
+
+      setCompanies((prevCompanies) => [...prevCompanies, ...result]);
+      return result;
+    } catch (error) {
+      console.error(`Error fetching companies (Retry ${retryCount + 1}):`, error);
+
+      if (retryCount < maxRetries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 30000));
+        setRetryCount((prevRetryCount) => prevRetryCount + 1);
+      } else {
+        setRetryCount(0);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+    return [];
+  }, [retryCount, setCompanies, setIsLoading, setRetryCount, api]);
+
 
   useEffect(() => {
     const fetchCompanies = async () => {

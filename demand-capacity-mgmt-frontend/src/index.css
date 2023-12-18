@@ -152,6 +152,7 @@ code {
   margin-top: 20px;
 }
 
+<<<<<<< HEAD
 /* Board.css */
 .board {
   display: flex;
@@ -248,6 +249,8 @@ code {
   white-space: pre-line;
 }
 
+=======
+>>>>>>> a51fe26 (AdressBook.. Improved Implementation)
 .vertical-table {
   border-collapse: collapse;
   border: 1px solid var(--border-color);
@@ -505,7 +508,11 @@ code {
 
 .board {
   display: flex;
+<<<<<<< HEAD
   height: 78.72vh;
+=======
+  height: 78.5vh;
+>>>>>>> a51fe26 (AdressBook.. Improved Implementation)
   overflow-y: auto;
   overflow-x: hidden;
 }
