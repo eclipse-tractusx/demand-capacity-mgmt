@@ -18,10 +18,21 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
+postgresql:
+  jdbcUrl: "jdbc:postgresql://postgresql:5432/edc"
+  fullnameOverride: "postgresql"
+  primary:
+    persistence:
+      enabled: true
+  readReplicas:
+    persistence:
+      enabled: true
+  auth:
+    database: "edc"
+    username: "user"
+    password: "password"
 
-# Default values for eclipse-dataspace-connector.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+    
 txdc:
   enabled: true
   install:
@@ -576,16 +587,3 @@ txdc:
     # -- Configure the hook-delete-policy for Helm tests
     hookDeletePolicy: before-hook-creation,hook-succeeded
 
-postgresql:
-  jdbcUrl: "jdbc:postgresql://postgresql:5432/edc"
-  fullnameOverride: "postgresql"
-  primary:
-    persistence:
-      enabled: true
-  readReplicas:
-    persistence:
-      enabled: true
-  auth:
-    database: "edc"
-    username: "user"
-    password: "password"
