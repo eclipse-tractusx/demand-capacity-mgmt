@@ -20,15 +20,8 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useEffect, useState } from "react";
-import {FcAddressBook, FcHighPriority} from "react-icons/fc";
-import { EventsContext } from "../../contexts/EventsContextProvider";
-import { EventProp, EventType } from "../../interfaces/event_interfaces";
-import { LoadingMessage } from "../common/LoadingMessages";
-import EventsTable from "../events/EventsTable";
+import { FcAddressBook } from "react-icons/fc";
 import BoardView from "../addessBook/BoardView";
-import {AddressBookContext} from "../../contexts/AdressBookContextProvider";
-import {FaAddressBook} from "react-icons/fa";
 
 
 function AddressBookPage() {
@@ -36,13 +29,14 @@ function AddressBookPage() {
     return (
         <>
             <br />
-            <div className="container-xl">
+            <div className="container">
                 <div style={{ display: "flex", }}>
-                    <FaAddressBook size={35} className='clip_board_icon'/><h3 className="icon-text-padding">Address Books</h3>
+                    <FcAddressBook size={35} className='clip_board_icon' /><h3 className="icon-text-padding">Address Book</h3>
                 </div>
+                <br />
                 <div className="table">
                     <div className="table-wrapper">
-                        <BoardView/>
+                        <BoardView />
                     </div>
                 </div>
             </div>

@@ -112,7 +112,7 @@ code {
   /* Adjust the width as needed */
 }
 
-.company_info_details{
+.company_info_details {
   font-size: large;
   text-decoration: underline;
 }
@@ -150,101 +150,6 @@ code {
   display: flex;
   justify-content: center;
   margin-top: 20px;
-}
-
-/* Board.css */
-.board {
-  display: flex;
-  height: 100vh;
-}
-
-.task-list {
-  flex: 1;
-  padding: 20px;
-  border-right: 1px solid #ccc;
-}
-
-.task-list h2 {
-  text-align: center;
-}
-
-.task-list ul {
-  list-style: none;
-  padding: 0;
-}
-
-.task-list li {
-  cursor: pointer;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.task-list li:hover {
-  background-color: #f5f5f5;
-}
-
-.task-detail {
-  flex: 2;
-  padding: 20px;
-}
-
-.task-detail h2 {
-  text-align: center;
-}
-
-.task-detail h3 {
-  margin-bottom: 10px;
-}
-
-.task-detail p {
-  white-space: pre-line;
-}
-/* Board.css */
-.board {
-  display: flex;
-  height: 100vh;
-}
-
-.task-list {
-  flex: 1;
-  padding: 20px;
-  border-right: 1px solid #ccc;
-}
-
-.task-list h2 {
-  text-align: center;
-}
-
-.task-list ul {
-  list-style: none;
-  padding: 0;
-}
-
-.task-list li {
-  cursor: pointer;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.task-list li:hover {
-  background-color: #f5f5f5;
-}
-
-.task-detail {
-  flex: 2;
-  padding: 20px;
-}
-
-.task-detail h2 {
-  text-align: center;
-}
-
-.task-detail h3 {
-  margin-bottom: 10px;
-}
-
-.task-detail p {
-  white-space: pre-line;
 }
 
 .vertical-table {
@@ -359,13 +264,14 @@ code {
   text-decoration-thickness: 4px;
 }
 
-.clip_board_icon{
+.clip_board_icon {
   color: #94cb2d !important;
 }
 
 .border-bottom {
   border-top: 1px solid #dee2e6;
-  border-bottom: 1px solid #dee2e6; /* Add a line to the bottom of each row */
+  border-bottom: 1px solid #dee2e6;
+  /* Add a line to the bottom of each row */
 }
 
 
@@ -380,12 +286,15 @@ code {
 .custom-table tbody tr {
   background-color: transparent;
 }
+
 .custom-table tbody tr:not(:last-child) {
-  border-bottom: 1px solid #dee2e6; /* Add a line between rows */
+  border-bottom: 1px solid #dee2e6;
+  /* Add a line between rows */
 }
 
 .fixed-width {
-  width: 100px; /* Set a fixed width for each td */
+  width: 100px;
+  /* Set a fixed width for each td */
 }
 
 /*Shake Animation*/
@@ -498,4 +407,106 @@ code {
   /* Yellow background color for active tab */
   color: #fff !important;
   /* White text color for active tab */
+}
+
+/* Board.css */
+
+.board {
+  display: flex;
+  height: 78.5vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.contact-table {
+  height: 35.6vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.contact-info:hover {
+  color: #ffc107;
+}
+
+
+.task-list {
+  overflow-y: auto;
+  flex: 1;
+  border-right: 1px solid #ccc;
+}
+
+.task-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.task-list li {
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.task-list li:hover {
+  background-color: #f5f5f5;
+}
+
+.task-detail {
+  flex: 2;
+  margin: 1rem;
+}
+
+.glitter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background-size: 400% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.glitter::before,
+.glitter::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  animation: sparkle 1.5s infinite linear alternate;
+}
+
+.glitter::before {
+  top: 50%;
+  left: 25%;
+  animation-delay: 0.5s;
+}
+
+.glitter::after {
+  top: 70%;
+  left: 75%;
+  animation-delay: 1s;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 400% 0;
+  }
+}
+
+@keyframes sparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
