@@ -6,6 +6,17 @@ import { AddressBookContext } from '../../contexts/AdressBookContextProvider';
 import { AddressBookCreateProps, AddressBookProps } from '../../interfaces/addressbook_interfaces';
 import { CompanyDataProps } from '../../interfaces/company_interfaces';
 
+
+const emptyAddressBook: AddressBookProps = {
+    contact: '',
+    name: '',
+    function: '',
+    email: '',
+    id: '',
+    companyId: '',
+    picture: ''
+};
+
 interface ContactModalProps {
     isOpen: boolean;
     handleClose: () => void;
@@ -19,13 +30,7 @@ const ContactModal: React.FC<ContactModalProps> = ({
     handleClose,
     isEditMode,
     company,
-    initialValues = {
-        contact: '',
-        name: '',
-        function: '',
-        email: '',
-        picture: ''
-    }
+    initialValues = emptyAddressBook,
 }) => {
     const [formData, setFormData] = useState(initialValues);
     const [formErrors, setFormErrors] = useState({
@@ -40,22 +45,16 @@ const ContactModal: React.FC<ContactModalProps> = ({
     const [phone, setPhone] = useState('');
 
     useEffect(() => {
-        console.log(isEditMode)
         // Set initial form data if it's in edit mode
+        console.log(initialValues)
         if (isEditMode) {
             setFormData(initialValues);
             setPreviewImage(initialValues.picture);
         } else {
             // Clear form data when not in edit mode (for new contact)
-            setFormData({
-                contact: '',
-                name: '',
-                function: '',
-                email: '',
-                picture: ''
-            });
+            setFormData(emptyAddressBook);
         }
-    }, [isEditMode]);
+    }, []);
 
     const clearPreviewImage = () => {
         setPreviewImage('');
@@ -122,25 +121,30 @@ const ContactModal: React.FC<ContactModalProps> = ({
             query: company.id,
             directQuery: false,
             addressBook: {
-                id: '',
+                id: formData.id || '', // Use formData.id or an empty string if undefined
                 companyId: company.id,
                 name: formData.name,
                 email: formData.email,
                 function: formData.function,
                 picture: previewImage,
                 contact: phone, // Use phone state for contact number
-            }
-        }
+            },
+        };
+        console.log(newContact)
         try {
-            console.log(newContact)
-            await createAddressBook(newContact);
+            if (isEditMode) {
+                // Perform update if in edit mode
+                await updateAddressBook(formData.id, newContact);
+            } else {
+                // Perform creation if not in edit mode
+                await createAddressBook(newContact);
+            }
         } catch (error) {
-            console.error('Error creating demand:', error);
+            console.error('Error creating/updating address book entry:', error);
         }
+
         handleClose();
     };
-
-
 
     return (
         <Modal show={isOpen} onHide={handleClose}>
