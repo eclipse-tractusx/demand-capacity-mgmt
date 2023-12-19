@@ -23,11 +23,11 @@
 import React, {useContext} from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import {useUser} from "../../contexts/UserContext";
-import {EventsContext} from "../../contexts/EventsContextProvider";
+import { ThresholdsContext } from "../../contexts/ThresholdsContextProvider";
 
 
 function ThresholdPage() {
-    const thresholds = {} = useContext(EventsContext)!;
+    const {thresholds, fetchThresholds } = useContext(ThresholdsContext)!;
     const { user } = useUser();
 
 
