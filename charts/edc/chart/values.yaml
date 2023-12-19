@@ -530,7 +530,7 @@ tractusx-connector:
       postStart:    # must be set externally!
     hashicorp:
       url: "https://vault.demo.catena-x.net"
-      token: <path:cgi-dcm-foss/data/value-added-service/dcm/dev#vault-token>
+      token: <path:cgi-dcm-foss/data/value-added-service/dcm/dev/vault-token#vault-token>
       timeout: 30
       healthCheck:
         enabled: true
@@ -538,9 +538,9 @@ tractusx-connector:
       paths:
         secret: /v1/cgi-dcm-foss
     secretNames:
-      transferProxyTokenSignerPrivateKey: value-added-service/dcm/dev/DAPS_PRIVATE_KEY
-      transferProxyTokenSignerPublicKey: value-added-service/dcm/dev/DAPS_PUBLIC_KEY
-      transferProxyTokenEncryptionAesKey: value-added-service/dcm/dev/DATA_ENCRYPTION_KEYS_ALIAS
+      transferProxyTokenSignerPrivateKey: <path:cgi-dcm-foss/data/value-added-service/dcm/dev/DAPS_PRIVATE_KEY>
+      transferProxyTokenSignerPublicKey: <path:cgi-dcm-foss/data/value-added-service/dcm/dev/DAPS_PUBLIC_KEY>
+      transferProxyTokenEncryptionAesKey: <path:cgi-dcm-foss/data/value-added-service/dcm/dev/DATA_ENCRYPTION_KEYS_ALIAS>
 
   backendService:
     httpProxyTokenReceiverUrl: "https://dcm.dev.demo.catena-x.net/endpoint"
