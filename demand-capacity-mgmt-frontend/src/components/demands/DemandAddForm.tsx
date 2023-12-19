@@ -317,7 +317,7 @@ const AddForm: React.FC<AddFormProps> = () => {
             <Form.Label className="control-label required-field-label">Demand Category</Form.Label>
             <Form.Select
               aria-label="Default select example"
-              placeholder="Demand Category"
+              // placeholder="Demand Category"
               name="demandCategoryId"
               id="demandCategoryId"
               value={formState.materialDemandSeries[0].demandCategoryId}
