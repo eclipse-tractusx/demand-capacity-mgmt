@@ -4,7 +4,7 @@ import { FileUploader } from "react-drag-drop-files";
 import PhoneInput from 'react-phone-input-2';
 import { AddressBookContext } from '../../contexts/AdressBookContextProvider';
 import { AddressBookCreateProps, AddressBookProps } from '../../interfaces/addressbook_interfaces';
-import { CompanyDataProps } from '../../interfaces/company_interfaces';
+import { CompanyData } from '../../interfaces/company_interfaces';
 
 
 const emptyAddressBook: AddressBookProps = {
@@ -21,7 +21,7 @@ interface ContactModalProps {
     isOpen: boolean;
     handleClose: () => void;
     isEditMode: boolean;
-    company: CompanyDataProps;
+    company: CompanyData;
     initialValues?: AddressBookProps;
 }
 

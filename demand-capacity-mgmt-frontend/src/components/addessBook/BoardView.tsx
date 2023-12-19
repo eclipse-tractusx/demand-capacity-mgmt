@@ -22,14 +22,14 @@
 
 import { useContext, useState } from 'react';
 import { CompanyContext } from '../../contexts/CompanyContextProvider';
-import { CompanyDataProps } from '../../interfaces/company_interfaces';
+import { CompanyData } from '../../interfaces/company_interfaces';
 import AddressBookDetailsView from "./AddressBookDetailsView";
 import CompaniesList from "./CompaniesList";
 
 const Board = () => {
 
     const { companies } = useContext(CompanyContext)!;
-    const [selectedCompany, setSelectedCompany] = useState<CompanyDataProps | null>(null);
+    const [selectedCompany, setSelectedCompany] = useState<CompanyData | null>(null);
 
     const [favoriteCompanies, setfavoriteCompanies] = useState<string[]>([]);
 

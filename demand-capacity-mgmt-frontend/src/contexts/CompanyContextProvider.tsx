@@ -20,67 +20,38 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useCallback, useEffect, useState } from 'react';
-import { CompanyDataProps } from '../interfaces/company_interfaces';
+import React, { createContext, useEffect, useState } from 'react';
+import { CompanyData } from '../interfaces/company_interfaces';
 import createAPIInstance from "../util/Api";
 import { useUser } from "./UserContext";
 
 interface CompanyContextData {
-  fetchCompaniesWithRetry: () => Promise<CompanyDataProps[]>;
-  companies: CompanyDataProps[];
-  topCompanies: CompanyDataProps[];
-  findCompanyByCompanyID: (companyID: string) => CompanyDataProps | undefined;
+  companies: CompanyData[];
+  topCompanies: CompanyData[];
+  findCompanyByCompanyID: (companyID: string) => CompanyData;
 }
 
 export const CompanyContext = createContext<CompanyContextData | undefined>(undefined);
 
 const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
   const { access_token } = useUser();
-  const [companies, setCompanies] = useState<CompanyDataProps[]>([]);
-  const [topCompanies, setTopCompanies] = useState<CompanyDataProps[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
-  const maxRetries = 3; //TODO set back to 3
+  const [companies, setCompanies] = useState<CompanyData[]>([]);
+  const [topCompanies, setTopCompanies] = useState<CompanyData[]>([]);
   const api = createAPIInstance(access_token);
-
-  const fetchCompaniesWithRetry = useCallback(async (): Promise<CompanyDataProps[]> => {
-    setIsLoading(true);
-
-    try {
-      const response = await api.get('/company', {});
-      const result: CompanyDataProps[] = await response.data;
-
-      setCompanies((prevCompanies) => [...prevCompanies, ...result]);
-      return result;
-    } catch (error) {
-      console.error(`Error fetching companies (Retry ${retryCount + 1}):`, error);
-
-      if (retryCount < maxRetries - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 30000));
-        setRetryCount((prevRetryCount) => prevRetryCount + 1);
-      } else {
-        setRetryCount(0);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-    return [];
-  }, [retryCount, setCompanies, setIsLoading, setRetryCount, api]);
-
 
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
         const response = await api.get('/company', {
         });
-        const result: CompanyDataProps[] = response.data;
+        const result: CompanyData[] = response.data;
         setCompanies(result);
       } catch (error) {
         console.error('Error fetching companies:', error);
       }
     };
 
-    const fetchTopCompanies = async (): Promise<CompanyDataProps> => {
+    const fetchTopCompanies = async (): Promise<CompanyData> => {
       try {
         const response = await api.get(`/company/top`);
         setTopCompanies(response.data);
@@ -97,17 +68,25 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
 
 
-  const findCompanyByCompanyID = (companyID: string | undefined): CompanyDataProps | undefined => {
-    return companies.find(company => company.id === companyID);
-  };
-
-  const findCompanyNameByBpn = (bpn: string | undefined): string => {
-    const companyName = companies.find(company => company.bpn === bpn)?.companyName;
-    return companyName || 'N/A';
+  const findCompanyByCompanyID = (companyID: string): CompanyData => {
+    const foundCompany = companies.find(company => company.id === companyID);
+    return foundCompany || {
+      id: '',
+      companyName: '',
+      bpn: '',
+      street: '',
+      zipCode: '',
+      country: '',
+      number: '',
+      contacts: [],
+      bpnType: '',
+      edc_url: '',
+      isEdcRegistered: false,
+    };
   };
 
   return (
-    <CompanyContext.Provider value={{ fetchCompaniesWithRetry, companies, topCompanies, findCompanyByCompanyID }}>
+    <CompanyContext.Provider value={{ companies, topCompanies, findCompanyByCompanyID }}>
       {props.children}
     </CompanyContext.Provider>
   );
