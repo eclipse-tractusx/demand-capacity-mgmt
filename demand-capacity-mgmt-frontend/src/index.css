@@ -372,10 +372,6 @@ code {
   transform-origin: center;
 }
 
-.spin-on-hover:hover {
-  animation: spin 1s ease-in-out infinite;
-}
-
 /* Admin Panel */
 .tabs-column {
   background-color: #f0f0f0;
@@ -413,7 +409,7 @@ code {
 
 .board {
   display: flex;
-  height: 78.5vh;
+  height: 78.72vh;
   overflow-y: auto;
   overflow-x: hidden;
 }

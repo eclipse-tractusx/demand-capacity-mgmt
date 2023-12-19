@@ -22,10 +22,10 @@
 
 import React from 'react';
 import { LuStar } from 'react-icons/lu';
-import { CompanyDataProps } from '../../interfaces/company_interfaces';
+import { CompanyData } from '../../interfaces/company_interfaces';
 
 interface CompanyListProps {
-    companies: CompanyDataProps[];
+    companies: CompanyData[];
     favoriteCompanies: string[];
     onCompanyClick: (taskId: string) => void;
 }
