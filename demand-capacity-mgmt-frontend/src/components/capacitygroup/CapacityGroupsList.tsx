@@ -26,6 +26,7 @@ import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react
 import { FaCopy, FaEllipsisV, FaEye, FaRedo } from 'react-icons/fa';
 import { LuStar } from 'react-icons/lu';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import { CompanyContext } from '../../contexts/CompanyContextProvider';
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import { useUser } from '../../contexts/UserContext';
 import '../../index.css';
