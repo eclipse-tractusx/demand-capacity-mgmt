@@ -34,11 +34,11 @@ public class TriggeredAlertEntity {
     @Column(name = "created")
     private String created;
 
-    @Column(name = "trigger_times")
-    private int triggerTimes;
-
-    @Column(name = "trigger_times_in_three_months")
-    private int triggerTimesInThreeMonths;
+//    @Column(name = "trigger_times")
+//    private int triggerTimes;
+//
+//    @Column(name = "trigger_times_in_three_months")
+//    private int triggerTimesInThreeMonths;
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
