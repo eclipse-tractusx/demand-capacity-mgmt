@@ -29,6 +29,7 @@ interface CompanyContextData {
   companies: CompanyData[];
   topCompanies: CompanyData[];
   findCompanyByCompanyID: (companyID: string) => CompanyData;
+  findCompanyNameByBpn: (companyBpn: string) => CompanyData;
 }
 
 export const CompanyContext = createContext<CompanyContextData | undefined>(undefined);
@@ -68,6 +69,22 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
 
 
+  const findCompanyNameByBpn = (companyBpn: string): CompanyData => {
+    const foundCompany = companies.find(company => company.bpn === companyBpn);
+    return foundCompany || {
+      id: '',
+      companyName: '',
+      bpn: '',
+      street: '',
+      zipCode: '',
+      country: '',
+      number: '',
+      contacts: [],
+      bpnType: '',
+      edc_url: '',
+      isEdcRegistered: false,
+    };
+  };
   const findCompanyByCompanyID = (companyID: string): CompanyData => {
     const foundCompany = companies.find(company => company.id === companyID);
     return foundCompany || {
@@ -86,7 +103,7 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   };
 
   return (
-    <CompanyContext.Provider value={{ companies, topCompanies, findCompanyByCompanyID }}>
+    <CompanyContext.Provider value={{ companies, topCompanies, findCompanyByCompanyID, findCompanyNameByBpn }}>
       {props.children}
     </CompanyContext.Provider>
   );
