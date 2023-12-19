@@ -17,17 +17,6 @@ const emptyAddressBook: AddressBookProps = {
     picture: ''
 };
 
-
-const emptyAddressBook: AddressBookProps = {
-    contact: '',
-    name: '',
-    function: '',
-    email: '',
-    id: '',
-    companyId: '',
-    picture: ''
-};
-
 interface ContactModalProps {
     isOpen: boolean;
     handleClose: () => void;
