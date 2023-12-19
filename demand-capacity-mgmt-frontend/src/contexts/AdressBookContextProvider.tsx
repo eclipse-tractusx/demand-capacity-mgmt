@@ -86,11 +86,8 @@ const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
         }
     };
 
-<<<<<<< HEAD
+
     const updateAddressBook = async (adressbookId: String, newAddressBook: AddressBookCreateProps): Promise<AddressBookProps | undefined> => {
-=======
-    const updateAddressBook = async (companyId: String, newAddressBook: AddressBookCreateProps): Promise<AddressBookProps | undefined> => {
->>>>>>> a51fe26 (AdressBook.. Improved Implementation)
         try {
             const api = createAPIInstance(access_token);
             const response = await api.put(`/addressBook/${adressbookId}`, newAddressBook);
