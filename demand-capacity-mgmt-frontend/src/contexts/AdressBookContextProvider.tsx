@@ -79,16 +79,18 @@ const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
         try {
             const api = createAPIInstance(access_token);
             const response = await api.post('/addressBook', newAddressBook);
+            fetchAddressBookWithRetry();
             return response.data;
         } catch (error) {
             console.error('Error creating address book:', error);
         }
     };
 
-    const updateAddressBook = async (companyId: String, newAddressBook: AddressBookCreateProps): Promise<AddressBookProps | undefined> => {
+    const updateAddressBook = async (adressbookId: String, newAddressBook: AddressBookCreateProps): Promise<AddressBookProps | undefined> => {
         try {
             const api = createAPIInstance(access_token);
-            const response = await api.put('/addressBook/${companyId}', newAddressBook);
+            const response = await api.put(`/addressBook/${adressbookId}`, newAddressBook);
+            fetchAddressBookWithRetry();
             return response.data;
         } catch (error) {
             console.error('Error creating address book:', error);
