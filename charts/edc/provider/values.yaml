@@ -19,18 +19,16 @@
 #   ********************************************************************************
 
 
-# Default values for eclipse-dataspace-connector.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+
+
 tractusx-connector:
   enabled: true
   install:
     daps: false
     postgresql: false
     vault: false
-  fullnameOverride: "dcm-edc-consumer"
+  fullnameOverride: "dcm-edc-provider"
   nameOverride: ""
-  # -- Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
   imagePullSecrets: []
   customLabels: {}
 
@@ -46,7 +44,7 @@ tractusx-connector:
       # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
       pullPolicy: IfNotPresent
       # -- Overrides the image tag whose default is the chart appVersion
-      tag: "0.5.0"
+      tag: "0.5.3"
     initContainers: []
     debug:
       enabled: false
@@ -92,13 +90,13 @@ tractusx-connector:
         # -- port for incoming api calls
         port: 8080
         # -- path for incoming api calls
-        path: /consumer/api
+        path: /BPNL000000000000/api
       # -- data management api, used by internal users, can be added to an ingress and must not be internet facing
       management:
         # -- port for incoming api calls
         port: 8081
         # -- path for incoming api calls
-        path: /consumer/management
+        path: /BPNL000000000000/management
         # -- authentication key, must be attached to each 'X-Api-Key' request header
         authKey: <path:cgi-dcm-foss/data/value-added-service/dcm/dev/authKey#authKey>
       # -- control api, used for internal control calls. can be added to the internal ingress, but should probably not
@@ -106,31 +104,31 @@ tractusx-connector:
         # -- port for incoming api calls
         port: 8083
         # -- path for incoming api calls
-        path: /consumer/control
+        path: /BPNL000000000000/control
       # -- ids api, used for inter connector communication and must be internet facing
       protocol:
         # -- port for incoming api calls
         port: 8084
         # -- path for incoming api calls
-        path: /consumer/api/v1/dsp
+        path: /BPNL000000000000/api/v1/dsp
       # -- metrics api, used for application metrics, must not be internet facing
       metrics:
         # -- port for incoming api calls
         port: 9090
         # -- path for incoming api calls
-        path: /consumer/metrics
+        path: /BPNL000000000000/metrics
       # -- observability api with unsecured access, must not be internet facing
       observability:
         # -- port for incoming API calls
         port: 8085
         # -- observability api, provides /health /readiness and /liveness endpoints
-        path: /consumer/observability
+        path: /BPNL000000000000/observability
         # -- allow or disallow insecure access, i.e. access without authentication
         insecure: true
     businessPartnerValidation:
       log:
         agreementValidation: true
-        # SSI configuration
+
     ssi:
       miw:
         url: "https://managed-identity-wallets-new.int.demo.catena-x.net"
@@ -141,7 +139,7 @@ tractusx-connector:
           id: "sa631"
           secretAlias: "miw-oem-secret"
       endpoint:
-        audience: https://dcm.int.demo.catena-x.net/consumer
+        audience: https://dcm.dev.demo.catena-x.net/consumer
 
     service:
       # -- [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) to expose the running application on a set of Pods as a network service.
@@ -314,7 +312,7 @@ tractusx-connector:
       # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
       pullPolicy: IfNotPresent
       # -- Overrides the image tag whose default is the chart appVersion
-      tag: "0.5.0"
+      tag: "0.5.3"
     initContainers: []
     debug:
       enabled: false
@@ -353,26 +351,26 @@ tractusx-connector:
     endpoints:
       default:
         port: 8080
-        path: /consumer/api
+        path: /BPNL000000000000/api
       public:
         port: 8081
-        path: /consumer/api/public
+        path: /BPNL000000000000/api/public
       control:
         port: 8083
-        path: /consumer/api/dataplane/control
+        path: /BPNL000000000000/api/dataplane/control
       proxy:
         port: 8186
-        path: /consumer/proxy
+        path: /BPNL000000000000/proxy
       observability:
         # -- port for incoming API calls
         port: 8085
         # -- observability api, provides /health /readiness and /liveness endpoints
-        path: /consumer/observability
+        path: /BPNL000000000000/observability
         # -- allow or disallow insecure access, i.e. access without authentication
         insecure: true
       metrics:
         port: 9090
-        path: /consumer/metrics
+        path: /BPNL000000000000/metrics
     aws:
       endpointOverride: ""
       accessKeyId: ""
@@ -509,7 +507,7 @@ tractusx-connector:
       public: ""
 
   postgresql:
-    jdbcUrl: "jdbc:postgresql://postgresql:5432/edc"
+    jdbcUrl: "jdbc:postgresql://postgresqlprovider:5432/edc"
     fullnameOverride: "postgresql"
     username: "user"
     password: "password"
@@ -545,20 +543,6 @@ tractusx-connector:
   backendService:
     httpProxyTokenReceiverUrl: "https://dcm.dev.demo.catena-x.net/endpoint"
 
-  networkPolicy:
-    # -- If `true` network policy will be created to restrict access to control- and dataplane
-    enabled: false
-    # -- Configuration of the controlplane component
-    controlplane:
-      # -- Specify from rule network policy for cp (defaults to all namespaces)
-      from:
-        - namespaceSelector: {}
-    # -- Configuration of the dataplane component
-    dataplane:
-      # -- Specify from rule network policy for dp (defaults to all namespaces)
-      from:
-        - namespaceSelector: {}
-
   serviceAccount:
     # Specifies whether a service account should be created
     create: true
@@ -570,14 +554,10 @@ tractusx-connector:
     # -- Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
     imagePullSecrets: []
 
-  # -- Configurations for Helm tests
-  tests:
-    # -- Configure the hook-delete-policy for Helm tests
-    hookDeletePolicy: before-hook-creation,hook-succeeded
 
 postgresql:
-  jdbcUrl: "jdbc:postgresql://postgresql:5432/edc"
-  fullnameOverride: "postgresql"
+  jdbcUrl: "jdbc:postgresql://postgresqlprovider:5432/edc"
+  fullnameOverride: "postgresqlprovider"
   primary:
     persistence:
       enabled: true
