@@ -209,7 +209,7 @@ const CapacityGroupsList: React.FC = () => {
           {user?.role === 'CUSTOMER' && (
             <>
               <td>{capacitygroup.supplierBNPL}</td>
-              <td>{findCompanyNameByBpn(capacitygroup.supplierBNPL)}</td>
+              <td>{findCompanyNameByBpn(capacitygroup.supplierBNPL).companyName}</td>
             </>
           )}
 
