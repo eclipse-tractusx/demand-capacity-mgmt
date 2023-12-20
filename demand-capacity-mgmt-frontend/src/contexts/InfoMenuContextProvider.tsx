@@ -25,11 +25,11 @@ import React, { FunctionComponent, createContext, useCallback, useContext, useEf
 
 import { InfoMenuData } from "../interfaces/infomenu_interfaces";
 import createAPIInstance from "../util/Api";
+import { AlertsContext } from "./AlertsContextProvider";
 import { CapacityGroupContext } from './CapacityGroupsContextProvider';
 import { DemandContext } from './DemandContextProvider';
 import { EventsContext } from './EventsContextProvider';
 import { useUser } from "./UserContext";
-import {AlertsContext} from "./AlertsContextProvider";
 
 interface InfoMenuContextData {
     data: InfoMenuData | null;
@@ -48,6 +48,7 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
     const { capacitygroups } = useContext(CapacityGroupContext) || {};
     const { demandprops } = useContext(DemandContext) || {};
     const { events } = useContext(EventsContext) || {};
+    const { triggeredAlerts } = useContext(AlertsContext) || {};
 
     const fetchData = useCallback(async () => {
         try {
@@ -60,10 +61,6 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
         }
     }, [access_token]);
 
-    useEffect(() => {
-        fetchData();
-        console.log('Top menu triggered due to access_token change');
-    }, [fetchData, access_token]);
 
     useEffect(() => {
         fetchData();
@@ -84,6 +81,11 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
         fetchData();
         console.log('Top menu triggered due to events change');
     }, [fetchData, events]);
+
+    useEffect(() => {
+        fetchData();
+        console.log('Top menu triggered due to triggeredAlerts change');
+    }, [fetchData, triggeredAlerts]);
 
 
     return (

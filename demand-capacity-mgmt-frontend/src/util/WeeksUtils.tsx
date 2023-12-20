@@ -112,3 +112,27 @@ export const getWeekDates = (year: number, month: string, week: number) => {
         endDate: endDate.toDateString(),
     };
 };
+
+export const getMondaysBetweenDates = (startDate: Date, endDate: Date): string[] => {
+    const mondays: string[] = [];
+    const current = new Date(startDate);
+
+    while (current <= endDate) {
+        if (current.getDay() === 1) {
+            // Monday has index 1 in JS (0 is Sunday, 1 is Monday, etc.)
+            const formattedDate = current.toISOString().slice(0, 10);
+            mondays.push(formattedDate);
+        }
+
+        current.setDate(current.getDate() + 1);
+    }
+
+    return mondays;
+};
+
+export const getNextMondayfromToday = () => {
+    const today = new Date();
+    const nextMonday = new Date(today);
+    nextMonday.setDate(today.getDate() + ((1 + 7 - today.getDay()) % 7));
+    return nextMonday;
+};

@@ -9,8 +9,8 @@ export interface CompanyData {
     country: string,
     number: string,
 
-    contacts: AddressBookProps[],
-    bpnType: string,
-    edc_url: string,
-    isEdcRegistered: boolean,
+    contacts?: AddressBookProps[],
+    bpnType?: string,
+    edc_url?: string,
+    isEdcRegistered?: boolean,
 }
