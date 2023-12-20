@@ -49,13 +49,6 @@ public class CapacityTimeSeries {
     @Column(name = "maximum_capacity", nullable = false)
     private Double maximumCapacity;
 
-    @Column(name = "ruled", nullable = false)
-    private boolean ruled = false;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "week_color")
-    private WeekColor weekColor;
-
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
