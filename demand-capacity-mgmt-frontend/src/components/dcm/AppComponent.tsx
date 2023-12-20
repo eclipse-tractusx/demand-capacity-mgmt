@@ -106,19 +106,6 @@ const AppComponent: React.FC = () => {
                         <DemandContextProvider>
                             <CompanyContextProvider>
                                 <AddressBookProvider>
-                                    <AddressBookPage />
-                                </AddressBookProvider>
-                            </CompanyContextProvider>
-                        </DemandContextProvider>
-                    </FavoritesContextProvider>
-                </AuthenticatedRoute>
-            } />
-            <Route path="/up" element={
-                <AuthenticatedRoute>
-                    <FavoritesContextProvider>
-                        <DemandContextProvider>
-                            <CompanyContextProvider>
-                                <AddressBookProvider>
                                     <Layout>
                                         <AddressBookPage />
                                     </Layout>
