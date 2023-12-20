@@ -56,8 +56,6 @@ const CapacityGroupsList: React.FC = () => {
   const { findCompanyByCompanyID } = useContext(CompanyContext)!;
   const [favoriteCapacityGroups, setFavoriteCapacityGroups] = useState<string[]>([]);
 
-
-  console.log(user)
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       // If the same column is clicked again, toggle the sort order
@@ -77,7 +75,7 @@ const CapacityGroupsList: React.FC = () => {
     } catch (error) {
       console.error('Error fetching favorites by type in DemandList:', error);
     }
-  }, [fetchFavoritesByType]);
+  }, []);
 
   const handleRefreshClick = useCallback(async () => {
     await fetchCapacityGroupsWithRetry();
