@@ -247,7 +247,7 @@ paths:
       tags:
         - addressBook
       summary: update addressBook by Id
-      operationId: updateAddressBookById
+      operationId: updateAddressBookById  # Unique operationId for this PUT operation
       requestBody:
         required: true
         content:
@@ -320,7 +320,7 @@ paths:
       tags:
         - addressBook
       summary: update addressBook by Id
-      operationId: updateAddressBookById
+      operationId: updateAddressBookById2  # Unique operationId for this PUT operation
       requestBody:
         required: true
         content:
@@ -340,26 +340,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AddressBookRequest"
-
-  /addressBook/query:
-    get:
-      tags:
-        - addressBook
-      summary: get companies
-      operationId: getAddressBook
-      responses:
-        200:
-          description: General greeting
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AddressBookResponse"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AddressBookRequest"
 
   /loggingHistory/filterLogs:
     get:
