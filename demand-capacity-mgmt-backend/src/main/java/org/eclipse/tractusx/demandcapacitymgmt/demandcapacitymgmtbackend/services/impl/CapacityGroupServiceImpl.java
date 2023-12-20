@@ -359,8 +359,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             capacityBody.setActualCapacity(BigDecimal.valueOf(capacityTimeSerie.getActualCapacity()));
             capacityBody.setMaximumCapacity(BigDecimal.valueOf(capacityTimeSerie.getMaximumCapacity()));
             capacityBody.setCapacityId(capacityTimeSerie.getCapacityGroupEntity().getId().toString());
-            capacityBody.setRuled(capacityTimeSerie.isRuled());
-            capacityBody.setWeekColor(capacityTimeSerie.getWeekColor().toString());
 
             bodys.add(capacityBody);
         }
