@@ -30,7 +30,6 @@ provider-dtr:
     # the K8s internal service name is used, which is a problem, when
     # validating the issuer claim in an access token
     idpIssuerUri: https://centralidp.int.demo.catena-x.net/auth/realms/CX-Central
-    idpClientId: Cl13-CX-Battery
     tenantId: default-tenant
     dataSource:
       driverClassName: org.postgresql.Driver
