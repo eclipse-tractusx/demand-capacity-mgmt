@@ -37,6 +37,7 @@ import {
   SingleCapacityGroupFavoriteResponse
 } from "../../interfaces/favorite_interfaces";
 import { getUserGreeting } from '../../interfaces/user_interface';
+import CompanyDetailsInteractionModal from '../common/CompanyDetailsInteractionModal';
 import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
 import Search from '../common/Search';
@@ -53,8 +54,11 @@ const CapacityGroupsList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
   const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
-  const { findCompanyByCompanyID } = useContext(CompanyContext)!;
+  const { findCompanyByCompanyID, findCompanyByBpn } = useContext(CompanyContext)!;
   const [favoriteCapacityGroups, setFavoriteCapacityGroups] = useState<string[]>([]);
+  const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [selectedCompanyId, setSelectedCompanyId] = useState('');
+
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -202,14 +206,32 @@ const CapacityGroupsList: React.FC = () => {
           <td>{capacitygroup.name}</td>
           {user?.role === 'SUPPLIER' && (
             <>
-              <td>{capacitygroup.customerBPNL}</td>
-              <td>{capacitygroup.customerName}</td>
+              <td onClick={() => {
+                setIsCompanyModalOpen(true);
+                setSelectedCompanyId(findCompanyByBpn(capacitygroup.customerBPNL).id);
+              }}>
+                <span className='interactable'>
+                  {capacitygroup.customerBPNL}</span></td>
+              <td onClick={() => {
+                setIsCompanyModalOpen(true);
+                setSelectedCompanyId(findCompanyByBpn(capacitygroup.customerBPNL).id);
+              }}><span className='interactable'>
+                  {capacitygroup.customerName}</span></td>
             </>
           )}
 
           {user?.role === 'CUSTOMER' && (
             <>
-              <td>{capacitygroup.supplierBNPL}</td>
+              <td onClick={() => {
+                setIsCompanyModalOpen(true);
+                setSelectedCompanyId(findCompanyByBpn(capacitygroup.supplierBNPL).id);
+              }}><span className='interactable'>
+                  {capacitygroup.supplierBNPL}</span></td>
+              <td onClick={() => {
+                setIsCompanyModalOpen(true);
+                setSelectedCompanyId(findCompanyByBpn(capacitygroup.supplierBNPL).id);
+              }}><span className='interactable'>
+                  {findCompanyByBpn(capacitygroup.supplierBNPL).companyName}</span></td>
             </>
           )}
 
@@ -322,6 +344,11 @@ const CapacityGroupsList: React.FC = () => {
             </div>
           </div>
         </div>
+        <CompanyDetailsInteractionModal
+          isOpen={isCompanyModalOpen}
+          handleClose={() => setIsCompanyModalOpen(false)}
+          companyId={selectedCompanyId}
+        />
       </>
       )}
     </>

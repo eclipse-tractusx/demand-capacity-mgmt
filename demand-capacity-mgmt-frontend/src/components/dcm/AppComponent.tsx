@@ -29,6 +29,7 @@ import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
 import EventsContextProvider from '../../contexts/EventsContextProvider';
 import FavoritesContextProvider from "../../contexts/FavoritesContextProvider";
+import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
 import QuickAcessItems from '../common/QuickAcessItems';
 import AdminPage from '../pages/AdminPage';
@@ -58,10 +59,12 @@ const AppComponent: React.FC = () => {
                     <FavoritesContextProvider>
                         <DemandContextProvider>
                             <CompanyContextProvider>
-                                <Layout>
-                                    <Home />
-                                    <QuickAcessItems />
-                                </Layout>
+                                <AddressBookProvider>
+                                    <Layout>
+                                        <Home />
+                                        <QuickAcessItems />
+                                    </Layout>
+                                </AddressBookProvider>
                             </CompanyContextProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
@@ -74,11 +77,15 @@ const AppComponent: React.FC = () => {
                     <FavoritesContextProvider>
                         <CapacityGroupsProvider>
                             <DemandContextProvider>
-                                <Layout>
-                                    <EventsContextProvider>
-                                        <CapacityGroupDetailsPage />
-                                    </EventsContextProvider>
-                                </Layout>
+                                <CompanyContextProvider>
+                                    <AddressBookProvider>
+                                        <Layout>
+                                            <EventsContextProvider>
+                                                <CapacityGroupDetailsPage />
+                                            </EventsContextProvider>
+                                        </Layout>
+                                    </AddressBookProvider>
+                                </CompanyContextProvider>
                             </DemandContextProvider>
                         </CapacityGroupsProvider>
                     </FavoritesContextProvider>
@@ -89,19 +96,23 @@ const AppComponent: React.FC = () => {
                     <FavoritesContextProvider>
                         <DemandContextProvider>
                             <CapacityGroupsProvider>
-                                <Layout>
-                                    <AlertsContextProvider>
-                                        <AlertsPage />
-                                    </AlertsContextProvider>
-                                </Layout>
+                                <CompanyContextProvider>
+                                    <AddressBookProvider>
+                                        <Layout>
+                                            <AlertsContextProvider>
+                                                <AlertsPage />
+                                            </AlertsContextProvider>
+                                        </Layout>
+                                    </AddressBookProvider>
+                                </CompanyContextProvider>
                             </CapacityGroupsProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
             } />
 
-            <Route path="/addressBook" element={
-                <AuthenticatedRoute>
+            < Route path="/addressBook" element={
+                < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
                             <CompanyContextProvider>
@@ -113,17 +124,21 @@ const AppComponent: React.FC = () => {
                             </CompanyContextProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
-                </AuthenticatedRoute>
+                </AuthenticatedRoute >
             } />
             < Route path="/up" element={
                 < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
-                                <EventsContextProvider>
-                                    <UpStatusPage />
-                                </EventsContextProvider>
-                            </Layout>
+                            <CompanyContextProvider>
+                                <AddressBookProvider>
+                                    <Layout>
+                                        <EventsContextProvider>
+                                            <UpStatusPage />
+                                        </EventsContextProvider>
+                                    </Layout>
+                                </AddressBookProvider>
+                            </CompanyContextProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute >
@@ -132,11 +147,15 @@ const AppComponent: React.FC = () => {
                 < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
-                                <EventsContextProvider>
-                                    <DownStatusPage />
-                                </EventsContextProvider>
-                            </Layout>
+                            <CompanyContextProvider>
+                                <AddressBookProvider>
+                                    <Layout>
+                                        <EventsContextProvider>
+                                            <DownStatusPage />
+                                        </EventsContextProvider>
+                                    </Layout>
+                                </AddressBookProvider>
+                            </CompanyContextProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute >
@@ -145,11 +164,19 @@ const AppComponent: React.FC = () => {
                 < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
-                                <EventsContextProvider>
-                                    <TodoListPage />
-                                </EventsContextProvider>
-                            </Layout>
+                            <CapacityGroupsProvider>
+                                <UnitsofMeasureContextContextProvider>
+                                    <CompanyContextProvider>
+                                        <AddressBookProvider>
+                                            <Layout>
+                                                <EventsContextProvider>
+                                                    <TodoListPage />
+                                                </EventsContextProvider>
+                                            </Layout>
+                                        </AddressBookProvider>
+                                    </CompanyContextProvider>
+                                </UnitsofMeasureContextContextProvider>
+                            </CapacityGroupsProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute >
@@ -159,11 +186,15 @@ const AppComponent: React.FC = () => {
                 < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
-                                <EventsContextProvider>
-                                    <EventsPage />
-                                </EventsContextProvider>
-                            </Layout>
+                            <CompanyContextProvider>
+                                <AddressBookProvider>
+                                    <Layout>
+                                        <EventsContextProvider>
+                                            <EventsPage />
+                                        </EventsContextProvider>
+                                    </Layout>
+                                </AddressBookProvider>
+                            </CompanyContextProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute >
@@ -173,11 +204,13 @@ const AppComponent: React.FC = () => {
                 < AuthenticatedRoute >
                     <DemandContextProvider>
                         <FavoritesContextProvider>
-                            <Layout>
-
-                                <FavoritesPage />
-
-                            </Layout>
+                            <CompanyContextProvider>
+                                <AddressBookProvider>
+                                    <Layout>
+                                        <FavoritesPage />
+                                    </Layout>
+                                </AddressBookProvider>
+                            </CompanyContextProvider>
                         </FavoritesContextProvider>
                     </DemandContextProvider>
                 </AuthenticatedRoute >
@@ -187,9 +220,13 @@ const AppComponent: React.FC = () => {
                 < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
-                                <AdminPage />
-                            </Layout>
+                            <CompanyContextProvider>
+                                <AddressBookProvider>
+                                    <Layout>
+                                        <AdminPage />
+                                    </Layout>
+                                </AddressBookProvider>
+                            </CompanyContextProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute >

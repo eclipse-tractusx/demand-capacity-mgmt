@@ -22,11 +22,11 @@ const CompanyDetailsInteractionModal: React.FC<CompanyDetailsModalProps> = ({
     return (
         <Modal show={isOpen}
             onHide={handleClose}
-            size='xl'
+            size='lg'
             backdrop="static"
             keyboard={false}>
             <Modal.Header closeButton>
-                <Modal.Title>Info</Modal.Title>
+                <Modal.Title>Company Info</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <AddressBookDetailsView company={findCompanyByCompanyID(companyId)} favoriteCompanies={favoriteCompanies} />
