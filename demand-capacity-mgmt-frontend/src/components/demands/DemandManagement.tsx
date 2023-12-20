@@ -42,6 +42,7 @@ import {
     FavoriteType,
     MaterialDemandFavoriteResponse
 } from "../../interfaces/favorite_interfaces";
+import CompanyDetailsInteractionModal from '../common/CompanyDetailsInteractionModal';
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import { LoadingMessage } from '../common/LoadingMessages';
 import DemandManagementTable from './DemandManagementTableHeaders';
@@ -68,6 +69,9 @@ const DemandManagement: React.FC = () => {
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
     const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
     const [favoriteDemands, setFavoriteDemands] = useState<string[]>([]);
+
+    const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+    const [selectedCompanyId, setSelectedCompanyId] = useState('');
 
     const fetchFavorites = useCallback(async () => {
         try {
@@ -256,7 +260,22 @@ const DemandManagement: React.FC = () => {
                             </div>
                         </Button>
                     </td>
-                    <td>{demand.customer.bpn}</td>
+                    {user?.role === 'SUPPLIER' && (
+                        <td onClick={() => {
+                            setIsCompanyModalOpen(true);
+                            setSelectedCompanyId(demand.customer.id);
+                        }}>
+                            <span className='interactable'>
+                                {demand.customer.bpn}</span></td>
+                    )}
+
+                    {user?.role === 'CUSTOMER' && (
+                        <td onClick={() => {
+                            setIsCompanyModalOpen(true);
+                            setSelectedCompanyId(demand.supplier.id);
+                        }}><span className='interactable'>
+                                {demand.supplier.bpn}</span></td>
+                    )}
                     <td>{demand.materialNumberCustomer}</td>
                     <td>{demand.materialNumberSupplier}</td>
                     <td>
@@ -457,7 +476,6 @@ const DemandManagement: React.FC = () => {
                         action={confirmationAction}
                     />
 
-
                     <DemandDetailsModal
                         show={showDetailsModal}
                         onHide={handleCloseDetails}
@@ -465,6 +483,11 @@ const DemandManagement: React.FC = () => {
                         fullscreen="xl"
                         selectedDemand={selectedDemand} />
 
+                    <CompanyDetailsInteractionModal
+                        isOpen={isCompanyModalOpen}
+                        handleClose={() => setIsCompanyModalOpen(false)}
+                        companyId={selectedCompanyId}
+                    />
                 </>
             )}
         </>

@@ -103,7 +103,7 @@ function TopMenuLinks() {
 
         </Navbar.Collapse>
         <Navbar.Collapse className="justify-content-end">
-          <Navbar.Text>
+          <Navbar.Text className='p-2'>
             Signed in as:  <span className='text-capitalize'>{getUserName(user)}</span>
             <br />
             <span className='font-weight-light small-menu-text'>Role: <span className='text-capitalize'>{user?.role.toLowerCase()}</span></span>
@@ -112,20 +112,20 @@ function TopMenuLinks() {
             placement="bottom"
             overlay={<Tooltip id="tooltip">Address Book</Tooltip>}
           >
-            <Nav.Link href="../addressbook" className="p-3 navbar-nav nav-item"><FaAddressBook /></Nav.Link>
+            <Nav.Link href="../addressbook" className="p-2 navbar-nav nav-item"><FaAddressBook /></Nav.Link>
           </OverlayTrigger>
           <OverlayTrigger
             placement="bottom"
             overlay={<Tooltip id="tooltip">User Settings</Tooltip>}
           >
-            <Nav.Link href="../ad" className="p-3 navbar-nav nav-item"><FiSettings /></Nav.Link>
+            <Nav.Link href="../ad" className="p-2 navbar-nav nav-item"><FiSettings /></Nav.Link>
           </OverlayTrigger>
           {user?.role === 'ADMIN' && (
             <OverlayTrigger
               placement="bottom"
               overlay={<Tooltip id="tooltip">Admin Dashboard</Tooltip>}
             >
-              <Nav.Link href="admin" className="p-3 navbar-nav nav-item">
+              <Nav.Link href="admin" className="p-2 navbar-nav nav-item">
                 <FaUserShield />
               </Nav.Link>
             </OverlayTrigger>

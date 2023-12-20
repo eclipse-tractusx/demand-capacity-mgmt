@@ -244,6 +244,16 @@ code {
   color: black;
 }
 
+.interactable {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.interactable:hover {
+  color: #ffc107;
+  cursor: pointer;
+  text-decoration: underline;
+}
 
 .table-checkbox {
   display: flex;
@@ -434,10 +444,6 @@ code {
   height: 35.6vh;
   overflow-y: scroll;
   overflow-x: hidden;
-}
-
-.contact-info:hover {
-  color: #ffc107;
 }
 
 

@@ -18,20 +18,12 @@ const RulesModal: React.FC<RulesModalProps> = ({ showRulesModal, hideRulesModal 
         backdrop="static"
         keyboard={false}>
         <Modal.Header closeButton>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+                <FcAlarmClock size={35} /><h4 className='icon-text-padding'> Configured Alert Rules</h4>
+            </div>
         </Modal.Header>
         <Modal.Body>
-
-            <div className="row">
-                <div className="col-sm-6">
-                    <div style={{ display: 'flex' }}>
-                        <FcAlarmClock size={35} />
-                        <h3 className="icon-text-padding">Configured Alert Rules</h3>
-                    </div>
-                </div>
-                <div className="col-sm-6">
-                    <ConfigureAlertModal />
-                </div>
-            </div>
+            <ConfigureAlertModal />
             <br />
             <ConfiguredAlertsTable />
         </Modal.Body>
