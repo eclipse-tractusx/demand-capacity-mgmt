@@ -20,43 +20,77 @@
  *    ********************************************************************************
  */
 
-import React, {useContext} from 'react';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import React, {useContext, useEffect, useState} from 'react';
+import {Form, Button, Row, Col, Table} from 'react-bootstrap';
 import {useUser} from "../../contexts/UserContext";
 import { ThresholdsContext } from "../../contexts/ThresholdsContextProvider";
+import {ThresholdProp} from "../../interfaces/Threshold_interfaces";
 
 
 function ThresholdPage() {
-    const {thresholds, fetchThresholds } = useContext(ThresholdsContext)!;
-    const { user } = useUser();
+    const { thresholds } = useContext(ThresholdsContext)!;
+    const [editableThresholds, setEditableThresholds] = useState<ThresholdProp[]>([]);
 
+    useEffect(() => {
+        setEditableThresholds(thresholds);
+    }, [thresholds]);
+
+    const handleCheckboxChange = (index: number) => {
+        const updatedThresholds = editableThresholds.map((threshold, idx) => {
+            if (idx === index) {
+                return { ...threshold, enabled: !threshold.enabled };
+            }
+            return threshold;
+        });
+        setEditableThresholds(updatedThresholds);
+    };
 
     const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log('Save thresholds');
+        console.log('Save thresholds', editableThresholds);
+        // Add logic to save the updated thresholds
     };
+
+    const chunkThresholds = (thresholds: ThresholdProp[], size: number): ThresholdProp[][] => {
+        return thresholds.reduce((acc: ThresholdProp[][], val: ThresholdProp, i: number) => {
+            let idx = Math.floor(i / size);
+            let page = acc[idx] || (acc[idx] = []);
+            page.push(val);
+            return acc;
+        }, []);
+    }
+
+    const chunkedThresholds = chunkThresholds(editableThresholds, 4);
 
     return (
         <div>
             <h3>Threshold Config Settings</h3>
             <Form onSubmit={handleSave}>
-                <Row xs={1} md={2} lg={4}>
-                    {thresholds.map((threshold, index) => (
-                        <Col key={index} className="mb-3">
-                            <Form.Check
-                                type="checkbox"
-                                id={`threshold-${threshold}`}
-                                label={`Threshold ${threshold}`}
-                            />
-                        </Col>
+                <Table striped bordered hover>
+                    <tbody>
+                    {chunkedThresholds.map((chunk: ThresholdProp[], chunkIndex: number) => (
+                        <tr key={chunkIndex}>
+                            {chunk.map((threshold: ThresholdProp, idx: number) => (
+                                <td key={idx}>
+                                    <Form.Check
+                                        type="checkbox"
+                                        id={`threshold-${threshold.percentage}`}
+                                        label={`${threshold.percentage} %`}
+                                        checked={threshold.enabled}
+                                        onChange={() => handleCheckboxChange(chunkIndex * 4 + idx)}
+                                    />
+                                </td>
+                            ))}
+                        </tr>
                     ))}
-                </Row>
-                <Button variant="primary" type="submit">
+                    </tbody>
+                </Table>
+                <Button variant="primary" type="submit" className="mt-3">
                     Save
                 </Button>
             </Form>
         </div>
     );
-};
+}
 
 export default ThresholdPage;
