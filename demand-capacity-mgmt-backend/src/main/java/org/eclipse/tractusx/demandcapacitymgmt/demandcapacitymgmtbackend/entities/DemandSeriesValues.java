@@ -51,11 +51,4 @@ public class DemandSeriesValues {
 
     @Column(name = "demand", nullable = false)
     private Double demand;
-
-    @Column(name = "ruled", nullable = false)
-    private boolean ruled = false;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "week_color")
-    private WeekColor weekColor;
 }
