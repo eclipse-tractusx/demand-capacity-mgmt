@@ -81,11 +81,6 @@ public class AddressBookServiceImpl implements AddressBookService {
     }
 
     @Override
-    public AddressBookResponse updateRecord(AddressBookRequest request, String id) {
-        return convertEntityToDto(goldenRecordManager.updateRecord(request, id));
-    }
-
-    @Override
     public void deleteRecord(AddressBookRequest request) {
         repository.deleteById(UUID.fromString(request.getQuery()));
     }
@@ -93,7 +88,7 @@ public class AddressBookServiceImpl implements AddressBookService {
     private AddressBookResponse convertEntityToDto(AddressBookRecordEntity entity) {
         AddressBookResponse response = new AddressBookResponse();
         response.setId(entity.getId().toString());
-        response.setContact(entity.getContact());
+        response.setCellPhone(entity.getCellPhone());
         response.setName(entity.getName());
         response.setEmail(entity.getEmail());
         response.setFunction(entity.getFunction());
