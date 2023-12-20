@@ -31,10 +31,10 @@ type CapacityGroupsTableProps = {
   capacitygroupsItems: React.ReactNode;
 };
 
+
+
 const CapacityGroupsTable: React.FC<CapacityGroupsTableProps> = ({ sortColumn, sortOrder, handleSort, capacitygroupsItems }) => {
-
   const { user } = useUser();
-
   return (
     <table className="table table-striped table-hover">
       <thead>
@@ -73,23 +73,12 @@ const CapacityGroupsTable: React.FC<CapacityGroupsTableProps> = ({ sortColumn, s
                 {sortColumn === 'supplierBNPL' && sortOrder === 'asc' && <BiCaretUp />}
                 {sortColumn === 'supplierBNPL' && sortOrder === 'desc' && <BiCaretDown />}
               </th>
-              <th onClick={() => handleSort('supplierName')}>
-                Supplier Name
-                {sortColumn === 'supplierName' && sortOrder === 'asc' && <BiCaretUp />}
-                {sortColumn === 'supplierName' && sortOrder === 'desc' && <BiCaretDown />}
-              </th>
             </>
           )}
-
           <th onClick={() => handleSort('numberOfMaterials')}>
             # of Materials
             {sortColumn === 'numberOfMaterials' && sortOrder === 'asc' && <BiCaretUp />}
             {sortColumn === 'numberOfMaterials' && sortOrder === 'desc' && <BiCaretDown />}
-          </th>
-          <th onClick={() => handleSort('favoritedBy')}>
-            Favorited by
-            {sortColumn === 'favoritedBy' && sortOrder === 'asc' && <BiCaretUp />}
-            {sortColumn === 'favoritedBy' && sortOrder === 'desc' && <BiCaretDown />}
           </th>
           <th onClick={() => handleSort('status')}>
             Status

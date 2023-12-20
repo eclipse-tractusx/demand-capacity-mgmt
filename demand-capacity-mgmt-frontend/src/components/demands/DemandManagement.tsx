@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Col, Dropdown, Form, Modal, Row } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaInfoCircle, FaRedo, FaSearch, FaTrashAlt } from 'react-icons/fa';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
@@ -66,16 +66,10 @@ const DemandManagement: React.FC = () => {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
-    const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
     const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
     const [favoriteDemands, setFavoriteDemands] = useState<string[]>([]);
 
-    const handleRefreshClick = async () => {
-        await fetchDemandProps(); // Call your fetchEvents function to refresh the data
-        await fetchFavorites();
-    };
-
-    const fetchFavorites = async () => {
+    const fetchFavorites = useCallback(async () => {
         try {
             const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
             if (favorites && favorites.materialDemands) {
@@ -84,9 +78,14 @@ const DemandManagement: React.FC = () => {
         } catch (error) {
             console.error('Error fetching favorites by type in DemandList:', error);
         }
-    };
+    }, [fetchFavoritesByType, setFavoriteDemands]);
 
-    const toggleFavorite = async (demandID: string) => {
+    const handleRefreshClick = useCallback(async () => {
+        await fetchDemandProps();
+        await fetchFavorites();
+    }, [fetchDemandProps, fetchFavorites]);
+
+    const toggleFavorite = useCallback(async (demandID: string) => {
         if (favoriteDemands.includes(demandID)) {
             await deleteFavorite(demandID)
             setFavoriteDemands(prev => prev.filter(id => id !== demandID));
@@ -95,11 +94,13 @@ const DemandManagement: React.FC = () => {
             setFavoriteDemands(prev => [...prev, demandID]);
         }
         handleRefreshClick();
-    };
+    }, [favoriteDemands, handleRefreshClick, addFavorite, deleteFavorite]);
 
+    const fetchFavoritesRef = useRef(fetchFavorites);
     useEffect(() => {
-        fetchFavorites();
-    }, []);
+        fetchFavoritesRef.current();
+        fetchDemandProps();
+    }, [searchQuery, fetchDemandProps]);
 
 
     const handleSort = (column: string | null) => {
@@ -163,9 +164,12 @@ const DemandManagement: React.FC = () => {
         }
     };
 
-    const isDemandFavorited = (demandId: string) => favoriteDemands.includes(demandId);
+    const isDemandFavorited = useMemo(() => {
+        const isFavorited = (demandId: string) => favoriteDemands.includes(demandId);
+        return isFavorited;
+    }, [favoriteDemands]);
 
-    useMemo(() => {
+    const filteredDemands = useMemo(() => {
         let filteredDemands = [...demandprops];
 
         if (searchQuery !== '') {
@@ -189,7 +193,7 @@ const DemandManagement: React.FC = () => {
         unfavoritedDemands.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
 
         // Concatenate favorited and unfavorited demands
-        const sortedDemands = [...favoritedDemands, ...unfavoritedDemands];
+        let sortedDemands = [...favoritedDemands, ...unfavoritedDemands];
 
         if (sortColumn) {
             // Sort the concatenated array by the specified column
@@ -217,8 +221,9 @@ const DemandManagement: React.FC = () => {
             }
         }
 
-        setFilteredDemands(sortedDemands);
-    }, [demandprops, searchQuery, sortColumn, sortOrder]);
+        return sortedDemands;
+    }, [demandprops, isDemandFavorited, searchQuery, sortColumn, sortOrder]);
+
 
 
     const slicedDemands = useMemo(() => {
@@ -251,18 +256,7 @@ const DemandManagement: React.FC = () => {
                             </div>
                         </Button>
                     </td>
-                    {user?.role === 'SUPPLIER' ? (
-                        <>
-                            <td>{demand.customer.bpn}</td>
-                            <td>{demand.customer.companyName}</td>
-                        </>
-                    ) : null}
-                    {user?.role === 'CUSTOMER' ? (
-                        <>
-                            <td>{demand.supplier.bpn}</td>
-                            <td>{demand.supplier.companyName}</td>
-                        </>
-                    ) : null}
+                    <td>{demand.customer.bpn}</td>
                     <td>{demand.materialNumberCustomer}</td>
                     <td>{demand.materialNumberSupplier}</td>
                     <td>
@@ -343,7 +337,7 @@ const DemandManagement: React.FC = () => {
                     </td>
                 </tr>
             )),
-        [slicedDemands]
+        [slicedDemands, favoriteDemands, toggleFavorite, user]
     );
 
     return (
@@ -359,7 +353,7 @@ const DemandManagement: React.FC = () => {
                                 onClick={() => setShowAddModal(true)}>
                                 <span>New Material Demand</span>
                             </Button>)}
-                        <Button className='btn btn-primary' onClick={handleRefreshClick}>
+                        <Button className='mx-1' variant="primary" onClick={handleRefreshClick}>
                             <FaRedo className="spin-on-hover" />
                         </Button>
                     </div>
@@ -401,7 +395,11 @@ const DemandManagement: React.FC = () => {
                                                     htmlSize={10}
                                                     max={100}
                                                     value={demandsPerPage}
-                                                    onChange={(e) => setDemandsPerPage(Number(e.target.value))}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        const newValue = value === '' ? 1 : Math.max(1, parseInt(value)); // Ensure it's not empty and not less than 1
+                                                        setDemandsPerPage(newValue);
+                                                    }}
                                                 />
                                             </Col>
                                         </Form.Group>
