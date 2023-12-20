@@ -54,11 +54,6 @@ public class AddressBookController implements AddressBookApi {
     }
 
     @Override
-    public ResponseEntity<AddressBookResponse> getAddressBook(AddressBookRequest addressBookRequest) throws Exception {
-        return ResponseEntity.status(200).body(service.getRecord(addressBookRequest));
-    }
-
-    @Override
     public ResponseEntity<List<AddressBookResponse>> getAllAddressBooks() throws Exception {
         return ResponseEntity.status(200).body(service.getRecords());
     }

@@ -27,6 +27,76 @@ servers:
   - url: http://localhost:8888/auth/realms/dcm/protocol/openid-connect
 
 paths:
+
+  /alerts:
+    post:
+      tags:
+        - alerts
+      summary: configureAlert
+      operationId: configureAlert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertResponse'
+
+    get:
+      tags:
+        - alerts
+      summary: get alerts
+      operationId: getAlerts
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertResponse'
+
+  /triggeredAlerts:
+    post:
+      tags:
+        - alerts
+      summary: configureTriggeredAlert
+      operationId: configureTriggeredAlert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggeredAlertRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggeredAlertResponse'
+    get:
+      tags:
+        - alerts
+      summary: get triggered alerts
+      operationId: getTriggeredAlerts
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TriggeredAlertResponse'
+
   /token/login:
     post:
       tags:
@@ -125,78 +195,20 @@ paths:
                 $ref: "#/components/schemas/IntrospectTokenResponse"
 
   /user:
-    post:
-      tags:
-        - userOperations
-      summary: create a user
-      operationId: postUser
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserRequest"
-      responses:
-        200:
-          description: General greeting
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserResponse"
-    get:
-      tags:
-        - userOperations
-      summary: get all users
-      operationId: fetch all users
-      responses:
-        200:
-          description: General Greeting
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/UserResponse"
-
-  /user/{user_id}:
     put:
       tags:
         - userOperations
-      summary: update user by Id
-      operationId: updateUserById
+      summary: edit a user
+      operationId: update an user
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserRequest"
-      parameters:
-        - in: "path"
-          name: "user_id"
-          schema:
-            type: string
-          required: true
+              $ref: '#/components/schemas/UserRequest'
       responses:
-        200:
-          description: Update of User
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserResponse"
-    delete:
-      tags:
-        - userOperations
-      summary: delete user by Id
-      operationId: deleteUsersById
-      parameters:
-        - in: "path"
-          name: "user_id"
-          schema:
-            type: string
-          required: true
-      responses:
-        200:
-          description: Delete user with id
+        201:
+          description: General Greeting
 
   /loggingHistory:
     post:
@@ -315,31 +327,6 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/AddressBookRequest"
-
-    put:
-      tags:
-        - addressBook
-      summary: update addressBook by Id
-      operationId: updateAddressBookById2  # Unique operationId for this PUT operation
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AddressBookRequest"
-      parameters:
-        - in: "path"
-          name: "address_book_id"
-          schema:
-            type: string
-          required: true
-      responses:
-        200:
-          description: Update of addressBook
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AddressBookRequest"
 
   /loggingHistory/filterLogs:
     get:
@@ -2068,3 +2055,105 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AddressBookFavoriteResponse"
+    AlertRequest:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        type:
+          type: string
+        threshold:
+          type: number
+        description:
+          type: string
+        user:
+          type: string
+        dedicatedAlerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DedicatedAlert'
+    TriggeredAlertRequest:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        triggerTimes:
+          type: number
+        triggerTimesInThreeMonths:
+          type: number
+        type:
+          type: string
+        threshold:
+          type: number
+        description:
+          type: string
+        user:
+          type: string
+    AlertResponse:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        type:
+          type: string
+        threshold:
+          type: string
+        description:
+          type: string
+        user:
+          type: string
+        dedicatedAlerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DedicatedAlert'
+    DedicatedAlert:
+      type: object
+      properties:
+        id:
+          type: string
+        objectId:
+          type: string
+        type:
+          type: string
+
+    TriggeredAlertResponse:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        triggerTimes:
+          type: integer
+        triggerTimesInThreeMonths:
+          type: integer
+        type:
+          type: string
+        threshold:
+          type: string
+        description:
+          type: string
+        user:
+          type: string

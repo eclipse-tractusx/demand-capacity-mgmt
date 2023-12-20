@@ -20,42 +20,17 @@
  *    ********************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
-import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import lombok.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.WeekColor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.AlertEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.StatusesEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Entity
-@Table(name = "demand_series_values")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class DemandSeriesValues {
-
-    @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid", updatable = false, name = "id")
-    private UUID id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private DemandSeries demandSeries;
-
-    @Column(name = "calendar_week", nullable = false)
-    private LocalDate calendarWeek;
-
-    @Column(name = "demand", nullable = false)
-    private Double demand;
-
-    @Column(name = "ruled", nullable = false)
-    private boolean ruled = false;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "week_color")
-    private WeekColor weekColor;
+public interface AlertsRepository extends JpaRepository<AlertEntity, Integer> {
+    Optional<AlertEntity> findByUserID(UUID userID);
+    List<AlertEntity> findAllByUserID(UUID userID);
+    void deleteByUserID(UUID userID);
 }
