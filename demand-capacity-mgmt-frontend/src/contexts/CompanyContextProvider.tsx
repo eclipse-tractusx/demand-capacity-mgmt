@@ -40,7 +40,7 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   const [topCompanies, setTopCompanies] = useState<CompanyData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-  const maxRetries = 3; //TODO set back to 3
+  const maxRetries = 3;
   const api = createAPIInstance(access_token);
 
   const fetchCompaniesWithRetry = useCallback(async (): Promise<CompanyData[]> => {
@@ -69,17 +69,6 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
 
   useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const response = await api.get('/company', {
-        });
-        const result: CompanyData[] = response.data;
-        setCompanies(result);
-      } catch (error) {
-        console.error('Error fetching companies:', error);
-      }
-    };
-
     const fetchTopCompanies = async (): Promise<CompanyData> => {
       try {
         const response = await api.get(`/company/top`);
@@ -91,7 +80,7 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
       }
     };
 
-    fetchCompanies();
+    fetchCompaniesWithRetry();
     fetchTopCompanies();
   }, [access_token]);
 
