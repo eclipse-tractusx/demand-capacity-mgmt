@@ -1,5 +1,10 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -10,12 +15,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.BottleneckManager;
 import org.springframework.stereotype.Component;
-
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -32,19 +31,19 @@ public class BottleneckDetectorUtil implements BottleneckManager {
     @Override
     public void calculateTodos(String userID) {
         userRepository
-                .findById(UUID.fromString(userID))
-                .ifPresent(
-                        user -> {
-                            List<MaterialDemandEntity> demands = fetchDemandsBasedOnRole(user, userID);
+            .findById(UUID.fromString(userID))
+            .ifPresent(
+                user -> {
+                    List<MaterialDemandEntity> demands = fetchDemandsBasedOnRole(user, userID);
 
-                            StatusesEntity statusesEntity = statusesRepository
-                                    .findByUserID(UUID.fromString(userID))
-                                    .orElseGet(() -> generateNewEntity(userID));
+                    StatusesEntity statusesEntity = statusesRepository
+                        .findByUserID(UUID.fromString(userID))
+                        .orElseGet(() -> generateNewEntity(userID));
 
-                            statusesEntity.setTodosCount(demands.size());
-                            statusesRepository.save(statusesEntity);
-                        }
-                );
+                    statusesEntity.setTodosCount(demands.size());
+                    statusesRepository.save(statusesEntity);
+                }
+            );
     }
 
     private StatusesEntity generateNewEntity(String userID) {
@@ -55,19 +54,34 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         List<MaterialDemandEntity> demands = new ArrayList<>();
 
         if (user.getRole().equals(Role.CUSTOMER)) {
-            demands = materialDemandRepository.findAll() //TODO SUPPLIER AQUI findbysupplierID
+            demands =
+                materialDemandRepository
+                    .findAll() //TODO SUPPLIER AQUI findbysupplierID
                     .stream()
-                    .filter(d -> d.getDemandSeries().stream().allMatch(series -> series.getDemandSeriesValues().stream().allMatch(value -> value.getDemand() == 0)))
+                    .filter(
+                        d ->
+                            d
+                                .getDemandSeries()
+                                .stream()
+                                .allMatch(
+                                    series ->
+                                        series
+                                            .getDemandSeriesValues()
+                                            .stream()
+                                            .allMatch(value -> value.getDemand() == 0)
+                                )
+                    )
                     .collect(Collectors.toList());
         } else if (user.getRole().equals(Role.SUPPLIER)) {
-            demands = materialDemandRepository.findAll() //TODO CUSTOMER AQUI findbycustomerID
+            demands =
+                materialDemandRepository
+                    .findAll() //TODO CUSTOMER AQUI findbycustomerID
                     .stream()
                     .filter(d -> d.getLinkStatus() == EventType.UN_LINKED)
                     .collect(Collectors.toList());
         }
         return demands;
     }
-
 
     @Override
     public void calculateBottleneck(String userID, boolean postLog) {
@@ -100,12 +114,30 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         logImprovementsAndDegradations(userID, postLog, improvements, degradations, cgID);
     }
 
-    private void logImprovementsAndDegradations(String userID, boolean postLog, int improvements, int degradations, UUID cgID) {
+    private void logImprovementsAndDegradations(
+        String userID,
+        boolean postLog,
+        int improvements,
+        int degradations,
+        UUID cgID
+    ) {
         if (improvements > 0) {
-            logEvent(EventType.STATUS_IMPROVEMENT, userID, postLog, "Status improved for " + improvements + " weeks", cgID);
+            logEvent(
+                EventType.STATUS_IMPROVEMENT,
+                userID,
+                postLog,
+                "Status improved for " + improvements + " weeks",
+                cgID
+            );
         }
         if (degradations > 0) {
-            logEvent(EventType.STATUS_REDUCTION, userID, postLog, "Status degraded for " + degradations + " weeks", cgID);
+            logEvent(
+                EventType.STATUS_REDUCTION,
+                userID,
+                postLog,
+                "Status degraded for " + degradations + " weeks",
+                cgID
+            );
         }
     }
 
@@ -124,7 +156,9 @@ public class BottleneckDetectorUtil implements BottleneckManager {
     }
 
     private Pair<Integer, Integer> processCapacityGroup(String userID, CapacityGroupEntity cgs, boolean postLog) {
-        List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(cgs.getId());
+        List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(
+            cgs.getId()
+        );
 
         int weeklyImprovements = 0;
         int weeklyDegradations = 0;
@@ -139,11 +173,18 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         return Pair.of(weeklyImprovements, weeklyDegradations);
     }
 
-    private Pair<Integer, Integer> processEachDemandEntity(LinkedCapacityGroupMaterialDemandEntity entity, String userID, CapacityGroupEntity cgs, boolean postLog) {
+    private Pair<Integer, Integer> processEachDemandEntity(
+        LinkedCapacityGroupMaterialDemandEntity entity,
+        String userID,
+        CapacityGroupEntity cgs,
+        boolean postLog
+    ) {
         int improvements = 0;
         int degradations = 0;
 
-        Optional<MaterialDemandEntity> materialDemandOpt = materialDemandRepository.findById(entity.getMaterialDemandID());
+        Optional<MaterialDemandEntity> materialDemandOpt = materialDemandRepository.findById(
+            entity.getMaterialDemandID()
+        );
         if (materialDemandOpt.isPresent()) {
             MaterialDemandEntity materialDemand = materialDemandOpt.get();
 
@@ -157,7 +198,12 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         return Pair.of(improvements, degradations);
     }
 
-    private Pair<Integer, Integer> processDemandSeries(DemandSeries demandSeries, CapacityGroupEntity cgs, String userID, boolean postLog) {
+    private Pair<Integer, Integer> processDemandSeries(
+        DemandSeries demandSeries,
+        CapacityGroupEntity cgs,
+        String userID,
+        boolean postLog
+    ) {
         int improvements = 0;
         int degradations = 0;
 
@@ -197,24 +243,28 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         capacityGroupRepository.save(cgs);
     }
 
-    private DemandSeriesValues findOrCreateDemandSeriesValue(List<DemandSeriesValues> demandSeriesValuesList, LocalDate week) {
-        return demandSeriesValuesList.stream()
-                .filter(dsv -> dsv.getCalendarWeek().equals(week))
-                .findFirst()
-                .orElseGet(DemandSeriesValues::new);
+    private DemandSeriesValues findOrCreateDemandSeriesValue(
+        List<DemandSeriesValues> demandSeriesValuesList,
+        LocalDate week
+    ) {
+        return demandSeriesValuesList
+            .stream()
+            .filter(dsv -> dsv.getCalendarWeek().equals(week))
+            .findFirst()
+            .orElseGet(DemandSeriesValues::new);
     }
 
     private Map<LocalDate, Double> getWeeklyDemands(List<DemandSeries> matchedDemandSeries) {
         return matchedDemandSeries
-                .stream()
-                .flatMap(demand -> demand.getDemandSeriesValues().stream())
-                .filter(value -> !value.getCalendarWeek().isBefore(TWO_WEEKS_FROM_NOW))
-                .collect(
-                        Collectors.groupingBy(
-                                DemandSeriesValues::getCalendarWeek,
-                                Collectors.summingDouble(DemandSeriesValues::getDemand)
-                        )
-                );
+            .stream()
+            .flatMap(demand -> demand.getDemandSeriesValues().stream())
+            .filter(value -> !value.getCalendarWeek().isBefore(TWO_WEEKS_FROM_NOW))
+            .collect(
+                Collectors.groupingBy(
+                    DemandSeriesValues::getCalendarWeek,
+                    Collectors.summingDouble(DemandSeriesValues::getDemand)
+                )
+            );
     }
 
     private void logEvent(EventType eventType, String userID, boolean postLog, String descriptionOverride, UUID cgID) {
@@ -229,7 +279,7 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         logEntity.setLogID(UUID.randomUUID());
 
         logEntity.setDescription(
-                Optional.ofNullable(descriptionOverride).orElseGet(() -> getEventDescription(eventType))
+            Optional.ofNullable(descriptionOverride).orElseGet(() -> getEventDescription(eventType))
         );
         if (logEntity.getDescription() != null) {
             loggingRepository.save(logEntity);

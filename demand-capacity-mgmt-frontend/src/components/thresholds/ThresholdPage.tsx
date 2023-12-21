@@ -21,23 +21,25 @@
  */
 
 import React, {useContext, useEffect, useState} from 'react';
-import {Form, Button, Row, Col, Table} from 'react-bootstrap';
+import {Form, Button, Row, Col, Table, Toast} from 'react-bootstrap';
 import {useUser} from "../../contexts/UserContext";
 import { ThresholdsContext } from "../../contexts/ThresholdsContextProvider";
 import {ThresholdProp} from "../../interfaces/Threshold_interfaces";
 
 
 function ThresholdPage() {
-    const { thresholds } = useContext(ThresholdsContext)!;
+    const { thresholds, fetchThresholds, updateThresholds } = useContext(ThresholdsContext)!;
+
     const [editableThresholds, setEditableThresholds] = useState<ThresholdProp[]>([]);
+    const [showToast, setShowToast] = useState(false);
 
     useEffect(() => {
         setEditableThresholds(thresholds);
     }, [thresholds]);
 
-    const handleCheckboxChange = (index: number) => {
-        const updatedThresholds = editableThresholds.map((threshold, idx) => {
-            if (idx === index) {
+    const handleCheckboxChange = (id: number) => {
+        const updatedThresholds = editableThresholds.map(threshold => {
+            if (threshold.id === id) {
                 return { ...threshold, enabled: !threshold.enabled };
             }
             return threshold;
@@ -45,11 +47,29 @@ function ThresholdPage() {
         setEditableThresholds(updatedThresholds);
     };
 
-    const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
+
+    const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log('Save thresholds', editableThresholds);
-        // Add logic to save the updated thresholds
+
+        const ruleRequests = editableThresholds.map(threshold => ({
+            id: threshold.id,
+            enabled: threshold.enabled
+        }));
+
+        try {
+            await updateThresholds(ruleRequests);
+            console.log('Thresholds saved:', ruleRequests);
+            await fetchThresholds();
+            setShowToast(true); // Show the toast on successful save
+            setTimeout(() => setShowToast(false), 3000); // Hide the toast after 3 seconds
+        } catch (error) {
+            console.error('Error saving thresholds:', error);
+        }
     };
+
+    const sortedThresholds = [...editableThresholds].sort((a, b) => {
+        return Number(a.percentage) - Number(b.percentage);
+    });
 
     const chunkThresholds = (thresholds: ThresholdProp[], size: number): ThresholdProp[][] => {
         return thresholds.reduce((acc: ThresholdProp[][], val: ThresholdProp, i: number) => {
@@ -60,7 +80,8 @@ function ThresholdPage() {
         }, []);
     }
 
-    const chunkedThresholds = chunkThresholds(editableThresholds, 4);
+    const chunkedThresholds = chunkThresholds(sortedThresholds, 4);
+
 
     return (
         <div>
@@ -68,16 +89,16 @@ function ThresholdPage() {
             <Form onSubmit={handleSave}>
                 <Table striped bordered hover>
                     <tbody>
-                    {chunkedThresholds.map((chunk: ThresholdProp[], chunkIndex: number) => (
+                    {chunkedThresholds.map((chunk, chunkIndex) => (
                         <tr key={chunkIndex}>
-                            {chunk.map((threshold: ThresholdProp, idx: number) => (
-                                <td key={idx}>
+                            {chunk.map((threshold) => (
+                                <td key={threshold.id}>
                                     <Form.Check
                                         type="checkbox"
                                         id={`threshold-${threshold.percentage}`}
                                         label={`${threshold.percentage} %`}
                                         checked={threshold.enabled}
-                                        onChange={() => handleCheckboxChange(chunkIndex * 4 + idx)}
+                                        onChange={() => handleCheckboxChange(threshold.id)}
                                     />
                                 </td>
                             ))}
@@ -89,6 +110,14 @@ function ThresholdPage() {
                     Save
                 </Button>
             </Form>
+
+            {/* Toast Notification */}
+            <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide style={{ position: 'fixed', bottom: 20, right: 20 }}>
+                <Toast.Header className="bg-success text-white">
+                    <strong className="mr-auto">Success</strong>
+                </Toast.Header>
+                <Toast.Body>Thresholds updated successfully!</Toast.Body>
+            </Toast>
         </div>
     );
 }

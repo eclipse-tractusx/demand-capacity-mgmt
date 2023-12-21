@@ -26,5 +26,5 @@ public enum WeekColor {
     GREEN,
     YELLOW,
     RED,
-    GREY
+    GREY,
 }

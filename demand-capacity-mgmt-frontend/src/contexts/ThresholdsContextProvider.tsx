@@ -28,8 +28,12 @@ import {EventProp} from "../interfaces/event_interfaces";
 interface ThresholdsContextData {
     thresholds: ThresholdProp[];
     fetchThresholds: () => Promise<void>;
+    updateThresholds: (ruleRequests: RuleRequest[]) => Promise<void>;
 }
-
+interface RuleRequest {
+    id: number;
+    enabled: boolean;
+}
 export const ThresholdsContext = createContext<ThresholdsContextData | undefined> (undefined);
 
 const ThresholdContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
@@ -47,13 +51,23 @@ const ThresholdContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
         }
     };
 
+    const updateThresholds = async (ruleRequests: RuleRequest[]) => {
+        try {
+            const api = createAPIInstance(access_token);
+            await api.put('/rules/', ruleRequests); // Send array of RuleRequest objects
+            fetchThresholds(); // Refetch thresholds
+        } catch (error) {
+            console.error('Error updating thresholds:', error);
+        }
+    };
+
     useEffect(() => {
         fetchThresholds();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [access_token]);
 
     return (
-        <ThresholdsContext.Provider value={{ thresholds, fetchThresholds }}>
+        <ThresholdsContext.Provider value={{ thresholds, fetchThresholds,updateThresholds  }}>
             {props.children}
         </ThresholdsContext.Provider>
     );

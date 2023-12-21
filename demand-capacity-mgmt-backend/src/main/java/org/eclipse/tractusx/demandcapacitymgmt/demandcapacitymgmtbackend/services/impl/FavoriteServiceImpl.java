@@ -23,6 +23,12 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -31,13 +37,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.FavoriteService;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -107,7 +106,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             }
             case ADDRESS_BOOK -> {
                 List<AddressBookFavoriteResponse> favoriteResponses = new ArrayList<>();
-                for(FavoriteEntity fav : favoriteResponseList){
+                for (FavoriteEntity fav : favoriteResponseList) {
                     favoriteResponses.add(convertToAddressBookDto(fav));
                 }
                 FavoriteResponse response = new FavoriteResponse();
@@ -147,9 +146,9 @@ public class FavoriteServiceImpl implements FavoriteService {
         return response;
     }
 
-    private AddressBookFavoriteResponse convertToAddressBookDto(FavoriteEntity entity){
+    private AddressBookFavoriteResponse convertToAddressBookDto(FavoriteEntity entity) {
         Optional<AddressBookRecordEntity> recordEntity = addressBookRepository.findById(entity.getFavoriteId());
-        if(recordEntity.isPresent()){
+        if (recordEntity.isPresent()) {
             AddressBookRecordEntity record = recordEntity.get();
             AddressBookFavoriteResponse response = new AddressBookFavoriteResponse();
             response.setName(record.getName());

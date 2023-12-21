@@ -2,16 +2,15 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.Rule;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.RulesetRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.RulesetService;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -22,15 +21,14 @@ public class RulesetServiceImpl implements RulesetService {
 
     @Override
     public List<RuleResponse> getAllRules() {
-
         List<RuleResponse> rules = new ArrayList<>();
         List<Rule> rulesEnts;
-        try{
+        try {
             rulesEnts = rulesetRepository.findAll();
-            for(Rule rule : rulesEnts){
+            for (Rule rule : rulesEnts) {
                 rules.add(convertToDto(rule));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             log.debug("Failed to fetch rules");
         }
         return rules;
@@ -43,19 +41,22 @@ public class RulesetServiceImpl implements RulesetService {
     }
 
     @Override
-    public void updateRule(RuleRequest ruleRequest) {
-        Optional<Rule> ruleEnt = rulesetRepository.findById(ruleRequest.getId());
-        if(ruleEnt.isPresent()){
-            Rule rule = ruleEnt.get();
-            rule.setEnabled(ruleRequest.getEnabled());
-            rulesetRepository.save(rule);
+    public void updateRule(List<RuleRequest> rulesRequest) {
+        for (RuleRequest ruleRequest : rulesRequest) {
+            Optional<Rule> ruleEnt = rulesetRepository.findById(ruleRequest.getId());
+            if (ruleEnt.isPresent()) {
+                Rule rule = ruleEnt.get();
+                rule.setEnabled(ruleRequest.getEnabled());
+                rulesetRepository.save(rule);
+            }
         }
     }
 
-    private RuleResponse convertToDto(Rule ruleEnt){
+    private RuleResponse convertToDto(Rule ruleEnt) {
         RuleResponse rule = new RuleResponse();
-            rule.setEnabled(ruleEnt.isEnabled());
-            rule.setPercentage(ruleEnt.getPercentage());
+        rule.setId(ruleEnt.getId());
+        rule.setEnabled(ruleEnt.isEnabled());
+        rule.setPercentage(ruleEnt.getPercentage());
         return rule;
     }
 }

@@ -27,5 +27,4 @@ public class Rule {
 
     @Column(name = "enabled")
     private boolean enabled;
-
 }
