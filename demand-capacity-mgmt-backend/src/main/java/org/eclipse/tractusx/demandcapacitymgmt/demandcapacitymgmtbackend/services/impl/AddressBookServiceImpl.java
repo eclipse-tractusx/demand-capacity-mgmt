@@ -88,7 +88,7 @@ public class AddressBookServiceImpl implements AddressBookService {
     private AddressBookResponse convertEntityToDto(AddressBookRecordEntity entity) {
         AddressBookResponse response = new AddressBookResponse();
         response.setId(entity.getId().toString());
-        response.setCellPhone(entity.getCellPhone());
+        response.setContact(entity.getContact());
         response.setName(entity.getName());
         response.setEmail(entity.getEmail());
         response.setFunction(entity.getFunction());

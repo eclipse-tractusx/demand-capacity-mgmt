@@ -48,12 +48,11 @@ public class GoldenRecordManagerImpl implements GoldenRecordManager {
     public AddressBookRecordEntity createRecord(AddressBookRequest request) {
         AddressBookRecordEntity recordEntity = new AddressBookRecordEntity();
         recordEntity.setCompanyId(UUID.fromString(request.getQuery()));
-        recordEntity.setName("TEST NAME");
-        recordEntity.setLandLine("TEST LAND LINE");
-        recordEntity.setCellPhone("TEST CELL PHONE");
-        recordEntity.setEmail("TEST EMAIL");
-        recordEntity.setDepartment("TEST DEPARTMENT");
-        recordEntity.setPicture("yeetus");
+        recordEntity.setName(request.getAddressBook().getName());
+        recordEntity.setContact(request.getAddressBook().getContact());
+        recordEntity.setEmail(request.getAddressBook().getEmail());
+        recordEntity.setPicture(request.getAddressBook().getPicture());
+        recordEntity.setFunction(request.getAddressBook().getFunction());
         repository.save(recordEntity);
         return recordEntity;
     }
@@ -64,7 +63,7 @@ public class GoldenRecordManagerImpl implements GoldenRecordManager {
         recordEntity.setId(UUID.fromString(id));
         recordEntity.setCompanyId(UUID.fromString(request.getQuery()));
         recordEntity.setName(request.getAddressBook().getName());
-        recordEntity.setCellPhone(request.getAddressBook().getContact());
+        recordEntity.setContact(request.getAddressBook().getContact());
         recordEntity.setEmail(request.getAddressBook().getEmail());
         recordEntity.setPicture(request.getAddressBook().getPicture());
         repository.save(recordEntity);
