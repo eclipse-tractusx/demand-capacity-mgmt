@@ -26,7 +26,8 @@ import 'react-phone-input-2/lib/bootstrap.css';
 import 'react-phone-input-2/lib/style.css';
 import { AddressBookProps } from "../../interfaces/addressbook_interfaces";
 import { CompanyData } from '../../interfaces/company_interfaces';
-import ContactModal from './ContactModal';
+import ContactCardModal from './ContactCardModal';
+import ContactModal from './ContactEditModal';
 
 interface ContactsListProps {
     data: AddressBookProps[];
@@ -39,6 +40,7 @@ const ContactsList: React.FC<ContactsListProps> = ({ company, data, isModal }) =
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
     const [selectedContact, setSelectedContact] = useState<AddressBookProps | null>(null);
     const [isEditModal, setisEditModal] = useState(false);
+    const [showBusinessCardModal, setShowBusinessCardModal] = useState(false);
 
     const [tooltipTextContact, setTooltipTextContact] = useState<{ [key: string]: string }>({});
     const [tooltipTextEmail, setTooltipTextEmail] = useState<{ [key: string]: string }>({});
@@ -67,7 +69,8 @@ const ContactsList: React.FC<ContactsListProps> = ({ company, data, isModal }) =
 
     const handleContactClick = (contact: string) => {
         if (contact.includes('@')) {
-            window.open(`mailto:${contact}`);
+            const mailtoLink = `mailto:${contact}`;
+            window.location.href = mailtoLink;
         } else {
             window.open(`tel:${contact}`);
         }
@@ -77,6 +80,15 @@ const ContactsList: React.FC<ContactsListProps> = ({ company, data, isModal }) =
         setSelectedContact(item);
         setisEditModal(true);
         setIsContactModalOpen(true);
+    };
+
+    const handleOpenBusinessCardModal = (contact: AddressBookProps) => {
+        setSelectedContact(contact);
+        setShowBusinessCardModal(true);
+    };
+
+    const handleCloseBusinessCardModal = () => {
+        setShowBusinessCardModal(false);
     };
 
 
@@ -109,7 +121,7 @@ const ContactsList: React.FC<ContactsListProps> = ({ company, data, isModal }) =
                                             className="clip_board_icon ms-2"
                                             onClick={() => handleCopyToClipboard(item.contact, 'contact', item.id)}
                                         />
-                                        <span onClick={() => handleContactClick(item.contact)}>+{item.contact}</span>
+                                        <span onClick={() => handleContactClick(item.contact)} className='interactable mx-1'>+{item.contact}</span>
                                     </span>
                                 </OverlayTrigger>
 
@@ -127,17 +139,17 @@ const ContactsList: React.FC<ContactsListProps> = ({ company, data, isModal }) =
                                             className="clip_board_icon ms-2"
                                             onClick={() => handleCopyToClipboard(item.email, 'email', item.id)}
                                         />
-                                        <span onClick={() => handleContactClick(item.email)}> {item.email}</span>
+                                        <span onClick={() => handleContactClick(item.email)} className='interactable mx-1'>{item.email}</span>
                                     </span>
                                 </OverlayTrigger>
                             </td>
-                            {isModal && (<td className="fixed-width align-middle">
-                                <Button variant="outline-primary" onClick={() => handleEditContact(item)}>
+                            <td className="fixed-width align-middle">
+                                <Button variant="outline-primary" onClick={() => handleOpenBusinessCardModal(item)}>
                                     <div style={{ display: "flex", justifyContent: "end" }}>
                                         <FaEye size={20} />
                                     </div>
                                 </Button>
-                            </td>)}
+                            </td>
                             {!isModal && (<td className="fixed-width align-middle">
                                 <Button variant="outline-primary" onClick={() => handleEditContact(item)}>
                                     <div style={{ display: "flex", justifyContent: "end" }}>
@@ -161,6 +173,12 @@ const ContactsList: React.FC<ContactsListProps> = ({ company, data, isModal }) =
                     }
                 />
             )}
+            <ContactCardModal
+                show={showBusinessCardModal}
+                onClose={handleCloseBusinessCardModal}
+                contact={selectedContact}
+            />
+
         </div>
 
     );

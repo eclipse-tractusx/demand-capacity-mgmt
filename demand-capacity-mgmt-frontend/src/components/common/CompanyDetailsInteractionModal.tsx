@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Modal } from 'react-bootstrap';
+import { FcOrganization } from 'react-icons/fc';
 import { CompanyContext } from '../../contexts/CompanyContextProvider';
 import AddressBookDetailsView from '../addessBook/AddressBookDetailsView';
 
@@ -26,10 +27,14 @@ const CompanyDetailsInteractionModal: React.FC<CompanyDetailsModalProps> = ({
             backdrop="static"
             keyboard={false}>
             <Modal.Header closeButton>
-                <Modal.Title>Company Info</Modal.Title>
+                <Modal.Title>
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                        <FcOrganization size={35} /><h4 className='icon-text-padding'>Company Info</h4>
+                    </div>
+                </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <AddressBookDetailsView company={findCompanyByCompanyID(companyId)} favoriteCompanies={favoriteCompanies} />
+                <AddressBookDetailsView company={findCompanyByCompanyID(companyId)} favoriteCompanies={favoriteCompanies} isModal={true} />
             </Modal.Body>
         </Modal>
     );
