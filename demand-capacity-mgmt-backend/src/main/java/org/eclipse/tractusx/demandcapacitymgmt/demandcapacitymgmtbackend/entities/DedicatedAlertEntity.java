@@ -26,8 +26,8 @@ public class DedicatedAlertEntity {
     @Enumerated(EnumType.STRING)
     private EventObjectType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private AlertEntity alertEntity;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @ToString.Exclude
+//    @EqualsAndHashCode.Exclude
+//    private AlertEntity alertEntity;
 }
