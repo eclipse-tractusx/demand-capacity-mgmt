@@ -29,23 +29,33 @@ import { AddressBookContext } from '../../contexts/AdressBookContextProvider';
 import { useUser } from '../../contexts/UserContext';
 import { AddressBookProps } from "../../interfaces/addressbook_interfaces";
 import { CompanyData } from '../../interfaces/company_interfaces';
-import CompanyModal from './CompanyModal';
-import ContactModal from './ContactModal';
+import CompanyModal from './CompanyEditModal';
+import ContactModal from './ContactEditModal';
 import ContactsList from './ContactsList';
 
 interface CompanyDetailsProps {
     company: CompanyData;
     favoriteCompanies: string[];
+    isModal?: boolean;
 }
 
-const AddressBookDetailsView: React.FC<CompanyDetailsProps> = ({ company, favoriteCompanies }) => {
+const AddressBookDetailsView: React.FC<CompanyDetailsProps> = ({ company, favoriteCompanies, isModal }) => {
     const { user } = useUser();
-    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-    const [isCompanyModalOpen, setisCompanyModalOpen] = useState(false);
-    const [selectedContact, setSelectedContact] = useState<AddressBookProps | null>(null);
+
+    //This changes based if the contact is to be added or edited.
     const [isEditModal, setisEditModal] = useState(false);
+    //This tell the component whether is being opened from the adressbook directly or from an interaction
+    const [isInteractionModal, setisInteractionModal] = useState(false);
+
     const [contacts, setContacts] = useState<AddressBookProps[]>([]);
     const { addressBooks, fetchAddressBookWithRetry, getAddressBooksByCompanyId } = useContext(AddressBookContext)!;
+
+    const [selectedContact, setSelectedContact] = useState<AddressBookProps | null>(null);
+
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+    const [isCompanyModalOpen, setisCompanyModalOpen] = useState(false);
+
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -53,14 +63,14 @@ const AddressBookDetailsView: React.FC<CompanyDetailsProps> = ({ company, favori
             navigate('/invalid'); // Redirect to the '/invalid' page
             return; // Return null or appropriate component indicating redirection
         }
+        setisInteractionModal(isModal || false);
         fetchAddressBookWithRetry();
-
-    }, [company]);
+    }, []);
 
     useEffect(() => {
         const filteredAddressBooks = getAddressBooksByCompanyId(company.id);
         setContacts(filteredAddressBooks);
-    }, [addressBooks, company.id]);
+    }, [addressBooks, company]);
 
     const handleAddContact = () => {
         setSelectedContact(null);
@@ -72,6 +82,8 @@ const AddressBookDetailsView: React.FC<CompanyDetailsProps> = ({ company, favori
         setisEditModal(true); // Set edit mode to true
         setisCompanyModalOpen(true); // Open the contact modal
     };
+
+
 
 
     return (
@@ -140,11 +152,15 @@ const AddressBookDetailsView: React.FC<CompanyDetailsProps> = ({ company, favori
                             </h6>
                         </div>
                         <div>
-                            <Button onClick={handleAddContact}><FaPlus className="icon" /> Add Contact</Button>
+                            <Button className="btn d-flex justify-content-center align-items-center" variant="primary" onClick={handleAddContact}>
+                                <span className="me-2"><FaPlus /></span>
+                                <span> Add Contact</span>
+                            </Button>
+
                         </div>
                     </div>
                     <hr />
-                    <ContactsList company={company} data={contacts || []} isModal={false} />
+                    <ContactsList company={company} data={contacts || []} isModal={isInteractionModal} />
                 </div>
             </div>
 
@@ -168,8 +184,6 @@ const AddressBookDetailsView: React.FC<CompanyDetailsProps> = ({ company, favori
                     company={company}
                 />
             )}
-
-
         </>
 
     );

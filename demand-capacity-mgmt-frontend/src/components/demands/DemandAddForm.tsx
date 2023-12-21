@@ -206,7 +206,6 @@ const AddForm: React.FC<AddFormProps> = () => {
   };
 
   const handleSupplierChange = (value: string) => {
-    console.log('Selected supplier ID:', value);
     setFormState((prevFormState) => ({
       ...prevFormState,
       supplierId: value,
