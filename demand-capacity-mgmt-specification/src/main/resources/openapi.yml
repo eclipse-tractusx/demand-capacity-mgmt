@@ -254,21 +254,24 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/LoggingHistoryResponse"
+
+
   /addressBook/{address_book_id}:
+
     put:
       tags:
         - addressBook
       summary: update addressBook by Id
-      operationId: updateAddressBookById  # Unique operationId for this PUT operation
+      operationId: updateAddressBookById
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AddressBookRequest"
+              $ref: '#/components/schemas/AddressBookRequest'
       parameters:
-        - in: "path"
-          name: "address_book_id"
+        - in: 'path'
+          name: 'address_book_id'
           schema:
             type: string
           required: true
@@ -278,7 +281,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AddressBookRequest"
+                $ref: '#/components/schemas/AddressBookRequest'
+
+
 
   /addressBook:
     get:
@@ -294,7 +299,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/AddressBookResponse"
+                  $ref: '#/components/schemas/AddressBookResponse'
     post:
       tags:
         - addressBook
@@ -306,13 +311,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AddressBookResponse"
+                $ref: '#/components/schemas/AddressBookResponse'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AddressBookRequest"
+              $ref: '#/components/schemas/AddressBookRequest'
     delete:
       tags:
         - addressBook
@@ -326,7 +331,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AddressBookRequest"
+              $ref: '#/components/schemas/AddressBookRequest'
+
+  /addressBook/query:
+    get:
+      tags:
+        - addressBook
+      summary: get companies
+      operationId: getAddressBook
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBookResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+
 
   /loggingHistory/filterLogs:
     get:
@@ -1679,13 +1705,13 @@ components:
           type: string
         name:
           type: string
-        landLine:
-          type: string
-        cellPhone:
-          type: string
+#        landLine:
+#          type: string
+#        cellPhone:
+#          type: string
         email:
           type: string
-        department:
+        contact:
           type: string
         function:
           type: string
@@ -1761,15 +1787,17 @@ components:
           type: string
         name:
           type: string
-        landLine:
-          type: string
-        cellPhone:
-          type: string
+#        landLine:
+#          type: string
+#        cellPhone:
+#          type: string
         email:
           type: string
-        department:
+        contact:
           type: string
         function:
+          type: string
+        picture:
           type: string
 
     UnitMeasure:
