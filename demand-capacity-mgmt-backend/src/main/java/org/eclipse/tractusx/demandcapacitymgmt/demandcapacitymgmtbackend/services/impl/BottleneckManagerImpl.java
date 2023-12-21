@@ -42,7 +42,6 @@ public class BottleneckManagerImpl implements BottleneckManager {
 
     @Override
     public void calculateBottleneck(String userID, boolean postLog) {
-        bottleneckDetectorUtil.calculateBottleneck(userID,postLog);
+        bottleneckDetectorUtil.calculateBottleneck(userID, postLog);
     }
-
 }

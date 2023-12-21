@@ -1002,17 +1002,19 @@ paths:
     put:
       tags:
         - rules
-      summary: Update a rule
-      operationId: updateRule
+      summary: Update a list of rules
+      operationId: updateRules
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RuleRequest'
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleRequest'
       responses:
         200:
-          description: updated rule
+          description: Updated rules
 
   /rules/{id}:
     get:
@@ -1063,6 +1065,8 @@ components:
     RuleResponse:
       type: object
       properties:
+        id:
+          type: integer
         percentage:
           type: integer
         enabled:
