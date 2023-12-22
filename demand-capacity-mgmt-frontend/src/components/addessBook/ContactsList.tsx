@@ -139,7 +139,7 @@ const ContactsList: React.FC<ContactsListProps> = ({ company, data, isModal }) =
                                             className="clip_board_icon ms-2"
                                             onClick={() => handleCopyToClipboard(item.email, 'email', item.id)}
                                         />
-                                        <span onClick={() => handleContactClick(item.email)} className='interactable mx-1'>{item.email}</span>
+                                        <span onClick={() => handleCopyToClipboard(item.email, 'email', item.id)} className='interactable mx-1'>Email</span>
                                     </span>
                                 </OverlayTrigger>
                             </td>
