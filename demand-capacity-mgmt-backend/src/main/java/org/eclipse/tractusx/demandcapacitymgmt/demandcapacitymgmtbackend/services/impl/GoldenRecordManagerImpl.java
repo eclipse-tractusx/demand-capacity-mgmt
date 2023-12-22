@@ -66,6 +66,7 @@ public class GoldenRecordManagerImpl implements GoldenRecordManager {
         recordEntity.setContact(request.getAddressBook().getContact());
         recordEntity.setEmail(request.getAddressBook().getEmail());
         recordEntity.setPicture(request.getAddressBook().getPicture());
+        recordEntity.setFunction(request.getAddressBook().getFunction());
         repository.save(recordEntity);
         return recordEntity;
     }
