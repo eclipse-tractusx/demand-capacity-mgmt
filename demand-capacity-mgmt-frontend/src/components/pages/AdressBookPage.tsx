@@ -21,7 +21,7 @@
  */
 
 import { FcAddressBook } from "react-icons/fc";
-import BoardView from "../addessBook/BoardView";
+import ContactsBoardView from "../addessBook/BoardView";
 
 
 function AddressBookPage() {
@@ -36,7 +36,7 @@ function AddressBookPage() {
                 <br />
                 <div className="table">
                     <div className="table-wrapper">
-                        <BoardView />
+                        <ContactsBoardView />
                     </div>
                 </div>
             </div>

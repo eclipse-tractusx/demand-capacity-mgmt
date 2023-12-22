@@ -29,6 +29,7 @@ import { EventsContext } from '../../contexts/EventsContextProvider';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import { DemandProp } from "../../interfaces/demand_interfaces";
 import { EventProp } from '../../interfaces/event_interfaces';
+import ContactsBoardView from '../addessBook/BoardView';
 import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList';
 import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
 import { LoadingMessage } from '../common/LoadingMessages';
@@ -46,6 +47,7 @@ function CapacityGroupDetailsPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
   const [materialDemands, setMaterialDemands] = useState<DemandProp[] | null>([]);
+  const [companyids, setCompanyIds] = useState<string[]>([]); // State to store company IDs
   const { fetchFilteredEvents } = useContext(EventsContext)!;
   const { getDemandbyId } = useContext(DemandContext)!;
   const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
@@ -73,9 +75,16 @@ function CapacityGroupDetailsPage() {
             const demandPromises = fetchedCapacityGroup.linkMaterialDemandIds.map(demandId => getDemandbyId(demandId));
             const demands = await Promise.all(demandPromises);
 
+            // Extract supplier from fetchedCapacityGroup
+            const supplierId = fetchedCapacityGroup.supplier?.id || '';
+
+            // Extract customer IDs from demands
+            const customerIds = demands.map(demand => demand?.customer.id);
+
             // Filter out any potential undefined values before setting the state.
             const validDemands = demands.filter(Boolean) as DemandProp[];
-
+            const allCompanyIds = [supplierId, ...customerIds].filter(Boolean) as string[];
+            setCompanyIds(allCompanyIds);
             setMaterialDemands(validDemands);
           }
 
@@ -150,6 +159,10 @@ function CapacityGroupDetailsPage() {
             <Tab eventKey="events" title="Events">
               <EventsTable events={capacityGroupEvents} isArchive={false} />
             </Tab>
+            <Tab eventKey="contacts" title="Contacts">
+              <ContactsBoardView companyids={companyids} isModal={true} />
+            </Tab>
+
 
           </Tabs>
         </div>

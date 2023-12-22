@@ -77,7 +77,7 @@ const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName, on
         setLoading(false);
       }
     };
-    console.log('Run fetch data')
+
     fetchData();
   }, [companies, topCompanies, fetchFavoritesByTypeRef]);
 

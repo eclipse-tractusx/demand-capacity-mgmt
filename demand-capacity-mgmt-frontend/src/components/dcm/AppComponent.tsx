@@ -98,11 +98,11 @@ const AppComponent: React.FC = () => {
                             <CapacityGroupsProvider>
                                 <CompanyContextProvider>
                                     <AddressBookProvider>
-                                        <Layout>
-                                            <AlertsContextProvider>
+                                        <AlertsContextProvider>
+                                            <Layout>
                                                 <AlertsPage />
-                                            </AlertsContextProvider>
-                                        </Layout>
+                                            </Layout>
+                                        </AlertsContextProvider>
                                     </AddressBookProvider>
                                 </CompanyContextProvider>
                             </CapacityGroupsProvider>
