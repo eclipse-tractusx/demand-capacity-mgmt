@@ -441,7 +441,8 @@ code {
 }
 
 .contact-table {
-  height: 33.35vh;
+  height: 34.2vh;
+  margin-top: -1.5%;
   overflow-y: scroll;
   overflow-x: hidden;
 }

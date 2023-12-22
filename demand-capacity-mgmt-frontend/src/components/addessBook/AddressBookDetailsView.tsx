@@ -99,7 +99,7 @@ const AddressBookDetailsView: React.FC<CompanyDetailsProps> = ({ company, favori
                             overlay={<Tooltip id={`tooltip-gr-${company.id}`}>Golden Record</Tooltip>}
                         >
                             <div style={{ marginLeft: 'auto', position: 'relative' }}>
-                                <FaSketch size={35} style={{ color: '#ffa600' }} />
+                                <FaSketch size={35} style={{ color: 'rgb(0 151 255)' }} />
                                 <div className="glitter" />
                             </div>
                         </OverlayTrigger>
