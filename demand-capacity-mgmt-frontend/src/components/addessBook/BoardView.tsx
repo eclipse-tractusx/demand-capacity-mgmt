@@ -20,18 +20,35 @@
  *    ********************************************************************************
  */
 
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CompanyContext } from '../../contexts/CompanyContextProvider';
 import { CompanyData } from '../../interfaces/company_interfaces';
 import AddressBookDetailsView from "./AddressBookDetailsView";
 import CompaniesList from "./CompaniesList";
 
-const Board = () => {
+interface ContactsBoardViewProps {
+    companyids?: string[];
+    isModal?: boolean;
+}
+
+const ContactsBoardView: React.FC<ContactsBoardViewProps> = ({ companyids, isModal }) => {
 
     const { companies } = useContext(CompanyContext)!;
     const [selectedCompany, setSelectedCompany] = useState<CompanyData | null>(null);
+    const [filteredCompanies, setFilteredCompanies] = useState<CompanyData[]>([]);
 
+    //For future implementation
     const [favoriteCompanies, setfavoriteCompanies] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (companyids && companyids.length > 0) {
+            const filtered = companies.filter((company) => companyids.includes(company.id));
+            setFilteredCompanies(filtered);
+        } else {
+            setFilteredCompanies(companies);
+        }
+    }, [companies, companyids]);
+
 
     const handleTaskClick = (companyId: string) => {
         const selected = companies.find((company) => company.id === companyId);
@@ -40,10 +57,10 @@ const Board = () => {
 
     return (
         <div className="board">
-            <CompaniesList favoriteCompanies={favoriteCompanies} companies={companies} onCompanyClick={handleTaskClick} />
-            {selectedCompany && <AddressBookDetailsView favoriteCompanies={favoriteCompanies} company={selectedCompany} />}
+            <CompaniesList favoriteCompanies={favoriteCompanies} companies={filteredCompanies} onCompanyClick={handleTaskClick} />
+            {selectedCompany && <AddressBookDetailsView favoriteCompanies={favoriteCompanies} company={selectedCompany} isModal={isModal} />}
         </div>
     );
 };
 
-export default Board;
+export default ContactsBoardView;

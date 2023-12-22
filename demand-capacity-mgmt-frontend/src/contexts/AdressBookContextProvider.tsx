@@ -91,6 +91,7 @@ const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
         try {
             const api = createAPIInstance(access_token);
             const response = await api.put(`/addressBook/${adressbookId}`, newAddressBook);
+            console.log(newAddressBook);
             fetchAddressBookWithRetry();
             return response.data;
         } catch (error) {

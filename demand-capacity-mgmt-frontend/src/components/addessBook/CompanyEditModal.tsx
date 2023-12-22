@@ -31,7 +31,7 @@ interface CompanyModalProps {
     initialValues?: CompanyData;
 }
 
-const CompanyModal: React.FC<CompanyModalProps> = ({
+const CompanyEditModal: React.FC<CompanyModalProps> = ({
     isOpen,
     handleClose,
     isEditMode,
@@ -97,8 +97,6 @@ const CompanyModal: React.FC<CompanyModalProps> = ({
             edc_url: formData.edc_url,
             isEdcRegistered: formData.isEdcRegistered,
         };
-
-        console.log(newCompany);
 
         try {
             if (isEditMode) {
@@ -235,4 +233,4 @@ const CompanyModal: React.FC<CompanyModalProps> = ({
     );
 };
 
-export default CompanyModal;
+export default CompanyEditModal;

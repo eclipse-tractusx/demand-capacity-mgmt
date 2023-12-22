@@ -154,11 +154,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ demandId }) => {
     setDemandValuesMap(newDemandValuesMap);
   }, [demandData]);
 
-  /*useEffect(() => { 
-    console.log(demandValuesMap)
-    console.log(weeksForDateRange)
-  }, [demandValuesMap]);*/
-
 
   const handleSave = async () => {
     if (!demandData?.demandSeries) {
