@@ -435,13 +435,13 @@ code {
 
 .board {
   display: flex;
-  height: 78.72vh;
+  height: 37.2vmax;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .contact-table {
-  height: 35.6vh;
+  height: 33.35vh;
   overflow-y: scroll;
   overflow-x: hidden;
 }
