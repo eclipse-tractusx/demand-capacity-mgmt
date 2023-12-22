@@ -96,6 +96,25 @@ public class AlertServiceImpl implements AlertService {
                                 alertEntity
                             );
                         }
+                    }else if (alertEntity.getType().equals(AlertThresholdType.ABSOLUTE)){
+                        double threshold = alertEntity.getThreshold();
+                        if (threshold >= 0 && (newValue - oldValue >= threshold)) {
+                            fillTriggeredAlert(
+                                    triggeredAlertEntity,
+                                    "Increased by ",
+                                    threshold,
+                                    false,
+                                    alertEntity
+                            );
+                        } else if ((threshold < 0 && (newValue - oldValue <= threshold))) {
+                            fillTriggeredAlert(
+                                    triggeredAlertEntity,
+                                    "Decreased by ",
+                                    threshold,
+                                    false,
+                                    alertEntity
+                            );
+                        }
                     }
                 } else if (alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.DEDICATED)) {
                     alertEntity
@@ -123,7 +142,7 @@ public class AlertServiceImpl implements AlertService {
                                             );
                                         }
                                     } else {
-                                        double threshold = alertEntity.getThreshold();
+                                        double threshold = alertEntity.getThreshold() / 100;
                                         double demandDelta = alertEntity.getThreshold() * oldValue;
                                         if (threshold >= 0 && (newValue - oldValue >= demandDelta)) {
                                             fillTriggeredAlert(
