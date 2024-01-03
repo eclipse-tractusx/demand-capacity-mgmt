@@ -21,6 +21,7 @@
  */
 import {FcComboChart} from "react-icons/fc";
 import { useUser } from "../../contexts/UserContext";
+import CapacityGroupBottlenecks from "../capacitygroup/CapacityGroupBottlenecks";
 
 function BottlenecksPage() {
     const { user } = useUser();
@@ -30,9 +31,10 @@ function BottlenecksPage() {
             <br />
             <div className="container-xl">
                 <div style={{ display: "flex" }}>
-                    <FcComboChart  size={35} />
+                    <FcComboChart size={35} />
                     <h3 className="icon-text-padding">Bottlenecks</h3>
                 </div>
+                <CapacityGroupBottlenecks />
             </div>
         </div>
     );
