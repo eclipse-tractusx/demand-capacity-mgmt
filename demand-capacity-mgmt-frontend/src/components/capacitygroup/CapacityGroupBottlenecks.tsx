@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
+import '../../../src/index.css';
 import {
     getISOWeek,
     startOfWeek,
-    addWeeks,
-    endOfWeek,
-    getMonth,
     startOfYear,
     endOfYear,
-    eachWeekOfInterval
+    eachWeekOfInterval, endOfWeek, addWeeks
 } from 'date-fns';
 
 interface WeekInfo {
@@ -76,7 +74,7 @@ class CapacityGroupBottlenecks extends Component<{}, CapacityGroupBottlenecksSta
         const year = new Date().getFullYear();
         const months: Month[] = [];
 
-        // Create Month objects for each month
+        // Initialize months with empty weeks
         for (let i = 0; i < 12; i++) {
             months.push({
                 year,
@@ -85,71 +83,91 @@ class CapacityGroupBottlenecks extends Component<{}, CapacityGroupBottlenecksSta
             });
         }
 
-        // Assign weeks to the correct month
-        weeksOfYear.forEach(weekInfo => {
-            const date = startOfWeek(new Date(year, 0, (weekInfo.weekNumber - 1) * 7 + 1), { weekStartsOn: 1 });
-            const monthIndex = date.getMonth();
-            const weekYear = date.getFullYear();
+        // Helper function to get the month index for a given date
+        const getMonthIndex = (date: Date) => {
+            const month = date.getMonth();
+            const firstDayOfMonth = startOfWeek(new Date(year, month, 1), { weekStartsOn: 1 });
+            return date >= firstDayOfMonth ? month : month - 1;
+        };
 
-            // Handle year transition
-            if (weekYear === year || (weekYear < year && monthIndex === 11)) {
-                months[monthIndex].weeks.push(weekInfo);
-            } else if (weekYear > year && monthIndex === 0) {
-                months[11].weeks.push(weekInfo); // Assign to December if it's the first week of next year
+        // Distribute weeks into months
+        weeksOfYear.forEach(weekInfo => {
+            // Get the start date of the week
+            const weekStartDate = addWeeks(startOfYear(new Date(year, 0, 1)), weekInfo.weekNumber - 1);
+            const weekEndDate = endOfWeek(weekStartDate, { weekStartsOn: 1 });
+
+            // Determine the month for the start and end of the week
+            const startMonthIndex = getMonthIndex(weekStartDate);
+            const endMonthIndex = getMonthIndex(weekEndDate);
+
+            // Add the week to the start month
+            if (!months[startMonthIndex].weeks.find(w => w.weekNumber === weekInfo.weekNumber)) {
+                months[startMonthIndex].weeks.push(weekInfo);
             }
+
+            // If the week spans two months, add it to the end month as well
+            if (startMonthIndex !== endMonthIndex) {
+                if (!months[endMonthIndex].weeks.find(w => w.weekNumber === weekInfo.weekNumber)) {
+                    months[endMonthIndex].weeks.push(weekInfo);
+                }
+            }
+        });
+
+        // Sort the weeks within each month
+        months.forEach(month => {
+            month.weeks.sort((a, b) => a.weekNumber - b.weekNumber);
         });
 
         return months;
     };
 
     getBottleneckColor = (bottleneck: number): string => {
-        if (bottleneck > 75) return 'bg-danger';
-        if (bottleneck > 50) return 'bg-warning';
-        return 'bg-success';
+        if (bottleneck > 75) {
+            console.log("Class: bottleneck-green");
+            return 'bottleneck-green';
+        }
+        if (bottleneck > 50) {
+            console.log("Class: bottleneck-yellow");
+            return 'bottleneck-yellow';
+        }
+        console.log("Class: bottleneck-red");
+        return 'bottleneck-red';
     };
+
 
     render() {
         const { data, months } = this.state;
 
-        // Concatenate all the weeks from each month to create the `allWeeks` array
-        const allWeeks = months.flatMap(month => month.weeks);
         return (
-            <div className='container'>
+            <div className='container mt-3'>
                 <div className="table-responsive">
-                    <table className="table">
-                        <thead>
+                    <table className="table table-bordered">
+                        <thead className="thead-dark">
                         <tr>
-                            <th></th> {/* Empty header for description column */}
-                            {months.map((month: Month) => (
-                                <th key={month.name} colSpan={month.weeks.length}>
-                                    {month.name} {month.year}
-                                </th>
-                            ))}
+                            {/* Year header spanning all columns */}
+                            <th scope="col" className="text-center" colSpan={53}>2024</th>
                         </tr>
                         <tr>
-                            <th></th> {/* Empty header for week numbers */}
-                            {allWeeks.map((weekInfo: WeekInfo, index: number) => (
-                                <th key={`week-${index}`} className="text-center">
-                                    {weekInfo.weekNumber}
+                            {/* Month headers */}
+                            {months.map((month) => (
+                                <th key={month.name} className="text-center" colSpan={month.weeks.length}>
+                                    {month.name}
                                 </th>
                             ))}
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <th>Delta</th>
-                            {data.map((item, index) => (
-                                <td key={`delta-${index}`} className="text-center">
-                                    {item.delta}
-                                </td>
-                            ))}
-                        </tr>
-                        <tr>
-                            <th>Bottleneck %</th>
-                            {data.map((item, index) => (
-                                <td key={`bottleneck-${index}`} className={this.getBottleneckColor(item.bottleneck)}>
-                                    {item.bottleneck}%
-                                </td>
+                            {months.map((month) => (
+                                month.weeks.map((week) => (
+                                    <td
+                                        key={week.weekNumber}
+                                        className={`text-center ${this.getBottleneckColor(data.find(d => d.week === week.weekNumber)?.bottleneck ?? 0)}`}
+                                    >
+                                        <div><strong>{week.weekNumber}</strong></div>
+                                        <div>{data.find(d => d.week === week.weekNumber)?.bottleneck ?? '-'}</div>
+                                    </td>
+                                ))
                             ))}
                         </tr>
                         </tbody>
