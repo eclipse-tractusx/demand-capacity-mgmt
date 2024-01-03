@@ -370,3 +370,16 @@ code {
   color: #fff !important;
   /* White text color for active tab */
 }
+
+.table-bordered .bottleneck-green {
+  background-color: #94cb2d;
+}
+
+.table-bordered .bottleneck-yellow {
+  background-color: #ffc107;
+}
+
+.table-bordered .bottleneck-red {
+  background-color: #dc3545;
+}
+
