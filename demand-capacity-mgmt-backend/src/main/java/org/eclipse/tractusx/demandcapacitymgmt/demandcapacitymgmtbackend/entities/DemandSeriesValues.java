@@ -23,10 +23,10 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.util.UUID;
-import lombok.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.WeekColor;
 
 @Entity
 @Table(name = "demand_series_values")
@@ -51,11 +51,4 @@ public class DemandSeriesValues {
 
     @Column(name = "demand", nullable = false)
     private Double demand;
-
-    @Column(name = "ruled", nullable = false)
-    private boolean ruled = false;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "week_color")
-    private WeekColor weekColor;
 }

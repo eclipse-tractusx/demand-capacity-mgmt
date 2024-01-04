@@ -1,20 +1,20 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.WeekColor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.BottleneckManager;
 import org.springframework.stereotype.Component;
+
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -44,6 +44,16 @@ public class BottleneckDetectorUtil implements BottleneckManager {
                     statusesRepository.save(statusesEntity);
                 }
             );
+    }
+
+    @Override
+    public void calculateCompany(String userID) {
+
+    }
+
+    @Override
+    public void calculateCapacityGroup(String capacityGroupID) {
+
     }
 
     private StatusesEntity generateNewEntity(String userID) {
@@ -141,19 +151,6 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         }
     }
 
-    private void assignWeekColor(DemandSeriesValues demandSeriesValue, EventType eventType) {
-        if (!demandSeriesValue.isRuled()) {
-            demandSeriesValue.setWeekColor(getWeekColorForEventType(eventType));
-        }
-    }
-
-    private WeekColor getWeekColorForEventType(EventType eventType) {
-        return switch (eventType) {
-            case STATUS_REDUCTION -> WeekColor.RED;
-            case STATUS_IMPROVEMENT -> WeekColor.GREEN;
-            default -> WeekColor.GREY;
-        };
-    }
 
     private Pair<Integer, Integer> processCapacityGroup(String userID, CapacityGroupEntity cgs, boolean postLog) {
         List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(
@@ -216,7 +213,6 @@ public class BottleneckDetectorUtil implements BottleneckManager {
 
             DemandSeriesValues demandSeriesValue = findOrCreateDemandSeriesValue(demandSeriesValuesList, week);
             EventType eventType = determineEventType(cgs, demand);
-            assignWeekColor(demandSeriesValue, eventType);
 
             if (eventType == EventType.STATUS_REDUCTION) {
                 degradations++;

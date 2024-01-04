@@ -20,11 +20,35 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks;
 
-public enum WeekColor {
-    GREEN,
-    YELLOW,
-    RED,
-    GREY,
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Entity
+@Table(name = "month_reports")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class MonthReport {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String month;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "year_report_id", nullable = false)
+    private YearReport yearReport;
+
+    @OneToMany(mappedBy = "monthReport", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<WeekReport> weekReport;
 }

@@ -121,7 +121,7 @@ function CapacityGroupDetailsPage() {
             }}
           >
             <Tab eventKey="overview" title="Overview">
-              <CapacityGroupSumView capacityGroup={capacityGroup} materialDemands={materialDemands} />
+              <CapacityGroupSumView capacityGroupID={capacityGroup.capacityGroupId}/>
               <CapacityGroupChronogram capacityGroup={capacityGroup} materialDemands={materialDemands} />
             </Tab>
             <Tab eventKey="materials" title="Materials">

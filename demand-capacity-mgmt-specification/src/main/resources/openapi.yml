@@ -29,6 +29,31 @@ servers:
 
 
 paths:
+
+  /generateYearReport:
+    post:
+      summary: Generate a year report for a given capacity group ID
+      operationId: generateYearReport
+      tags:
+        - YearReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/YearReportRequest'
+      responses:
+        '201':
+          description: Successfully created year report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/YearReport'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+
   /token/login:
     post:
       tags:
@@ -2048,3 +2073,74 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AddressBookFavoriteResponse'
+
+    YearReportRequest:
+      type: object
+      required:
+        - cgID
+      properties:
+        cgID:
+          type: string
+          description: The capacity group ID for which to generate the report
+
+    YearReport:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        year:
+          type: integer
+          format: int32
+        capacityGroupId:
+          type: string
+        ruled:
+          type: boolean
+        percentage:
+          type: integer
+          format: int32
+        totalWeeksCurrentYear:
+          type: integer
+          format: int32
+        monthReport:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthReport'
+
+    MonthReport:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        month:
+          type: string
+        yearReport:
+          $ref: '#/components/schemas/YearReport'
+        weekReport:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeekReport'
+
+    WeekReport:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        week:
+          type: integer
+          format: int32
+        delta:
+          type: number
+          format: double
+        maxCapacity:
+          type: number
+          format: double
+        actCapacity:
+          type: number
+          format: double
+        monthReport:
+          $ref: '#/components/schemas/MonthReport'
+        demandSeries:
+          $ref: '#/components/schemas/MaterialDemandSeriesResponse'
