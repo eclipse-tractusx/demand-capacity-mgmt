@@ -20,34 +20,26 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.api.YearReportApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReport;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.BottleneckManager;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.BottleneckDetectorUtil;
-import org.springframework.stereotype.Service;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReportRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl.BottleneckManagerImpl;
+import org.springframework.http.ResponseEntity;
 
-@RequiredArgsConstructor
-@Service
-@Slf4j
-public class BottleneckManagerImpl implements BottleneckManager {
+public class YearReportController implements YearReportApi {
 
-    private final BottleneckDetectorUtil bottleneckDetectorUtil;
+    private HttpServletRequest request;
+
+    private BottleneckManagerImpl bottleneckManager;
 
     @Override
-    public void calculateTodos(String userID) {
-        bottleneckDetectorUtil.calculateTodos(userID);
+    public ResponseEntity<YearReport> generateYearReport(YearReportRequest yearReportRequest) throws Exception {
+        return ResponseEntity.status(200).body(
+                bottleneckManager.generateYearReport(yearReportRequest.getCgID())
+        );
     }
 
-    @Override
-    public YearReport generateYearReport(String capacityGroupID) {
-        return null;
-    }
-
-    @Override
-    public void calculateBottleneck(String userID, boolean postLog) {
-        bottleneckDetectorUtil.calculateBottleneck(userID, postLog);
-    }
 }
