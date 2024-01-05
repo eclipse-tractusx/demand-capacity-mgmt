@@ -36,7 +36,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MonthReport {
+public class MonthReportDto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,8 +47,8 @@ public class MonthReport {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "year_report_id", nullable = false)
-    private YearReport yearReport;
+    private YearReportDto yearReportDto;
 
-    @OneToMany(mappedBy = "monthReport", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<WeekReport> weekReport;
+    @OneToMany(mappedBy = "monthReportDto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<WeekReportDto> weekReportDto;
 }

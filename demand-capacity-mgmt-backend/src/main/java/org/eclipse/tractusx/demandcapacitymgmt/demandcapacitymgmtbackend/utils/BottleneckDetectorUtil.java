@@ -1,8 +1,12 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReport;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks.MonthReportDto;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks.WeekReportDto;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks.YearReportDto;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
@@ -11,8 +15,11 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,16 +51,6 @@ public class BottleneckDetectorUtil implements BottleneckManager {
                     statusesRepository.save(statusesEntity);
                 }
             );
-    }
-
-    @Override
-    public void calculateCompany(String userID) {
-
-    }
-
-    @Override
-    public void calculateCapacityGroup(String capacityGroupID) {
-
     }
 
     private StatusesEntity generateNewEntity(String userID) {
@@ -309,4 +306,103 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         statusesRepository.save(status);
         return status;
     }
+
+
+    // Year report generation
+    @Override
+    public YearReport generateYearReport(String userID, String capacityGroupID) {
+        YearReportDto yearReport = new YearReportDto();
+        CapacityGroupEntity cgs = capacityGroupRepository.findById(UUID.fromString(capacityGroupID)).get();
+        List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(cgs.getId());
+
+        int currentYear = LocalDate.now().getYear();
+        yearReport.setYear(currentYear);
+        yearReport.setCapacityGroupId(capacityGroupID);
+        yearReport.setTotalWeeksCurrentYear(getWeeksInYear(currentYear));
+
+        List<MonthReportDto> monthReports = new ArrayList<>();
+        for (int month = 1; month <= 12; month++) {
+            MonthReportDto monthReport = processMonth(matchedEntities, month, currentYear);
+            monthReports.add(monthReport);
+        }
+
+        yearReport.setMonthReportDto(monthReports);
+
+        // Save yearReport to database if required
+
+        return new YearReport();
+    }
+
+    // Month report processing
+    private MonthReportDto processMonth(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities, int month, int year) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDate firstDayOfMonth = yearMonth.atDay(1);
+        int weeksInMonth = getWeekCount(year, month);
+
+        List<WeekReportDto> weekReports = new ArrayList<>();
+        for (int week = 1; week <= weeksInMonth; week++) {
+            LocalDate weekStart = firstDayOfMonth.with(WeekFields.ISO.dayOfWeek(), 1).plusWeeks(week - 1);
+            int weekOfYear = weekStart.get(WeekFields.ISO.weekOfWeekBasedYear());
+            List<DemandSeries> weekDemands = filterDemandsForWeek(matchedEntities, weekStart, weekOfYear);
+            weekReports.add(calculateWeekDelta(weekDemands, weekOfYear, year));
+        }
+
+        MonthReportDto monthReport = new MonthReportDto();
+        monthReport.setMonth(firstDayOfMonth.getMonth().toString());
+        monthReport.setWeekReportDto(weekReports);
+
+        return monthReport;
+    }
+
+    // Week count calculation
+    public static int getWeekCount(int year, int month) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDate firstDayOfMonth = yearMonth.atDay(1);
+        LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
+        int count = 0;
+        for (LocalDate date = firstDayOfMonth; !date.isAfter(lastDayOfMonth); date = date.plusDays(1)) {
+            if (date.getDayOfWeek() == DayOfWeek.THURSDAY) {
+                count++;
+            }
+        }
+        return count;
+    }
+    // Weeks in year calculation
+    private int getWeeksInYear(int year) {
+        LocalDate lastDayOfYear = LocalDate.of(year, 12, 31);
+        WeekFields weekFields = WeekFields.of(Locale.UK); // Using UK standard
+        int weekNumber = lastDayOfYear.get(weekFields.weekOfWeekBasedYear());
+        return weekNumber;
+    }
+
+
+    // Week report calculation
+    private WeekReportDto calculateWeekDelta(List<DemandSeries> weekDemands, int weekNumber, int year) {
+        WeekReportDto weekReport = new WeekReportDto();
+        double totalDelta = 0.0;
+        // Implement logic to calculate total delta for the week based on weekDemands
+        // Example logic to calculate delta
+        weekReport.setWeek(weekNumber);
+        weekReport.setDelta(totalDelta);
+
+        return weekReport;
+    }
+
+    private List<DemandSeries> filterDemandsForWeek(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities, LocalDate weekStart, int weekOfYear) {
+        List<DemandSeries> weekDemands = new ArrayList<>();
+
+        for (LinkedCapacityGroupMaterialDemandEntity entity : matchedEntities) {
+            Optional<MaterialDemandEntity> materialDemandOpt = materialDemandRepository.findById(entity.getMaterialDemandID());
+            materialDemandOpt.ifPresent(materialDemand -> {
+                for (DemandSeries demandSeries : materialDemand.getDemandSeries()) {
+                    if (demandSeries.getDemandSeriesValues().stream().anyMatch(dsv ->
+                            dsv.getCalendarWeek().get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()) == weekOfYear)) {
+                        weekDemands.add(demandSeries);
+                    }
+                }
+            });
+        }
+        return weekDemands;
+    }
+
 }

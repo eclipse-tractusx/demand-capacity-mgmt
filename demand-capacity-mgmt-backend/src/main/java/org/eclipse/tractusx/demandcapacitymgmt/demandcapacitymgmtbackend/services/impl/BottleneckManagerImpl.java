@@ -42,8 +42,8 @@ public class BottleneckManagerImpl implements BottleneckManager {
     }
 
     @Override
-    public YearReport generateYearReport(String capacityGroupID) {
-        return null;
+    public YearReport generateYearReport(String userID,String capacityGroupID) {
+        return bottleneckDetectorUtil.generateYearReport(userID,capacityGroupID);
     }
 
     @Override

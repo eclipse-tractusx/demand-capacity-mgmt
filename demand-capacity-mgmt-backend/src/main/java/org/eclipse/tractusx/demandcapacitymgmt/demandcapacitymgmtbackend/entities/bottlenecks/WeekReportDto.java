@@ -27,35 +27,37 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
 
-import java.util.List;
-
+@Entity
+@Table(name = "week_reports")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "year_reports")
-public class YearReport {
+public class WeekReportDto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private int year;
+    private int week;
 
-    @Column(name = "capacity_group_id")
-    private String capacityGroupId;
+    @Column(nullable = false)
+    private double delta;
 
-    @Column(name = "ruled")
-    private boolean ruled;
+    @Column(name = "max_capacity", nullable = false)
+    private double maxCapacity;
 
-    @Column(name = "percentage")
-    private int percentage;
+    @Column(name = "act_capacity", nullable = false)
+    private double actCapacity;
 
-    @Column(name = "total_weeks_current_year", nullable = false)
-    private int totalWeeksCurrentYear;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "month_report_id", nullable = false)
+    private MonthReportDto monthReportDto;
 
-    @OneToMany(mappedBy = "yearReport", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MonthReport> monthReport;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "demand_series_id", referencedColumnName = "id")
+    private DemandSeries demandSeries;
 }

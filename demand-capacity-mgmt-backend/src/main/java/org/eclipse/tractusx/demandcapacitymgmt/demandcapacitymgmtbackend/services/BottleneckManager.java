@@ -29,5 +29,5 @@ public interface BottleneckManager {
 
     void calculateTodos(String userID);
 
-    YearReport generateYearReport(String capacityGroupID);
+    YearReport generateYearReport(String userID,String capacityGroupID);
 }

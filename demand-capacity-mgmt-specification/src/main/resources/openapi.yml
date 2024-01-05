@@ -30,7 +30,7 @@ servers:
 
 paths:
 
-  /generateYearReport:
+  /year/report:
     post:
       summary: Generate a year report for a given capacity group ID
       operationId: generateYearReport
