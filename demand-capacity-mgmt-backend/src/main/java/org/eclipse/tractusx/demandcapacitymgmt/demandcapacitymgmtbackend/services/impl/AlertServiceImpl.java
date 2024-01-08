@@ -177,7 +177,7 @@ public class AlertServiceImpl implements AlertService {
         boolean isRelative,
         AlertEntity alertEntity
     ) {
-        triggeredAlertEntity.setDescription(message + threshold + (isRelative ? "%" : "units"));
+        triggeredAlertEntity.setDescription(message + threshold + (isRelative ? "%" : " units"));
         alertEntity.setTriggeredTimes(alertEntity.getTriggeredTimes() + 1);
         alertsRepository.save(alertEntity);
         triggeredAlertsRepository.save(triggeredAlertEntity);
