@@ -66,6 +66,7 @@ const DemandManagement: React.FC = () => {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
+    const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
     const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
     const [favoriteDemands, setFavoriteDemands] = useState<string[]>([]);
 
@@ -99,11 +100,6 @@ const DemandManagement: React.FC = () => {
     useEffect(() => {
         fetchFavorites();
     }, []);
-
-    useEffect(() => {
-        fetchFavorites();
-        fetchDemandProps();
-    }, [searchQuery]);
 
 
     const handleSort = (column: string | null) => {
@@ -169,7 +165,7 @@ const DemandManagement: React.FC = () => {
 
     const isDemandFavorited = (demandId: string) => favoriteDemands.includes(demandId);
 
-    const filteredDemands = useMemo(() => {
+    useMemo(() => {
         let filteredDemands = [...demandprops];
 
         if (searchQuery !== '') {
@@ -193,7 +189,7 @@ const DemandManagement: React.FC = () => {
         unfavoritedDemands.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
 
         // Concatenate favorited and unfavorited demands
-        let sortedDemands = [...favoritedDemands, ...unfavoritedDemands];
+        const sortedDemands = [...favoritedDemands, ...unfavoritedDemands];
 
         if (sortColumn) {
             // Sort the concatenated array by the specified column
@@ -221,9 +217,8 @@ const DemandManagement: React.FC = () => {
             }
         }
 
-        return sortedDemands;
+        setFilteredDemands(sortedDemands);
     }, [demandprops, searchQuery, sortColumn, sortOrder]);
-
 
 
     const slicedDemands = useMemo(() => {
@@ -256,7 +251,18 @@ const DemandManagement: React.FC = () => {
                             </div>
                         </Button>
                     </td>
-                    <td>{demand.customer.bpn}</td>
+                    {user?.role === 'SUPPLIER' ? (
+                        <>
+                            <td>{demand.customer.bpn}</td>
+                            <td>{demand.customer.companyName}</td>
+                        </>
+                    ) : null}
+                    {user?.role === 'CUSTOMER' ? (
+                        <>
+                            <td>{demand.supplier.bpn}</td>
+                            <td>{demand.supplier.companyName}</td>
+                        </>
+                    ) : null}
                     <td>{demand.materialNumberCustomer}</td>
                     <td>{demand.materialNumberSupplier}</td>
                     <td>
@@ -353,10 +359,8 @@ const DemandManagement: React.FC = () => {
                                 onClick={() => setShowAddModal(true)}>
                                 <span>New Material Demand</span>
                             </Button>)}
-                        <Button className='float-end spin-on-hover' variant="primary" onClick={handleRefreshClick}>
-                            <span className="button-content">
-                                <FaRedo className="icon" />
-                            </span>
+                        <Button className='btn btn-primary' onClick={handleRefreshClick}>
+                            <FaRedo className="spin-on-hover" />
                         </Button>
                     </div>
                 </div>
@@ -397,11 +401,7 @@ const DemandManagement: React.FC = () => {
                                                     htmlSize={10}
                                                     max={100}
                                                     value={demandsPerPage}
-                                                    onChange={(e) => {
-                                                        const value = e.target.value;
-                                                        const newValue = value === '' ? 1 : Math.max(1, parseInt(value)); // Ensure it's not empty and not less than 1
-                                                        setDemandsPerPage(newValue);
-                                                    }}
+                                                    onChange={(e) => setDemandsPerPage(Number(e.target.value))}
                                                 />
                                             </Col>
                                         </Form.Group>

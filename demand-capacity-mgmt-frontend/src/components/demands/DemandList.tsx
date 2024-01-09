@@ -28,6 +28,7 @@ import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
+import { useUser } from '../../contexts/UserContext';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import { EventType } from '../../interfaces/event_interfaces';
 import { FavoriteType, MaterialDemandFavoriteResponse } from "../../interfaces/favorite_interfaces";
@@ -57,6 +58,8 @@ const DemandList: React.FC<{
   eventTypes = []
 }) => {
 
+    const { user } = useUser();
+
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
@@ -78,8 +81,7 @@ const DemandList: React.FC<{
 
 
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
-    //const [listedDemands, setListedDemands] = useState<DemandProp[]>([]);
-
+    const [filteredDemands, setFilteredDemands] = useState<DemandProp[]>([]);
     const fetchFavorites = async () => {
       try {
         const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
@@ -95,8 +97,19 @@ const DemandList: React.FC<{
       setShowWizardModal(showWizard || false);
       fetchDemandProps();
       fetchFavorites();
-      setCurrentPage(1);
-    }, [showWizard, searchQuery]);
+    }, [showWizard]);
+
+
+    const filteredDemandsByEventTypes = useMemo(() => {
+      if (eventTypes.length > 0) {
+        // If eventTypes array is provided, filter demands based on the specified event types
+        return filteredDemands.filter((demand) => eventTypes.includes(demand.linkStatus));
+      } else {
+        // If no eventTypes are provided, return all filteredDemands
+        return filteredDemands;
+      }
+    }, [filteredDemands, eventTypes]);
+
 
     const handleSort = (column: string | null) => {
       if (sortColumn === column) {
@@ -162,11 +175,10 @@ const DemandList: React.FC<{
 
     const isDemandFavorited = (demandId: string) => favoriteDemands.includes(demandId);
 
-    const filteredDemands = useMemo(() => {
+    useMemo(() => {
       let filteredDemands = [...demandprops];
 
       if (searchQuery !== '') {
-        setCurrentPage(1);
         filteredDemands = filteredDemands.filter((demand) =>
           demand.materialDescriptionCustomer.toLowerCase().includes(searchQuery.toLowerCase()) ||
           demand.id.toString().includes(searchQuery.toLowerCase()) ||
@@ -174,11 +186,6 @@ const DemandList: React.FC<{
           demand.materialNumberCustomer.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
           demand.materialNumberSupplier.toString().toLowerCase().includes(searchQuery.toLowerCase())
         );
-      }
-
-      // Filter by eventTypes if provided
-      if (eventTypes.length > 0) {
-        filteredDemands = filteredDemands.filter((demand) => eventTypes.includes(demand.linkStatus));
       }
 
       // Separate favorited and unfavorited demands
@@ -192,7 +199,7 @@ const DemandList: React.FC<{
       unfavoritedDemands.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
 
       // Concatenate favorited and unfavorited demands
-      let sortedDemands = [...favoritedDemands, ...unfavoritedDemands];
+      const sortedDemands = [...favoritedDemands, ...unfavoritedDemands];
 
       if (sortColumn) {
         // Sort the concatenated array by the specified column
@@ -211,6 +218,7 @@ const DemandList: React.FC<{
 
           // If the types are not string or number, return 0 (no sorting)
           return 0;
+
         });
 
         if (sortOrder === 'desc') {
@@ -218,17 +226,21 @@ const DemandList: React.FC<{
           sortedDemands.reverse();
         }
       }
-      // Return the sortedDemands instead of filteredDemands
-      return sortedDemands;
-    }, [demandprops, searchQuery, sortColumn, sortOrder, eventTypes]);
+
+      setFilteredDemands(sortedDemands);
+    }, [demandprops, searchQuery, sortColumn, sortOrder]);
 
     const slicedDemands = useMemo(() => {
+      // Use filteredDemandsByEventTypes instead of filteredDemands for slicing and rendering
       const indexOfLastDemand = currentPage * demandsPerPage;
       const indexOfFirstDemand = indexOfLastDemand - demandsPerPage;
-      return filteredDemands.slice(indexOfFirstDemand, indexOfLastDemand);
-    }, [currentPage, demandsPerPage, filteredDemands]);
+      return filteredDemandsByEventTypes.slice(indexOfFirstDemand, indexOfLastDemand);
+    }, [filteredDemandsByEventTypes, currentPage, demandsPerPage]);
 
-    const totalPagesNum = Math.ceil(filteredDemands.length / demandsPerPage);
+    const totalPagesNum = useMemo(() => Math.ceil(filteredDemands.length / demandsPerPage), [
+      filteredDemands,
+      demandsPerPage,
+    ]);
 
     const handleCheckboxChange = useCallback(
       (event: React.ChangeEvent<HTMLInputElement>, demandId: string) => {
@@ -290,7 +302,18 @@ const DemandList: React.FC<{
                 </div>
               </Button>
             </td>
-            <td>{demand.customer.bpn}</td>
+            {user?.role === 'SUPPLIER' ? (
+              <>
+                <td>{demand.customer.bpn}</td>
+                <td>{demand.customer.companyName}</td>
+              </>
+            ) : null}
+            {user?.role === 'CUSTOMER' ? (
+              <>
+                <td>{demand.supplier.bpn}</td>
+                <td>{demand.supplier.companyName}</td>
+              </>
+            ) : null}
             <td>{demand.materialNumberCustomer}</td>
             <td>{demand.materialNumberSupplier}</td>
             <td>
@@ -406,11 +429,7 @@ const DemandList: React.FC<{
                             htmlSize={10}
                             max={100}
                             value={demandsPerPage}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              const newValue = value === '' ? 1 : Math.max(1, parseInt(value)); // Ensure it's not empty and not less than 1
-                              setDemandsPerPage(newValue);
-                            }}
+                            onChange={(e) => setDemandsPerPage(Number(e.target.value))}
                           />
                         </Col>
                       </Form.Group>

@@ -29,7 +29,6 @@ import Select from 'react-select';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
 import { FavoritesContext } from '../../contexts/FavoritesContextProvider';
 import { UnitsofMeasureContext } from '../../contexts/UnitsOfMeasureContextProvider';
-import { useUser } from '../../contexts/UserContext';
 import CustomOption from '../../interfaces/customoption_interface';
 import { DemandProp } from '../../interfaces/demand_interfaces';
 import { FavoriteType } from '../../interfaces/favorite_interfaces';
@@ -44,7 +43,6 @@ interface CapacityGroupWizardModalProps {
 }
 
 function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: CapacityGroupWizardModalProps) {
-  const { user } = useUser();
   const [step, setStep] = useState(0);
   const [groupName, setGroupName] = useState('');
   const [defaultActualCapacity, setDefaultActualCapacity] = useState('');
@@ -66,6 +64,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
 
   // Function to get the unit measure description based on id
   const getUnitMeasureDescription = (unitMeasureId: string) => {
+    console.log(unitMeasureId)
     const unitMeasure = unitsofmeasureContext?.unitsofmeasure.find(unit => unit.id === unitMeasureId);
     return unitMeasure ? `${unitMeasure.dimension} - ${unitMeasure.description} (${unitMeasure.unSymbol})` : 'N/A';
   };
@@ -164,7 +163,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
       startDate: earliestDate,
       endDate: latestDate,
       customer: selectedDemands.length > 0 ? selectedDemands[0].customer.id : '',
-      supplier: user?.companyID || '',
+      supplier: selectedDemands.length > 0 ? selectedDemands[0].supplier.id : '',
       linkMaterialDemandIds: selectedDemands.map((demand) => demand.id),
     };
 
@@ -264,6 +263,8 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
         // Combine favorite options and demand options
         materialDemandOptions = [...favoriteOptions, ...demandOptions];
 
+        console.log(materialDemandOptions);
+
         setOptions(materialDemandOptions); // Update options state with combined material demands
       } catch (error) {
         console.error('Error fetching filtered capacity groups:', error);
@@ -291,15 +292,14 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
           {isLoading && <> <LoadingCustomMessage message='Creating..' /></>}
           {isSuccess ? (
             <div className="alert alert-success" role="alert">
-              Capacity group created !
-              It can now be found on the <a href='/' onClick={() => window.open(`/details/${createdgroupid}`, '_blank')}> Capacity group</a> list.
-              You can now close this prompt.
+              Capacity group created.
+              It can now be found on the <a href='/'>Capacity group</a> list.
             </div>
           ) : (
             <>
               {step === 0 && (
                 <div>
-                  <StepBreadcrumbs currentStep={step} />
+                  <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                   <br />
                   <p>
                     Welcome to the Capacity Group Wizard, this intuitive interface will simplify this task. <br />
@@ -310,7 +310,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               {step === 1 && (
                 <Form>
                   <Form.Group>
-                    <StepBreadcrumbs currentStep={step} />
+                    <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                     <center><h5>Group Details</h5></center>
 
                     <Form.Label className="control-label required-field-label">Capacity Group Name</Form.Label>
@@ -359,7 +359,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               )}
               {step === 2 && (
                 <div>
-                  <StepBreadcrumbs currentStep={step} />
+                  <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                   <center><h5>Demand Linkage</h5></center>
                   {areUnitMeasureIdsEqual(selectedDemands) ? (
                     // No warning if unit measure IDs are equal
@@ -417,7 +417,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               )}
               {step === 3 && (
                 <div>
-                  <StepBreadcrumbs currentStep={step} />
+                  <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                   <center><h5>Review and Submit</h5></center>
                   <br />
                   <div className="row mb-2">

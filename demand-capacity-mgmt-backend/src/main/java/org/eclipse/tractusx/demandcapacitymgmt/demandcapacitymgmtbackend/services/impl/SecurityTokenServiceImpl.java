@@ -263,7 +263,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         user.setAccessToken(accessToken);
         user.setRefreshToken(refreshToken);
         user.setExpiresIn(expiresIn);
-        user.setCompanyID(userEntity.getCompanyID().toString());
+        user.setCompanyID(user.getCompanyID());
         statusManager.calculateBottleneck(user.getUserID(), false);
         statusManager.calculateTodos(user.getUserID());
         return user;

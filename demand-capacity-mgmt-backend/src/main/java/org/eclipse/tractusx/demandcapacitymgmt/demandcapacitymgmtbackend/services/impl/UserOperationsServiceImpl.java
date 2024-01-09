@@ -60,4 +60,5 @@ public class UserOperationsServiceImpl implements UserOperationsService {
         user.setLastName(entity.getLastName());
         return user;
     }
+
 }

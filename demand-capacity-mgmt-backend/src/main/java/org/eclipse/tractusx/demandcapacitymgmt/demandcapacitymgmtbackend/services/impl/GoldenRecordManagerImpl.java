@@ -48,8 +48,10 @@ public class GoldenRecordManagerImpl implements GoldenRecordManager {
         AddressBookRecordEntity recordEntity = new AddressBookRecordEntity();
         recordEntity.setCompanyId(UUID.fromString(query));
         recordEntity.setName("TEST NAME");
-        recordEntity.setContact("TEST CONTACT");
+        recordEntity.setLandLine("TEST LAND LINE");
+        recordEntity.setCellPhone("TEST CELL PHONE");
         recordEntity.setEmail("TEST EMAIL");
+        recordEntity.setDepartment("TEST DEPARTMENT");
         recordEntity.setPicture("yeetus".getBytes());
         repository.save(recordEntity);
         return recordEntity;

@@ -29,6 +29,7 @@ import { CapacityGroupContext } from './CapacityGroupsContextProvider';
 import { DemandContext } from './DemandContextProvider';
 import { EventsContext } from './EventsContextProvider';
 import { useUser } from "./UserContext";
+import {AlertsContext} from "./AlertsContextProvider";
 
 interface InfoMenuContextData {
     data: InfoMenuData | null;
@@ -66,6 +67,11 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
 
     useEffect(() => {
         fetchData();
+        console.log('Top menu triggered due to access_token change');
+    }, [fetchData, access_token]);
+
+    useEffect(() => {
+        fetchData();
         console.log('Top menu triggered due to capacitygroups change');
     }, [fetchData, capacitygroups]);
 
@@ -78,6 +84,7 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
         fetchData();
         console.log('Top menu triggered due to events change');
     }, [fetchData, events]);
+
 
     return (
         <InfoMenuContext.Provider value={{ data, fetchData }}>
