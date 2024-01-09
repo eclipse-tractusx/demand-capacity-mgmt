@@ -1,0 +1,14 @@
+VAULT_ADDR=https://vault.demo.catena-x.net
+VAULT_TOKEN=s.ZAfqe9Mj6xo1QCfUA1OXHmh1
+SECRET_PATH=cgi-dcm-foss/data/value-added-service/dcm/dev/keycloak
+DB_VENDOR=postgres
+DB_ADDR=postgres
+POSTGRES_USER=dcm
+POSTGRES_PASSWORD=dcm
+POSTGRES_DB=keycloak
+POSTGRES_PORT=5432
+KEYCLOAK_PORT=8888
+KEYCLOAK_USER=admin
+KEYCLOAK_PASSWORD=p#h4PJwX%S^zk8nU67ImtMvj
+KEYCLOAK_ADDRESS=http://localhost:8888
+KEYCLOAK_REALM=dcm
