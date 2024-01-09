@@ -40,4 +40,5 @@ public class UserController implements UserOperationsApi {
         UserResponse user = service.updateUser(userId, userRequest);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
+
 }
