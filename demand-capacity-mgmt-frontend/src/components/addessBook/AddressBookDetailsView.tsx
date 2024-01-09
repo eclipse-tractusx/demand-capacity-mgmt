@@ -152,12 +152,14 @@ const AddressBookDetailsView: React.FC<CompanyDetailsProps> = ({ company, favori
                             </h6>
                         </div>
                         <div>
-                            <Button className="btn d-flex justify-content-center align-items-center" variant="primary" onClick={handleAddContact}>
-                                <span className="me-2"><FaPlus /></span>
-                                <span> Add Contact</span>
-                            </Button>
-
+                            {!isModal && (
+                                <Button className="btn d-flex justify-content-center align-items-center" variant="primary" onClick={handleAddContact}>
+                                    <span className="me-2"><FaPlus /></span>
+                                    <span> Add Contact</span>
+                                </Button>
+                            )}
                         </div>
+
                     </div>
                     <hr />
                     <ContactsList company={company} data={contacts || []} isModal={isInteractionModal} />
