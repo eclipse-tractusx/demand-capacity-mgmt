@@ -48,11 +48,17 @@ public class AddressBookRecordEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "contact")
-    private String contact;
+    @Column(name = "landLine")
+    private String landLine;
+
+    @Column(name = "cellPhone")
+    private String cellPhone;
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "department")
+    private String department;
 
     @Column(name = "function")
     private String function;

@@ -22,6 +22,7 @@
 
 import React from 'react';
 import { Route, Routes } from "react-router-dom";
+import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
@@ -69,14 +70,15 @@ const AppComponent: React.FC = () => {
             <Route path="/details/:id" element={
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
-                        <DemandContextProvider>
-                            <Layout>
-                                <CapacityGroupsProvider>
+                        <CapacityGroupsProvider>
+                            <DemandContextProvider>
+                                <Layout>
                                     <EventsContextProvider>
                                         <CapacityGroupDetailsPage />
                                     </EventsContextProvider>
-                                </CapacityGroupsProvider>
-                            </Layout></DemandContextProvider>
+                                </Layout>
+                            </DemandContextProvider>
+                        </CapacityGroupsProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
             } />
@@ -84,17 +86,19 @@ const AppComponent: React.FC = () => {
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
-                                <EventsContextProvider>
-                                    <AlertsPage />
-                                </EventsContextProvider>
-                            </Layout>
-                        </DemandContextProvider>
-                    </FavoritesContextProvider>
-                </AuthenticatedRoute>
+                            <CapacityGroupsProvider>
+                                <Layout>
+                                    <AlertsContextProvider>
+                                        <AlertsPage />
+                                    </AlertsContextProvider>
+                                </Layout>
+                            </CapacityGroupsProvider>
+                        </DemandContextProvider >
+                    </FavoritesContextProvider >
+                </AuthenticatedRoute >
             } />
-            <Route path="/up" element={
-                <AuthenticatedRoute>
+            < Route path="/up" element={
+                < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
                             <Layout>
@@ -104,10 +108,10 @@ const AppComponent: React.FC = () => {
                             </Layout>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
-                </AuthenticatedRoute>
+                </AuthenticatedRoute >
             } />
-            <Route path="/down" element={
-                <AuthenticatedRoute>
+            < Route path="/down" element={
+                < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
                             <Layout>
@@ -117,10 +121,10 @@ const AppComponent: React.FC = () => {
                             </Layout>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
-                </AuthenticatedRoute>
+                </AuthenticatedRoute >
             } />
-            <Route path="/todo" element={
-                <AuthenticatedRoute>
+            < Route path="/todo" element={
+                < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
                             <Layout>
@@ -130,11 +134,11 @@ const AppComponent: React.FC = () => {
                             </Layout>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
-                </AuthenticatedRoute>
+                </AuthenticatedRoute >
             } />
 
-            <Route path="/events" element={
-                <AuthenticatedRoute>
+            < Route path="/events" element={
+                < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
                             <Layout>
@@ -144,11 +148,11 @@ const AppComponent: React.FC = () => {
                             </Layout>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
-                </AuthenticatedRoute>
+                </AuthenticatedRoute >
             } />
 
-            <Route path="/favorites" element={
-                <AuthenticatedRoute>
+            < Route path="/favorites" element={
+                < AuthenticatedRoute >
                     <DemandContextProvider>
                         <FavoritesContextProvider>
                             <Layout>
@@ -158,11 +162,11 @@ const AppComponent: React.FC = () => {
                             </Layout>
                         </FavoritesContextProvider>
                     </DemandContextProvider>
-                </AuthenticatedRoute>
+                </AuthenticatedRoute >
             } />
 
-            <Route path="/admin" element={
-                <AuthenticatedRoute>
+            < Route path="/admin" element={
+                < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
                             <Layout>
@@ -170,9 +174,9 @@ const AppComponent: React.FC = () => {
                             </Layout>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
-                </AuthenticatedRoute>
+                </AuthenticatedRoute >
             } />
-        </Routes>
+        </Routes >
     );
 }
 

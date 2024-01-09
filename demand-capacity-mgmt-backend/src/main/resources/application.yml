@@ -46,7 +46,7 @@ keycloak:
   baseUrl: http://localhost:8888
   realm: dcm
   clientId: dcmauth
-  clientSecret: ${DCMSECR}
+  clientSecret: 99efa50e0cde9e3b1f693e75d5623059e911ab6b26050192543cbf4cd19bc2d8
   grant_type_token: password
   grant_type_refresh_token : refresh_token
 

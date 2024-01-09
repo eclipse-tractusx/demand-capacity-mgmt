@@ -33,9 +33,9 @@ import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider
 import EventsContextProvider from '../../contexts/EventsContextProvider';
 import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
 import { useUser } from "../../contexts/UserContext";
-import { getUserName } from '../../interfaces/user_interface';
 import { logout } from "../../util/Auth";
 import InfoMenu from "../menu/InfoMenu";
+import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 
 function TopMenuLinks() {
   const { user, refresh_token, setUser } = useUser();
@@ -89,11 +89,13 @@ function TopMenuLinks() {
           <div className={`info-menu ${collapsed ? 'move-out' : 'move-in'}`}>
             <DemandCategoryContextProvider>
               <CapacityGroupsProvider>
+                <AlertsContextProvider>
                 <EventsContextProvider>
                   <InfoMenuProvider>
                     <InfoMenu />
                   </InfoMenuProvider>
                 </EventsContextProvider>
+                </AlertsContextProvider>
               </CapacityGroupsProvider>
             </DemandCategoryContextProvider>
           </div>
@@ -101,7 +103,7 @@ function TopMenuLinks() {
         </Navbar.Collapse>
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
-            Signed in as:  <span className='text-capitalize'>{getUserName(user)}</span>
+            Signed in as:  <span className='text-capitalize'>{user?.username}</span>
             <br />
             <span className='font-weight-light small-menu-text'>Role: <span className='text-capitalize'>{user?.role.toLowerCase()}</span></span>
           </Navbar.Text>

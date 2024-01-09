@@ -53,7 +53,7 @@ const CapacityGroupsList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
   const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
-  const { findCompanyByCompanyID } = useContext(CompanyContext)!;
+  const { findCompanyByCompanyID, findCompanyNameByBpn } = useContext(CompanyContext)!;
   const [favoriteCapacityGroups, setFavoriteCapacityGroups] = useState<string[]>([]);
 
   const handleSort = (column: string) => {
@@ -170,7 +170,7 @@ const CapacityGroupsList: React.FC = () => {
               />
             </span>
           </td>
-          <td><center>
+          <td>
             <OverlayTrigger
               placement="top"
               overlay={<Tooltip id={`tooltip-copy-${capacitygroup.internalId}-open`}>Go to Details</Tooltip>}
@@ -181,9 +181,8 @@ const CapacityGroupsList: React.FC = () => {
                 </div>
               </Button>
             </OverlayTrigger>
-          </center>
           </td>
-          <td><center>
+          <td>
             <OverlayTrigger
               placement="top"
               overlay={<Tooltip id={`tooltip-copy-${capacitygroup.internalId}`}>{capacitygroup.internalId}</Tooltip>}
@@ -197,13 +196,26 @@ const CapacityGroupsList: React.FC = () => {
               >
                 <FaCopy />
               </Button>
-            </OverlayTrigger></center>
+            </OverlayTrigger>
           </td>
           <td>{capacitygroup.name}</td>
-          <td>{capacitygroup.customerBPNL}</td>
-          <td>{capacitygroup.customerName}</td>
-          <td>{capacitygroup.supplierBNPL}</td>
+          {user?.role === 'SUPPLIER' && (
+            <>
+              <td>{capacitygroup.customerBPNL}</td>
+              <td>{capacitygroup.customerName}</td>
+            </>
+          )}
+
+          {user?.role === 'CUSTOMER' && (
+            <>
+              <td>{capacitygroup.supplierBNPL}</td>
+              <td>{findCompanyNameByBpn(capacitygroup.supplierBNPL)}</td>
+            </>
+          )}
+
+
           <td>{capacitygroup.numberOfMaterials}</td>
+          <td>{capacitygroup.favoritedBy}</td>
           <td>
             {capacitygroup.linkStatus === EventType.TODO ? (
               <span className="badge rounded-pill text-bg-warning" id="tag-warning">
@@ -249,7 +261,6 @@ const CapacityGroupsList: React.FC = () => {
         <div className="row">
           <div className="col-sm-6">
             <h3>{getUserGreeting(user)}!</h3>
-            <span className='text-muted'>{findCompanyByCompanyID(user?.companyID || '')?.companyName || ''}</span>
           </div>
           <div className="col-sm-6">
             <div className="row">
@@ -257,10 +268,8 @@ const CapacityGroupsList: React.FC = () => {
                 <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
               </div>
               <div className="col-sm-1">
-                <Button className='float-end spin-on-hover' variant="primary" onClick={handleRefreshClick}>
-                  <span className="button-content">
-                    <FaRedo className="icon" />
-                  </span>
+                <Button className='float-end' variant="primary" onClick={handleRefreshClick}>
+                  <FaRedo className="spin-on-hover" />
                 </Button>
               </div>
             </div>
@@ -301,11 +310,7 @@ const CapacityGroupsList: React.FC = () => {
                         htmlSize={10}
                         max={100}
                         value={capacitygroupsPerPage}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          const newValue = value === '' ? 1 : Math.max(1, parseInt(value)); // Ensure it's not empty and not less than 1
-                          setcapacitygroupsPerPage(newValue);
-                        }}
+                        onChange={(e) => setcapacitygroupsPerPage(Number(e.target.value))}
                       />
                     </Col>
                   </Form.Group>

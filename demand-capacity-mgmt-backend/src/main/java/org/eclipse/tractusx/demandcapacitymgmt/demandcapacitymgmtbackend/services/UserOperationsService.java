@@ -5,6 +5,10 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.UserResponse;
 import java.util.List;
 
 public interface UserOperationsService {
-    void updateUser(UserRequest request);
+    UserResponse createUser(UserRequest request);
+    UserResponse updateUser(String userID, UserRequest request);
+
+    void deleteUser(String userId);
+
     List<UserResponse> fetchAllUsers();
 }

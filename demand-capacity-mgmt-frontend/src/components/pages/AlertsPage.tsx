@@ -21,55 +21,63 @@
  */
 
 import { useContext, useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
+import { FaList } from "react-icons/fa";
 import { FcHighPriority } from "react-icons/fc";
-import { EventsContext } from "../../contexts/EventsContextProvider";
-import { EventProp, EventType } from "../../interfaces/event_interfaces";
+import { AlertsContext } from "../../contexts/AlertsContextProvider";
+import AlertsTable from "../alerts/AlertsTable";
+import ConfigureAlertModal from "../alerts/ConfigureAlertModal";
+import RulesModal from "../alerts/RulesModal";
 import { LoadingMessage } from "../common/LoadingMessages";
-import EventsTable from "../events/EventsTable";
 
 
 function AlertsPage() {
-    const { fetchFilteredEvents } = useContext(EventsContext)!;
-    const [filteredEvents, setFilteredEvents] = useState<EventProp[]>([]);
     const [loading, setLoading] = useState(false);
+    const [showRulesModal, setShowRulesModal] = useState(false);
+    const { triggeredAlerts, fetchTriggeredAlertsWithRetry } = useContext(AlertsContext)!;
+
+    const openRulesModalClick = () => {
+        setShowRulesModal(true);
+    };
+    const hideRulesModal = () => {
+        setShowRulesModal(false);
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                // Fetch events based on the selected event type
-                const filteredEvents = await fetchFilteredEvents({
-                    event: EventType.ALERT,
-                });
-                setFilteredEvents(filteredEvents);
-            } catch (error) {
-                console.error('Error fetching filtered events:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData(); // Call the fetchData function when the component mounts
-    }, [fetchFilteredEvents]);
+        fetchTriggeredAlertsWithRetry();
+    }, []);
 
     if (loading) {
         return <LoadingMessage />; // Show loading spinner when data is loading
     }
-
     return (
         <>
             <br />
             <div className="container-xl">
-                <div style={{ display: "flex", }}>
-                    <FcHighPriority size={35} /><h3 className="icon-text-padding">Alerts</h3>
+                <div className="row">
+                    <div className="col-sm-6">
+                        <div style={{ display: 'flex' }}>
+                            <FcHighPriority size={35} />
+                            <h3 className="icon-text-padding">Alerts</h3>
+                        </div>
+                    </div>
+                    <div className="col-sm-6">
+                        <Button className='btn btn-primary float-end ms-2' onClick={openRulesModalClick}>
+                            <span><FaList /> Alert Rules</span>
+                        </Button>
+                        <ConfigureAlertModal />
+                    </div>
                 </div>
+
                 <div className="table">
                     <div className="table-wrapper">
-                        <EventsTable events={filteredEvents} isArchive={false} />
+                        <AlertsTable alerts={triggeredAlerts} />
                     </div>
                 </div>
             </div>
+            <RulesModal showRulesModal={showRulesModal} hideRulesModal={hideRulesModal} />
         </>
+
     );
 }
 
