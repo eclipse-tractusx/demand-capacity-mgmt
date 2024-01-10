@@ -29,6 +29,21 @@ servers:
 
 
 paths:
+
+  /edc/token:
+    post:
+      tags:
+        - EDC
+      summary: Get Access Token
+      operationId: getAccessToken
+      responses:
+        '200':
+          description: Access token retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenResponse'
+
   /token/login:
     post:
       tags:
@@ -3142,3 +3157,19 @@ components:
           edc: https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/TransferState
         state: STARTED
+
+    AccessTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        expires_in:
+          type: long
+        refresh_expires_in:
+          type: long
+        token_type:
+          type: string
+        not-before-policy:
+          type: long
+        scope:
+          type: string
