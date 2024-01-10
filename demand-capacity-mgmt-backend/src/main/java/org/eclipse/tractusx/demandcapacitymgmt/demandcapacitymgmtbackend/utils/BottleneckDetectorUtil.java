@@ -382,28 +382,35 @@ public class BottleneckDetectorUtil implements BottleneckManager {
     }
 
     // Month report processing
-    private MonthReportDto processMonth(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities, int month, int year, float capacity, float maxCapacity) {
+    private MonthReportDto processMonth(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities,
+                                        int month, int year, float capacity, float maxCapacity) {
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate firstDayOfMonth = yearMonth.atDay(1);
         LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
 
         List<WeekReportDto> weekReports = new ArrayList<>();
 
-        // Start from the first Monday of the month or the last Monday of the previous month
-        LocalDate startOfWeek = firstDayOfMonth.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        // Adjust the start date to the beginning of the first week in the month
+        LocalDate current = firstDayOfMonth.with(WeekFields.ISO.dayOfWeek(), 1);
+        if (current.getMonthValue() != month) {
+            current = current.plusWeeks(1); // Move to the next week if the first week starts in the previous month
+        }
 
-        while (!startOfWeek.isAfter(lastDayOfMonth)) {
-            LocalDate thursdayOfWeek = startOfWeek.with(WeekFields.ISO.dayOfWeek(), 4);
-            int weekOfYear = thursdayOfWeek.get(WeekFields.ISO.weekOfWeekBasedYear());
+        while (!current.isAfter(lastDayOfMonth)) {
+            int weekOfYear = current.get(WeekFields.ISO.weekOfWeekBasedYear());
 
-            // Include week if Thursday falls within the current month
-            if (thursdayOfWeek.getMonthValue() == month) {
+            // Exclude the first week of the next year if it's part of December
+            if (month == 12 && weekOfYear == 1 && current.getYear() == year) {
+                break;
+            }
+
+            // Proceed only if the week belongs to the current year
+            if (current.getYear() == year) {
                 List<DemandSeriesValues> weekDemandValues = getDemandsForWeek(matchedEntities, weekOfYear);
                 weekReports.add(calculateWeekDelta(weekDemandValues, weekOfYear, year, capacity, maxCapacity));
             }
 
-            // Move to the next Monday
-            startOfWeek = startOfWeek.plusWeeks(1);
+            current = current.plusWeeks(1);
         }
 
         MonthReportDto monthReport = new MonthReportDto();
@@ -412,8 +419,6 @@ public class BottleneckDetectorUtil implements BottleneckManager {
 
         return monthReport;
     }
-
-
 
     private List<DemandSeriesValues> getDemandsForWeek(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities, int weekOfYear) {
         List<DemandSeriesValues> weekDemandValues = new ArrayList<>();
@@ -459,33 +464,12 @@ public class BottleneckDetectorUtil implements BottleneckManager {
     }
 
 
-    // Week count calculation
-    public static int getWeekCount(int year, int month) {
-        YearMonth yearMonth = YearMonth.of(year, month);
-        LocalDate firstDayOfMonth = yearMonth.atDay(1);
-        LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
-        int count = 0;
-        for (LocalDate date = firstDayOfMonth; !date.isAfter(lastDayOfMonth); date = date.plusDays(1)) {
-            if (date.getDayOfWeek() == DayOfWeek.THURSDAY) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     private int getWeeksInYear(int year) {
         LocalDate lastDayOfYear = LocalDate.of(year, 12, 31);
-        WeekFields weekFields = WeekFields.ISO; // Using ISO standard
-        int weekNumber = lastDayOfYear.get(weekFields.weekOfWeekBasedYear());
-
-        // Check if the last week belongs to the next year
-        LocalDate firstDayOfLastWeek = lastDayOfYear.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        if (firstDayOfLastWeek.getYear() < year) {
-            return weekNumber - 1;
-        }
-
-        return weekNumber;
+        return (lastDayOfYear.getDayOfWeek() == DayOfWeek.THURSDAY ||
+                (lastDayOfYear.isLeapYear() && lastDayOfYear.getDayOfWeek() == DayOfWeek.WEDNESDAY)) ? 53 : 52;
     }
+
 
 
 
