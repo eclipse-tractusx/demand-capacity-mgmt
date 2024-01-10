@@ -18,17 +18,85 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
-
-openapi: '3.0.2'
+openapi: "3.0.2"
 info:
   title: Spring Template API
-  version: '1.0'
+  version: "1.0"
 servers:
   - url: https://localhost:8080/
   - url: http://localhost:8888/auth/realms/dcm/protocol/openid-connect
 
-
 paths:
+
+  /alerts:
+    post:
+      tags:
+        - alerts
+      summary: configureAlert
+      operationId: configureAlert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertResponse'
+
+    get:
+      tags:
+        - alerts
+      summary: get alerts
+      operationId: getAlerts
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertResponse'
+
+  /triggeredAlerts:
+    post:
+      tags:
+        - alerts
+      summary: configureTriggeredAlert
+      operationId: configureTriggeredAlert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggeredAlertRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggeredAlertResponse'
+    get:
+      tags:
+        - alerts
+      summary: get triggered alerts
+      operationId: getTriggeredAlerts
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TriggeredAlertResponse'
+
   /token/login:
     post:
       tags:
@@ -55,7 +123,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
   /token/refresh:
     post:
       tags:
@@ -79,7 +147,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
   /token/logout:
     post:
       tags:
@@ -124,83 +192,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IntrospectTokenResponse'
+                $ref: "#/components/schemas/IntrospectTokenResponse"
 
   /user:
-
-    post:
-      tags:
-        - userOperations
-      summary: create a user
-      operationId: postUser
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequest'
-      responses:
-        200:
-          description: General greeting
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-    get:
-      tags:
-        - userOperations
-      summary: get all users
-      operationId: fetch all users
-      responses:
-        200:
-          description: General Greeting
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UserResponse'
-
-  /user/{user_id}:
-
     put:
       tags:
         - userOperations
-      summary: update user by Id
-      operationId: updateUserById
+      summary: edit a user
+      operationId: update an user
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UserRequest'
-      parameters:
-        - in: 'path'
-          name: 'user_id'
-          schema:
-            type: string
-          required: true
       responses:
-        200:
-          description: Update of User
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-    delete:
-      tags:
-        - userOperations
-      summary: delete user by Id
-      operationId: deleteUsersById
-      parameters:
-        - in: 'path'
-          name: 'user_id'
-          schema:
-            type: string
-          required: true
-      responses:
-        200:
-          description: Delete user with id
+        201:
+          description: General Greeting
 
   /loggingHistory:
     post:
@@ -213,14 +221,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoggingHistoryRequest'
+              $ref: "#/components/schemas/LoggingHistoryRequest"
       responses:
         200:
           description: General greeting
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoggingHistoryResponse'
+                $ref: "#/components/schemas/LoggingHistoryResponse"
     delete:
       tags:
         - loggingHistory
@@ -245,7 +253,38 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LoggingHistoryResponse'
+                  $ref: "#/components/schemas/LoggingHistoryResponse"
+
+
+  /addressBook/{address_book_id}:
+
+    put:
+      tags:
+        - addressBook
+      summary: update addressBook by Id
+      operationId: updateAddressBookById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+      parameters:
+        - in: 'path'
+          name: 'address_book_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Update of addressBook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBookRequest'
+
+
+
   /addressBook:
     get:
       tags:
@@ -326,12 +365,12 @@ paths:
           in: query
           description: The start time for the logging history (optional)
           schema:
-            type: string  # You can change the type to match your data format (e.g., datetime)
+            type: string # You can change the type to match your data format (e.g., datetime)
         - name: end_time
           in: query
           description: The end time for the logging history (optional)
           schema:
-            type: string  # You can change the type to match your data format (e.g., datetime)
+            type: string # You can change the type to match your data format (e.g., datetime)
         - name: event
           in: query
           description: The event type (optional)
@@ -341,12 +380,12 @@ paths:
           in: query
           description: The material demand ID (optional)
           schema:
-            type: string  # Adjust the type as needed
+            type: string # Adjust the type as needed
         - name: capacity_group_id
           in: query
           description: The capacity group ID (optional)
           schema:
-            type: string  # Adjust the type as needed
+            type: string # Adjust the type as needed
       responses:
         200:
           description: General greeting
@@ -355,8 +394,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LoggingHistoryResponse'
-
+                  $ref: "#/components/schemas/LoggingHistoryResponse"
 
   /loggingHistory/{log_id}:
     delete:
@@ -365,16 +403,14 @@ paths:
       summary: delete Log by Id
       operationId: deleteLogById
       parameters:
-        - in: 'path'
-          name: 'log_id'
+        - in: "path"
+          name: "log_id"
           schema:
             type: string
           required: true
       responses:
         200:
           description: Delete log with id
-
-
 
   /loggingHistory/archivedLog:
     post:
@@ -387,11 +423,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoggingHistoryRequest'
+              $ref: "#/components/schemas/LoggingHistoryRequest"
       responses:
         200:
           description: Created Archived Log
-
 
     get:
       tags:
@@ -406,8 +441,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ArchivedLoggingHistoryResponse'
-
+                  $ref: "#/components/schemas/ArchivedLoggingHistoryResponse"
 
     delete:
       tags:
@@ -420,7 +454,6 @@ paths:
         500:
           description: Error occurred while deleting logs.
 
-
   /loggingHistory/archivedLog/{log_id}:
     delete:
       tags:
@@ -428,8 +461,8 @@ paths:
       summary: delete archived Log by Id
       operationId: deleteArchivedLogById
       parameters:
-        - in: 'path'
-          name: 'log_id'
+        - in: "path"
+          name: "log_id"
           schema:
             type: string
           required: true
@@ -451,10 +484,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LoggingHistoryResponse'
+                  $ref: "#/components/schemas/LoggingHistoryResponse"
         404:
           description: loggingHistory not found
-
 
   /loggingHistory/favoriteCapacityGroups:
     get:
@@ -470,7 +502,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LoggingHistoryResponse'
+                  $ref: "#/components/schemas/LoggingHistoryResponse"
         404:
           description: loggingHistory not found
   /statuses:
@@ -484,14 +516,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StatusRequest'
+              $ref: "#/components/schemas/StatusRequest"
       responses:
         200:
           description: General greeting
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StatusesResponse'
+                $ref: "#/components/schemas/StatusesResponse"
 
     get:
       tags:
@@ -506,7 +538,7 @@ paths:
               schema:
                 #               type: object
                 #               items:
-                $ref: '#/components/schemas/StatusesResponse'
+                $ref: "#/components/schemas/StatusesResponse"
 
     put:
       tags:
@@ -518,10 +550,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StatusRequest'
+              $ref: "#/components/schemas/StatusRequest"
       parameters:
-        - in: 'path'
-          name: 'status_id'
+        - in: "path"
+          name: "status_id"
           schema:
             type: string
           required: true
@@ -531,8 +563,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StatusesResponse'
-
+                $ref: "#/components/schemas/StatusesResponse"
 
   /demand:
     post:
@@ -545,14 +576,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MaterialDemandRequest'
+              $ref: "#/components/schemas/MaterialDemandRequest"
       responses:
         200:
           description: General greeting
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaterialDemandResponse'
+                $ref: "#/components/schemas/MaterialDemandResponse"
     get:
       tags:
         - Demand
@@ -566,7 +597,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/MaterialDemandResponse'
+                  $ref: "#/components/schemas/MaterialDemandResponse"
 
   /demand/series/{material_demand_id}:
     get:
@@ -575,8 +606,8 @@ paths:
       summary: get list of demand series by material demand id
       operationId: getDemandSeriesByMaterialDemand
       parameters:
-        - in: 'path'
-          name: 'material_demand_id'
+        - in: "path"
+          name: "material_demand_id"
           schema:
             type: string
           required: true
@@ -588,7 +619,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/MaterialDemandSeriesResponse'
+                  $ref: "#/components/schemas/MaterialDemandSeriesResponse"
 
   /demand/series:
     get:
@@ -604,7 +635,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/MaterialDemandSeriesResponse'
+                  $ref: "#/components/schemas/MaterialDemandSeriesResponse"
 
     post:
       tags:
@@ -617,14 +648,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DemandSeriesCompositeRequest'
+              $ref: "#/components/schemas/DemandSeriesCompositeRequest"
       responses:
         200:
           description: General greeting
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DemandSeriesCompositeResponse'
+                $ref: "#/components/schemas/DemandSeriesCompositeResponse"
 
   /demand/series/unlink:
     post:
@@ -638,7 +669,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DemandSeriesUnlinkRequest'
+              $ref: "#/components/schemas/DemandSeriesUnlinkRequest"
       responses:
         204:
           description: no content
@@ -650,8 +681,8 @@ paths:
       summary: get demand by Id
       operationId: getDemandsById
       parameters:
-        - in: 'path'
-          name: 'demand_id'
+        - in: "path"
+          name: "demand_id"
           schema:
             type: string
           required: true
@@ -661,7 +692,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaterialDemandResponse'
+                $ref: "#/components/schemas/MaterialDemandResponse"
 
     put:
       tags:
@@ -673,10 +704,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MaterialDemandRequest'
+              $ref: "#/components/schemas/MaterialDemandRequest"
       parameters:
-        - in: 'path'
-          name: 'demand_id'
+        - in: "path"
+          name: "demand_id"
           schema:
             type: string
           required: true
@@ -686,15 +717,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaterialDemandResponse'
+                $ref: "#/components/schemas/MaterialDemandResponse"
     delete:
       tags:
         - Demand
       summary: delete demand by Id
       operationId: deleteDemandsById
       parameters:
-        - in: 'path'
-          name: 'demand_id'
+        - in: "path"
+          name: "demand_id"
           schema:
             type: string
           required: true
@@ -713,7 +744,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LinkCGDSRequest'
+              $ref: "#/components/schemas/LinkCGDSRequest"
       responses:
         204:
           description: no content
@@ -731,7 +762,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CapacityGroupDefaultViewResponse'
+                  $ref: "#/components/schemas/CapacityGroupDefaultViewResponse"
     post:
       tags:
         - capacityGroup
@@ -742,14 +773,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CapacityGroupRequest'
+              $ref: "#/components/schemas/CapacityGroupRequest"
       responses:
         200:
           description: General greeting
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CapacityGroupResponse'
+                $ref: "#/components/schemas/CapacityGroupResponse"
 
   /capacityGroup/{capacityGroup_id}:
     get:
@@ -758,8 +789,8 @@ paths:
       summary: get capacityGroup by ID
       operationId: getCapacityGroupById
       parameters:
-        - in: 'path'
-          name: 'capacityGroup_id'
+        - in: "path"
+          name: "capacityGroup_id"
           schema:
             type: string
           required: true
@@ -769,8 +800,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SingleCapacityGroup'
-
+                $ref: "#/components/schemas/SingleCapacityGroup"
 
   /weekbasedcapacitygroup:
     get:
@@ -786,8 +816,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/WeekBasedCapacityGroupDtoResponse'
-
+                  $ref: "#/components/schemas/WeekBasedCapacityGroupDtoResponse"
 
     post:
       tags:
@@ -801,14 +830,12 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/WeekBasedCapacityGroupDtoRequest'
+                $ref: "#/components/schemas/WeekBasedCapacityGroupDtoRequest"
       responses:
         200:
           description: weekBasedCapacityGroup endpoint
 
-
   /weekbasedcapacitygroup/{weekBasedCapacity_id}:
-
     put:
       tags:
         - weekBasedCapacityGroup
@@ -819,10 +846,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WeekBasedCapacityGroupDtoRequest'
+              $ref: "#/components/schemas/WeekBasedCapacityGroupDtoRequest"
       parameters:
-        - in: 'path'
-          name: 'weekBasedCapacity_id'
+        - in: "path"
+          name: "weekBasedCapacity_id"
           schema:
             type: string
           required: true
@@ -832,12 +859,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WeekBasedCapacityGroupDtoResponse'
-
-
+                $ref: "#/components/schemas/WeekBasedCapacityGroupDtoResponse"
 
   /weekbasedmaterialdemand/{weekBasedMaterialDemand_id}:
-
     put:
       tags:
         - weekBasedMaterialDemand
@@ -848,10 +872,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WeekBasedMaterialDemandRequestDto'
+              $ref: "#/components/schemas/WeekBasedMaterialDemandRequestDto"
       parameters:
-        - in: 'path'
-          name: 'weekBasedMaterialDemand_id'
+        - in: "path"
+          name: "weekBasedMaterialDemand_id"
           schema:
             type: string
           required: true
@@ -861,8 +885,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WeekBasedMaterialDemandResponseDto'
-
+                $ref: "#/components/schemas/WeekBasedMaterialDemandResponseDto"
 
   /weekbasedmaterialdemand:
     get:
@@ -878,8 +901,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/WeekBasedMaterialDemandResponseDto'
-
+                  $ref: "#/components/schemas/WeekBasedMaterialDemandResponseDto"
 
     post:
       tags:
@@ -893,7 +915,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/WeekBasedMaterialDemandRequestDto'
+                $ref: "#/components/schemas/WeekBasedMaterialDemandRequestDto"
       responses:
         200:
           description: weekBasedCapacityGroup endpoint
@@ -909,14 +931,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CompanyDto'
+              $ref: "#/components/schemas/CompanyDto"
       responses:
         200:
           description: Company created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CompanyDto'
+                $ref: "#/components/schemas/CompanyDto"
     get:
       tags:
         - company
@@ -930,7 +952,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CompanyDto'
+                  $ref: "#/components/schemas/CompanyDto"
   /company/{company_id}:
     delete:
       tags:
@@ -938,8 +960,8 @@ paths:
       summary: delete company by Id
       operationId: deleteCompanyById
       parameters:
-        - in: 'path'
-          name: 'company_id'
+        - in: "path"
+          name: "company_id"
           schema:
             type: string
           required: true
@@ -961,7 +983,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CompanyDto'
+                  $ref: "#/components/schemas/CompanyDto"
 
   /unitmeasure:
     get:
@@ -977,7 +999,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UnitMeasure'
+                  $ref: "#/components/schemas/UnitMeasure"
 
   /demandcategory:
     get:
@@ -993,7 +1015,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DemandCategoryResponse'
+                  $ref: "#/components/schemas/DemandCategoryResponse"
   /favorite:
     get:
       tags:
@@ -1006,7 +1028,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FavoriteResponse'
+                $ref: "#/components/schemas/FavoriteResponse"
 
     post:
       tags:
@@ -1018,11 +1040,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FavoriteRequest'
+              $ref: "#/components/schemas/FavoriteRequest"
       responses:
         200:
           description: Favorite created successfully
-
 
   /favorite/{id}:
     delete:
@@ -1062,7 +1083,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FavoriteResponse'
+                $ref: "#/components/schemas/FavoriteResponse"
         404:
           description: Favorite not found
 
@@ -1084,7 +1105,7 @@ components:
         companyID:
           type: string
         role:
-          $ref: '#/components/schemas/Role'
+          $ref: "#/components/schemas/Role"
 
     UserResponse:
       type: object
@@ -1102,7 +1123,7 @@ components:
         companyID:
           type: string
         role:
-          $ref: '#/components/schemas/Role'
+          $ref: "#/components/schemas/Role"
 
     User:
       type: object
@@ -1120,7 +1141,7 @@ components:
         companyID:
           type: string
         role:
-          $ref: '#/components/schemas/Role'
+          $ref: "#/components/schemas/Role"
         access_token:
           type: string
         refresh_token:
@@ -1215,15 +1236,15 @@ components:
         endDate:
           type: string
         customer:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         supplier:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         linkMaterialDemandIds:
           type: array
           items:
             type: string
             format: uuid
-          description: 'Array of UUIDs representing linked material demand IDs.'
+          description: "Array of UUIDs representing linked material demand IDs."
 
     DemandResponseDto:
       type: object
@@ -1247,14 +1268,13 @@ components:
         companyId:
           type: string
         product:
-          $ref: '#/components/schemas/ProductDto'
+          $ref: "#/components/schemas/ProductDto"
 
     DemandRequestUpdateDto:
       type: object
       properties:
         actualDemand:
           type: number
-
 
     LoggingHistoryRequest:
       type: object
@@ -1279,7 +1299,6 @@ components:
           type: string
         isFavorited:
           type: boolean
-
 
     ArchivedLoggingHistoryRequest:
       type: object
@@ -1353,8 +1372,6 @@ components:
         isFavorited:
           type: boolean
 
-
-
     ProductDto:
       type: object
       properties:
@@ -1379,7 +1396,7 @@ components:
         customerLocation:
           type: string
         demandCategory:
-          $ref: '#/components/schemas/DemandCategoryDto'
+          $ref: "#/components/schemas/DemandCategoryDto"
 
     CapacitiesDto:
       type: object
@@ -1391,8 +1408,6 @@ components:
         maximumCapacity:
           type: string
 
-
-
     WeekBasedCapacityGroupDtoRequest:
       type: object
       properties:
@@ -1401,8 +1416,7 @@ components:
         viewed:
           type: boolean
         WeekBasedCapacityGroupRequest:
-          $ref: '#/components/schemas/WeekBasedCapacityGroupRequest'
-
+          $ref: "#/components/schemas/WeekBasedCapacityGroupRequest"
 
     WeekBasedMaterialDemandResponseDto:
       type: object
@@ -1412,8 +1426,7 @@ components:
         viewed:
           type: boolean
         WeekBasedMaterialDemandRequest:
-          $ref: '#/components/schemas/WeekBasedMaterialDemandRequest'
-
+          $ref: "#/components/schemas/WeekBasedMaterialDemandRequest"
 
     WeekBasedCapacityGroupDtoResponse:
       type: object
@@ -1423,9 +1436,7 @@ components:
         viewed:
           type: boolean
         WeekBasedCapacityGroupRequest:
-          $ref: '#/components/schemas/WeekBasedCapacityGroupRequest'
-
-
+          $ref: "#/components/schemas/WeekBasedCapacityGroupRequest"
 
     WeekBasedCapacityGroupRequest:
       type: object
@@ -1435,7 +1446,7 @@ components:
         linkedDemandSeries:
           type: array
           items:
-            $ref: '#/components/schemas/LinkedDemandSeriesRequest'
+            $ref: "#/components/schemas/LinkedDemandSeriesRequest"
         supplier:
           type: string
         name:
@@ -1447,7 +1458,7 @@ components:
         capacities:
           type: array
           items:
-            $ref: '#/components/schemas/CapacitiesDto'
+            $ref: "#/components/schemas/CapacitiesDto"
         changedAt:
           type: string
         capacityGroupId:
@@ -1473,7 +1484,7 @@ components:
         demandSeries:
           type: array
           items:
-            $ref: '#/components/schemas/DemandWeekSeriesDto'
+            $ref: "#/components/schemas/DemandWeekSeriesDto"
         materialNumberCustomer:
           type: string
         customer:
@@ -1497,7 +1508,7 @@ components:
         demandSeries:
           type: array
           items:
-            $ref: '#/components/schemas/DemandWeekSeriesDto'
+            $ref: "#/components/schemas/DemandWeekSeriesDto"
         materialNumberCustomer:
           type: string
         customer:
@@ -1525,11 +1536,11 @@ components:
         demands:
           type: array
           items:
-            $ref: '#/components/schemas/DemandSeriesDto'
+            $ref: "#/components/schemas/DemandSeriesDto"
         customerLocation:
           type: string
         demandCategory:
-          $ref: '#/components/schemas/DemandSeriesCategoryDto'
+          $ref: "#/components/schemas/DemandSeriesCategoryDto"
 
     WeekBasedMaterialDemandRequestDto:
       type: object
@@ -1539,8 +1550,7 @@ components:
         viewed:
           type: boolean
         WeekBasedMaterialDemandRequest:
-          $ref: '#/components/schemas/WeekBasedMaterialDemandRequest'
-
+          $ref: "#/components/schemas/WeekBasedMaterialDemandRequest"
 
     MaterialDemandRequest:
       type: object
@@ -1562,7 +1572,7 @@ components:
         materialDemandSeries:
           type: array
           items:
-            $ref: '#/components/schemas/MaterialDemandSeries'
+            $ref: "#/components/schemas/MaterialDemandSeries"
 
     MaterialDemandSeries:
       type: object
@@ -1580,13 +1590,11 @@ components:
         demandSeriesValues:
           type: array
           items:
-            $ref: '#/components/schemas/MaterialDemandSeriesValue'
+            $ref: "#/components/schemas/MaterialDemandSeriesValue"
         capacityGroupId:
           type: string
         materialDemand:
           type: string
-
-
 
     MaterialDemandSeriesValue:
       type: object
@@ -1608,20 +1616,19 @@ components:
         materialNumberSupplier:
           type: string
         customer:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         supplier:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         unitMeasureId:
-          $ref: '#/components/schemas/UnitMeasure'
+          $ref: "#/components/schemas/UnitMeasure"
         changedAt:
           type: string
         demandSeries:
           type: array
           items:
-            $ref: '#/components/schemas/MaterialDemandSeriesResponse'
+            $ref: "#/components/schemas/MaterialDemandSeriesResponse"
         linkStatus:
           type: string
-
 
     CompanyDto:
       type: object
@@ -1686,6 +1693,8 @@ components:
           type: string
         directQuery:
           type: boolean
+        addressBook:
+          $ref: "#/components/schemas/AddressBookDto"
 
     AddressBookResponse:
       type: object
@@ -1696,19 +1705,36 @@ components:
           type: string
         name:
           type: string
-        landLine:
-          type: string
-        cellPhone:
-          type: string
+#        landLine:
+#          type: string
+#        cellPhone:
+#          type: string
         email:
           type: string
-        department:
+        contact:
           type: string
         function:
           type: string
         picture:
           type: string
-          format: byte
+
+    AddressBookDto:
+      type: object
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        name:
+          type: string
+        contact:
+          type: string
+        email:
+          type: string
+        function:
+          type: string
+        picture:
+          type: string
 
     MaterialDemandFavoriteResponse:
       type: object
@@ -1722,9 +1748,9 @@ components:
         materialNumberSupplier:
           type: string
         customer:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         supplier:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         status:
           type: string
         unitOfMeasure:
@@ -1740,9 +1766,9 @@ components:
         id:
           type: string
         customer:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         supplier:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         capacityGroupId:
           type: string
         status:
@@ -1761,15 +1787,17 @@ components:
           type: string
         name:
           type: string
-        landLine:
-          type: string
-        cellPhone:
-          type: string
+#        landLine:
+#          type: string
+#        cellPhone:
+#          type: string
         email:
           type: string
-        department:
+        contact:
           type: string
         function:
+          type: string
+        picture:
           type: string
 
     UnitMeasure:
@@ -1796,17 +1824,17 @@ components:
         id:
           type: string
         customerLocation:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         expectedSupplierLocation:
           type: array
           items:
-            $ref: '#/components/schemas/CompanyDto'
+            $ref: "#/components/schemas/CompanyDto"
         demandCategory:
-          $ref: '#/components/schemas/DemandCategoryResponse'
+          $ref: "#/components/schemas/DemandCategoryResponse"
         demandSeriesValues:
           type: array
           items:
-            $ref: '#/components/schemas/MaterialDemandSeriesValue'
+            $ref: "#/components/schemas/MaterialDemandSeriesValue"
         materialDemandId:
           type: string
 
@@ -1816,7 +1844,7 @@ components:
         demandSeries:
           type: array
           items:
-            $ref: '#/components/schemas/LinkedDemandMaterialCompositeResponse'
+            $ref: "#/components/schemas/LinkedDemandMaterialCompositeResponse"
 
     LinkedDemandMaterialCompositeResponse:
       type: object
@@ -1826,17 +1854,17 @@ components:
         materialDemandID:
           type: string
         customerLocation:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         expectedSupplierLocation:
           type: array
           items:
-            $ref: '#/components/schemas/CompanyDto'
+            $ref: "#/components/schemas/CompanyDto"
         demandCategory:
-          $ref: '#/components/schemas/DemandCategoryResponse'
+          $ref: "#/components/schemas/DemandCategoryResponse"
         demandSeriesValues:
           type: array
           items:
-            $ref: '#/components/schemas/MaterialDemandSeriesValue'
+            $ref: "#/components/schemas/MaterialDemandSeriesValue"
 
     DemandSeriesCompositeRequest:
       type: object
@@ -1854,7 +1882,6 @@ components:
           type: string
         capacityGroupID:
           type: string
-
 
     DemandCategoryResponse:
       type: object
@@ -1884,15 +1911,15 @@ components:
         Capacities:
           type: array
           items:
-            $ref: '#/components/schemas/CapacityRequest'
+            $ref: "#/components/schemas/CapacityRequest"
 
     LinkedDemandSeriesResponse:
       type: object
       properties:
         demandCategory:
-          $ref: '#/components/schemas/DemandCategoryResponse'
+          $ref: "#/components/schemas/DemandCategoryResponse"
         customerLocation:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         materialNumberSupplier:
           type: string
         materialNumberCustomer:
@@ -1906,23 +1933,23 @@ components:
         capacities:
           type: array
           items:
-            $ref: '#/components/schemas/CapacityRequest'
+            $ref: "#/components/schemas/CapacityRequest"
         supplierLocations:
           type: array
           items:
-            $ref: '#/components/schemas/CompanyDto'
+            $ref: "#/components/schemas/CompanyDto"
         customer:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         supplier:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         weekBasedCapacityGroupId:
           type: string
         linkedDemandSeries:
           type: array
           items:
-            $ref: '#/components/schemas/LinkedDemandSeriesResponse'
+            $ref: "#/components/schemas/LinkedDemandSeriesResponse"
         unitOfMeasure:
-          $ref: '#/components/schemas/UnitMeasure'
+          $ref: "#/components/schemas/UnitMeasure"
         changeAt:
           type: string
         name:
@@ -1992,13 +2019,13 @@ components:
       type: object
       properties:
         customer:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         supplier:
-          $ref: '#/components/schemas/CompanyDto'
+          $ref: "#/components/schemas/CompanyDto"
         capacities:
           type: array
           items:
-            $ref: '#/components/schemas/CapacityBody'
+            $ref: "#/components/schemas/CapacityBody"
         linkMaterialDemandIds:
           type: array
           items:
@@ -2025,7 +2052,6 @@ components:
         weekColor:
           type: string
 
-
     FavoriteRequest:
       type: object
       properties:
@@ -2040,23 +2066,128 @@ components:
         capacityGroups:
           type: array
           items:
-            $ref: '#/components/schemas/SingleCapacityGroupFavoriteResponse'
+            $ref: "#/components/schemas/SingleCapacityGroupFavoriteResponse"
         materialDemands:
           type: array
           items:
-            $ref: '#/components/schemas/MaterialDemandFavoriteResponse'
+            $ref: "#/components/schemas/MaterialDemandFavoriteResponse"
         companies:
           type: array
           items:
-            $ref: '#/components/schemas/CompanyDtoFavoriteResponse'
+            $ref: "#/components/schemas/CompanyDtoFavoriteResponse"
         events:
           type: array
           items:
-            $ref: '#/components/schemas/EventFavoriteResponse'
+            $ref: "#/components/schemas/EventFavoriteResponse"
         addressBooks:
           type: array
           items:
+            $ref: "#/components/schemas/AddressBookFavoriteResponse"
+    
+    AlertRequest:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        type:
+          type: string
+        threshold:
+          type: number
+        description:
+          type: string
+        user:
+          type: string
+        dedicatedAlerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DedicatedAlert'
+    TriggeredAlertRequest:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        triggerTimes:
+          type: number
+        triggerTimesInThreeMonths:
+          type: number
+        type:
+          type: string
+        threshold:
+          type: number
+        description:
+          type: string
+        user:
+          type: string
+    AlertResponse:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        type:
+          type: string
+        threshold:
+          type: string
+        description:
+          type: string
+        user:
+          type: string
+        dedicatedAlerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DedicatedAlert'
+    DedicatedAlert:
+      type: object
+      properties:
+        id:
+          type: string
+        objectId:
+          type: string
+        type:
+          type: string
+
+    TriggeredAlertResponse:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        triggerTimes:
+          type: integer
+        triggerTimesInThreeMonths:
+          type: integer
+        type:
+          type: string
+        threshold:
+          type: string
+        description:
+          type: string
+        user:
+          type: string
             $ref: '#/components/schemas/AddressBookFavoriteResponse'
+    
     ApiErrorDetail:
       type: object
       properties:

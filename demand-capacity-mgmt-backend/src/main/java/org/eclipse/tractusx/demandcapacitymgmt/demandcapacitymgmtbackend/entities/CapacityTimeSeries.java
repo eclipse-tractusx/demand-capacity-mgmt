@@ -23,10 +23,9 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 import lombok.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.WeekColor;
-
-import java.util.UUID;
 
 @Entity
 @Table(name = "capacity_time_series")
@@ -49,13 +48,6 @@ public class CapacityTimeSeries {
 
     @Column(name = "maximum_capacity", nullable = false)
     private Double maximumCapacity;
-
-    @Column(name = "ruled", nullable = false)
-    private boolean ruled = false;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "week_color")
-    private WeekColor weekColor;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

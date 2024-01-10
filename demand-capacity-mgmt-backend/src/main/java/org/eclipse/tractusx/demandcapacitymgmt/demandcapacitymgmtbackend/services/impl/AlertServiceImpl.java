@@ -80,9 +80,40 @@ public class AlertServiceImpl implements AlertService {
                         double threshold = alertEntity.getThreshold() / 100;
                         double demandDelta = threshold * oldValue;
                         if (threshold >= 0 && (newValue - oldValue >= demandDelta)) {
-                            fillTriggeredAlert(triggeredAlertEntity, "Increased by ", alertEntity.getThreshold(), true, alertEntity);
+                            fillTriggeredAlert(
+                                triggeredAlertEntity,
+                                "Increased by ",
+                                alertEntity.getThreshold(),
+                                true,
+                                alertEntity
+                            );
                         } else if ((threshold < 0 && (newValue - oldValue <= demandDelta))) {
-                            fillTriggeredAlert(triggeredAlertEntity, "Decreased by ", alertEntity.getThreshold(), true, alertEntity);
+                            fillTriggeredAlert(
+                                triggeredAlertEntity,
+                                "Decreased by ",
+                                alertEntity.getThreshold(),
+                                true,
+                                alertEntity
+                            );
+                        }
+                    }else if (alertEntity.getType().equals(AlertThresholdType.ABSOLUTE)){
+                        double threshold = alertEntity.getThreshold();
+                        if (threshold >= 0 && (newValue - oldValue >= threshold)) {
+                            fillTriggeredAlert(
+                                    triggeredAlertEntity,
+                                    "Increased by ",
+                                    threshold,
+                                    false,
+                                    alertEntity
+                            );
+                        } else if ((threshold < 0 && (newValue - oldValue <= threshold))) {
+                            fillTriggeredAlert(
+                                    triggeredAlertEntity,
+                                    "Decreased by ",
+                                    threshold,
+                                    false,
+                                    alertEntity
+                            );
                         }
                     }
                 } else if (alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.DEDICATED)) {
@@ -111,7 +142,7 @@ public class AlertServiceImpl implements AlertService {
                                             );
                                         }
                                     } else {
-                                        double threshold = alertEntity.getThreshold();
+                                        double threshold = alertEntity.getThreshold() / 100;
                                         double demandDelta = alertEntity.getThreshold() * oldValue;
                                         if (threshold >= 0 && (newValue - oldValue >= demandDelta)) {
                                             fillTriggeredAlert(
@@ -146,7 +177,7 @@ public class AlertServiceImpl implements AlertService {
         boolean isRelative,
         AlertEntity alertEntity
     ) {
-        triggeredAlertEntity.setDescription(message + threshold + (isRelative ? "%" : "units"));
+        triggeredAlertEntity.setDescription(message + threshold + (isRelative ? "%" : " units"));
         alertEntity.setTriggeredTimes(alertEntity.getTriggeredTimes() + 1);
         alertsRepository.save(alertEntity);
         triggeredAlertsRepository.save(triggeredAlertEntity);
@@ -224,7 +255,7 @@ public class AlertServiceImpl implements AlertService {
         responseDto.setMonitoredObjects(alertEntity.getMonitoredObjects().name());
         responseDto.setThreshold(String.valueOf(alertEntity.getThreshold()));
         responseDto.setUser(alertEntity.getUserID().toString());
-        responseDto.setTriggerTimes(alertEntity.getTriggeredTimes());
+        //responseDto.setTriggerTimes(alertEntity.getTriggeredTimes());
         responseDto.setDedicatedAlerts(dedicatedAlerts);
         return responseDto;
     }

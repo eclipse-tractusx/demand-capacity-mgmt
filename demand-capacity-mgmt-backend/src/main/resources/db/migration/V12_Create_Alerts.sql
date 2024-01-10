@@ -52,5 +52,5 @@ create table dedicated_alerts
     object_id uuid,
     alert_name varchar(400),
     type varchar(400),
-    alert_id uuid constraint alert_id references dedicated_alerts(id)
+    alert_id uuid constraint alert_id references alerts(id)
 );
