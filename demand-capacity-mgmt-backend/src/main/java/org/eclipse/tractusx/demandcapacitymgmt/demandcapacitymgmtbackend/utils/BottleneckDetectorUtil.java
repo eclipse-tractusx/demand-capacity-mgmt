@@ -428,17 +428,19 @@ public class BottleneckDetectorUtil implements BottleneckManager {
 
         // Updated delta calculation: capacity - totalDemand
         double totalDelta = capacity - totalDemand;
-
-        weekReport.setWeek(weekNumber);
-        weekReport.setDelta(totalDelta);
-        weekReport.setActCapacity(capacity);
-        weekReport.setMaxCapacity(maxCapacity);
-        if (weekDemandValues.size() == 0){} else {
+        if (weekDemandValues.isEmpty()){
+            weekReport.setWeek(weekNumber);
+            weekReport.setDelta(0);
+        } else {
             DemandCategoryEntity category = weekDemandValues.get(0).getDemandSeries().getDemandCategory();
             weekReport.setDemandCatID(category.getId().toString());
             weekReport.setDemandCatName(category.getDemandCategoryName());
             weekReport.setDemandCatCode(category.getDemandCategoryCode());
+            weekReport.setWeek(weekNumber);
+            weekReport.setDelta(totalDelta);
         }
+        weekReport.setActCapacity(capacity);
+        weekReport.setMaxCapacity(maxCapacity);
         return weekReport;
     }
 

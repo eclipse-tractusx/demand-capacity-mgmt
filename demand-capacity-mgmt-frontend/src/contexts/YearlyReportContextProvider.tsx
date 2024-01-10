@@ -24,7 +24,7 @@ import React, { createContext, useEffect, useState } from 'react';
 import createAPIInstance from "../util/Api";
 import { useUser } from "./UserContext";
 
-interface WeekReport {
+export interface WeekReport {
   week: number;
   delta: number;
   maxCapacity: number;
@@ -33,49 +33,59 @@ interface WeekReport {
   catCode: string | null;
   catName: string | null;
 }
-interface MonthReport {
+export interface MonthReport {
   month: string;
   weekReport: WeekReport[];
 }
 
-interface YearReport {
+export interface YearReport {
   year: number;
   totalWeeksCurrentYear: number;
   monthReport: MonthReport[];
+  capacityGroupId: string;
+  ruled: boolean;
+  percentage: number
 }
 
 interface YearReportContextValue {
   yearReport: YearReport | undefined;
+  fetchYearReport: (cgID: string) => Promise<YearReport | undefined>;
 }
-
 export const YearlyReportContext = createContext<YearReportContextValue>({
   yearReport: undefined,
+  fetchYearReport: async (cgID: string) => undefined, // A function returning a promise resolved with undefined
 });
-
 const YearlyReportContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
+
   const { access_token } = useUser();
   const [yearReport, setYearReport] = useState<YearReport | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 3;
 
-  useEffect(() => {
-    const api = createAPIInstance(access_token);
-    const fetchYearReport = async () => {
-      try {
-        const response = await api.post<YearReport>('/year/report');
-        setYearReport(response.data);
-        console.log("YEAR REPORT : " +  response.data)
-      } catch (error) {
-        console.error('Error fetching year report:', error);
-      }
-    };
-
-    if (access_token) {
-      fetchYearReport();
+  const fetchYearReport = async (cgID: string): Promise<YearReport | undefined> => {
+    if (isLoading || !access_token || yearReport) {
+      // Prevent fetching if already loading, no access token, or year report already exists
+      return;
     }
-  }, [access_token]);
 
-  const contextValue = {
+    setIsLoading(true); // Set loading before the operation begins
+
+    try {
+      const api = createAPIInstance(access_token);
+      const response = await api.post<YearReport>('/year/report', { cgID });
+      setYearReport(response.data);
+      return response.data;
+    } catch (error) {
+      return undefined;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const contextValue: YearReportContextValue = {
     yearReport,
-    // Add any additional state or functions here
+    fetchYearReport
   };
 
   return (

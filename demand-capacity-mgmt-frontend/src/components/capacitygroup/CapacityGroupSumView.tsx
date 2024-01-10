@@ -20,11 +20,8 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import {OverlayTrigger, Table, Tooltip} from 'react-bootstrap';
-import '../../../src/index.css';
-import { addDays, addMonths, addWeeks, format, getISOWeek, startOfMonth } from 'date-fns';
-import { FaArrowDown, FaArrowRight } from 'react-icons/fa';
+import React, { useContext, useEffect, useState } from 'react';
+import { Table } from 'react-bootstrap';
 import { YearlyReportContext } from "../../contexts/YearlyReportContextProvider";
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 
@@ -32,87 +29,110 @@ interface WeeklyViewProps {
   capacityGroupID: string | null | undefined;
 }
 
-const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID}) => {
+interface TableData {
+  [key: string]: {
+    bgColor: string;
+    content: string;
+  };
+}
+
+const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID }) => {
 
   const { demandcategories } = useContext(DemandCategoryContext) || {};
-  const { yearReport } = useContext(YearlyReportContext) || {};
+  const { yearReport, fetchYearReport } = useContext(YearlyReportContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dataFetched, setDataFetched] = useState(false);
+  const [tableData, setTableData] = useState<TableData>({});
 
   useEffect(() => {
+    if (capacityGroupID && !yearReport && !isLoading) {
+      setIsLoading(true);
+      fetchYearReport(capacityGroupID)
+          .then(() => setDataFetched(true)) // Set state to trigger re-render
+          .catch(error => console.error('Failed to fetch year report:', error))
+          .finally(() => setIsLoading(false));
+    }
+  }, [capacityGroupID, yearReport, isLoading, fetchYearReport]);
 
-  }, []);
+  useEffect(() => {
+    if (yearReport) {
+      const newTableData: TableData = {};
+      yearReport.monthReport.forEach(month => {
+        month.weekReport.forEach(week => {
+          // Use the week and category ID to generate a unique key for each cell
+          demandcategories?.forEach(category => {
+            const key = `${month.month}-${week.week}-${category.id}`;
+            if (week.catID === category.id) {
+              if (week.delta < 0) {
+                newTableData[key] = { bgColor: 'rgba(220, 53, 69, 0.5)', content: week.delta.toString() };
+              } else if (week.delta === 0) {
+                newTableData[key] = { bgColor: 'rgba(148, 203, 45, 0.5)', content: '0' };
+              }
+            }
+          });
+          // For weeks without specific category data, use a generic key
+          const genericKey = `${month.month}-${week.week}`;
+          if (!week.catID) {
+            newTableData[genericKey] = { bgColor: '', content: '' };
+          }
+        });
+      });
+      console.log('Table data constructed:', newTableData);
+      setTableData(newTableData); // Update the state
+    }
+  }, [yearReport, demandcategories]); // Add demandcategories as a dependency
 
-  // Track which Demand.description rows are expanded
-  const [expandedDemandRows, setExpandedDemandRows] = useState<Record<string, boolean>>({});
-  if (!yearReport) {
-    return <div>Loading...</div>; // Adjusted loading logic
+
+
+  if (!yearReport && !dataFetched) {
+    return <div>LOADING</div>;
   }
-
-  const renderTooltip = (weekNumber: number) => (
-      <Tooltip id={`week-tooltip-${weekNumber}`}>
-        Week {weekNumber}
-      </Tooltip>
-  );
-
-  // DEMAND CATEGORIES
-  //Mapping of demand categories
-  const idToNumericIdMap: Record<string, number> = {};
-  if (demandcategories) {
-    demandcategories.forEach((category, index) => {
-      idToNumericIdMap[category.id] = index;
-    });
-  }
-
-  // Function to toggle the expansion of a Demand.description row
-  const toggleDemandRowExpansion = (demandId: string) => {
-    setExpandedDemandRows((prevExpandedRows) => ({
-      ...prevExpandedRows,
-      [demandId]: !prevExpandedRows[demandId],
-    }));
-  };
-
 
   return (
       <div className='container'>
-        <Table striped bordered hover size="sm">
-          <thead>
-          <tr>
-            <th>#</th>
-            {yearReport.monthReport.map((month) => (
-                <th key={month.month} colSpan={month.weekReport.length}>
-                  {month.month}
-                </th>
+        <div style={{ overflowX: 'auto' }}>
+          <Table striped bordered hover size="sm">
+            <thead>
+            <tr>
+              <th colSpan={5}>{yearReport?.year}</th>
+              <th colSpan={48}>Rules are being applied by your administrator</th>
+            </tr>
+            <tr>
+              <th>Demand Category</th>
+              {yearReport?.monthReport.map((month) => (
+                  <th key={month.month} colSpan={month.weekReport.length}>{month.month}</th>
+              ))}
+            </tr>
+            </thead>
+            <tbody>
+            {demandcategories?.map(category => (
+                <tr key={category.id}>
+                  <td>{category.demandCategoryName}</td>
+                  {yearReport?.monthReport.flatMap(month =>
+                      month.weekReport.map(week => {
+                        // Construct the key with the category ID
+                        const key = `${month.month}-${week.week}-${category.id}`;
+                        const genericKey = `${month.month}-${week.week}`;
+                        // Use the specific key if available, otherwise fall back to the generic key
+                        const cellData = tableData[key] || tableData[genericKey];
+                        return (
+                            <td key={key}
+                                style={{
+                                  minWidth: '75px',
+                                  textAlign: 'center',
+                                  backgroundColor: cellData?.bgColor || '',
+                                }}>
+                              {cellData?.content || ''}
+                            </td>
+                        );
+                      })
+                  )}
+                </tr>
             ))}
-          </tr>
-          </thead>
-          <tbody>
-          {yearReport.monthReport.flatMap((month, monthIndex) =>
-              month.weekReport.map((week, weekIndex) => (
-                  <tr key={`${monthIndex}-${weekIndex}`}>
-                    <td>
-                      <OverlayTrigger placement="top" overlay={renderTooltip(week.week)}>
-                        <span>{week.week}</span>
-                      </OverlayTrigger>
-                    </td>
-                    <td>{week.delta}</td>
-                    <td>{week.maxCapacity}</td>
-                    <td>{week.actCapacity}</td>
-                    {/* Additional data columns */}
-                  </tr>
-              ))
-          )}
-          {/* Rows for demand categories */}
-          {demandcategories?.map((category, categoryIndex) => (
-              <tr key={categoryIndex}>
-                <td colSpan={4 + 8}>
-                  {category.demandCategoryName}
-                  {/* Render more details about demand categories if needed */}
-                </td>
-              </tr>
-          ))}
-          </tbody>
-        </Table>
+            </tbody>
+          </Table>
+        </div>
       </div>
   );
 }
-
 export default CapacityGroupSumView;
