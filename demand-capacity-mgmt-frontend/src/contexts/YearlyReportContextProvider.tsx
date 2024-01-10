@@ -75,6 +75,7 @@ const YearlyReportContextProvider: React.FC<React.PropsWithChildren<{}>> = (prop
       const api = createAPIInstance(access_token);
       const response = await api.post<YearReport>('/year/report', { cgID });
       setYearReport(response.data);
+      //console.log(response.data)
       return response.data;
     } catch (error) {
       return undefined;

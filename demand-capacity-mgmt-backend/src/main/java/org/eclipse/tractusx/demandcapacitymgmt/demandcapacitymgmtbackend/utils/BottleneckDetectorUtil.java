@@ -21,6 +21,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -309,6 +310,8 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         return status;
     }
 
+    //YEAR REPORT CALCULATIONS
+
     public YearReport convertToYearReport(YearReportDto yearReportDto) {
         YearReport yearReport = new YearReport();
         yearReport.setYear(yearReportDto.getYear());
@@ -382,24 +385,35 @@ public class BottleneckDetectorUtil implements BottleneckManager {
     private MonthReportDto processMonth(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities, int month, int year, float capacity, float maxCapacity) {
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate firstDayOfMonth = yearMonth.atDay(1);
-        int weeksInMonth = getWeekCount(year, month);
+        LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
 
         List<WeekReportDto> weekReports = new ArrayList<>();
-        for (int week = 1; week <= weeksInMonth; week++) {
-            LocalDate weekStart = firstDayOfMonth.with(WeekFields.ISO.dayOfWeek(), 1).plusWeeks(week - 1);
-            int weekOfYear = weekStart.get(WeekFields.ISO.weekOfWeekBasedYear());
 
-            // New approach: directly fetch and process the week's demands
-            List<DemandSeriesValues> weekDemandValues = getDemandsForWeek(matchedEntities, weekOfYear);
-            weekReports.add(calculateWeekDelta(weekDemandValues, weekOfYear, year, capacity, maxCapacity));
+        // Start from the first Monday of the month or the last Monday of the previous month
+        LocalDate startOfWeek = firstDayOfMonth.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+        while (!startOfWeek.isAfter(lastDayOfMonth)) {
+            LocalDate thursdayOfWeek = startOfWeek.with(WeekFields.ISO.dayOfWeek(), 4);
+            int weekOfYear = thursdayOfWeek.get(WeekFields.ISO.weekOfWeekBasedYear());
+
+            // Include week if Thursday falls within the current month
+            if (thursdayOfWeek.getMonthValue() == month) {
+                List<DemandSeriesValues> weekDemandValues = getDemandsForWeek(matchedEntities, weekOfYear);
+                weekReports.add(calculateWeekDelta(weekDemandValues, weekOfYear, year, capacity, maxCapacity));
+            }
+
+            // Move to the next Monday
+            startOfWeek = startOfWeek.plusWeeks(1);
         }
 
         MonthReportDto monthReport = new MonthReportDto();
-        monthReport.setMonth(firstDayOfMonth.getMonth().toString());
+        monthReport.setMonth(yearMonth.getMonth().toString());
         monthReport.setWeekReportDto(weekReports);
 
         return monthReport;
     }
+
+
 
     private List<DemandSeriesValues> getDemandsForWeek(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities, int weekOfYear) {
         List<DemandSeriesValues> weekDemandValues = new ArrayList<>();
@@ -458,16 +472,21 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         }
         return count;
     }
-    // Weeks in year calculation
+
     private int getWeeksInYear(int year) {
         LocalDate lastDayOfYear = LocalDate.of(year, 12, 31);
-        WeekFields weekFields = WeekFields.of(Locale.UK); // Using UK standard
+        WeekFields weekFields = WeekFields.ISO; // Using ISO standard
         int weekNumber = lastDayOfYear.get(weekFields.weekOfWeekBasedYear());
+
+        // Check if the last week belongs to the next year
+        LocalDate firstDayOfLastWeek = lastDayOfYear.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        if (firstDayOfLastWeek.getYear() < year) {
+            return weekNumber - 1;
+        }
+
         return weekNumber;
     }
 
-
-    // Week report calculation
 
 
 }
