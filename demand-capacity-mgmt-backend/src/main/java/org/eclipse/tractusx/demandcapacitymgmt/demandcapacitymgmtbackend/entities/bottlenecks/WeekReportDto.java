@@ -22,6 +22,8 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,35 +31,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
 
-@Entity
-@Table(name = "week_reports")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class WeekReportDto {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
     private int week;
-
-    @Column(nullable = false)
     private double delta;
-
-    @Column(name = "max_capacity", nullable = false)
     private double maxCapacity;
-
-    @Column(name = "act_capacity", nullable = false)
     private double actCapacity;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "month_report_id", nullable = false)
-    private MonthReportDto monthReportDto;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "demand_series_id", referencedColumnName = "id")
+    private String demandCatID;
+    private String demandCatCode;
+    private String demandCatName;
     private DemandSeries demandSeries;
 }

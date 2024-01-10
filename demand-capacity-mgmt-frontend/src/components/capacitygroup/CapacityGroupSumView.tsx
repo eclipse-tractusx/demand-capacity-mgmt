@@ -21,25 +21,37 @@
  */
 
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import {OverlayTrigger, Table, Tooltip} from 'react-bootstrap';
 import '../../../src/index.css';
 import { addDays, addMonths, addWeeks, format, getISOWeek, startOfMonth } from 'date-fns';
 import { FaArrowDown, FaArrowRight } from 'react-icons/fa';
-import YearlyReportContextProvider, { YearlyReportContext } from "../../contexts/YearlyReportContextProvider";
+import { YearlyReportContext } from "../../contexts/YearlyReportContextProvider";
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
-import {loadingMessageCSS} from "react-select/src/components/Menu";
 
 interface WeeklyViewProps {
   capacityGroupID: string | null | undefined;
 }
+
 const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID}) => {
 
   const { demandcategories } = useContext(DemandCategoryContext) || {};
   const { yearReport } = useContext(YearlyReportContext) || {};
 
-  if(!yearReport){
-    loadingMessageCSS()
+  useEffect(() => {
+
+  }, []);
+
+  // Track which Demand.description rows are expanded
+  const [expandedDemandRows, setExpandedDemandRows] = useState<Record<string, boolean>>({});
+  if (!yearReport) {
+    return <div>Loading...</div>; // Adjusted loading logic
   }
+
+  const renderTooltip = (weekNumber: number) => (
+      <Tooltip id={`week-tooltip-${weekNumber}`}>
+        Week {weekNumber}
+      </Tooltip>
+  );
 
   // DEMAND CATEGORIES
   //Mapping of demand categories
@@ -49,8 +61,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID}) => 
       idToNumericIdMap[category.id] = index;
     });
   }
-  // Track which Demand.description rows are expanded
-  const [expandedDemandRows, setExpandedDemandRows] = useState<Record<string, boolean>>({});
+
   // Function to toggle the expansion of a Demand.description row
   const toggleDemandRowExpansion = (demandId: string) => {
     setExpandedDemandRows((prevExpandedRows) => ({
@@ -61,213 +72,47 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID}) => 
 
 
   return (
-    <div className='container'>
-      <div className="table-container">
-        <div className="container">
-          <table className="vertical-table">
-            <thead>
-              <tr>
-                <th className="empty-header-cell"></th>
-                <th colSpan={yearReport.totalWeeksCurrentYear} className="header-cell">
-                  {yearReport.year}
+      <div className='container'>
+        <Table striped bordered hover size="sm">
+          <thead>
+          <tr>
+            <th>#</th>
+            {yearReport.monthReport.map((month) => (
+                <th key={month.month} colSpan={month.weekReport.length}>
+                  {month.month}
                 </th>
-              </tr>
-              <tr>
-                {monthsCurrentYear.map((month) => (
-                  <th key={month.name + month.year} colSpan={month.weeks.length} className="header-cell">
-                    {month.name}
-                  </th>
-                ))}
-              </tr>
-              <tr>
-                {monthsCurrentYear.map((month) =>
-                  month.weeks.map((week) => (
-                    <th key={month.name + week} className="header-cell week-header-cell">
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip id={`week-tooltip-${month.year}-${week}`}>
-                            {`Week ${week} - ${getWeekDates(month.year, month.name, week).startDate} to ${getWeekDates(
-                              month.year,
-                              month.name,
-                              week
-                            ).endDate}`}
-                          </Tooltip>
-                        }
-                      >
-                        <span>{week}</span>
+            ))}
+          </tr>
+          </thead>
+          <tbody>
+          {yearReport.monthReport.flatMap((month, monthIndex) =>
+              month.weekReport.map((week, weekIndex) => (
+                  <tr key={`${monthIndex}-${weekIndex}`}>
+                    <td>
+                      <OverlayTrigger placement="top" overlay={renderTooltip(week.week)}>
+                        <span>{week.week}</span>
                       </OverlayTrigger>
-                    </th>
-                  ))
-                )}
-              </tr>
-
-              <tr>
-                <th className="sticky-header-cell">
-                  <div className="sticky-header-content" onClick={() => toggleDemandRowExpansion('total')}>
-                    {expandedDemandRows['total'] ? <FaArrowDown /> : <FaArrowRight />} Demands (Sum)
-                  </div>
-                </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                  month.weeks.map((week) => (
-                    <td
-                      key={`demand-${week}`}
-                      className={`data-cell ${demandSums[week] !== 0 ? 'non-zero-demand-cell' : ''}`}
-                      // Assign an ID to each cell to identify it for focusing
-                      id={`cell-${week}`}
-                      // Use the created ref directly without the need for a ternary operator
-                      ref={demandSums[week] !== 0 ? firstNonZeroDemandRef : undefined}
-                    >
-                      {demandSums[week] !== 0 ? demandSums[week] : '-'} {/*Todo Stylize */}
                     </td>
-                  ))
-                )}
+                    <td>{week.delta}</td>
+                    <td>{week.maxCapacity}</td>
+                    <td>{week.actCapacity}</td>
+                    {/* Additional data columns */}
+                  </tr>
+              ))
+          )}
+          {/* Rows for demand categories */}
+          {demandcategories?.map((category, categoryIndex) => (
+              <tr key={categoryIndex}>
+                <td colSpan={4 + 8}>
+                  {category.demandCategoryName}
+                  {/* Render more details about demand categories if needed */}
+                </td>
               </tr>
-              {expandedDemandRows['total'] && (
-                <>
-                  {capacityGroup &&
-                    materialDemands &&
-                    materialDemands.map((demand) => (
-                      <React.Fragment key={`demand-row-${demand.id}`}>
-                        <tr>
-                          <th className="sticky-header-cell">
-                            <div
-                              className="sticky-header-content table-header-nested-text "
-                              onClick={() => toggleDemandRowExpansion(demand.id)}
-                            >
-                              {expandedDemandRows[demand.id] ? <FaArrowDown /> : <FaArrowRight />} {demand.materialDescriptionCustomer}
-                            </div>
-                          </th>
-                          {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                            month.weeks.map((week) => {
-                              const demandSum =
-                                demandSumsByDemandAndWeek[demand.materialDescriptionCustomer]?.[week] || null;
-                              return (
-                                <td key={`demandSeries-${week}-${demand.id}`} className="data-cell">
-                                  <strong>{demandSum !== null ? (demandSum || 0) : '-'}</strong>
-                                </td>
-                              );
-                            })
-                          )}
-                        </tr>
-                        {expandedDemandRows[demand.id] && (
-                          <>
-                            {demand.demandSeries?.map((demandSeries) => (
-                              <React.Fragment key={`demandSeries-row-${demandSeries.demandCategory.id}`}>
-                                <tr>
-                                  <th className="sticky-header-cell">
-                                    <div className="sticky-header-content table-header-nested-text-child">
-                                      {demandSeries.demandCategory.demandCategoryName}
-                                    </div>
-                                  </th>
-                                  {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                                    month.weeks.map((week) => {
-                                      const demandValue = demandSeries.demandSeriesValues.find(
-                                        (demandValue) => getISOWeek(new Date(demandValue.calendarWeek)) === week
-                                      );
-                                      const demandSum = demandValue?.demand || null;
-                                      return (
-                                        <td key={`demandSeries-${week}-${demandSeries.demandCategory.id}`} className="data-cell">
-                                          {demandSum !== null ? (demandSum || 0) : '-'}
-                                        </td>
-                                      );
-                                    })
-                                  )}
-                                </tr>
-                              </React.Fragment>
-                            ))}
-                          </>
-                        )}
-                      </React.Fragment>
-                    ))}
-                </>
-              )}
-              <tr>
-                <th className="sticky-header-cell">
-                  <div className="sticky-header-content">-</div>
-                </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                  month.weeks.map((week) => (
-                    <td key={`empty-${week}`} className="data-cell">
-                      {' '}
-                    </td>
-                  ))
-                )}
-              </tr>
-              <tr>
-                <th className="sticky-header-cell">
-                  <div className="sticky-header-content">Actual Capacity</div>
-                </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                  month.weeks.map((week) => {
-                    const matchingCapacity = capacityGroup?.capacities.find((capacity) => {
-                      const capacityWeek = new Date(capacity.calendarWeek);
-                      return getISOWeek(capacityWeek) === week;
-                    });
-                    const actualCapacity = matchingCapacity?.actualCapacity ?? '-';
-
-                    return (
-                      <td key={`actual-capacity-${week}`} className="data-cell">
-                        {actualCapacity.toString()}
-                      </td>
-                    );
-                  })
-                )}
-              </tr>
-              <tr>
-                <th className="sticky-header-cell">
-                  <div className="sticky-header-content">Maximum Capacity</div>
-                </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                  month.weeks.map((week) => {
-                    const matchingCapacity = capacityGroup?.capacities.find((capacity) => {
-                      const capacityWeek = new Date(capacity.calendarWeek);
-                      return getISOWeek(capacityWeek) === week;
-                    });
-                    const maximumCapacity = matchingCapacity?.maximumCapacity ?? '-';
-
-                    return (
-                      <td key={`actual-capacity-${week}`} className="data-cell">
-                        {maximumCapacity.toString()}
-                      </td>
-                    );
-                  })
-                )}
-              </tr>
-              <tr>
-                <th className="sticky-header-cell">
-                  <div className="sticky-header-content">-</div>
-                </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                  month.weeks.map((week) => (
-                    <td key={`empty-${week}`} className="data-cell">
-                      {' '}
-                    </td>
-                  ))
-                )}
-              </tr>
-              <tr>
-                <th className="sticky-header-cell">
-                  <div className="sticky-header-content">Delta</div>
-                </th>
-                {monthsPreviousYear.concat(monthsCurrentYear, monthsNextYear).map((month) =>
-                  month.weeks.map((week) => (
-                    <td
-                      key={`delta-${month.year}-${week}`}
-                      className={`data-cell ${deltaMap[month.year]?.[week] < 0 ? 'bg-light-red' : deltaMap[month.year]?.[week] > 0 ? 'bg-light-green' : ''}`}
-                    >
-                      {deltaMap[month.year][week] > 0 ? `+${deltaMap[month.year][week]}` : deltaMap[month.year][week]}
-                    </td>
-                  ))
-                )}
-              </tr>
-            </thead>
-          </table>
-        </div>
+          ))}
+          </tbody>
+        </Table>
       </div>
-    </div>
   );
 }
-
 
 export default CapacityGroupSumView;

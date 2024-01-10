@@ -29,26 +29,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
-@Entity
-@Table(name = "month_reports")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MonthReportDto {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
     private String month;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "year_report_id", nullable = false)
-    private YearReportDto yearReportDto;
-
-    @OneToMany(mappedBy = "monthReportDto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<WeekReportDto> weekReportDto;
 }

@@ -27,6 +27,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReport;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReportRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks.YearReportDto;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl.BottleneckManagerImpl;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.ResponseEntity;
