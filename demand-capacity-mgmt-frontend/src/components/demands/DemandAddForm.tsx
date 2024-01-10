@@ -26,7 +26,9 @@ import CompanyContextProvider from '../../contexts/CompanyContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
+import { useUser } from '../../contexts/UserContext';
 import { Demand } from '../../interfaces/demand_interfaces';
+import { getMondaysBetweenDates, getNextMondayfromToday } from '../../util/WeeksUtils';
 import CompanyOptions from '../common/CompanyOptions';
 import UnitsOfMeasureOptions from '../common/UnitsofMeasureOptions';
 import DemandCategoryOptions from './DemandCategoryOptions';
@@ -35,22 +37,6 @@ type AddFormProps = {
   fetchDemandProps: () => void; // Function to fetch demands
 };
 
-const getMondaysBetweenDates = (startDate: Date, endDate: Date): string[] => {
-  const mondays: string[] = [];
-  const current = new Date(startDate);
-
-  while (current <= endDate) {
-    if (current.getDay() === 1) {
-      // Monday has index 1 in JS (0 is Sunday, 1 is Monday, etc.)
-      const formattedDate = current.toISOString().slice(0, 10);
-      mondays.push(formattedDate);
-    }
-
-    current.setDate(current.getDate() + 1);
-  }
-
-  return mondays;
-};
 
 const useHandleSubmit = (initialFormState: Demand) => {
   const { createDemand } = useContext(DemandContext)!;
@@ -113,17 +99,18 @@ const useHandleSubmit = (initialFormState: Demand) => {
 };
 
 const AddForm: React.FC<AddFormProps> = () => {
+  const { user } = useUser();
   const initialFormState: Demand = {
     id: '',
     materialDescriptionCustomer: '',
     materialNumberCustomer: '',
     materialNumberSupplier: '',
-    customerId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6', //This will be the ID of the company associated with the logged user
+    customerId: user?.companyID || '',
     supplierId: '',
     unitMeasureId: '',
     materialDemandSeries: [
       {
-        customerLocationId: 'e1abe001-4e24-471f-9b66-a4b3408e3bf6',  //This will be the ID of the company associated with the logged user
+        customerLocationId: user?.companyID || '',
         expectedSupplierLocationId: [],
         demandCategoryId: '',
         demandSeriesValues: [],
@@ -225,12 +212,6 @@ const AddForm: React.FC<AddFormProps> = () => {
     }));
   };
 
-  const getNextMonday = () => {
-    const today = new Date();
-    const nextMonday = new Date(today);
-    nextMonday.setDate(today.getDate() + ((1 + 7 - today.getDay()) % 7));
-    return nextMonday;
-  };
 
   const [startDateValid, setStartDateValid] = useState(true);
   const [endDateValid, setEndDateValid] = useState(true);
@@ -259,7 +240,6 @@ const AddForm: React.FC<AddFormProps> = () => {
       {showSuccessMessage && submissionStatus === 'submitted' ? (
         <div className="alert alert-success" role="alert">
           Material demand has been created!
-          Please reach to the <a href='#overview'>Overview</a> to adjust the demand.
         </div>
       ) : (
         <Form>
@@ -272,7 +252,7 @@ const AddForm: React.FC<AddFormProps> = () => {
                 name="startDate"
                 id="startDate"
                 pattern="\d{4}-\d{2}-\d{2}"
-                min={getNextMonday().toISOString().slice(0, 10)}
+                min={getNextMondayfromToday().toISOString().slice(0, 10)}
                 onChange={onStartDateChange}
                 required
                 isInvalid={!startDateValid}
@@ -287,7 +267,7 @@ const AddForm: React.FC<AddFormProps> = () => {
                 name="endDate"
                 id="endDate"
                 pattern="\d{4}-\d{2}-\d{2}"
-                min={getNextMonday().toISOString().slice(0, 10)}
+                min={getNextMondayfromToday().toISOString().slice(0, 10)}
                 onChange={onEndDateChange}
                 isInvalid={!endDateValid}
               />
@@ -317,7 +297,7 @@ const AddForm: React.FC<AddFormProps> = () => {
             <Form.Label className="control-label required-field-label">Demand Category</Form.Label>
             <Form.Select
               aria-label="Default select example"
-              // placeholder="Demand Category"
+              placeholder="Demand Category"
               name="demandCategoryId"
               id="demandCategoryId"
               value={formState.materialDemandSeries[0].demandCategoryId}

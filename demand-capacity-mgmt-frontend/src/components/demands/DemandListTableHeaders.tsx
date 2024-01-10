@@ -40,9 +40,7 @@ const DemandListTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, h
           {hasfavorites && <th></th>}
           {hasfavorites && <th></th>}
           <th></th>
-
-
-          {user?.role === 'SUPPLIER' ? (
+          {user?.role === 'SUPPLIER' && (
             <>
               <th onClick={() => handleSort('customer.bpn')}>
                 Customer BPN{' '}
@@ -50,15 +48,10 @@ const DemandListTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, h
                 {sortColumn === 'customer.bpn' && sortOrder === 'desc' && <BiCaretDown />}
                 {!sortColumn && <i className="material-icons">...</i>}
               </th>
-              <th onClick={() => handleSort('customer.name')}>
-                Customer Name{' '}
-                {sortColumn === 'customer.name' && sortOrder === 'asc' && <BiCaretUp />}
-                {sortColumn === 'customer.name' && sortOrder === 'desc' && <BiCaretDown />}
-                {!sortColumn && <i className="material-icons">...</i>}
-              </th>
             </>
-          ) : null}
-          {user?.role === 'CUSTOMER' ? (
+          )}
+
+          {user?.role === 'CUSTOMER' && (
             <>
               <th onClick={() => handleSort('supplier.bpn')}>
                 Supplier BPN{' '}
@@ -66,15 +59,8 @@ const DemandListTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, h
                 {sortColumn === 'supplier.bpn' && sortOrder === 'desc' && <BiCaretDown />}
                 {!sortColumn && <i className="material-icons">...</i>}
               </th>
-              <th onClick={() => handleSort('supplier.name')}>
-                Supplier Name{' '}
-                {sortColumn === 'supplier.name' && sortOrder === 'asc' && <BiCaretUp />}
-                {sortColumn === 'supplier.name' && sortOrder === 'desc' && <BiCaretDown />}
-                {!sortColumn && <i className="material-icons">...</i>}
-              </th>
             </>
-          ) : null}
-
+          )}
           <th onClick={() => handleSort('materialNumberCustomer')}>
             Material No. Customer{' '}
             {sortColumn === 'materialNumberCustomer' && sortOrder === 'asc' && <BiCaretUp />}

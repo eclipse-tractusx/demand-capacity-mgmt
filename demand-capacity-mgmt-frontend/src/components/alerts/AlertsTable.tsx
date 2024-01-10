@@ -109,6 +109,7 @@ const AlertsTable: React.FC<AlertsTableProps> = ({ alerts }) => {
                     <tbody>
                         {currentAlerts.map((alert, index) => (
                             <tr key={index}>
+                                <th></th>
                                 <td>{new Date(alert.created).toLocaleString()}</td>
                                 <td>{alert.alertName ?? '-'}</td>
                                 <td>{alert.description ?? '-'}</td>

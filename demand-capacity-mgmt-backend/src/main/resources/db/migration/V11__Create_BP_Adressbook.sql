@@ -30,5 +30,5 @@ CREATE TABLE IF NOT EXISTS address_book
     contact varchar(50),
     email varchar(150),
     function varchar(100),
-    picture bytea
+    picture text
 );

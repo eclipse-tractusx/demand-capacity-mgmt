@@ -35,8 +35,8 @@ const ConfigureAlertModal = () => {
     const [demandOptions, setDemandOptions] = useState<any[]>([]); // State to store options for Creatable component
     const [capacityGroupsOptions, setCapacityGroupsOptions] = useState<any[]>([]); // State to store options for Creatable component
     const [isLoading, setIsLoading] = useState(false);
-    const { demandprops, fetchDemandProps } = useContext(DemandContext)!;  // Make sure to get the fetchDemands function from the context.
-    const { capacitygroups, fetchCapacityGroupsWithRetry } = useContext(CapacityGroupContext)!;  // Make sure to get the fetchDemands function from the context.
+    const { demandprops } = useContext(DemandContext)!;  // Make sure to get the fetchDemands function from the context.
+    const { capacitygroups } = useContext(CapacityGroupContext)!;  // Make sure to get the fetchDemands function from the context.
     const [alertType, setAlertType] = useState('');
     const [alertName, setAlertName] = useState('');
     const [alertMonitoredObject, setAlertMonitoredObject] = useState('');
@@ -73,76 +73,68 @@ const ConfigureAlertModal = () => {
     };
 
     useEffect(() => {
-        fetchDemandProps();
-        fetchCapacityGroupsWithRetry();
-        let demands = [...demandprops];
-        let capacityGroups = [...capacitygroups];
-        const fetchData = async () => {
-            try {
-                setIsLoading(true);
-                const favoriteIdsSet = new Set<string>(); // Set to store unique favorite material demand IDs
-                let materialDemandOptions: any[] = [];
-                let capacityGroupsOpt: any[] = [];
+        try {
+            setIsLoading(true);
+            const favoriteIdsSet = new Set<string>(); // Set to store unique favorite material demand IDs
+            let materialDemandOptions: any[] = [];
+            let capacityGroupsOpt: any[] = [];
 
-                // Fetch material demands from demands prop
-                const demandMaterialDemands = demands || [];
-                const demandCapacityGroups = capacityGroups || [];
+            // Fetch material demands from demands prop
+            const demandMaterialDemands = demandprops || [];
+            const demandCapacityGroups = capacitygroups || [];
 
-                // Filter demand material demands to exclude those with IDs present in favorites
-                const filteredDemandOptions = demandMaterialDemands.filter((md: any) => {
-                    // Exclude demand if its ID is present in favorites
-                    if (favoriteIdsSet.has(md.id)) {
-                        return false;
-                    }
-                    return true;
-                });
-                // Filter demand material capacity groups to exclude those with IDs present in favorites
-                const filteredCapacityGroupsOptions = demandCapacityGroups.filter((md: any) => {
-                    // Exclude demand if its ID is present in favorites
-                    if (favoriteIdsSet.has(md.id)) {
-                        return false;
-                    }
-                    return true;
-                });
+            // Filter demand material demands to exclude those with IDs present in favorites
+            const filteredDemandOptions = demandMaterialDemands.filter((md: any) => {
+                // Exclude demand if its ID is present in favorites
+                if (favoriteIdsSet.has(md.id)) {
+                    return false;
+                }
+                return true;
+            });
+            // Filter demand material capacity groups to exclude those with IDs present in favorites
+            const filteredCapacityGroupsOptions = demandCapacityGroups.filter((md: any) => {
+                // Exclude demand if its ID is present in favorites
+                if (favoriteIdsSet.has(md.id)) {
+                    return false;
+                }
+                return true;
+            });
 
-                // Map demand material demands to options
-                const demandOptions = filteredDemandOptions.map((md: any) => {
-                    const label = (
-                        <div>
-                            {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
-                        </div>
-                    );
-                    return {
-                        value: md,
-                        label: label,
-                    };
-                });
+            // Map demand material demands to options
+            const demandOptions = filteredDemandOptions.map((md: any) => {
+                const label = (
+                    <div>
+                        {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
+                    </div>
+                );
+                return {
+                    value: md,
+                    label: label,
+                };
+            });
 
-                const capacityGroupsOptions = filteredCapacityGroupsOptions.map((cg: any) => {
-                    const label = (
-                        <div>
-                            {cg.name || 'N/A'} - {cg.numberOfMaterials || 'N/A'} - {cg.supplierBNPL || 'N/A'}
-                        </div>
-                    );
-                    return {
-                        value: cg,
-                        label: label,
-                    };
-                });
-                // Combine favorite options and demand options
-                materialDemandOptions = [...demandOptions];
-                capacityGroupsOpt = [...capacityGroupsOptions];
-                setDemandOptions(materialDemandOptions); // Update options state with combined material demands
-                setCapacityGroupsOptions(capacityGroupsOpt); // Update options state with combined material demands
-            } catch (error) {
-                console.error('Error fetching filtered capacity groups:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchData();
-
-    }, []);
+            const capacityGroupsOptions = filteredCapacityGroupsOptions.map((cg: any) => {
+                const label = (
+                    <div>
+                        {cg.name || 'N/A'} - {cg.numberOfMaterials || 'N/A'} - {cg.supplierBNPL || 'N/A'}
+                    </div>
+                );
+                return {
+                    value: cg,
+                    label: label,
+                };
+            });
+            // Combine favorite options and demand options
+            materialDemandOptions = [...demandOptions];
+            capacityGroupsOpt = [...capacityGroupsOptions];
+            setDemandOptions(materialDemandOptions); // Update options state with combined material demands
+            setCapacityGroupsOptions(capacityGroupsOpt); // Update options state with combined material demands
+        } catch (error) {
+            console.error('Error fetching filtered capacity groups:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [demandprops, capacitygroups]);
 
     const handleRemoveDemand = (index: number) => {
         const updatedDemands = [...selectedDemands];
@@ -271,14 +263,12 @@ const ConfigureAlertModal = () => {
         setSelectedCapacityGroups([]);
     };
 
-    console.log(formState.type, "form state type")
-
-
     return <div className="d-flex justify-content-end align-items-center">
-        <Button className='btn btn-secondary float-end ms-2' onClick={openConfigureModal}>
-            <span><FaPlus /> New Rule </span>
-        </Button>
 
+        <Button className="btn btn-success d-flex justify-content-center align-items-center" variant="secondary" onClick={openConfigureModal}>
+            <span className="me-2"><FaPlus /></span>
+            <span> New Rule </span>
+        </Button>
         <Modal
             show={showConfigureAlertModal}
             onHide={handleCloseButton}

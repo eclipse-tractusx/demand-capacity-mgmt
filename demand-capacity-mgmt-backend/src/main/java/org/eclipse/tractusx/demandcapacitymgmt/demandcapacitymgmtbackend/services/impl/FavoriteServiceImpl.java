@@ -153,9 +153,11 @@ public class FavoriteServiceImpl implements FavoriteService {
             AddressBookFavoriteResponse response = new AddressBookFavoriteResponse();
             response.setName(record.getName());
             response.setId(record.getId().toString());
-            response.setLandLine(record.getLandLine());
-            response.setCellPhone(record.getCellPhone());
-            response.setDepartment(record.getDepartment());
+            //            response.setLandLine(record.getLandLine());
+            //            response.setCellPhone(record.getCellPhone());
+            //            response.setDepartment(record.getDepartment());
+            response.setPicture(record.getPicture());
+            response.setContact(record.getContact());
             response.setEmail(record.getEmail());
             response.setCompanyId(response.getCompanyId());
             response.setFunction(record.getFunction());
