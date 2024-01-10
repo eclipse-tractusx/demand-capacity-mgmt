@@ -1,11 +1,10 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import javax.xml.catalog.Catalog;
 import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import javax.xml.catalog.Catalog;
 
 public interface EDCService {
     Mono<IdResponse> createAsset(AssetInput dto);
@@ -46,6 +45,8 @@ public interface EDCService {
 
     Mono<IdResponse> createEDR(NegotiateEdrRequest dto);
 
+    Mono<AccessTokenResponse> getAccessToken();
+
     Mono<DataAddress> getEDR(String edrId);
 
     Mono<Void> deleteEDR(String edrId);
@@ -53,6 +54,4 @@ public interface EDCService {
     Mono<AssetRequest> createAASRequest(AssetRequest dto);
 
     Mono<EndpointDataReferenceEntry> getEDRSByParameters(String agreementId, String assetId, String providerId);
-
-
 }
