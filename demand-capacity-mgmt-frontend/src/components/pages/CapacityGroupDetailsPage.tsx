@@ -33,6 +33,7 @@ import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList'
 import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
 import { LoadingMessage } from '../common/LoadingMessages';
 import EventsTable from '../events/EventsTable';
+import YearlyReportContextProvider from "../../contexts/YearlyReportContextProvider";
 
 function CapacityGroupDetailsPage() {
   const { id } = useParams();
