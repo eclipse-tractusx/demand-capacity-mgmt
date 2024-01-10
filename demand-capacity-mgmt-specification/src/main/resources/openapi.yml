@@ -2083,6 +2083,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AddressBookFavoriteResponse"
+    
     AlertRequest:
       type: object
       properties:
@@ -2185,3 +2186,1182 @@ components:
           type: string
         user:
           type: string
+            $ref: '#/components/schemas/AddressBookFavoriteResponse'
+    
+    ApiErrorDetail:
+      type: object
+      properties:
+        invalidValue:
+          type: object
+          example: null
+        message:
+          type: string
+          example: null
+        path:
+          type: string
+          example: null
+        type:
+          type: string
+          example: null
+      example: null
+    Asset:
+      type: object
+      properties:
+        createdAt:
+          type: integer
+          format: int64
+          example: null
+        dataAddress:
+          $ref: '#/components/schemas/DataAddress'
+        id:
+          type: string
+          example: null
+        privateProperties:
+          type: object
+          additionalProperties:
+            type: object
+            example: null
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: object
+            example: null
+          example: null
+      example: null
+    AssetEntryNewDto:
+      type: object
+      properties:
+        asset:
+          $ref: '#/components/schemas/Asset'
+        dataAddress:
+          $ref: '#/components/schemas/DataAddress'
+      example: null
+    AssetInput:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/Asset
+        dataAddress:
+          $ref: '#/components/schemas/DataAddress'
+        privateProperties:
+          type: object
+          additionalProperties:
+            type: object
+            example: null
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: object
+            example: null
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@id': asset-id
+        properties:
+          key: value
+        privateProperties:
+          privateKey: privateValue
+        dataAddress:
+          type: HttpData
+    AssetOutput:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/Asset
+        createdAt:
+          type: integer
+          format: int64
+          example: null
+        dataAddress:
+          $ref: '#/components/schemas/DataAddress'
+        privateProperties:
+          type: object
+          additionalProperties:
+            type: object
+            example: null
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: object
+            example: null
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@id': asset-id
+        edc:properties:
+          edc:key: value
+        edc:privateProperties:
+          edc:privateKey: privateValue
+        edc:dataAddress:
+          edc:type: HttpData
+        edc:createdAt: 1688465655
+    AssetRequest:
+      type: object
+      properties:
+        assetId:
+          type: string
+          example: null
+        endpointUrl:
+          type: string
+          example: null
+        pathSegments:
+          type: string
+          example: null
+        providerId:
+          type: string
+          example: null
+        queryParams:
+          type: string
+          example: null
+        transferProcessId:
+          type: string
+          example: null
+      example: null
+    CallbackAddress:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/CallbackAddress
+        authCodeId:
+          type: string
+          example: null
+        authKey:
+          type: string
+          example: null
+        events:
+          uniqueItems: true
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+        transactional:
+          type: boolean
+          example: null
+        uri:
+          type: string
+          example: null
+      example: null
+    Catalog:
+      type: object
+      description: DCAT catalog
+      example:
+        '@id': 7df65569-8c59-4013-b1c0-fa14f6641bf2
+        '@type': dcat:Catalog
+        dcat:dataset:
+          '@id': bcca61be-e82e-4da6-bfec-9716a56cef35
+          '@type': dcat:Dataset
+          odrl:hasPolicy:
+            '@id': OGU0ZTMzMGMtODQ2ZS00ZWMxLThmOGQtNWQxNWM0NmI2NmY4:YmNjYTYxYmUtZTgyZS00ZGE2LWJmZWMtOTcxNmE1NmNlZjM1:NDY2ZTZhMmEtNjQ1Yy00ZGQ0LWFlZDktMjdjNGJkZTU4MDNj
+            '@type': odrl:Set
+            odrl:permission:
+              odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
+              odrl:action:
+                odrl:type: http://www.w3.org/ns/odrl/2/use
+              odrl:constraint:
+                odrl:and:
+                  - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
+                    odrl:operator:
+                      '@id': odrl:gteq
+                    odrl:rightOperand: 2023-07-07T07:19:58.585601395Z
+                  - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
+                    odrl:operator:
+                      '@id': odrl:lteq
+                    odrl:rightOperand: 2023-07-12T07:19:58.585601395Z
+            odrl:prohibition: []
+            odrl:obligation: []
+            odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
+          dcat:distribution:
+            - '@type': dcat:Distribution
+              dct:format:
+                '@id': HttpData
+              dcat:accessService: 5e839777-d93e-4785-8972-1005f51cf367
+          edc:description: description
+          edc:id: bcca61be-e82e-4da6-bfec-9716a56cef35
+        dcat:service:
+          '@id': 5e839777-d93e-4785-8972-1005f51cf367
+          '@type': dcat:DataService
+          dct:terms: connector
+          dct:endpointUrl: http://localhost:16806/protocol
+        edc:participantId: urn:connector:provider
+        '@context':
+          dct: https://purl.org/dc/terms/
+          edc: https://w3id.org/edc/v0.0.1/ns/
+          dcat: https://www.w3.org/ns/dcat/
+          odrl: http://www.w3.org/ns/odrl/2/
+          dspace: https://w3id.org/dspace/v0.8/
+    CatalogRequest:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/CatalogRequest
+        counterPartyAddress:
+          type: string
+          example: null
+        protocol:
+          type: string
+          example: null
+        providerUrl:
+          type: string
+          description: please use counterPartyAddress instead
+          example: null
+          deprecated: true
+        querySpec:
+          $ref: '#/components/schemas/QuerySpec'
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': CatalogRequest
+        counterPartyAddress: http://provider-address
+        protocol: dataspace-protocol-http
+        querySpec:
+          offset: 0
+          limit: 50
+          sortOrder: DESC
+          sortField: fieldName
+          filterExpression: []
+    ContractAgreement:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractAgreement
+        assetId:
+          type: string
+          example: null
+        consumerId:
+          type: string
+          example: null
+        contractSigningDate:
+          type: integer
+          format: int64
+          example: null
+        policy:
+          $ref: '#/components/schemas/Policy'
+        providerId:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/ContractAgreement
+        '@id': negotiation-id
+        providerId: provider-id
+        consumerId: consumer-id
+        assetId: asset-id
+        contractSigningDate: 1688465655
+        policy:
+          '@context': http://www.w3.org/ns/odrl.jsonld
+          '@type': Set
+          '@id': offer-id
+          permission:
+            - target: asset-id
+              action: display
+    ContractDefinitionInput:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractDefinition
+        accessPolicyId:
+          type: string
+          example: null
+        assetsSelector:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/Criterion'
+        contractPolicyId:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@id': definition-id
+        accessPolicyId: asset-policy-id
+        contractPolicyId: contract-policy-id
+        assetsSelector: []
+    ContractDefinitionOutput:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractDefinition
+        accessPolicyId:
+          type: string
+          example: null
+        assetsSelector:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/Criterion'
+        contractPolicyId:
+          type: string
+          example: null
+        createdAt:
+          type: integer
+          format: int64
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@id': definition-id
+        edc:accessPolicyId: asset-policy-id
+        edc:contractPolicyId: contract-policy-id
+        edc:assetsSelector: []
+        edc:createdAt: 1688465655
+    ContractNegotiation:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractNegotiation
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddress'
+        contractAgreementId:
+          type: string
+          example: null
+        counterPartyAddress:
+          type: string
+          example: null
+        counterPartyId:
+          type: string
+          example: null
+        errorDetail:
+          type: string
+          example: null
+        protocol:
+          type: string
+          example: null
+        state:
+          type: string
+          example: null
+        type:
+          type: string
+          example: null
+          enum:
+            - CONSUMER
+            - PROVIDER
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/ContractNegotiation
+        '@id': negotiation-id
+        type: PROVIDER
+        protocol: dataspace-protocol-http
+        counterPartyId: counter-party-id
+        counterPartyAddress: http://counter/party/address
+        state: VERIFIED
+        contractAgreementId: contract:agreement:id
+        errorDetail: eventual-error-detail
+        createdAt: 1688465655
+        callbackAddresses:
+          - transactional: false
+            uri: http://callback/url
+            events:
+              - contract.negotiation
+              - transfer.process
+            authKey: auth-key
+            authCodeId: auth-code-id
+    ContractOfferDescription:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractOfferDescription
+        assetId:
+          type: string
+          example: null
+        offerId:
+          type: string
+          example: null
+        policy:
+          $ref: '#/components/schemas/Policy'
+      example: null
+    ContractRequest:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractRequest
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddress'
+        connectorAddress:
+          type: string
+          example: null
+        connectorId:
+          type: string
+          description: please use providerId instead
+          example: null
+          deprecated: true
+        consumerId:
+          type: string
+          description: this field is not used anymore
+          example: null
+          deprecated: true
+        offer:
+          $ref: '#/components/schemas/ContractOfferDescription'
+        protocol:
+          type: string
+          example: null
+        providerId:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/ContractRequest
+        connectorAddress: http://provider-address
+        protocol: dataspace-protocol-http
+        providerId: provider-id
+        offer:
+          offerId: offer-id
+          assetId: asset-id
+          policy:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@type': Set
+            '@id': offer-id
+            permission:
+              - target: asset-id
+                action: display
+        callbackAddresses:
+          - transactional: false
+            uri: http://callback/url
+            events:
+              - contract.negotiation
+              - transfer.process
+            authKey: auth-key
+            authCodeId: auth-code-id
+    Criterion:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/Criterion
+        operandLeft:
+          type: object
+          example: null
+        operandRight:
+          type: object
+          example: null
+        operator:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': Criterion
+        operandLeft: fieldName
+        operator: =
+        operandRight: some value
+    DataAddress:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/DataAddress
+        type:
+          type: string
+          example: null
+      example: null
+    DataFlowRequest:
+      type: object
+      properties:
+        callbackAddress:
+          type: string
+          format: url
+          example: null
+        destinationDataAddress:
+          $ref: '#/components/schemas/DataAddress'
+        id:
+          type: string
+          example: null
+        processId:
+          type: string
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+        sourceDataAddress:
+          $ref: '#/components/schemas/DataAddress'
+        traceContext:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+        trackable:
+          type: boolean
+          example: null
+      example: null
+    DataPlaneInstanceSchema:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
+        allowedDestTypes:
+          uniqueItems: true
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+        allowedSourceTypes:
+          uniqueItems: true
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+        lastActive:
+          type: integer
+          format: int64
+          example: null
+        turnCount:
+          type: integer
+          format: int32
+          example: null
+        url:
+          type: string
+          format: url
+          example: null
+      example:
+        '@id': your-dataplane-id
+        url: http://somewhere.com:1234/api/v1
+        allowedSourceTypes:
+          - source-type1
+          - source-type2
+        allowedDestTypes:
+          - your-dest-type
+    Dataset:
+      type: object
+      description: DCAT dataset
+      example:
+        '@id': bcca61be-e82e-4da6-bfec-9716a56cef35
+        '@type': dcat:Dataset
+        odrl:hasPolicy:
+          '@id': OGU0ZTMzMGMtODQ2ZS00ZWMxLThmOGQtNWQxNWM0NmI2NmY4:YmNjYTYxYmUtZTgyZS00ZGE2LWJmZWMtOTcxNmE1NmNlZjM1:NDY2ZTZhMmEtNjQ1Yy00ZGQ0LWFlZDktMjdjNGJkZTU4MDNj
+          '@type': odrl:Set
+          odrl:permission:
+            odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
+            odrl:action:
+              odrl:type: http://www.w3.org/ns/odrl/2/use
+            odrl:constraint:
+              odrl:and:
+                - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
+                  odrl:operator:
+                    '@id': odrl:gteq
+                  odrl:rightOperand: 2023-07-07T07:19:58.585601395Z
+                - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
+                  odrl:operator:
+                    '@id': odrl:lteq
+                  odrl:rightOperand: 2023-07-12T07:19:58.585601395Z
+          odrl:prohibition: []
+          odrl:obligation: []
+          odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
+        dcat:distribution:
+          - '@type': dcat:Distribution
+            dct:format:
+              '@id': HttpData
+            dcat:accessService: 5e839777-d93e-4785-8972-1005f51cf367
+        edc:description: description
+        edc:id: bcca61be-e82e-4da6-bfec-9716a56cef35
+        '@context':
+          dct: https://purl.org/dc/terms/
+          edc: https://w3id.org/edc/v0.0.1/ns/
+          dcat: https://www.w3.org/ns/dcat/
+          odrl: http://www.w3.org/ns/odrl/2/
+          dspace: https://w3id.org/dspace/v0.8/
+    DatasetRequest:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/CatalogRequest
+        counterPartyAddress:
+          type: string
+          example: null
+        protocol:
+          type: string
+          example: null
+        querySpec:
+          $ref: '#/components/schemas/QuerySpec'
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': DatasetRequest
+        '@id': dataset-id
+        counterPartyAddress: http://counter-party-address
+        protocol: dataspace-protocol-http
+    DeprovisionedResource:
+      type: object
+      properties:
+        error:
+          type: boolean
+          example: null
+        errorMessage:
+          type: string
+          example: null
+        inProcess:
+          type: boolean
+          example: null
+        provisionedResourceId:
+          type: string
+          example: null
+      example: null
+    EndpointDataReferenceEntry:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: EndpointDataReferenceEntry
+        agreementId:
+          type: string
+          example: null
+        assetId:
+          type: string
+          example: null
+        edrState:
+          type: string
+          example: null
+        expirationDate:
+          type: integer
+          format: int64
+          example: null
+        providerId:
+          type: string
+          example: null
+      example:
+        '@type': tx:EndpointDataReferenceEntry
+        edc:agreementId: MQ==:MQ==:ZTY3MzQ4YWEtNTdmZC00YzA0LTg2ZmQtMGMxNzk0MWM3OTkw
+        edc:transferProcessId: 78a66945-d638-4c0a-be71-b35a0318a410
+        edc:assetId: "1"
+        edc:providerId: BPNL00DATAP00001
+        tx:edrState: NEGOTIATED
+        tx:expirationDate: 1690811364000
+        '@context':
+          dct: https://purl.org/dc/terms/
+          tx: https://w3id.org/tractusx/v0.0.1/ns/
+          edc: https://w3id.org/edc/v0.0.1/ns/
+          dcat: https://www.w3.org/ns/dcat/
+          odrl: http://www.w3.org/ns/odrl/2/
+          dspace: https://w3id.org/dspace/v0.8/
+    Failure:
+      type: object
+      properties:
+        failureDetail:
+          type: string
+          example: null
+        messages:
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+      example: null
+    HealthCheckResult:
+      type: object
+      properties:
+        component:
+          type: string
+          example: null
+        failure:
+          $ref: '#/components/schemas/Failure'
+        isHealthy:
+          type: boolean
+          example: null
+      example: null
+    HealthStatus:
+      type: object
+      properties:
+        componentResults:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/HealthCheckResult'
+        isSystemHealthy:
+          type: boolean
+          example: null
+      example: null
+    IdResponse:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        createdAt:
+          type: integer
+          format: int64
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@id': id-value
+        createdAt: 1688465655
+    List:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        groups:
+          uniqueItems: true
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+      example:
+        '@context':
+          tx: https://w3id.org/tractusx/v0.0.1/ns/
+        '@id': tx:BPN000001234
+        tx:groups:
+          - group1
+          - group2
+          - group3
+    NegotiateEdrRequest:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/tractusx/v0.0.1/ns/NegotiateEdrRequestDto
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddress'
+        connectorAddress:
+          type: string
+          example: null
+        connectorId:
+          type: string
+          description: please use providerId instead
+          example: null
+          deprecated: true
+        offer:
+          $ref: '#/components/schemas/ContractOfferDescription'
+        protocol:
+          type: string
+          example: null
+        providerId:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': NegotiateEdrRequestDto
+        connectorAddress: http://provider-address
+        protocol: dataspace-protocol-http
+        providerId: provider-id
+        offer:
+          offerId: offer-id
+          assetId: asset-id
+          policy:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@type': Set
+            '@id': offer-id
+            permission:
+              - target: asset-id
+                action: display
+        callbackAddresses:
+          - transactional: false
+            uri: http://callback/url
+            events:
+              - contract.negotiation
+              - transfer.process
+    NegotiationState:
+      type: object
+      properties:
+        state:
+          type: string
+          example: null
+      example: null
+    Policy:
+      type: object
+      description: ODRL policy
+      example:
+        '@context': http://www.w3.org/ns/odrl.jsonld
+        '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
+        '@type': odrl:Set
+        permission:
+          target: http://example.com/asset:9898.movie
+          action:
+            type: http://www.w3.org/ns/odrl/2/use
+          constraint:
+            leftOperand: https://w3id.org/edc/v0.0.1/ns/left
+            operator: eq
+            rightOperand: value
+        prohibition: []
+        obligation: []
+    PolicyDefinitionInput:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
+        policy:
+          $ref: '#/components/schemas/Policy'
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@id': definition-id
+        policy:
+          '@context': http://www.w3.org/ns/odrl.jsonld
+          '@type': Set
+          uid: http://example.com/policy:1010
+          permission:
+            - target: http://example.com/asset:9898.movie
+              action: display
+              constraint:
+                - leftOperand: spatial
+                  operator: eq
+                  rightOperand: https://www.wikidata.org/wiki/Q183
+                  comment: i.e Germany
+    PolicyDefinitionOutput:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
+        policy:
+          $ref: '#/components/schemas/Policy'
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@id': definition-id
+        policy:
+          '@context': http://www.w3.org/ns/odrl.jsonld
+          '@type': Set
+          uid: http://example.com/policy:1010
+          permission:
+            - target: http://example.com/asset:9898.movie
+              action: display
+              constraint:
+                - leftOperand: spatial
+                  operator: eq
+                  rightOperand: https://www.wikidata.org/wiki/Q183
+                  comment: i.e Germany
+        createdAt: 1688465655
+    ProvisionerWebhookRequest:
+      type: object
+      properties:
+        apiKeyJwt:
+          type: string
+          example: null
+        assetId:
+          type: string
+          example: null
+        contentDataAddress:
+          $ref: '#/components/schemas/DataAddress'
+        hasToken:
+          type: boolean
+          example: null
+        resourceDefinitionId:
+          type: string
+          example: null
+        resourceName:
+          type: string
+          example: null
+      example: null
+    QuerySpec:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/QuerySpec
+        filterExpression:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/Criterion'
+        limit:
+          type: integer
+          format: int32
+          example: null
+        offset:
+          type: integer
+          format: int32
+          example: null
+        sortField:
+          type: string
+          example: null
+        sortOrder:
+          type: string
+          example: null
+          enum:
+            - ASC
+            - DESC
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': QuerySpec
+        offset: 5
+        limit: 10
+        sortOrder: DESC
+        sortField: fieldName
+        filterExpression: []
+    SelectionRequestSchema:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/SelectionRequest
+        destination:
+          $ref: '#/components/schemas/DataAddress'
+        source:
+          $ref: '#/components/schemas/DataAddress'
+        strategy:
+          type: string
+          example: null
+      example:
+        source:
+          '@type': https://w3id.org/edc/v0.0.1/ns/DataAddress
+          type: test-src1
+        destination:
+          '@type': https://w3id.org/edc/v0.0.1/ns/DataAddress
+          type: test-dst2
+        strategy: you_custom_strategy
+    TerminateNegotiationSchema:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/TerminateNegotiation
+        reason:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TerminateNegotiation
+        '@id': negotiation-id
+        reason: a reason to terminate
+    TerminateTransfer:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/TransferState
+        state:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TerminateTransfer
+        reason: a reason to terminate
+    TransferProcess:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/TransferProcess
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddress'
+        contractAgreementId:
+          type: string
+          example: null
+        counterPartyAddress:
+          type: string
+          example: null
+        counterPartyId:
+          type: string
+          example: null
+        errorDetail:
+          type: string
+          example: null
+        privateProperties:
+          type: object
+          additionalProperties:
+            type: object
+            example: null
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+            deprecated: true
+          example: null
+          deprecated: true
+        protocol:
+          type: string
+          example: null
+        state:
+          type: string
+          example: null
+        type:
+          type: string
+          example: null
+          enum:
+            - CONSUMER
+            - PROVIDER
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferProcess
+        '@id': process-id
+        correlationId: correlation-id
+        type: PROVIDER
+        state: STARTED
+        stateTimestamp: 1688465655
+        assetId: asset-id
+        connectorId: connectorId
+        contractId: contractId
+        dataDestination:
+          type: data-destination-type
+        privateProperties:
+          private-key: private-value
+        errorDetail: eventual-error-detail
+        createdAt: 1688465655
+        callbackAddresses:
+          - transactional: false
+            uri: http://callback/url
+            events:
+              - contract.negotiation
+              - transfer.process
+            authKey: auth-key
+            authCodeId: auth-code-id
+    TransferProcessFailStateDto:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          example: null
+      example: null
+    TransferRequest:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/TransferRequest
+        assetId:
+          type: string
+          example: null
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddress'
+        connectorAddress:
+          type: string
+          example: null
+        connectorId:
+          type: string
+          example: null
+        contractId:
+          type: string
+          example: null
+        dataDestination:
+          $ref: '#/components/schemas/DataAddress'
+        privateProperties:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: "Deprecated as this field is not used anymore, please use\
+              \ privateProperties instead"
+            example: null
+            deprecated: true
+          description: "Deprecated as this field is not used anymore, please use privateProperties\
+            \ instead"
+          example: null
+          deprecated: true
+        protocol:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferRequest
+        protocol: dataspace-protocol-http
+        connectorAddress: http://provider-address
+        connectorId: provider-id
+        contractId: contract-id
+        assetId: asset-id
+        dataDestination:
+          type: data-destination-type
+        privateProperties:
+          private-key: private-value
+        callbackAddresses:
+          - transactional: false
+            uri: http://callback/url
+            events:
+              - contract.negotiation
+              - transfer.process
+            authKey: auth-key
+            authCodeId: auth-code-id
+    TransferState:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/TransferState
+        state:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferState
+        state: STARTED
