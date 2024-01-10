@@ -52,21 +52,25 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID }) =>
           .catch(error => console.error('Failed to fetch year report:', error))
           .finally(() => setIsLoading(false));
     }
-  }, [capacityGroupID, yearReport, isLoading, fetchYearReport]);
+  }, [capacityGroupID, isLoading]);
 
   useEffect(() => {
-    if (yearReport) {
+    if (yearReport && demandcategories) {
       const newTableData: TableData = {};
       yearReport.monthReport.forEach(month => {
         month.weekReport.forEach(week => {
           // Use the week and category ID to generate a unique key for each cell
+
           demandcategories?.forEach(category => {
-            const key = `${month.month}-${week.week}-${category.id}`;
+            const key = `${yearReport.year}-${month.month}-${week.week}-${category.id}`;
             if (week.catID === category.id) {
+              if (week.delta > 0) {
+                newTableData[key] = { bgColor: 'rgba(148, 203, 45, 0.8)', content: week.delta.toString() };
+              }
               if (week.delta < 0) {
-                newTableData[key] = { bgColor: 'rgba(220, 53, 69, 0.5)', content: week.delta.toString() };
+                newTableData[key] = { bgColor: 'rgba(220, 53, 69, 0.8)', content: week.delta.toString() };
               } else if (week.delta === 0) {
-                newTableData[key] = { bgColor: 'rgba(148, 203, 45, 0.5)', content: '0' };
+                newTableData[key] = { bgColor: 'rgba(148, 203, 45, 0.8)', content: '0' };
               }
             }
           });
@@ -77,10 +81,10 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID }) =>
           }
         });
       });
-      console.log('Table data constructed:', newTableData);
       setTableData(newTableData); // Update the state
     }
-  }, [yearReport, demandcategories]); // Add demandcategories as a dependency
+  }, [yearReport, demandcategories]);
+
 
 
 
@@ -103,36 +107,55 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID }) =>
                   <th key={month.month} colSpan={month.weekReport.length}>{month.month}</th>
               ))}
             </tr>
+            {/* Additional row for week numbers */}
+            <tr>
+              <th></th> {/* Empty cell under "Demand Category" */}
+              {yearReport?.monthReport.map((month) =>
+                  month.weekReport.map((week) => (
+                      <th key={`${month.month}-week-${week.week}`}>{`${week.week}`}</th>
+                  ))
+              )}
+            </tr>
             </thead>
             <tbody>
-            {demandcategories?.map(category => (
-                <tr key={category.id}>
-                  <td>{category.demandCategoryName}</td>
-                  {yearReport?.monthReport.flatMap(month =>
-                      month.weekReport.map(week => {
-                        // Construct the key with the category ID
-                        const key = `${month.month}-${week.week}-${category.id}`;
-                        const genericKey = `${month.month}-${week.week}`;
-                        // Use the specific key if available, otherwise fall back to the generic key
-                        const cellData = tableData[key] || tableData[genericKey];
-                        return (
-                            <td key={key}
-                                style={{
-                                  minWidth: '75px',
-                                  textAlign: 'center',
-                                  backgroundColor: cellData?.bgColor || '',
-                                }}>
-                              {cellData?.content || ''}
-                            </td>
-                        );
-                      })
-                  )}
-                </tr>
-            ))}
+            {demandcategories && (() => {
+              const uniqueCategoryCodes = new Set();
+              const uniqueDemandCategories = demandcategories.filter(cat => {
+                const isDuplicate = uniqueCategoryCodes.has(cat.demandCategoryCode);
+                uniqueCategoryCodes.add(cat.demandCategoryCode);
+                return !isDuplicate;
+              });
+
+              return uniqueDemandCategories.map(category => (
+                  <tr key={category.id}>
+                    <td>{category.demandCategoryName}</td>
+                    {yearReport?.monthReport.flatMap(month =>
+                        month.weekReport.map(week => {
+                          // Construct the key with the category ID
+                          const key = `${yearReport.year}-${month.month}-${week.week}-${category.id}`;
+                          const genericKey = `${month.month}-${week.week}`;
+                          // Use the specific key if available, otherwise fall back to the generic key
+                          const cellData = tableData[key] || tableData[genericKey];
+                          return (
+                              <td key={key}
+                                  style={{
+                                    minWidth: '75px',
+                                    textAlign: 'center',
+                                    backgroundColor: cellData?.bgColor || '',
+                                  }}>
+                                {cellData?.content || ''}
+                              </td>
+                          );
+                        })
+                    )}
+                  </tr>
+              ));
+            })()}
             </tbody>
           </Table>
         </div>
       </div>
   );
+
 }
 export default CapacityGroupSumView;
