@@ -25,6 +25,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks.YearReportDto;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.BottleneckManager;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.BottleneckDetectorUtil;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class BottleneckManagerImpl implements BottleneckManager {
     }
 
     @Override
-    public YearReport generateYearReport(String userID,String capacityGroupID) {
+    public YearReport generateYearReport(String userID, String capacityGroupID) {
         return bottleneckDetectorUtil.generateYearReport(userID,capacityGroupID);
     }
 

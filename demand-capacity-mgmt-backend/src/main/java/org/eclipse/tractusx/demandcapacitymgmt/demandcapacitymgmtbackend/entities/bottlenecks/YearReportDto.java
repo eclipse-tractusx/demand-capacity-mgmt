@@ -34,28 +34,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "year_reports")
 public class YearReportDto {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
     private int year;
-
-    @Column(name = "capacity_group_id")
     private String capacityGroupId;
-
-    @Column(name = "ruled")
     private boolean ruled;
-
-    @Column(name = "percentage")
     private int percentage;
-
-    @Column(name = "total_weeks_current_year", nullable = false)
     private int totalWeeksCurrentYear;
-
-    @OneToMany(mappedBy = "yearReportDto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MonthReportDto> monthReportDto;
 }

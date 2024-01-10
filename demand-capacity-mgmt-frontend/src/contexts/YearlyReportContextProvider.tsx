@@ -19,34 +19,37 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
+
 import React, { createContext, useEffect, useState } from 'react';
 import createAPIInstance from "../util/Api";
 import { useUser } from "./UserContext";
 
 interface WeekReport {
   week: number;
-  data: string; // Replace 'string' with the actual data type you plan to use
+  delta: number;
+  maxCapacity: number;
+  actCapacity: number;
+  catID: string | null;
+  catCode: string | null;
+  catName: string | null;
 }
-
 interface MonthReport {
   month: string;
-  weeks: WeekReport[];
+  weekReport: WeekReport[];
 }
 
 interface YearReport {
   year: number;
   totalWeeksCurrentYear: number;
-  months: MonthReport[];
+  monthReport: MonthReport[];
 }
 
-// Define a context value type
 interface YearReportContextValue {
   yearReport: YearReport | undefined;
 }
 
 export const YearlyReportContext = createContext<YearReportContextValue>({
   yearReport: undefined,
-  // Initialize any additional state or functions here
 });
 
 const YearlyReportContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
@@ -57,8 +60,9 @@ const YearlyReportContextProvider: React.FC<React.PropsWithChildren<{}>> = (prop
     const api = createAPIInstance(access_token);
     const fetchYearReport = async () => {
       try {
-        const response = await api.get<YearReport>('/yearreport');
+        const response = await api.post<YearReport>('/year/report');
         setYearReport(response.data);
+        console.log("YEAR REPORT : " +  response.data)
       } catch (error) {
         console.error('Error fetching year report:', error);
       }

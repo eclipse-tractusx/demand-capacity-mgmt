@@ -43,6 +43,7 @@ import UpStatusPage from '../pages/UpStatusPage';
 import Layout from './Layout';
 import BottlenecksContextProvider from "../../contexts/BottlenecksContextProvider";
 import ThresholdsContextProvider from "../../contexts/ThresholdsContextProvider";
+import YearlyReportContextProvider from "../../contexts/YearlyReportContextProvider";
 
 
 const AppComponent: React.FC = () => {
@@ -68,6 +69,7 @@ const AppComponent: React.FC = () => {
             <Route path="/details/:id" element={
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
+                        <YearlyReportContextProvider>
                         <DemandContextProvider>
                             <Layout>
                                 <CapacityGroupsProvider>
@@ -76,6 +78,7 @@ const AppComponent: React.FC = () => {
                                     </EventsContextProvider>
                                 </CapacityGroupsProvider>
                             </Layout></DemandContextProvider>
+                            </YearlyReportContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
             }/>

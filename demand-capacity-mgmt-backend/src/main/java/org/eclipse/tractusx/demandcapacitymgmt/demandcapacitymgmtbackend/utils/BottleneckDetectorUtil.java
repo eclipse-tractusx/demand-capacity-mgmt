@@ -1,5 +1,7 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.MonthReport;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekReport;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReport;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
@@ -307,6 +309,52 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         return status;
     }
 
+    public YearReport convertToYearReport(YearReportDto yearReportDto) {
+        YearReport yearReport = new YearReport();
+        yearReport.setYear(yearReportDto.getYear());
+        yearReport.setCapacityGroupId(yearReportDto.getCapacityGroupId());
+        yearReport.setRuled(yearReportDto.isRuled());
+        yearReport.setPercentage(yearReportDto.getPercentage());
+        yearReport.setTotalWeeksCurrentYear(yearReportDto.getTotalWeeksCurrentYear());
+
+        if (yearReportDto.getMonthReportDto() != null) {
+            List<MonthReport> monthReports = new ArrayList<>();
+            for (MonthReportDto monthReportDto : yearReportDto.getMonthReportDto()) {
+                monthReports.add(convertToMonthReport(monthReportDto));
+            }
+            yearReport.setMonthReport(monthReports);
+        }
+
+        return yearReport;
+    }
+
+    public MonthReport convertToMonthReport(MonthReportDto monthReportDto) {
+        MonthReport monthReport = new MonthReport();
+        monthReport.setMonth(monthReportDto.getMonth());
+
+        if (monthReportDto.getWeekReportDto() != null) {
+            List<WeekReport> weekReports = new ArrayList<>();
+            for (WeekReportDto weekReportDto : monthReportDto.getWeekReportDto()) {
+                weekReports.add(convertToWeekReport(weekReportDto));
+            }
+            monthReport.setWeekReport(weekReports);
+        }
+        return monthReport;
+    }
+
+    public WeekReport convertToWeekReport(WeekReportDto weekReportDto) {
+        WeekReport weekReport = new WeekReport();
+        weekReport.setWeek(weekReportDto.getWeek());
+        weekReport.setDelta(weekReportDto.getDelta());
+        weekReport.setMaxCapacity(weekReportDto.getMaxCapacity());
+        weekReport.setActCapacity(weekReportDto.getActCapacity());
+        weekReport.setCatID(weekReportDto.getDemandCatID());
+        weekReport.setCatName(weekReportDto.getDemandCatName());
+        weekReport.setCatCode(weekReportDto.getDemandCatCode());
+
+        return weekReport;
+    }
+
 
     // Year report generation
     @Override
@@ -322,19 +370,16 @@ public class BottleneckDetectorUtil implements BottleneckManager {
 
         List<MonthReportDto> monthReports = new ArrayList<>();
         for (int month = 1; month <= 12; month++) {
-            MonthReportDto monthReport = processMonth(matchedEntities, month, currentYear);
+            MonthReportDto monthReport = processMonth(matchedEntities, month, currentYear, cgs.getDefaultActualCapacity(), cgs.getDefaultMaximumCapacity());
             monthReports.add(monthReport);
         }
 
         yearReport.setMonthReportDto(monthReports);
-
-        // Save yearReport to database if required
-
-        return new YearReport();
+        return convertToYearReport(yearReport);
     }
 
     // Month report processing
-    private MonthReportDto processMonth(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities, int month, int year) {
+    private MonthReportDto processMonth(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities, int month, int year, float capacity, float maxCapacity) {
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate firstDayOfMonth = yearMonth.atDay(1);
         int weeksInMonth = getWeekCount(year, month);
@@ -343,8 +388,10 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         for (int week = 1; week <= weeksInMonth; week++) {
             LocalDate weekStart = firstDayOfMonth.with(WeekFields.ISO.dayOfWeek(), 1).plusWeeks(week - 1);
             int weekOfYear = weekStart.get(WeekFields.ISO.weekOfWeekBasedYear());
-            List<DemandSeries> weekDemands = filterDemandsForWeek(matchedEntities, weekStart, weekOfYear);
-            weekReports.add(calculateWeekDelta(weekDemands, weekOfYear, year));
+
+            // New approach: directly fetch and process the week's demands
+            List<DemandSeriesValues> weekDemandValues = getDemandsForWeek(matchedEntities, weekOfYear);
+            weekReports.add(calculateWeekDelta(weekDemandValues, weekOfYear, year, capacity, maxCapacity));
         }
 
         MonthReportDto monthReport = new MonthReportDto();
@@ -353,6 +400,48 @@ public class BottleneckDetectorUtil implements BottleneckManager {
 
         return monthReport;
     }
+
+    private List<DemandSeriesValues> getDemandsForWeek(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities, int weekOfYear) {
+        List<DemandSeriesValues> weekDemandValues = new ArrayList<>();
+
+        for (LinkedCapacityGroupMaterialDemandEntity entity : matchedEntities) {
+            Optional<MaterialDemandEntity> materialDemandOpt = materialDemandRepository.findById(entity.getMaterialDemandID());
+            materialDemandOpt.ifPresent(materialDemand -> {
+                for (DemandSeries demandSeries : materialDemand.getDemandSeries()) {
+                    demandSeries.getDemandSeriesValues().stream()
+                            .filter(dsv -> dsv.getCalendarWeek().get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()) == weekOfYear)
+                            .forEach(weekDemandValues::add);
+                }
+            });
+        }
+
+        return weekDemandValues;
+    }
+
+
+    private WeekReportDto calculateWeekDelta(List<DemandSeriesValues> weekDemandValues, int weekNumber, int year, float capacity, float maxCapacity) {
+        WeekReportDto weekReport = new WeekReportDto();
+        double totalDemand = weekDemandValues.stream()
+                .mapToDouble(DemandSeriesValues::getDemand)
+                .sum();
+
+
+        // Updated delta calculation: capacity - totalDemand
+        double totalDelta = capacity - totalDemand;
+
+        weekReport.setWeek(weekNumber);
+        weekReport.setDelta(totalDelta);
+        weekReport.setActCapacity(capacity);
+        weekReport.setMaxCapacity(maxCapacity);
+        if (weekDemandValues.size() == 0){} else {
+            DemandCategoryEntity category = weekDemandValues.get(0).getDemandSeries().getDemandCategory();
+            weekReport.setDemandCatID(category.getId().toString());
+            weekReport.setDemandCatName(category.getDemandCategoryName());
+            weekReport.setDemandCatCode(category.getDemandCategoryCode());
+        }
+        return weekReport;
+    }
+
 
     // Week count calculation
     public static int getWeekCount(int year, int month) {
@@ -377,32 +466,6 @@ public class BottleneckDetectorUtil implements BottleneckManager {
 
 
     // Week report calculation
-    private WeekReportDto calculateWeekDelta(List<DemandSeries> weekDemands, int weekNumber, int year) {
-        WeekReportDto weekReport = new WeekReportDto();
-        double totalDelta = 0.0;
-        // Implement logic to calculate total delta for the week based on weekDemands
-        // Example logic to calculate delta
-        weekReport.setWeek(weekNumber);
-        weekReport.setDelta(totalDelta);
 
-        return weekReport;
-    }
-
-    private List<DemandSeries> filterDemandsForWeek(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities, LocalDate weekStart, int weekOfYear) {
-        List<DemandSeries> weekDemands = new ArrayList<>();
-
-        for (LinkedCapacityGroupMaterialDemandEntity entity : matchedEntities) {
-            Optional<MaterialDemandEntity> materialDemandOpt = materialDemandRepository.findById(entity.getMaterialDemandID());
-            materialDemandOpt.ifPresent(materialDemand -> {
-                for (DemandSeries demandSeries : materialDemand.getDemandSeries()) {
-                    if (demandSeries.getDemandSeriesValues().stream().anyMatch(dsv ->
-                            dsv.getCalendarWeek().get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()) == weekOfYear)) {
-                        weekDemands.add(demandSeries);
-                    }
-                }
-            });
-        }
-        return weekDemands;
-    }
 
 }
