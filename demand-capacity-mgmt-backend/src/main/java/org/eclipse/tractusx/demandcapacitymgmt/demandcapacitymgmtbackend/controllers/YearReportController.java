@@ -23,11 +23,10 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.controllers;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.YearReportApi;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReport;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReportRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReportResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks.YearReportDto;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl.BottleneckManagerImpl;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.ResponseEntity;
@@ -42,10 +41,13 @@ public class YearReportController implements YearReportApi {
     private BottleneckManagerImpl bottleneckManager;
 
     @Override
-    public ResponseEntity<YearReport> generateYearReport(YearReportRequest yearReportRequest) throws Exception {
+    public ResponseEntity<YearReportResponse> generateYearReport(YearReportRequest yearReportRequest) throws Exception {
         return ResponseEntity.status(200).body(
-                bottleneckManager.generateYearReport(UserUtil.getUserID(request),yearReportRequest.getCgID())
-        );
+                bottleneckManager.generateYearReport(
+                        UserUtil.getUserID(request)
+                        , yearReportRequest.getCgID(),
+                        yearReportRequest.getStartDate(),
+                        yearReportRequest.getEndDate()
+        ));
     }
-
 }

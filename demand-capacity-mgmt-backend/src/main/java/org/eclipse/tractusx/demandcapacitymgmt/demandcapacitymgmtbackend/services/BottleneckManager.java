@@ -22,13 +22,14 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReport;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks.YearReportDto;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReportResponse;
+
+import java.time.LocalDate;
 
 public interface BottleneckManager {
     void calculateBottleneck(String userID, boolean postLog);
 
     void calculateTodos(String userID);
 
-    YearReport generateYearReport(String userID, String capacityGroupID);
+    YearReportResponse generateYearReport(String userID, String capacityGroupID, LocalDate startDate, LocalDate endDate);
 }

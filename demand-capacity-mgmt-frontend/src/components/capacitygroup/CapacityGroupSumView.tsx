@@ -20,142 +20,154 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { Table } from 'react-bootstrap';
-import { YearlyReportContext } from "../../contexts/YearlyReportContextProvider";
+import {YearlyReportContext} from "../../contexts/YearlyReportContextProvider";
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { subWeeks, addWeeks, formatISO, startOfDay } from 'date-fns';
+import { FaRegCalendarCheck } from 'react-icons/fa';
 interface WeeklyViewProps {
   capacityGroupID: string | null | undefined;
+  startDate: string; // Assuming ISO format (YYYY-MM-DD)
+  endDate: string; // Assuming ISO format (YYYY-MM-DD)
 }
 
-interface TableData {
-  [key: string]: {
-    bgColor: string;
-    content: string;
+const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID, startDate, endDate }) => {
+
+  const { yearReports, fetchYearReports } = useContext(YearlyReportContext);
+  const {demandcategories} = useContext(DemandCategoryContext) || {};
+
+  // Use different names for internal date state
+  const [internalStartDate, setInternalStartDate] = useState<Date>(new Date(startDate));
+  const [internalEndDate, setInternalEndDate] = useState<Date>(new Date(endDate));
+
+  // Handlers for date change
+  const handleInternalStartDateChange = (date: Date) => {
+    setInternalStartDate(date);
   };
-}
 
-const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID }) => {
+  const handleInternalEndDateChange = (date: Date) => {
+    setInternalEndDate(date);
+  };
 
-  const { demandcategories } = useContext(DemandCategoryContext) || {};
-  const { yearReport, fetchYearReport } = useContext(YearlyReportContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const [dataFetched, setDataFetched] = useState(false);
-  const [tableData, setTableData] = useState<TableData>({});
+
 
   useEffect(() => {
-    if (capacityGroupID && !yearReport && !isLoading) {
-      setIsLoading(true);
-      fetchYearReport(capacityGroupID)
-          .then(() => setDataFetched(true)) // Set state to trigger re-render
-          .catch(error => console.error('Failed to fetch year report:', error))
-          .finally(() => setIsLoading(false));
+    if (capacityGroupID) {
+      const formattedStartDate = formatISO(internalStartDate, { representation: 'date' });
+      const formattedEndDate = formatISO(internalEndDate, { representation: 'date' });
+      fetchYearReports(capacityGroupID, formattedStartDate, formattedEndDate);
     }
-  }, [capacityGroupID, isLoading]);
-
-  useEffect(() => {
-    if (yearReport && demandcategories) {
-      const newTableData: TableData = {};
-      yearReport.monthReport.forEach(month => {
-        month.weekReport.forEach(week => {
-          // Use the week and category ID to generate a unique key for each cell
-
-          demandcategories?.forEach(category => {
-            const key = `${yearReport.year}-${month.month}-${week.week}-${category.id}`;
-            if (week.catID === category.id) {
-              if (week.delta > 0) {
-                newTableData[key] = { bgColor: 'rgba(148, 203, 45, 0.8)', content: week.delta.toString() };
-              }
-              if (week.delta < 0) {
-                newTableData[key] = { bgColor: 'rgba(220, 53, 69, 0.8)', content: week.delta.toString() };
-              } else if (week.delta === 0) {
-                newTableData[key] = { bgColor: 'rgba(148, 203, 45, 0.8)', content: '0' };
-              }
-            }
-          });
-          // For weeks without specific category data, use a generic key
-          const genericKey = `${month.month}-${week.week}`;
-          if (!week.catID) {
-            newTableData[genericKey] = { bgColor: '', content: '' };
-          }
-        });
-      });
-      setTableData(newTableData); // Update the state
-    }
-  }, [yearReport, demandcategories]);
+  }, [capacityGroupID, internalStartDate, internalEndDate, fetchYearReports]);
 
 
-
-
-  if (!yearReport && !dataFetched) {
-    return <div>LOADING</div>;
+  if (!yearReports) {
+    return <div>Loading...</div>;
   }
+  const renderYearHeaders = () => {
+    return yearReports.map(report => (
+        <th key={report.year} colSpan={report.monthReport.flatMap(month => month.weekReport).length}>
+          {report.year}
+        </th>
+    ));
+  };
+  const renderMonthHeaders = () => {
+    return yearReports.flatMap(report =>
+        report.monthReport.map(month => (
+            <th key={`${report.year}-${month.month}`} colSpan={month.weekReport.length}>
+              {month.month}
+            </th>
+        ))
+    );
+  };
+
+  const renderWeekNumbers = () => {
+    return yearReports.map(report =>
+        report.monthReport.flatMap((month: { weekReport: any[]; month: any; }) =>
+            month.weekReport.map(week => (
+                <th key={`${report.year}-${month.month}-${week.week}`}>{week.week}</th>
+            ))
+        )
+    ).flat();
+  };
+
+
+
+  const renderTableBody = () => {
+    return demandcategories?.map(category => (
+        <tr key={category.id}>
+          <td>{category.demandCategoryName}</td>
+          {yearReports.flatMap(report =>
+              report.monthReport.flatMap(month =>
+                  month.weekReport.map(week => {
+                    const key = `${report.year}-${month.month}-${week.week}-${category.id}`;
+                    const bgColor = week.catID === category.id ? (week.delta >= 0 ? 'rgba(148, 203, 45, 0.8)' : 'rgba(220, 53, 69, 0.8)') : '';
+                    const content = week.catID === category.id ? week.delta.toString() : '';
+                    return (
+                        <td key={key}
+                            style={{minWidth: '75px', textAlign: 'center', backgroundColor: bgColor}}>
+                          {content}
+                        </td>
+                    );
+                  })
+              )
+          )}
+        </tr>
+    ));
+  };
 
   return (
       <div className='container'>
-        <div style={{ overflowX: 'auto' }}>
+        <div className="date-range-container">
+          <div className="pop-out-section">
+            <div className="text-muted p-1"> <FaRegCalendarCheck /> Data Range</div>
+            <div className="col-12 p-1 d-flex form-group align-items-center">
+              <DatePicker
+                  className="form-control"
+                  selected={internalStartDate}
+                  onChange={handleInternalStartDateChange}
+                  selectsStart
+                  startDate={internalStartDate}
+                  endDate={internalEndDate}
+                  placeholderText="Select a Start Date"
+                  showYearDropdown
+                  showMonthDropdown
+                  dateFormat="yyyy-MM-dd"
+              />
+              <span className="mx-3">-</span>
+              <DatePicker
+                  className="form-control"
+                  selected={internalEndDate}
+                  onChange={handleInternalEndDateChange}
+                  selectsEnd
+                  startDate={internalStartDate}
+                  endDate={internalEndDate}
+                  minDate={internalStartDate}
+                  placeholderText="Select an End Date"
+                  showYearDropdown
+                  showMonthDropdown
+                  dateFormat="yyyy-MM-dd"
+              />
+            </div>
+          </div>
+        </div>
+        <div style={{overflowX: 'auto'}}>
           <Table striped bordered hover size="sm">
             <thead>
-            <tr>
-              <th colSpan={5}>{yearReport?.year}</th>
-              <th colSpan={48}>Rules are being applied by your administrator</th>
-            </tr>
+            <tr>{renderYearHeaders()}</tr>
             <tr>
               <th>Demand Category</th>
-              {yearReport?.monthReport.map((month) => (
-                  <th key={month.month} colSpan={month.weekReport.length}>{month.month}</th>
-              ))}
+              {renderMonthHeaders()}
             </tr>
-            {/* Additional row for week numbers */}
-            <tr>
-              <th></th> {/* Empty cell under "Demand Category" */}
-              {yearReport?.monthReport.map((month) =>
-                  month.weekReport.map((week) => (
-                      <th key={`${month.month}-week-${week.week}`}>{`${week.week}`}</th>
-                  ))
-              )}
-            </tr>
+            <tr>{renderWeekNumbers()}</tr>
             </thead>
-            <tbody>
-            {demandcategories && (() => {
-              const uniqueCategoryCodes = new Set();
-              const uniqueDemandCategories = demandcategories.filter(cat => {
-                const isDuplicate = uniqueCategoryCodes.has(cat.demandCategoryCode);
-                uniqueCategoryCodes.add(cat.demandCategoryCode);
-                return !isDuplicate;
-              });
-
-              return uniqueDemandCategories.map(category => (
-                  <tr key={category.id}>
-                    <td>{category.demandCategoryName}</td>
-                    {yearReport?.monthReport.flatMap(month =>
-                        month.weekReport.map(week => {
-                          // Construct the key with the category ID
-                          const key = `${yearReport.year}-${month.month}-${week.week}-${category.id}`;
-                          const genericKey = `${month.month}-${week.week}`;
-                          // Use the specific key if available, otherwise fall back to the generic key
-                          const cellData = tableData[key] || tableData[genericKey];
-                          return (
-                              <td key={key}
-                                  style={{
-                                    minWidth: '75px',
-                                    textAlign: 'center',
-                                    backgroundColor: cellData?.bgColor || '',
-                                  }}>
-                                {cellData?.content || ''}
-                              </td>
-                          );
-                        })
-                    )}
-                  </tr>
-              ));
-            })()}
-            </tbody>
+            <tbody>{renderTableBody()}</tbody>
           </Table>
         </div>
       </div>
   );
+};
 
-}
 export default CapacityGroupSumView;
