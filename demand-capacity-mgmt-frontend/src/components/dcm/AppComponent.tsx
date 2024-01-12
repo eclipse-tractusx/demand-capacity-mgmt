@@ -70,18 +70,18 @@ const AppComponent: React.FC = () => {
             <Route path="/details/:id" element={
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
-                        <DemandCategoryContextProvider>
-                        <YearlyReportContextProvider>
                         <DemandContextProvider>
                             <Layout>
                                 <CapacityGroupsProvider>
                                     <EventsContextProvider>
-                                        <CapacityGroupDetailsPage/>
+                                        <DemandCategoryContextProvider>
+                                            <YearlyReportContextProvider>
+                                                <CapacityGroupDetailsPage/>
+                                            </YearlyReportContextProvider>
+                                        </DemandCategoryContextProvider>
                                     </EventsContextProvider>
                                 </CapacityGroupsProvider>
                             </Layout></DemandContextProvider>
-                            </YearlyReportContextProvider>
-                        </DemandCategoryContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
             }/>

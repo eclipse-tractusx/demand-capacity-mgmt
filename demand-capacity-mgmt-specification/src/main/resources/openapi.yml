@@ -32,7 +32,7 @@ paths:
 
   /year/report:
     post:
-      summary: Generate a year report for a given capacity group ID
+      summary: Generate a year report for a given capacity group ID and date range
       operationId: generateYearReport
       tags:
         - YearReport
@@ -44,11 +44,11 @@ paths:
               $ref: '#/components/schemas/YearReportRequest'
       responses:
         '200':
-          description: Successfully created year report
+          description: Successfully created year reports
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/YearReport'
+                $ref: '#/components/schemas/YearReportResponse'
         '400':
           description: Bad request
         '500':
@@ -2078,10 +2078,29 @@ components:
       type: object
       required:
         - cgID
+        - startDate
+        - endDate
       properties:
         cgID:
           type: string
           description: The capacity group ID for which to generate the report
+        startDate:
+          type: string
+          format: date
+          description: The start date of the report range
+        endDate:
+          type: string
+          format: date
+          description: The end date of the report range
+
+    YearReportResponse:
+      type: object
+      properties:
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/YearReport'
+
 
     YearReport:
       type: object
