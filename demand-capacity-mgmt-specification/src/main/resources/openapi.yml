@@ -43,6 +43,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccessTokenResponse'
+  /edc/asset:
+    post:
+      tags:
+        - EDC
+      summary: create an asset
+      operationId: registerAsset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetEntryNewDto'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+  /edc/asset/request:
+    post:
+      tags:
+        - EDC
+      summary: Create an asset
+      operationId: createAssetRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuerySpec'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
 
   /token/login:
     post:
@@ -1996,31 +2036,45 @@ components:
           type: string
           example: null
       example: null
-    Asset:
+
+    Asset: # Define your Asset schema
       type: object
       properties:
-        createdAt:
-          type: integer
-          format: int64
-          example: null
-        dataAddress:
-          $ref: '#/components/schemas/DataAddress'
-        id:
+        "@id":
           type: string
-          example: null
-        privateProperties:
+          description: The identifier of the asset
+        "@type":
+          type: string
+          description: The type of the asset
+        "edc:properties":
+          $ref: '#/components/schemas/AssetProperties'
+        "@context":
           type: object
           additionalProperties:
-            type: object
-            example: null
-          example: null
-        properties:
-          type: object
-          additionalProperties:
-            type: object
-            example: null
-          example: null
-      example: null
+            type: string
+            description: Context information
+      required:
+        - id
+        - type
+        - properties
+        - context
+
+    AssetProperties: # Define your AssetProperties schema
+      type: object
+      properties:
+        "edc:description":
+          type: string
+          description: The description of the asset
+        "edc:id":
+          type: string
+          description: The identifier of the asset
+        "edc:contenttype":
+          type: string
+          description: The content type of the asset
+      required:
+        - id
+
+
     AssetEntryNewDto:
       type: object
       properties:

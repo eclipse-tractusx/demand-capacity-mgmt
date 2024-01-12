@@ -3,6 +3,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import javax.xml.catalog.Catalog;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,8 @@ public class EDCServiceImpl implements EDCService {
     private String accessToken;
     private Instant tokenExpiration;
 
+    private String apiKey = "ZWRjX2RjbV9hZXNfZW5ja2V5Cg==";
+
     public Mono<String> getToken() {
         if (accessToken != null && !isTokenExpired()) {
             return Mono.just(accessToken);
@@ -35,28 +38,35 @@ public class EDCServiceImpl implements EDCService {
     @Override
     public Mono<AccessTokenResponse> getAccessToken() {
         String tokenEndpoint =
-                "https://centralidp.int.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token";
+            "https://centralidp.int.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token";
         // Set the client credentials
         String clientId = "sa574";
         String clientSecret = "Lh0ctCMQQitoS8qxwKVx9BgbwYOhNJns";
         String grantType = "client_credentials";
 
-        WebClient client = WebClient.builder()
-                .baseUrl(tokenEndpoint)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .build();
+        WebClient client = WebClient
+            .builder()
+            .baseUrl(tokenEndpoint)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+            .build();
 
-        return client.post()
-                .body(BodyInserters.fromFormData("grant_type", grantType)
-                        .with("client_id", clientId)
-                        .with("client_secret", clientSecret))
-                .retrieve()
-                .bodyToMono(AccessTokenResponse.class)
-                .doOnSuccess(response -> {
+        return client
+            .post()
+            .body(
+                BodyInserters
+                    .fromFormData("grant_type", grantType)
+                    .with("client_id", clientId)
+                    .with("client_secret", clientSecret)
+            )
+            .retrieve()
+            .bodyToMono(AccessTokenResponse.class)
+            .doOnSuccess(
+                response -> {
                     accessToken = response.getAccessToken();
                     // Set token expiration time (assuming response provides expiresIn in seconds)
                     tokenExpiration = Instant.now().plusSeconds(response.getExpiresIn().longValue());
-                });
+                }
+            );
     }
 
     private boolean isTokenExpired() {
@@ -64,33 +74,51 @@ public class EDCServiceImpl implements EDCService {
     }
 
     @Override
-    public Mono<IdResponse> createAsset(AssetInput dto) {
-        return getToken()
-            .flatMap(
-                accessToken -> {
-                    return webClient
-                        .post()
-                        .uri(uriBuilder -> uriBuilder.path("/management/v2/assets").build())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(dto))
-                        .retrieve()
-                        .bodyToMono(IdResponse.class);
-                }
-            )
+    public Mono<IdResponse> createAsset(AssetEntryNewDto dto) {
+        WebClient client = WebClient
+            .builder()
+            .baseUrl("https://dcm.dev.demo.catena-x.net/BPNL000000000000/management/v2/assets")
+            .defaultHeader(HttpHeaders.CONTENT_TYPE)
+            .build();
+
+        return client
+            .post()
+            .header("X-Api-Key", apiKey)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(dto)
+            .retrieve()
+            .bodyToMono(IdResponse.class)
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
     }
 
     @Override
-    public Flux<AssetOutput> createAssetRequest(QuerySpec dto) {
-        return webClient
+    public List<Asset> createAssetRequest(QuerySpec dto) {
+        WebClient client = WebClient
+            .builder()
+            .baseUrl("https://dcm.dev.demo.catena-x.net/BPNL000000000000/management/v2/assets/request")
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .build();
+
+        return client
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/management/v2/assets/request").build())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(dto))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .bodyToFlux(AssetOutput.class)
-            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
+            .bodyToFlux(Asset.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnNext(
+                response -> {
+                    // Log the received response
+                    log.info("Received response: {}", response);
+                }
+            )
+            .doOnError(this::logErrorDetails)
+            .collectList()
+            .block(); // Blocking to get the List
+    }
+
+    private void logErrorDetails(Throwable error) {
+        // Log error details
+        System.err.println("Error occurred while making the request: " + error.getMessage());
     }
 
     @Override

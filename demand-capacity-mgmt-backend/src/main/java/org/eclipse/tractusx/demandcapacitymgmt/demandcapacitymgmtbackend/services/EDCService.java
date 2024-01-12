@@ -1,15 +1,16 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.util.List;
 import javax.xml.catalog.Catalog;
 import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface EDCService {
-    Mono<IdResponse> createAsset(AssetInput dto);
+    Mono<IdResponse> createAsset(AssetEntryNewDto dto);
 
-    Flux<AssetOutput> createAssetRequest(QuerySpec dto);
+    List<Asset> createAssetRequest(QuerySpec dto);
 
     Mono<AssetOutput> getAsset(String assetId);
 
