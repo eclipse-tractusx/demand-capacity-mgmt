@@ -22,6 +22,8 @@ import reactor.util.retry.Retry;
 public class EDCServiceImpl implements EDCService {
 
     private final WebClient webClient = WebClient.create("https://materialpass.int.demo.catena-x.net/BPNL000000000000");
+
+    private static final String BASE_URL = "https://dcm.dev.demo.catena-x.net/BPNL000000000000";
     private String accessToken;
     private Instant tokenExpiration;
 
@@ -95,7 +97,7 @@ public class EDCServiceImpl implements EDCService {
     public List<Asset> createAssetRequest(QuerySpec dto) {
         WebClient client = WebClient
             .builder()
-            .baseUrl("https://dcm.dev.demo.catena-x.net/BPNL000000000000/management/v2/assets/request")
+            .baseUrl(BASE_URL + "/management/v2/assets/request")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
 
