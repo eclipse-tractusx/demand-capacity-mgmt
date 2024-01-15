@@ -22,6 +22,11 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -32,12 +37,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusManager;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -60,7 +59,6 @@ public class StatusManagerImpl implements StatusManager {
                 user -> {
                     List<MaterialDemandEntity> demands = fetchDemandsBasedOnRole(user, userID);
 
-
                     StatusesEntity statusesEntity = statusesRepository
                         .findByUserID(UUID.fromString(userID))
                         .orElseGet(() -> generateNewEntity(userID));
@@ -72,7 +70,7 @@ public class StatusManagerImpl implements StatusManager {
     }
 
     private void processUserTodos(UserEntity user, String userID) {
-        List<MaterialDemandEntity> demands = fetchDemandsBasedOnRole(user,userID);
+        List<MaterialDemandEntity> demands = fetchDemandsBasedOnRole(user, userID);
         StatusesEntity statusesEntity = getStatusEntity(userID);
         updateTodosCount(statusesEntity, demands.size());
     }
@@ -111,8 +109,7 @@ public class StatusManagerImpl implements StatusManager {
     }
 
     private StatusesEntity getStatusEntity(String userID) {
-        return statusesRepository.findByUserID(UUID.fromString(userID))
-                .orElseGet(() -> generateNewEntity(userID));
+        return statusesRepository.findByUserID(UUID.fromString(userID)).orElseGet(() -> generateNewEntity(userID));
     }
 
     private StatusesEntity generateNewEntity(String userID) {
@@ -123,7 +120,6 @@ public class StatusManagerImpl implements StatusManager {
         statusesEntity.setTodosCount(count);
         statusesRepository.save(statusesEntity);
     }
-
 
     @Override
     public void calculateBottleneck(String userID, boolean postLog) {
@@ -156,7 +152,13 @@ public class StatusManagerImpl implements StatusManager {
         return statusesRepository.findByUserID(UUID.fromString(userID));
     }
 
-    private void logImprovementsAndDegradations(String userID, boolean postLog, int improvements, int degradations, UUID cgID) {
+    private void logImprovementsAndDegradations(
+        String userID,
+        boolean postLog,
+        int improvements,
+        int degradations,
+        UUID cgID
+    ) {
         if (improvements > 0) {
             logEvent(
                 EventType.STATUS_IMPROVEMENT,
@@ -195,11 +197,18 @@ public class StatusManagerImpl implements StatusManager {
         return Pair.of(weeklyImprovements, weeklyDegradations);
     }
 
-    private Pair<Integer, Integer> processEachDemandEntity(LinkedCapacityGroupMaterialDemandEntity entity, String userID, CapacityGroupEntity cgs, boolean postLog) {
+    private Pair<Integer, Integer> processEachDemandEntity(
+        LinkedCapacityGroupMaterialDemandEntity entity,
+        String userID,
+        CapacityGroupEntity cgs,
+        boolean postLog
+    ) {
         int improvements = 0;
         int degradations = 0;
 
-        Optional<MaterialDemandEntity> materialDemandOpt = materialDemandRepository.findById(entity.getMaterialDemandID());
+        Optional<MaterialDemandEntity> materialDemandOpt = materialDemandRepository.findById(
+            entity.getMaterialDemandID()
+        );
         if (materialDemandOpt.isPresent()) {
             MaterialDemandEntity materialDemand = materialDemandOpt.get();
 
@@ -213,7 +222,12 @@ public class StatusManagerImpl implements StatusManager {
         return Pair.of(improvements, degradations);
     }
 
-    private Pair<Integer, Integer> processDemandSeries(DemandSeries demandSeries, CapacityGroupEntity cgs, String userID, boolean postLog) {
+    private Pair<Integer, Integer> processDemandSeries(
+        DemandSeries demandSeries,
+        CapacityGroupEntity cgs,
+        String userID,
+        boolean postLog
+    ) {
         int improvements = 0;
         int degradations = 0;
 
@@ -251,10 +265,16 @@ public class StatusManagerImpl implements StatusManager {
     }
 
     private Map<LocalDate, Double> getWeeklyDemands(List<DemandSeries> matchedDemandSeries) {
-        return matchedDemandSeries.stream()
-                .flatMap(demand -> demand.getDemandSeriesValues().stream())
-                .filter(value -> !value.getCalendarWeek().isBefore(TWO_WEEKS_FROM_NOW))
-                .collect(Collectors.groupingBy(DemandSeriesValues::getCalendarWeek, Collectors.summingDouble(DemandSeriesValues::getDemand)));
+        return matchedDemandSeries
+            .stream()
+            .flatMap(demand -> demand.getDemandSeriesValues().stream())
+            .filter(value -> !value.getCalendarWeek().isBefore(TWO_WEEKS_FROM_NOW))
+            .collect(
+                Collectors.groupingBy(
+                    DemandSeriesValues::getCalendarWeek,
+                    Collectors.summingDouble(DemandSeriesValues::getDemand)
+                )
+            );
     }
 
     private void logEvent(EventType eventType, String userID, boolean postLog, String descriptionOverride, UUID cgID) {
@@ -267,7 +287,9 @@ public class StatusManagerImpl implements StatusManager {
         logEntity.setUserAccount(getUser(userID).map(UserEntity::getUsername).orElse("Unknown"));
         logEntity.setTime_created(Timestamp.valueOf(LocalDateTime.now()));
         logEntity.setLogID(UUID.randomUUID());
-        logEntity.setDescription(Optional.ofNullable(descriptionOverride).orElseGet(() -> getEventDescription(eventType)));
+        logEntity.setDescription(
+            Optional.ofNullable(descriptionOverride).orElseGet(() -> getEventDescription(eventType))
+        );
 
         if (logEntity.getDescription() != null) {
             loggingRepository.save(logEntity);

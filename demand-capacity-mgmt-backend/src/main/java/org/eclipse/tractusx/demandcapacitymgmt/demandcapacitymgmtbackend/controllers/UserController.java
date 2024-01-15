@@ -42,5 +42,4 @@ public class UserController implements UserOperationsApi {
         service.updateUser(userRequest);
         return ResponseEntity.status(201).build();
     }
-
 }
