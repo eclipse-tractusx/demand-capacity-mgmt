@@ -2186,7 +2186,6 @@ components:
           type: string
         user:
           type: string
-            $ref: '#/components/schemas/AddressBookFavoriteResponse'
     
     ApiErrorDetail:
       type: object
