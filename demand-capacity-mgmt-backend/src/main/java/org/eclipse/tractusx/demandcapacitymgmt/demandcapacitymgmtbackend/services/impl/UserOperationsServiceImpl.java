@@ -23,10 +23,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UserRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UserResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UserEntity;
@@ -34,6 +30,9 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UserRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UserOperationsService;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -55,16 +54,6 @@ public class UserOperationsServiceImpl implements UserOperationsService {
             user.setCompanyID(UUID.fromString(request.getCompanyID()));
             repository.save(user);
         }
-    }
-
-    @Override
-    public List<UserResponse> fetchAllUsers() {
-        List<UserEntity> users = repository.findAll();
-        List<UserResponse> userResponses = new ArrayList<>();
-        for (UserEntity user : users) {
-            userResponses.add(convertToDto(user));
-        }
-        return userResponses;
     }
 
     private UserResponse convertToDto(UserEntity entity) {
