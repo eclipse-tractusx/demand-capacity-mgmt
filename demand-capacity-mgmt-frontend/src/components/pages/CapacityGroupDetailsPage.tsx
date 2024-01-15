@@ -19,6 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
+
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -33,8 +34,6 @@ import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList'
 import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
 import { LoadingMessage } from '../common/LoadingMessages';
 import EventsTable from '../events/EventsTable';
-import YearlyReportContextProvider from "../../contexts/YearlyReportContextProvider";
-import CapacityGroupSumViewBackup from "../capacitygroup/CapacityGroupSumViewBackup";
 
 function CapacityGroupDetailsPage() {
   const { id } = useParams();
@@ -52,8 +51,8 @@ function CapacityGroupDetailsPage() {
   const { getDemandbyId } = useContext(DemandContext)!;
   const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
   const navigate = useNavigate()
-  const [startDate, setStartDate] = useState<Date>(new Date());
-  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [] = useState<Date>(new Date());
+  const [] = useState<Date>(new Date());
 
   useEffect(() => {
     if (id) {
@@ -101,14 +100,10 @@ function CapacityGroupDetailsPage() {
       return <LoadingMessage />;
     }
 
-    function updateParentDateRange(start: Date, end: Date) {
-      setStartDate(start);
-      setEndDate(end);
-    }
     const currentYear = new Date().getFullYear();
 
-    const startDate = new Date(currentYear, 0, 1).toISOString().split('T')[0]; // First day of the current year
-    const endDate = new Date(currentYear, 11, 31).toISOString().split('T')[0]; // Last day of the current year
+    const startDate = new Date(currentYear, 0, 1).toISOString().split('T')[0];
+    const endDate = new Date(currentYear, 11, 31).toISOString().split('T')[0];
 
     return (
       <>
@@ -134,14 +129,6 @@ function CapacityGroupDetailsPage() {
             }}
           >
             <Tab eventKey="overview" title="Overview">
-
-              {/*
-              <CapacityGroupSumViewBackup
-                  capacityGroup={capacityGroup}
-                  materialDemands={materialDemands}
-                  updateParentDateRange={updateParentDateRange}
-              />
-              */}
               <CapacityGroupSumView
                   capacityGroupID={capacityGroup.capacityGroupId}
                   startDate={startDate}
