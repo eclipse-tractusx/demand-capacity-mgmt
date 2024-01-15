@@ -367,10 +367,10 @@ public class BottleneckDetectorUtil implements BottleneckManager {
             YearReportDto yearReport = new YearReportDto();
             CapacityGroupEntity cgs = capacityGroupRepository.findById(UUID.fromString(capacityGroupID)).get();
             List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities = matchedDemandsRepository.findByCapacityGroupID(cgs.getId());
-
             yearReport.setYear(year);
             yearReport.setCapacityGroupId(capacityGroupID);
             yearReport.setTotalWeeksCurrentYear(getWeeksInYear(year));
+            yearReport.setRuled(cgs.isRuled());
 
             List<MonthReportDto> monthReports = new ArrayList<>();
             for (int month = 1; month <= 12; month++) {

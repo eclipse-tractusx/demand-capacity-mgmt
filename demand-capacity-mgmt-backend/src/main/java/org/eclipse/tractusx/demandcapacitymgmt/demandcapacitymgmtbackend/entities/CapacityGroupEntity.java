@@ -23,11 +23,12 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import lombok.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 
 @Entity
 @Table(name = "capacity_group")
@@ -76,4 +77,7 @@ public class CapacityGroupEntity {
 
     @Column(name = "link_status")
     private EventType linkStatus;
+
+    @Column(name = "ruled")
+    private boolean ruled;
 }

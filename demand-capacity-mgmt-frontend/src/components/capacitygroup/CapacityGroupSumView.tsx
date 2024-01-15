@@ -171,6 +171,11 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID, star
 
   return (
       <div className='container'>
+        {yearReports[0].ruled && (
+            <h4 className="text-center mt-3">
+              Rules are being enforced by your administrator
+            </h4>
+        )}
         <div className="date-range-container">
           <div className="pop-out-section">
             <div className="text-muted p-1"> <FaRegCalendarCheck /> Data Range</div>
