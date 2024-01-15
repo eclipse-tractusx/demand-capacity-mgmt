@@ -33,7 +33,8 @@ create table capacity_group
     end_date date,
     customer uuid constraint capacity_group_customer_id references company_base_data(id),
     supplier uuid constraint capacity_group_supplier_id references company_base_data(id),
-    link_status VARCHAR(50)
+    link_status VARCHAR(50),
+    ruled boolean default false
 );
 
 create table capacity_time_series
