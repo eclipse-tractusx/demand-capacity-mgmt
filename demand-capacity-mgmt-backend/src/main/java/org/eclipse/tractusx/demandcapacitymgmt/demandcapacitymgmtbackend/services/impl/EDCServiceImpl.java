@@ -1,5 +1,8 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.time.Duration;
 import java.time.Instant;
@@ -75,33 +78,29 @@ public class EDCServiceImpl implements EDCService {
         return tokenExpiration != null && Instant.now().isAfter(tokenExpiration);
     }
 
+    private WebClient webClientCreation(String path) {
+        return WebClient.builder().baseUrl(BASE_URL + path).defaultHeader(HttpHeaders.CONTENT_TYPE).build();
+    }
+
     @Override
     public Mono<IdResponse> createAsset(AssetEntryNewDto dto) {
-        WebClient client = WebClient
-            .builder()
-            .baseUrl("https://dcm.dev.demo.catena-x.net/BPNL000000000000/management/v2/assets")
-            .defaultHeader(HttpHeaders.CONTENT_TYPE)
-            .build();
-
-        return client
+        return webClientCreation("/management/v2/assets")
             .post()
-            .header("X-Api-Key", apiKey)
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(dto)
+            .header("x-api-key", apiKey)
             .retrieve()
             .bodyToMono(IdResponse.class)
-            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnNext(
+                response -> {
+                    // Log the received response
+                    log.info("Received response: {}", response);
+                }
+            );
     }
 
     @Override
     public List<Asset> createAssetRequest(QuerySpec dto) {
-        WebClient client = WebClient
-            .builder()
-            .baseUrl(BASE_URL + "/management/v2/assets/request")
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .build();
-
-        return client
+        return webClientCreation("/management/v2/assets/request")
             .post()
             .header("x-api-key", apiKey)
             .retrieve()
@@ -155,15 +154,22 @@ public class EDCServiceImpl implements EDCService {
     }
 
     @Override
-    public Flux<PolicyDefinitionOutput> createPolicyRequest(QuerySpec dto) {
-        return webClient
+    public List<PolicyDefinitionOutput> createPolicyRequest(QuerySpec dto) {
+        return webClientCreation("/management/v2/policydefinitions/request")
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/management/v2/policydefinitions/request").build())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(dto))
+            .header("x-api-key", apiKey)
             .retrieve()
             .bodyToFlux(PolicyDefinitionOutput.class)
-            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnNext(
+                response -> {
+                    // Log the received response
+                    log.info("Received response: {}", response);
+                }
+            )
+            .doOnError(this::logErrorDetails)
+            .collectList()
+            .block();
     }
 
     @Override
