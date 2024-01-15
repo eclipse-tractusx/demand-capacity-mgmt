@@ -204,15 +204,22 @@ public class EDCServiceImpl implements EDCService {
     }
 
     @Override
-    public Flux<ContractDefinitionOutput> createContractDefRequest(QuerySpec dto) {
-        return webClient
+    public List<ContractDefinitionOutput> createContractDefRequest(QuerySpec dto) {
+        return webClientCreation("/management/v2/contractdefinitions/request")
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/management/v2/contractdefinitions/request").build())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(dto))
+            .header("x-api-key", apiKey)
             .retrieve()
             .bodyToFlux(ContractDefinitionOutput.class)
-            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnNext(
+                response -> {
+                    // Log the received response
+                    log.info("Received response: {}", response);
+                }
+            )
+            .doOnError(this::logErrorDetails)
+            .collectList()
+            .block();
     }
 
     @Override
