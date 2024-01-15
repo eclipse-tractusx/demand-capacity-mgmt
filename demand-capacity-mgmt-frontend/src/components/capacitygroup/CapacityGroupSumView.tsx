@@ -28,6 +28,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { subWeeks, addWeeks, formatISO, startOfDay } from 'date-fns';
 import { FaRegCalendarCheck } from 'react-icons/fa';
+import '../../../src/index.css';
+
 interface WeeklyViewProps {
   capacityGroupID: string | null | undefined;
   startDate: string; // Assuming ISO format (YYYY-MM-DD)
@@ -110,15 +112,15 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID, star
                 ))}
               </tr>
               <tr>
-                <th></th> {/* Empty header for demand categories */}
+                <th style={{ backgroundColor: 'rgba(128, 128, 128, 0.2)' }}></th> {/* Empty header for demand categories */}
                 {uniqueYears.map(year => (
                     yearReports
                         .filter(report => report.year === year)
                         .flatMap(report =>
                             report.monthReport.flatMap(month =>
                                 month.weekReport.map(week => (
-                                    <th key={`week-${year}-${month.month}-${week.week}`}>
-                                      Week {week.week}
+                                    <th style={{ backgroundColor: 'rgba(128, 128, 128, 0.2)' }} key={`week-${year}-${month.month}-${week.week}`}>
+                                      {week.week}
                                     </th>
                                 ))
                             )
