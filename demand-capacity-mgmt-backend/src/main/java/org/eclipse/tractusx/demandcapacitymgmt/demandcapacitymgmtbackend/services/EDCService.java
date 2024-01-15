@@ -18,7 +18,7 @@ public interface EDCService {
 
     Mono<IdResponse> createPolicy(PolicyDefinitionInput dto);
 
-    Flux<PolicyDefinitionOutput> createPolicyRequest(QuerySpec dto);
+    List<PolicyDefinitionOutput> createPolicyRequest(QuerySpec dto);
 
     Mono<PolicyDefinitionOutput> getPolicy(String policyId);
 
