@@ -78,28 +78,35 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID, star
               <thead>
               <tr>
                 <th></th> {/* Empty header for demand categories */}
-                {uniqueYears.map(year => (
-                    yearReports
-                        .filter(report => report.year === year)
-                        .flatMap(report => (
-                            <th key={`year-${year}`} colSpan={report.totalWeeksCurrentYear + 1}>
-                              {year}
-                            </th>
-                        ))
-                ))}
+                {uniqueYears.map(year => {
+                  const yearData = yearReports.find(report => report.year === year);
+                  if (!yearData) return null;
+
+                  // Calculate the colspan based on the number of weeks in the year report
+                  const weeksInYear = yearData.monthReport.reduce(
+                      (total, month) => total + month.weekReport.length,
+                      0
+                  );
+
+                  return (
+                      <th key={`year-${year}`} colSpan={weeksInYear}>
+                        {year}
+                      </th>
+                  );
+                })}
               </tr>
               <tr>
                 <th>Demand Category</th> {/* Header for demand categories */}
                 {uniqueYears.map(year => (
                     yearReports
                         .filter(report => report.year === year)
-                        .flatMap(report => (
+                        .flatMap(report =>
                             report.monthReport.flatMap(month => (
                                 <th key={`month-${year}-${month.month}`} colSpan={month.weekReport.length}>
                                   {month.month}
                                 </th>
                             ))
-                        ))
+                        )
                 ))}
               </tr>
               <tr>
@@ -108,13 +115,13 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID, star
                     yearReports
                         .filter(report => report.year === year)
                         .flatMap(report =>
-                            report.monthReport.flatMap(month => (
+                            report.monthReport.flatMap(month =>
                                 month.weekReport.map(week => (
                                     <th key={`week-${year}-${month.month}-${week.week}`}>
                                       Week {week.week}
                                     </th>
                                 ))
-                            ))
+                            )
                         )
                 ))}
               </tr>
@@ -127,7 +134,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID, star
                         yearReports
                             .filter(report => report.year === year)
                             .flatMap(report =>
-                                report.monthReport.flatMap(month => (
+                                report.monthReport.flatMap(month =>
                                     month.weekReport.map(week => {
                                       const demandCategoryWeek = week.catID === category.id ? week : null;
                                       const hasDelta = demandCategoryWeek !== null;
@@ -147,7 +154,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID, star
                                           </td>
                                       );
                                     })
-                                ))
+                                )
                             )
                     ))}
                   </tr>
@@ -158,6 +165,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroupID, star
         </div>
     );
   };
+
 
   return (
       <div className='container'>
