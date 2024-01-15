@@ -96,24 +96,12 @@ public class AlertServiceImpl implements AlertService {
                                 alertEntity
                             );
                         }
-                    }else if (alertEntity.getType().equals(AlertThresholdType.ABSOLUTE)){
+                    } else if (alertEntity.getType().equals(AlertThresholdType.ABSOLUTE)) {
                         double threshold = alertEntity.getThreshold();
                         if (threshold >= 0 && (newValue - oldValue >= threshold)) {
-                            fillTriggeredAlert(
-                                    triggeredAlertEntity,
-                                    "Increased by ",
-                                    threshold,
-                                    false,
-                                    alertEntity
-                            );
+                            fillTriggeredAlert(triggeredAlertEntity, "Increased by ", threshold, false, alertEntity);
                         } else if ((threshold < 0 && (newValue - oldValue <= threshold))) {
-                            fillTriggeredAlert(
-                                    triggeredAlertEntity,
-                                    "Decreased by ",
-                                    threshold,
-                                    false,
-                                    alertEntity
-                            );
+                            fillTriggeredAlert(triggeredAlertEntity, "Decreased by ", threshold, false, alertEntity);
                         }
                     }
                 } else if (alertEntity.getMonitoredObjects().equals(AlertsMonitoredObjects.DEDICATED)) {

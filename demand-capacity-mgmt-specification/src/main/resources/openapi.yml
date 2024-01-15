@@ -1759,6 +1759,10 @@ components:
           type: string
         favorited_at:
           type: string
+        end_date:
+          type: string
+        start_date:
+          type: string
 
     SingleCapacityGroupFavoriteResponse:
       type: object

@@ -178,43 +178,43 @@ public class DemandServiceImpl implements DemandService {
         List<Double> newDemandValues = new ArrayList<>(List.of());
 
         demand
-                .getDemandSeries()
-                .forEach(
-                        demandSeries -> {
-                            demandSeries
-                                    .getDemandSeriesValues()
-                                    .forEach(
-                                            demandSeriesValues -> {
-                                                newDemandValues.add(demandSeriesValues.getDemand());
-                                            }
-                                    );
-                        }
-                );
+            .getDemandSeries()
+            .forEach(
+                demandSeries -> {
+                    demandSeries
+                        .getDemandSeriesValues()
+                        .forEach(
+                            demandSeriesValues -> {
+                                newDemandValues.add(demandSeriesValues.getDemand());
+                            }
+                        );
+                }
+            );
 
         materialDemandRepository
-                .findById(UUID.fromString(demandId))
-                .get()
-                .getDemandSeries()
-                .forEach(
-                        demandSeries1 -> {
-                            demandSeries1
-                                    .getDemandSeriesValues()
-                                    .forEach(
-                                            demandSeriesValues -> {
-                                                oldDemandValues.add(demandSeriesValues.getDemand());
-                                            }
-                                    );
-                        }
-                );
+            .findById(UUID.fromString(demandId))
+            .get()
+            .getDemandSeries()
+            .forEach(
+                demandSeries1 -> {
+                    demandSeries1
+                        .getDemandSeriesValues()
+                        .forEach(
+                            demandSeriesValues -> {
+                                oldDemandValues.add(demandSeriesValues.getDemand());
+                            }
+                        );
+                }
+            );
 
         for (int i = 0; i < newDemandValues.size(); i++) {
             if (!Objects.equals(oldDemandValues.get(i), newDemandValues.get(i))) {
                 alertService.triggerDemandAlertsIfNeeded(
-                        userID,
-                        true,
-                        oldDemandValues.get(i),
-                        newDemandValues.get(i),
-                        demandId
+                    userID,
+                    true,
+                    oldDemandValues.get(i),
+                    newDemandValues.get(i),
+                    demandId
                 );
             }
         }
