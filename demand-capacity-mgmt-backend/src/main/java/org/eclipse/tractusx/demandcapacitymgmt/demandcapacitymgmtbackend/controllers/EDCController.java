@@ -21,6 +21,11 @@ public class EDCController implements EdcApi {
     }
 
     @Override
+    public ResponseEntity<List<ContractDefinitionOutput>> createContractRequest(QuerySpec querySpec) throws Exception {
+        return ResponseEntity.ok(edcService.createContractDefRequest(querySpec));
+    }
+
+    @Override
     public ResponseEntity<List<PolicyDefinitionOutput>> createPolicyRequest(QuerySpec querySpec) throws Exception {
         return ResponseEntity.ok(edcService.createPolicyRequest(querySpec));
     }

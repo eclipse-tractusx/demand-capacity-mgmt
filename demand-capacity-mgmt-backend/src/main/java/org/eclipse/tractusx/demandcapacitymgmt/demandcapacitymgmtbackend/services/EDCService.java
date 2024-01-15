@@ -26,7 +26,7 @@ public interface EDCService {
 
     Mono<IdResponse> createContractDef(ContractDefinitionInput dto);
 
-    Flux<ContractDefinitionOutput> createContractDefRequest(QuerySpec dto);
+    List<ContractDefinitionOutput> createContractDefRequest(QuerySpec dto);
 
     Mono<ContractDefinitionOutput> getContractDef(String contractDefId);
 

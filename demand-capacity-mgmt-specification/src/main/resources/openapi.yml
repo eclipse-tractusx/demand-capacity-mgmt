@@ -106,6 +106,28 @@ paths:
                 items:
                   $ref: '#/components/schemas/PolicyDefinitionOutput'
 
+  /edc/contract/request:
+    post:
+      tags:
+        - EDC
+      summary: Create an asset
+      operationId: createContractRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuerySpec'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContractDefinitionOutput'
+
   /token/login:
     post:
       tags:
@@ -2379,29 +2401,23 @@ components:
         '@type':
           type: string
           example: https://w3id.org/edc/v0.0.1/ns/ContractDefinition
-        accessPolicyId:
+        "edc:accessPolicyId":
           type: string
           example: null
-        assetsSelector:
-          type: array
+        "edc:assetsSelector":
+          type: object
           example: null
           items:
             $ref: '#/components/schemas/Criterion'
-        contractPolicyId:
+        "edc:contractPolicyId":
           type: string
           example: null
-        createdAt:
-          type: integer
-          format: int64
-          example: null
-      example:
-        '@context':
-          edc: https://w3id.org/edc/v0.0.1/ns/
-        '@id': definition-id
-        edc:accessPolicyId: asset-policy-id
-        edc:contractPolicyId: contract-policy-id
-        edc:assetsSelector: []
-        edc:createdAt: 1688465655
+        "@context":
+          type: object
+          additionalProperties:
+            type: string
+            description: Context information
+
     ContractNegotiation:
       type: object
       properties:
