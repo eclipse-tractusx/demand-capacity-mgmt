@@ -31,8 +31,28 @@ public class EDCController implements EdcApi {
     }
 
     @Override
+    public ResponseEntity<Void> deleteAssetById(String assetId) throws Exception {
+        return ResponseEntity.ok(edcService.deleteAsset(assetId));
+    }
+
+    @Override
+    public ResponseEntity<Void> deletePolicyById(String policyId) throws Exception {
+        return ResponseEntity.ok(edcService.deletePolicy(policyId));
+    }
+
+    @Override
     public ResponseEntity<AccessTokenResponse> getAccessToken() throws Exception {
         return ResponseEntity.ok(edcService.getAccessToken().block());
+    }
+
+    @Override
+    public ResponseEntity<Asset> getAssetById(String assetId) throws Exception {
+        return ResponseEntity.ok(edcService.getAsset(assetId));
+    }
+
+    @Override
+    public ResponseEntity<PolicyDefinitionOutput> getPolicyById(String policyId) throws Exception {
+        return ResponseEntity.ok(edcService.getPolicy(policyId));
     }
 
     @Override

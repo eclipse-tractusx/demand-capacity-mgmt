@@ -62,6 +62,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IdResponse'
+
+  /edc/asset/{asset_id}:
+    get:
+      tags:
+        - EDC
+      summary: get asset by Id
+      operationId: getAssetById
+      parameters:
+        - in: 'path'
+          name: 'asset_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: get asset by Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+    delete:
+      tags:
+        - EDC
+      summary: delete asset by Id
+      operationId: deleteAssetById
+      parameters:
+        - in: 'path'
+          name: 'asset_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete asset with id
+
   /edc/asset/request:
     post:
       tags:
@@ -105,6 +140,39 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PolicyDefinitionOutput'
+  /edc/policy/{policy_id}:
+    get:
+      tags:
+        - EDC
+      summary: get policy by Id
+      operationId: getPolicyById
+      parameters:
+        - in: 'path'
+          name: 'policy_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: get policy by Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyDefinitionOutput'
+    delete:
+      tags:
+        - EDC
+      summary: delete policy by Id
+      operationId: deletePolicyById
+      parameters:
+        - in: 'path'
+          name: 'policy_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete policy with id
 
   /edc/contract/request:
     post:
@@ -2123,10 +2191,11 @@ components:
       type: object
       properties:
         asset:
-          $ref: '#/components/schemas/Asset'
+          $ref: '#/components/schemas/AssetInput'
         dataAddress:
           $ref: '#/components/schemas/DataAddress'
       example: null
+
     AssetInput:
       type: object
       properties:
@@ -2136,30 +2205,14 @@ components:
         '@type':
           type: string
           example: https://w3id.org/edc/v0.0.1/ns/Asset
-        dataAddress:
-          $ref: '#/components/schemas/DataAddress'
-        privateProperties:
-          type: object
-          additionalProperties:
-            type: object
-            example: null
-          example: null
         properties:
           type: object
           additionalProperties:
             type: object
             example: null
           example: null
-      example:
-        '@context':
-          edc: https://w3id.org/edc/v0.0.1/ns/
-        '@id': asset-id
-        properties:
-          key: value
-        privateProperties:
-          privateKey: privateValue
-        dataAddress:
-          type: HttpData
+
+
     AssetOutput:
       type: object
       properties:
@@ -2581,6 +2634,8 @@ components:
           type: string
           example: null
       example: null
+
+
     DataFlowRequest:
       type: object
       properties:

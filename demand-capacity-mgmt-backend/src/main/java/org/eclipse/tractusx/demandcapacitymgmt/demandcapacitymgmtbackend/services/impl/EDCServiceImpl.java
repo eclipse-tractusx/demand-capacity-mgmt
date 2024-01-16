@@ -1,8 +1,5 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.time.Duration;
 import java.time.Instant;
@@ -30,7 +27,7 @@ public class EDCServiceImpl implements EDCService {
     private String accessToken;
     private Instant tokenExpiration;
 
-    private String apiKey = "ZWRjX2RjbV9hZXNfZW5ja2V5Cg==";
+    private final String apiKey = "ZWRjX2RjbV9hZXNfZW5ja2V5Cg==";
 
     public Mono<String> getToken() {
         if (accessToken != null && !isTokenExpired()) {
@@ -89,13 +86,7 @@ public class EDCServiceImpl implements EDCService {
             .header("x-api-key", apiKey)
             .retrieve()
             .bodyToMono(IdResponse.class)
-            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
-            .doOnNext(
-                response -> {
-                    // Log the received response
-                    log.info("Received response: {}", response);
-                }
-            );
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
     }
 
     @Override
@@ -106,12 +97,6 @@ public class EDCServiceImpl implements EDCService {
             .retrieve()
             .bodyToFlux(Asset.class)
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
-            .doOnNext(
-                response -> {
-                    // Log the received response
-                    log.info("Received response: {}", response);
-                }
-            )
             .doOnError(this::logErrorDetails)
             .collectList()
             .block(); // Blocking to get the List
@@ -123,22 +108,28 @@ public class EDCServiceImpl implements EDCService {
     }
 
     @Override
-    public Mono<AssetOutput> getAsset(String assetId) {
-        return webClient
+    public Asset getAsset(String assetId) {
+        return webClientCreation("/management/v2/assets/" + assetId)
             .get()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/management/v2/assets", "{id}").build(assetId))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .toEntity(AssetOutput.class)
-            .flatMap(responseEntity -> Mono.justOrEmpty(responseEntity.getBody()));
+            .bodyToMono(Asset.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block(); // Blocking to get the List
     }
 
     @Override
-    public Mono<Void> deleteAsset(String assetId) {
-        return webClient
+    public Void deleteAsset(String assetId) {
+        webClientCreation("/management/v2/assets/" + assetId)
             .delete()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/management/v2/assets", "{id}").build(assetId))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .bodyToMono(Void.class);
+            .bodyToMono(Asset.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block();
+        return null;
     }
 
     @Override
@@ -173,22 +164,28 @@ public class EDCServiceImpl implements EDCService {
     }
 
     @Override
-    public Mono<PolicyDefinitionOutput> getPolicy(String policyId) {
-        return webClient
+    public PolicyDefinitionOutput getPolicy(String policyId) {
+        return webClientCreation("/management/v2/policydefinitions/" + policyId)
             .get()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/management/v2/policydefinitions", "{id}").build(policyId))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .toEntity(PolicyDefinitionOutput.class)
-            .flatMap(responseEntity -> Mono.justOrEmpty(responseEntity.getBody()));
+            .bodyToMono(PolicyDefinitionOutput.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block();
     }
 
     @Override
-    public Mono<Void> deletePolicy(String policyId) {
-        return webClient
+    public Void deletePolicy(String policyId) {
+        webClientCreation("/management/v2/policydefinitions/" + policyId)
             .delete()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/management/v2policydefinitions", "{id}").build(policyId))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .bodyToMono(Void.class);
+            .bodyToMono(PolicyDefinitionOutput.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block();
+        return null;
     }
 
     @Override
