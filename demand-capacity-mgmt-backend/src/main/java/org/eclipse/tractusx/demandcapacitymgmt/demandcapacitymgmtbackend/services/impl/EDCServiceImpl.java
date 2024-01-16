@@ -84,6 +84,7 @@ public class EDCServiceImpl implements EDCService {
         return webClientCreation("/management/v2/assets")
             .post()
             .header("x-api-key", apiKey)
+            .bodyValue(dto)
             .retrieve()
             .bodyToMono(IdResponse.class)
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
