@@ -36,6 +36,11 @@ public class EDCController implements EdcApi {
     }
 
     @Override
+    public ResponseEntity<Void> deleteContractById(String contractId) throws Exception {
+        return ResponseEntity.ok(edcService.deleteContractDef(contractId));
+    }
+
+    @Override
     public ResponseEntity<Void> deletePolicyById(String policyId) throws Exception {
         return ResponseEntity.ok(edcService.deletePolicy(policyId));
     }
@@ -48,6 +53,11 @@ public class EDCController implements EdcApi {
     @Override
     public ResponseEntity<Asset> getAssetById(String assetId) throws Exception {
         return ResponseEntity.ok(edcService.getAsset(assetId));
+    }
+
+    @Override
+    public ResponseEntity<ContractDefinitionOutput> getContractById(String contractId) throws Exception {
+        return ResponseEntity.ok(edcService.getContractDef(contractId));
     }
 
     @Override

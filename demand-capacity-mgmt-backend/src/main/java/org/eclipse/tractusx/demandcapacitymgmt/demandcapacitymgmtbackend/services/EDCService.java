@@ -27,9 +27,9 @@ public interface EDCService {
 
     List<ContractDefinitionOutput> createContractDefRequest(QuerySpec dto);
 
-    Mono<ContractDefinitionOutput> getContractDef(String contractDefId);
+    ContractDefinitionOutput getContractDef(String contractDefId);
 
-    Mono<Void> deleteContractDef(String contractDefId);
+    Void deleteContractDef(String contractDefId);
 
     Mono<Catalog> createCatalogRequest(CatalogRequest dto);
 
