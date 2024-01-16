@@ -76,6 +76,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
     }
   }, [checkedDemands]);
 
+
   const nextStep = () => {
 
     //Validate if required fields are filled
@@ -111,27 +112,55 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
     updatedDemands.splice(index, 1);
     setSelectedDemands(updatedDemands);
   };
+
   const calculateEarliestAndLatestDates = (selectedDemands: DemandProp[]) => {
-    let earliestDate: string = '';
-    let latestDate: string = '';
+    let earliestDate: string | null = null;
+    let latestDate: string | null = null;
 
     selectedDemands.forEach((demand) => {
-      demand.demandSeries?.forEach((series) => {
-        series.demandSeriesValues?.forEach((value) => {
-          const dateStr: string = value?.calendarWeek || '';
-          if (!earliestDate || dateStr < earliestDate) {
-            earliestDate = dateStr;
-          }
-          if (!latestDate || dateStr > latestDate) {
-            latestDate = dateStr;
-          }
+      // Check startDate and endDate for potential earliestDate and latestDate
+      if (demand.startDate) {
+        earliestDate = earliestDate
+          ? new Date(demand.startDate) < new Date(earliestDate)
+            ? demand.startDate
+            : earliestDate
+          : demand.startDate;
+      }
+      if (demand.endDate) {
+        latestDate = latestDate
+          ? new Date(demand.endDate) > new Date(latestDate)
+            ? demand.endDate
+            : latestDate
+          : demand.endDate;
+      }
+
+      // If demandSeries is present, calculate earliestDate and latestDate from demandSeries
+      if (demand.demandSeries) {
+        demand.demandSeries.forEach((series) => {
+          series.demandSeriesValues?.forEach((value) => {
+            const dateStr: string = value?.calendarWeek || '';
+            if (dateStr) {
+              earliestDate = earliestDate
+                ? new Date(dateStr) < new Date(earliestDate)
+                  ? dateStr
+                  : earliestDate
+                : dateStr;
+
+              latestDate = latestDate
+                ? new Date(dateStr) > new Date(latestDate)
+                  ? dateStr
+                  : latestDate
+                : dateStr;
+            }
+          });
         });
-      });
+      }
     });
 
-    return { earliestDate, latestDate };
+    // Use a default value if earliestDate or latestDate is still null
+    const defaultDate: string = "1970-01-01"; // Replace with an appropriate default date
+    return { earliestDate: earliestDate || defaultDate, latestDate: latestDate || defaultDate };
   };
-
 
   function areUnitMeasureIdsEqual(demands: DemandProp[]): boolean {
     if (demands.length <= 1) {
