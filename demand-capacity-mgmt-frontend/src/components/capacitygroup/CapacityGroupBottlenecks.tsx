@@ -21,7 +21,7 @@
  */
 
 import React, {useContext, useEffect, useState} from 'react';
-import {Button, Form, Table, Toast} from 'react-bootstrap';
+import {Button, Form, Table, Modal} from 'react-bootstrap';
 import {YearlyReportContext} from "../../contexts/YearlyReportContextProvider";
 import {DemandCategoryContext} from '../../contexts/DemandCategoryProvider';
 import DatePicker from "react-datepicker";
@@ -32,6 +32,7 @@ import '../../../src/index.css';
 import {ThresholdProp} from "../../interfaces/Threshold_interfaces";
 import {ThresholdsContext} from "../../contexts/ThresholdsContextProvider";
 import {FcComboChart} from "react-icons/fc";
+import BottleNeckModalComponent from "./BottleNeckModalComponent";
 
 
 interface WeeklyViewProps {
@@ -117,6 +118,20 @@ const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({capacityGroupID, s
 
     const chunkedThresholds = chunkThresholds(sortedThresholds, 5);
 
+
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [selectedMonth, setSelectedMonth] = useState<string>('');
+    const [selectedWeekDeltaData, setSelectedWeekDeltaData] = useState<{ week: number; delta: number }[]>([]);
+    const [selectedCategoryName, setSelectedCategoryName] = useState<string>(""); // Add the state for selectedCategoryName
+
+    const handleTableCellClick = (selectedMonth: string, selectedWeekDeltaData: any[], categoryName: string) => {
+        setSelectedMonth(selectedMonth);
+        setSelectedWeekDeltaData(selectedWeekDeltaData);
+        setSelectedCategoryName(categoryName); // Pass the category name to the state
+        setShowModal(true);
+    };
+
+
     if (!yearReports) {
         return <div>Loading...</div>;
 
@@ -153,35 +168,35 @@ const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({capacityGroupID, s
                             <tr key={category.id}>
                                 <td>{category.demandCategoryName}</td>
                                 {uniqueYearMonths.map(({ year, month }) => {
-                                    const monthReport = yearReports.find(report => report.year === year)
-                                        ?.monthReport.find(mr => mr.month === month);
+                                    const monthReport = yearReports.find(report => report.year === year)?.monthReport.find(mr => mr.month === month);
                                     const categoryDeltas = monthReport?.weekReport.flatMap(weekReport =>
                                         weekReport.categoryDeltas
                                             .filter(delta => delta.catID === category.id)
-                                            .map(delta => ({ ...delta, week: weekReport.week }))
+                                            .map(delta => ({ week: weekReport.week, delta: delta.delta, catName: delta.catName }))
                                     );
 
                                     let totalDelta = 0;
                                     let tooltipContent = "";
                                     let hasCategoryData = false;
-                                    categoryDeltas?.forEach(({ delta, week, catID, catName, catCode }) => {
+
+                                    categoryDeltas?.forEach(({ delta, week, catName }) => {
                                         totalDelta += delta;
                                         tooltipContent += `Week ${week}: ${delta.toFixed(2)}\n`;
-                                        if (catID && catName && catCode) {
+                                        if (week !== undefined && delta !== undefined) { // Check if week and delta exist
                                             hasCategoryData = true;
                                         }
                                     });
 
                                     const baseColor = totalDelta >= 0 ? '148, 203, 45' : '220, 53, 69';
-                                    const opacity = hasCategoryData ? 0.9 : 0.5; // Adjust opacity based on category data
+                                    const opacity = hasCategoryData ? 0.9 : 0.5;
                                     const bgColor = `rgba(${baseColor}, ${opacity})`;
-                                    const content = hasCategoryData ? totalDelta.toFixed(2) : ""; // Display content only if category data exists
+                                    const content = hasCategoryData ? (totalDelta === 0 ? '0' : totalDelta.toFixed(2)) : ""; // Display '' (empty) if no category data
 
                                     return (
                                         <td
                                             key={`${year}-${month}`}
-                                            style={{ textAlign: 'center', backgroundColor: bgColor }}
-                                            title={tooltipContent.trim()}
+                                            style={{ textAlign: 'center', backgroundColor: bgColor, cursor: 'pointer' }}
+                                            onClick={() => handleTableCellClick(`${month} ${year}`, categoryDeltas || [], category.demandCategoryName)}
                                         >
                                             {content}
                                         </td>
@@ -264,6 +279,13 @@ const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({capacityGroupID, s
             <Table size="sm">
                 <tbody>{renderTable()}</tbody>
             </Table>
+            <BottleNeckModalComponent
+                showModal={showModal}
+                setShowModal={setShowModal}
+                selectedMonth={selectedMonth}
+                selectedWeekDeltaData={selectedWeekDeltaData}
+                categoryName={selectedCategoryName}
+            />
         </div>
     );
 };
