@@ -3,7 +3,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.util.List;
 import javax.xml.catalog.Catalog;
-import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -12,17 +11,17 @@ public interface EDCService {
 
     List<Asset> createAssetRequest(QuerySpec dto);
 
-    Mono<AssetOutput> getAsset(String assetId);
+    Asset getAsset(String assetId);
 
-    Mono<Void> deleteAsset(String assetId);
+    Void deleteAsset(String assetId);
 
     Mono<IdResponse> createPolicy(PolicyDefinitionInput dto);
 
     List<PolicyDefinitionOutput> createPolicyRequest(QuerySpec dto);
 
-    Mono<PolicyDefinitionOutput> getPolicy(String policyId);
+    PolicyDefinitionOutput getPolicy(String policyId);
 
-    Mono<Void> deletePolicy(String policyId);
+    Void deletePolicy(String policyId);
 
     Mono<IdResponse> createContractDef(ContractDefinitionInput dto);
 
