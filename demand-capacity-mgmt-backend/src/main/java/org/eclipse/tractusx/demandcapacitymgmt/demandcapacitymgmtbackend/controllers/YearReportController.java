@@ -47,7 +47,9 @@ public class YearReportController implements YearReportApi {
                         UserUtil.getUserID(request)
                         , yearReportRequest.getCgID(),
                         yearReportRequest.getStartDate(),
-                        yearReportRequest.getEndDate()
+                        yearReportRequest.getEndDate(),
+                        yearReportRequest.getRuled(),
+                        yearReportRequest.getPercentage()
         ));
     }
 }

@@ -76,7 +76,9 @@ const AppComponent: React.FC = () => {
                                     <EventsContextProvider>
                                         <DemandCategoryContextProvider>
                                             <YearlyReportContextProvider>
-                                                <CapacityGroupDetailsPage/>
+                                                <ThresholdsContextProvider>
+                                                    <CapacityGroupDetailsPage/>
+                                                </ThresholdsContextProvider>
                                             </YearlyReportContextProvider>
                                         </DemandCategoryContextProvider>
                                     </EventsContextProvider>
@@ -175,20 +177,6 @@ const AppComponent: React.FC = () => {
                                     <AdminPage/>
                                 </Layout>
                             </ThresholdsContextProvider>
-                        </DemandContextProvider>
-                    </FavoritesContextProvider>
-                </AuthenticatedRoute>
-            }/>
-
-            <Route path="/bottlenecks" element={
-                <AuthenticatedRoute>
-                    <FavoritesContextProvider>
-                        <DemandContextProvider>
-                            <Layout>
-                                <BottlenecksContextProvider>
-                                    <BottlenecksPage/>
-                                </BottlenecksContextProvider>
-                            </Layout>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>

@@ -218,7 +218,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         singleCapacityGroup.setLinkMaterialDemandIds(response.getLinkMaterialDemandIds());
 
         singleCapacityGroup.setCapacities(convertToCapacityBody(capacityGroupEntity.getCapacityTimeSeriesList()));
-
+        singleCapacityGroup.setRuled(capacityGroupEntity.isRuled());
         return singleCapacityGroup;
     }
 

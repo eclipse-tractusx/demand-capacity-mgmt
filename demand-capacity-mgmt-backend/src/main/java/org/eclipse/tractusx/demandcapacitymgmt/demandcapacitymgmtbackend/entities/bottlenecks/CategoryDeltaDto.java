@@ -26,19 +26,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
-
-import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WeekReportDto {
-    private int week;
+public class CategoryDeltaDto {
+    private String catID;
+    private String catName;
+    private String catCode;
     private double delta;
-    private double maxCapacity;
-    private double actCapacity;
-    private List<CategoryDeltaDto> categoryDeltaDtos;
-    private DemandSeries demandSeries;
 }

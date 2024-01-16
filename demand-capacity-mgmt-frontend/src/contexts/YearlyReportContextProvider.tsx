@@ -25,14 +25,18 @@ import createAPIInstance from "../util/Api";
 import { useUser } from "./UserContext";
 
 export interface WeekReport {
-  week: number;
-  delta: number;
-  maxCapacity: number;
-  actCapacity: number;
-  catID: string | null;
-  catCode: string | null;
-  catName: string | null;
+    week: number;
+    maxCapacity: number;
+    actCapacity: number;
+    categoryDeltas: CategoryDelta[];
 }
+export interface CategoryDelta {
+    catID: string;
+    catName: string;
+    catCode: string;
+    delta: number;
+}
+
 export interface MonthReport {
   month: string;
   weekReport: WeekReport[];
@@ -49,7 +53,7 @@ export interface YearReport {
 
 interface YearReportContextValue {
     yearReports: YearReport[] | undefined;
-    fetchYearReports: (cgID: string, startDate: string, endDate: string) => Promise<void>;
+    fetchYearReports: (cgID: string, startDate: string, endDate: string, ruled: boolean, percentage: number) => Promise<void>;
 }
 
 
@@ -61,10 +65,10 @@ const YearlyReportContextProvider: React.FC<React.PropsWithChildren<{}>> = (prop
     const { access_token } = useUser();
     const [yearReports, setYearReports] = useState<YearReport[] | undefined>(undefined);
 
-    const fetchYearReports = useCallback(async (cgID: string, startDate: string, endDate: string) => {
+    const fetchYearReports = useCallback(async (cgID: string, startDate: string, endDate: string, ruled: boolean, percentage: number) => {
         try {
             const api = createAPIInstance(access_token);
-            const response = await api.post('/year/report', { cgID, startDate, endDate });
+            const response = await api.post('/year/report', { cgID, startDate, endDate, ruled,percentage });
             setYearReports(response.data.reports);  // Assuming response.data has the 'reports' key
         } catch (error) {
             console.error(error);
@@ -72,9 +76,6 @@ const YearlyReportContextProvider: React.FC<React.PropsWithChildren<{}>> = (prop
         } finally {
         }
     }, [access_token]);
-
-
-
 
     const contextValue: YearReportContextValue = {
         yearReports,

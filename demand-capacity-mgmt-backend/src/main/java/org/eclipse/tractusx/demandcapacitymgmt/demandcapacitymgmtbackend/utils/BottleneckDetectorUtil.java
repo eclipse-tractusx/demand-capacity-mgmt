@@ -1,12 +1,10 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils;
 
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.MonthReport;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekReport;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReport;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReportResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks.CategoryDeltaDto;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks.MonthReportDto;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks.WeekReportDto;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks.YearReportDto;
@@ -312,7 +310,7 @@ public class BottleneckDetectorUtil implements BottleneckManager {
 
     //YEAR REPORT CALCULATIONS
 
-    public YearReport convertToYearReport(YearReportDto yearReportDto) {
+    private YearReport convertToYearReport(YearReportDto yearReportDto) {
         YearReport yearReport = new YearReport();
         yearReport.setYear(yearReportDto.getYear());
         yearReport.setCapacityGroupId(yearReportDto.getCapacityGroupId());
@@ -331,7 +329,7 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         return yearReport;
     }
 
-    public MonthReport convertToMonthReport(MonthReportDto monthReportDto) {
+    private MonthReport convertToMonthReport(MonthReportDto monthReportDto) {
         MonthReport monthReport = new MonthReport();
         monthReport.setMonth(monthReportDto.getMonth());
 
@@ -345,23 +343,32 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         return monthReport;
     }
 
-    public WeekReport convertToWeekReport(WeekReportDto weekReportDto) {
+    private WeekReport convertToWeekReport(WeekReportDto weekReportDto) {
         WeekReport weekReport = new WeekReport();
         weekReport.setWeek(weekReportDto.getWeek());
-        weekReport.setDelta(weekReportDto.getDelta());
         weekReport.setMaxCapacity(weekReportDto.getMaxCapacity());
         weekReport.setActCapacity(weekReportDto.getActCapacity());
-        weekReport.setCatID(weekReportDto.getDemandCatID());
-        weekReport.setCatName(weekReportDto.getDemandCatName());
-        weekReport.setCatCode(weekReportDto.getDemandCatCode());
-
+        ArrayList<CategoryDelta> deltas = new ArrayList<>();
+        for(CategoryDeltaDto dto : weekReportDto.getCategoryDeltaDtos()) {
+            deltas.add(convertToCategoryDelta(dto));
+        }
+        weekReport.setCategoryDeltas(deltas);
         return weekReport;
+    }
+
+    private CategoryDelta convertToCategoryDelta(CategoryDeltaDto categoryDeltaDto) {
+        CategoryDelta categoryDelta = new CategoryDelta();
+        categoryDelta.setCatID(categoryDeltaDto.getCatID());
+        categoryDelta.setCatName(categoryDeltaDto.getCatName());
+        categoryDelta.setCatCode(categoryDeltaDto.getCatCode());
+        categoryDelta.setDelta(categoryDeltaDto.getDelta());
+        return categoryDelta;
     }
 
 
     // Year report generation
     @Override
-    public YearReportResponse generateYearReport(String userID, String capacityGroupID, LocalDate startDate, LocalDate endDate) {
+    public YearReportResponse generateYearReport(String userID, String capacityGroupID, LocalDate startDate, LocalDate endDate, boolean ruled, int percentage) {
         List<YearReportDto> yearReports = new ArrayList<>();
         for (int year = startDate.getYear(); year <= endDate.getYear(); year++) {
             YearReportDto yearReport = new YearReportDto();
@@ -375,7 +382,7 @@ public class BottleneckDetectorUtil implements BottleneckManager {
             List<MonthReportDto> monthReports = new ArrayList<>();
             for (int month = 1; month <= 12; month++) {
                 if (isMonthWithinRange(year, month, startDate, endDate)) {
-                    MonthReportDto monthReport = processMonth(matchedEntities, month, year, cgs.getDefaultActualCapacity(), cgs.getDefaultMaximumCapacity(), startDate, endDate);
+                    MonthReportDto monthReport = processMonth(matchedEntities, month, year, cgs.getDefaultActualCapacity(), cgs.getDefaultMaximumCapacity(), startDate, endDate, ruled, percentage);
                     monthReports.add(monthReport);
                 }
             }
@@ -404,7 +411,8 @@ public class BottleneckDetectorUtil implements BottleneckManager {
     // Month report processing
     private MonthReportDto processMonth(List<LinkedCapacityGroupMaterialDemandEntity> matchedEntities,
                                         int month, int year, float capacity, float maxCapacity,
-                                        LocalDate startDate, LocalDate endDate) {
+                                        LocalDate startDate, LocalDate endDate, boolean ruled, int percentage) {
+
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate firstDayOfMonth = yearMonth.atDay(1);
         LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
@@ -422,7 +430,7 @@ public class BottleneckDetectorUtil implements BottleneckManager {
             // Check if the current week is within the date range
             if (weekFallsInRange(current, startDate, endDate)) {
                 List<DemandSeriesValues> weekDemandValues = getDemandsForWeek(matchedEntities, weekOfYear, year);
-                weekReports.add(calculateWeekDelta(weekDemandValues, weekOfYear, year, capacity, maxCapacity));
+                weekReports.add(calculateWeekDelta(weekDemandValues, weekOfYear, capacity, maxCapacity, ruled, percentage));
             }
 
             current = current.plusWeeks(1);
@@ -459,30 +467,41 @@ public class BottleneckDetectorUtil implements BottleneckManager {
     }
 
 
-    private WeekReportDto calculateWeekDelta(List<DemandSeriesValues> weekDemandValues, int weekNumber, int year, float capacity, float maxCapacity) {
+    private WeekReportDto calculateWeekDelta(List<DemandSeriesValues> weekDemandValues, int weekNumber, float capacity, float maxCapacity, Boolean ruled, Integer percentage) {
         WeekReportDto weekReport = new WeekReportDto();
-        double totalDemand = weekDemandValues.stream()
-                .mapToDouble(DemandSeriesValues::getDemand)
-                .sum();
-
-
-        // Updated delta calculation: capacity - totalDemand
-        double totalDelta = capacity - totalDemand;
-        if (weekDemandValues.isEmpty()){
-            weekReport.setWeek(weekNumber);
-            weekReport.setDelta(0);
-        } else {
-            DemandCategoryEntity category = weekDemandValues.get(0).getDemandSeries().getDemandCategory();
-            weekReport.setDemandCatID(category.getId().toString());
-            weekReport.setDemandCatName(category.getDemandCategoryName());
-            weekReport.setDemandCatCode(category.getDemandCategoryCode());
-            weekReport.setWeek(weekNumber);
-            weekReport.setDelta(totalDelta);
-        }
+        weekReport.setWeek(weekNumber);
         weekReport.setActCapacity(capacity);
         weekReport.setMaxCapacity(maxCapacity);
+
+        Map<String, List<DemandSeriesValues>> groupedByCategory = weekDemandValues.stream()
+                .collect(Collectors.groupingBy(dsv -> dsv.getDemandSeries().getDemandCategory().getId().toString()));
+
+        List<CategoryDeltaDto> categoryDeltaDtos = new ArrayList<>();
+        for (Map.Entry<String, List<DemandSeriesValues>> entry : groupedByCategory.entrySet()) {
+            double totalDemand = entry.getValue().stream()
+                    .mapToDouble(DemandSeriesValues::getDemand)
+                    .sum();
+
+            // Apply adjustment if ruled is true and percentage is not null
+            double adjustedCapacity = (ruled != null && ruled && percentage != null)
+                    ? capacity * (1 + (percentage / 100.0))
+                    : capacity;
+            double totalDelta = adjustedCapacity - totalDemand;
+
+            DemandCategoryEntity category = entry.getValue().get(0).getDemandSeries().getDemandCategory();
+            CategoryDeltaDto categoryDeltaDto = new CategoryDeltaDto();
+            categoryDeltaDto.setCatID(category.getId().toString());
+            categoryDeltaDto.setCatName(category.getDemandCategoryName());
+            categoryDeltaDto.setCatCode(category.getDemandCategoryCode());
+            categoryDeltaDto.setDelta(totalDelta);
+
+            categoryDeltaDtos.add(categoryDeltaDto);
+        }
+
+        weekReport.setCategoryDeltaDtos(categoryDeltaDtos);
         return weekReport;
     }
+
 
 
     private int getWeeksInYear(int year) {

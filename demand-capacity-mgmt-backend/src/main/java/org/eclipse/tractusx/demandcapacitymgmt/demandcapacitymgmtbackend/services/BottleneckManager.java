@@ -31,5 +31,5 @@ public interface BottleneckManager {
 
     void calculateTodos(String userID);
 
-    YearReportResponse generateYearReport(String userID, String capacityGroupID, LocalDate startDate, LocalDate endDate);
+    YearReportResponse generateYearReport(String userID, String capacityGroupID, LocalDate startDate, LocalDate endDate, boolean ruled, int percentage);
 }
