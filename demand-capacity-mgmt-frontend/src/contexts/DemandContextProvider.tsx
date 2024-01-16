@@ -22,6 +22,7 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { Demand, DemandProp } from '../interfaces/demand_interfaces';
 import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
 import { useUser } from "./UserContext";
 
 
@@ -45,6 +46,9 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const { access_token } = useUser();
   const api = createAPIInstance(access_token);
 
+  const objectType = '1';
+  let errorCode = '';
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchDemandPropsWithRetry = useMemo(() => async (maxRetries = 3) => {
     let retries = 0;
@@ -59,12 +63,12 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
         setIsLoading(false); // Set isLoading to false on success
         return; // Exit the loop on success
       } catch (error) {
-        console.error(`Error fetching demands (Retry ${retries + 1}):`, error);
         retries++;
         if (retries < maxRetries) {
           // Delay for 30 seconds before the next retry
           await new Promise((resolve) => setTimeout(resolve, 30000));
         } else {
+          customErrorToast(objectType, '0', '00')
           setIsLoading(false); // Set isLoading to false on max retries
         }
       }

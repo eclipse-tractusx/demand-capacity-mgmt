@@ -25,12 +25,12 @@ import React, { FunctionComponent, createContext, useCallback, useContext, useEf
 
 import { InfoMenuData } from "../interfaces/infomenu_interfaces";
 import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
 import { AlertsContext } from "./AlertsContextProvider";
 import { CapacityGroupContext } from './CapacityGroupsContextProvider';
 import { DemandContext } from './DemandContextProvider';
 import { EventsContext } from './EventsContextProvider';
 import { useUser } from "./UserContext";
-
 interface InfoMenuContextData {
     data: InfoMenuData | null;
     fetchData: () => void;
@@ -50,6 +50,9 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
     const { events } = useContext(EventsContext) || {};
     const { triggeredAlerts } = useContext(AlertsContext) || {};
 
+    const objectType = '4';
+    const errorCode = '5';
+
     const fetchData = useCallback(async () => {
         try {
             const api = createAPIInstance(access_token);
@@ -57,7 +60,7 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
             const result: InfoMenuData = response.data;
             setData(result);
         } catch (error) {
-            console.error("Error fetching data: ", error);
+            customErrorToast(objectType, errorCode, '00')
         }
     }, [access_token]);
 
