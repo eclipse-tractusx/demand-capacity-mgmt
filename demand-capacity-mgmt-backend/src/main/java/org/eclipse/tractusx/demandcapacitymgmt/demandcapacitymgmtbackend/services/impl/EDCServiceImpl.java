@@ -152,12 +152,6 @@ public class EDCServiceImpl implements EDCService {
             .retrieve()
             .bodyToFlux(PolicyDefinitionOutput.class)
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
-            .doOnNext(
-                response -> {
-                    // Log the received response
-                    log.info("Received response: {}", response);
-                }
-            )
             .doOnError(this::logErrorDetails)
             .collectList()
             .block();
@@ -208,12 +202,6 @@ public class EDCServiceImpl implements EDCService {
             .retrieve()
             .bodyToFlux(ContractDefinitionOutput.class)
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
-            .doOnNext(
-                response -> {
-                    // Log the received response
-                    log.info("Received response: {}", response);
-                }
-            )
             .doOnError(this::logErrorDetails)
             .collectList()
             .block();
