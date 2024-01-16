@@ -118,7 +118,25 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Asset'
-
+  /edc/policy:
+    post:
+      tags:
+        - EDC
+      summary: create a Policy
+      operationId: createPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyDefinitionInput'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
   /edc/policy/request:
     post:
       tags:
@@ -173,6 +191,26 @@ paths:
       responses:
         200:
           description: Delete policy with id
+
+  /edc/contract:
+    post:
+      tags:
+        - EDC
+      summary: create an contract definition
+      operationId: createContract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractDefinitionInput'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
 
   /edc/contract/request:
     post:
@@ -2243,7 +2281,7 @@ components:
           example: https://w3id.org/edc/v0.0.1/ns/Asset
         properties:
           $ref: '#/components/schemas/Props'
-          example: null
+
 
     Props:
       type: object
@@ -2464,6 +2502,8 @@ components:
     ContractDefinitionInput:
       type: object
       properties:
+        '@context':
+          type: object
         '@id':
           type: string
           example: null
@@ -2474,10 +2514,7 @@ components:
           type: string
           example: null
         assetsSelector:
-          type: array
-          example: null
-          items:
-            $ref: '#/components/schemas/Criterion'
+          $ref: '#/components/schemas/Criterion'
         contractPolicyId:
           type: string
           example: null
@@ -2487,7 +2524,11 @@ components:
         '@id': definition-id
         accessPolicyId: asset-policy-id
         contractPolicyId: contract-policy-id
-        assetsSelector: []
+        assetsSelector:
+          '@type': CriterionDto
+          operandLeft: https://w3id.org/edc/v0.0.1/ns/id
+          operator: "="
+          operandRight: digital-twin-registry
     ContractDefinitionOutput:
       type: object
       properties:
@@ -3020,9 +3061,12 @@ components:
             rightOperand: value
         prohibition: []
         obligation: []
+
     PolicyDefinitionInput:
       type: object
       properties:
+        '@context':
+          type: object
         '@id':
           type: string
           example: null

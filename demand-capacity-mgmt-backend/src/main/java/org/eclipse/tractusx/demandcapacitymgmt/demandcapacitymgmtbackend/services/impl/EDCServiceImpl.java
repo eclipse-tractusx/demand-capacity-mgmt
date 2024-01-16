@@ -135,11 +135,10 @@ public class EDCServiceImpl implements EDCService {
 
     @Override
     public Mono<IdResponse> createPolicy(PolicyDefinitionInput dto) {
-        return webClient
+        return webClientCreation("/management/v2/policydefinitions")
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/management/v2/policydefinitions").build())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(dto))
+            .header("x-api-key", apiKey)
+            .bodyValue(dto)
             .retrieve()
             .bodyToMono(IdResponse.class)
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
@@ -185,13 +184,20 @@ public class EDCServiceImpl implements EDCService {
 
     @Override
     public Mono<IdResponse> createContractDef(ContractDefinitionInput dto) {
-        return webClient
+        return webClientCreation("/management/v2/contractdefinitions")
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/management/v2/contractdefinitions").build())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(dto))
+            .header("x-api-key", apiKey)
+            .bodyValue(dto)
             .retrieve()
             .bodyToMono(IdResponse.class)
+            .doOnRequest(
+                request -> {
+                    // Log request details before sending
+
+                    System.out.println("Request Body: " + dto.toString()); // You can customize this based on your DTO structure
+                }
+            )
+            .log()
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
     }
 
