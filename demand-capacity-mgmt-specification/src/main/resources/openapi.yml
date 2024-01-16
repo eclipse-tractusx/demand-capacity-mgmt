@@ -2024,6 +2024,8 @@ components:
           type: string
         capacityGroupName:
           type: string
+        ruled:
+          type: boolean
 
     CapacityBody:
       type: object
@@ -2092,6 +2094,10 @@ components:
           type: string
           format: date
           description: The end date of the report range
+        ruled:
+          type: boolean
+        percentage:
+          type: integer
 
     YearReportResponse:
       type: object
@@ -2139,18 +2145,26 @@ components:
         week:
           type: integer
           format: int32
-        delta:
-          type: number
-          format: double
         maxCapacity:
           type: number
           format: double
         actCapacity:
           type: number
           format: double
+        categoryDeltas:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryDelta'
+
+    CategoryDelta:
+      type: object
+      properties:
         catID:
-          type: string
-        catCode:
           type: string
         catName:
           type: string
+        catCode:
+          type: string
+        delta:
+          type: number
+          format: double

@@ -20,22 +20,32 @@
  *    ********************************************************************************
  */
 import {FcComboChart} from "react-icons/fc";
-import { useUser } from "../../contexts/UserContext";
+import {useUser} from "../../contexts/UserContext";
 import CapacityGroupBottlenecks from "../capacitygroup/CapacityGroupBottlenecks";
+import ThresholdsContextProvider from "../../contexts/ThresholdsContextProvider";
 
-function BottlenecksPage() {
-    const { user } = useUser();
+interface BottlenecksPageProps {
+    ruled: boolean;
+    capacityGroupID: string;
+    startDate: string;
+    endDate: string;
+}
 
+function BottlenecksPage({capacityGroupID, startDate, endDate}: BottlenecksPageProps) {
     return (
         <div className="bottlenecks-page">
-            <br />
-            <div className="container-xl">
-                <div style={{ display: "flex" }}>
-                    <FcComboChart size={35} />
-                    <h3 className="icon-text-padding">Bottlenecks</h3>
-                </div>
-                <CapacityGroupBottlenecks />
+            <br/>
+            <div className="container-fluid">
+                <ThresholdsContextProvider>
+                    <CapacityGroupBottlenecks
+                        capacityGroupID={capacityGroupID}
+                        startDate={startDate}
+                        endDate={endDate}
+                    />
+                </ThresholdsContextProvider>
             </div>
+
+
         </div>
     );
 }

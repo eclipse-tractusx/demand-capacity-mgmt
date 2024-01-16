@@ -2,11 +2,13 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleResponse;
+
 import java.util.List;
-import org.springframework.http.ResponseEntity;
 
 public interface RulesetService {
     List<RuleResponse> getAllRules();
+
+    List<RuleResponse> getAllEnabledRules();
 
     RuleResponse getRule(Integer id);
 
