@@ -196,6 +196,40 @@ paths:
                 items:
                   $ref: '#/components/schemas/ContractDefinitionOutput'
 
+  /edc/contract/{contract_id}:
+    get:
+      tags:
+        - EDC
+      summary: get contract by Id
+      operationId: getContractById
+      parameters:
+        - in: 'path'
+          name: 'contract_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: get contract by Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractDefinitionOutput'
+    delete:
+      tags:
+        - EDC
+      summary: delete contract by Id
+      operationId: deleteContractById
+      parameters:
+        - in: 'path'
+          name: 'contract_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete contract with id
+
   /token/login:
     post:
       tags:
@@ -2459,9 +2493,9 @@ components:
           example: null
         "edc:assetsSelector":
           type: object
-          example: null
-          items:
-            $ref: '#/components/schemas/Criterion'
+          additionalProperties:
+            type: string
+            description: Context information
         "edc:contractPolicyId":
           type: string
           example: null

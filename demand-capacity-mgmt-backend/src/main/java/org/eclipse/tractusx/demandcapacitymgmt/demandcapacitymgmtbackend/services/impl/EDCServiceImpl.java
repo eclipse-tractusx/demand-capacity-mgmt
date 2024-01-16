@@ -220,28 +220,28 @@ public class EDCServiceImpl implements EDCService {
     }
 
     @Override
-    public Mono<ContractDefinitionOutput> getContractDef(String contractDefId) {
-        return webClient
+    public ContractDefinitionOutput getContractDef(String contractDefId) {
+        return webClientCreation("/management/v2/contractdefinitions/" + contractDefId)
             .get()
-            .uri(
-                uriBuilder ->
-                    uriBuilder.pathSegment("/management/v2/contractdefinitions/{id}", "{id}").build(contractDefId)
-            )
+            .header("x-api-key", apiKey)
             .retrieve()
-            .toEntity(ContractDefinitionOutput.class)
-            .flatMap(responseEntity -> Mono.justOrEmpty(responseEntity.getBody()));
+            .bodyToMono(ContractDefinitionOutput.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block();
     }
 
     @Override
-    public Mono<Void> deleteContractDef(String contractDefId) {
-        return webClient
+    public Void deleteContractDef(String contractDefId) {
+        webClientCreation("/management/v2/contractdefinitions/" + contractDefId)
             .delete()
-            .uri(
-                uriBuilder ->
-                    uriBuilder.pathSegment("/management/v2/contractdefinitions/{id}", "{id}").build(contractDefId)
-            )
+            .header("x-api-key", apiKey)
             .retrieve()
-            .bodyToMono(Void.class);
+            .bodyToMono(ContractDefinitionOutput.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block();
+        return null;
     }
 
     @Override
