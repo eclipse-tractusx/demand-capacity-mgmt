@@ -2224,6 +2224,8 @@ components:
     AssetEntryNewDto:
       type: object
       properties:
+        '@context':
+          type: object
         asset:
           $ref: '#/components/schemas/AssetInput'
         dataAddress:
@@ -2240,11 +2242,18 @@ components:
           type: string
           example: https://w3id.org/edc/v0.0.1/ns/Asset
         properties:
-          type: object
-          additionalProperties:
-            type: object
-            example: null
+          $ref: '#/components/schemas/Props'
           example: null
+
+    Props:
+      type: object
+      properties:
+        description:
+          type: string
+
+        contenttype:
+          type: string
+
 
 
     AssetOutput:
@@ -2666,7 +2675,16 @@ components:
           example: https://w3id.org/edc/v0.0.1/ns/DataAddress
         type:
           type: string
-          example: null
+        proxyPath:
+          type: string
+        proxyBody:
+          type: string
+        proxyMethod:
+          type: string
+        proxyQueryParams:
+          type: string
+        baseUrl:
+          type: string
       example: null
 
 
@@ -2899,18 +2917,14 @@ components:
     IdResponse:
       type: object
       properties:
+        '@type':
+          type: string
         '@id':
           type: string
-          example: null
-        createdAt:
+        'edc:createdAt':
           type: integer
           format: int64
-          example: null
-      example:
-        '@context':
-          edc: https://w3id.org/edc/v0.0.1/ns/
-        '@id': id-value
-        createdAt: 1688465655
+
     List:
       type: object
       properties:
