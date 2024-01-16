@@ -19,9 +19,8 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback } from 'react';
 import Select from 'react-select';
-import { UnitsofMeasureContext } from '../../contexts/UnitsOfMeasureContextProvider';
 
 interface AlertMonitoredObjectsOptionsProps {
     selectedMonitoredObjectId: string;
