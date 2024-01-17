@@ -24,6 +24,7 @@ import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { CompanyData } from '../interfaces/company_interfaces';
 import createAPIInstance from "../util/Api";
 import { customErrorToast } from '../util/ErrorMessagesHandler';
+import { is404Error, isAxiosError, isTimeoutError } from '../util/TypeGuards';
 import { useUser } from "./UserContext";
 
 interface CompanyContextData {
@@ -69,6 +70,27 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
       setIsLoading(false);
     }
   }, [retryCount, setCompanies, setIsLoading, setRetryCount, api]);
+
+  const getCompanybyId = async (id: string): Promise<CompanyData | undefined> => {
+    try {
+      const response = await api.get(`/demand/${id}`);
+      return response.data;
+    } catch (error) {
+      if (isTimeoutError(error)) {
+        // This is a timeout error
+        customErrorToast(objectType, errorCode, '00')
+      } else if (is404Error(error) && error.response && error.response.status === 404) {
+        // This is a 404 Internal Server Error
+        customErrorToast(objectType, errorCode, '40')
+      } else if (isAxiosError(error) && error.response && error.response.status === 500) {
+        // This is a 500 Internal Server Error
+        customErrorToast(objectType, errorCode, '50')
+      } else {
+        // Handle other types of errors
+        customErrorToast('5', '0', '0') //This will trigger, Unkown error
+      }
+    }
+  };
 
   const fetchTopCompanies = async (): Promise<void> => {
     try {

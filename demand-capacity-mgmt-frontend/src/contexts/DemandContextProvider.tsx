@@ -23,6 +23,7 @@ import React, { createContext, useCallback, useEffect, useMemo, useState } from 
 import { Demand, DemandProp } from '../interfaces/demand_interfaces';
 import createAPIInstance from "../util/Api";
 import { customErrorToast } from '../util/ErrorMessagesHandler';
+import { is404Error, isAxiosError, isTimeoutError } from '../util/TypeGuards';
 import { useUser } from "./UserContext";
 
 
@@ -89,16 +90,29 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       const response = await api.get(`/demand/${id}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching demand by id:', error);
+      if (isTimeoutError(error)) {
+        // This is a timeout error
+        customErrorToast(objectType, '0', '00')
+      } else if (is404Error(error) && error.response && error.response.status === 404) {
+        // This is a 404 Internal Server Error
+        customErrorToast(objectType, '4', '04')
+      } else if (isAxiosError(error) && error.response && error.response.status === 500) {
+        // This is a 500 Internal Server Error
+        customErrorToast(objectType, '5', '00')
+      } else {
+        // Handle other types of errors
+        customErrorToast('5', '0', '0') //This will trigger, Unkown error
+      }
     }
   };
+
 
   const deleteDemand = async (id: string) => {
     try {
       await api.delete(`/demand/${id}`);
       fetchDemandProps();
     } catch (error) {
-      console.error('Error deleting demand:', error);
+      customErrorToast(objectType, '0', '90')
     }
   };
 
@@ -106,7 +120,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
     try {
       await api.post('/demand', newDemand);
     } catch (error) {
-      console.error('Error creating demand:', error);
+      customErrorToast(objectType, '1', '00')
     }
   };
 
@@ -115,7 +129,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       await api.put(`/demand/${updatedDemand.id}`, updatedDemand);
       fetchDemandProps();
     } catch (error) {
-      console.error('Error updating demand:', error);
+      customErrorToast(objectType, '1', '15')
     }
   };
 
@@ -129,7 +143,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       };
       await api.post('/demand/series/unlink', unlinkreq);
     } catch (error) {
-      console.error('Error unlinking demand:', error);
+      customErrorToast(objectType, '1', '16')
       throw error;
     }
   };
