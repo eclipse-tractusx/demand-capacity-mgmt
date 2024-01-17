@@ -19,25 +19,23 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-export interface Supplier {
-  id: string
-  bpn: string
-  companyName: string
-  street: string
-  number: string
-  zipCode: string
-  country: string
-  myCompany: string
-}
 
+import { AxiosError } from "axios";
 
-export interface ExpectedSupplierLocation {
-  id: string
-  bpn: string
-  companyName: string
-  street: string
-  number: string
-  zipCode: string
-  country: string
-  myCompany: string
-}
+// Type guards
+export const isTimeoutError = (error: unknown): error is Error & { code?: string } => {
+    return typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 'ECONNABORTED';
+};
+
+export const is404Error = (error: unknown): error is AxiosError => {
+    return (
+        isAxiosError(error) &&
+        error.response !== undefined &&
+        error.response.status !== undefined &&
+        error.response.status === 404
+    );
+};
+
+export const isAxiosError = (error: unknown): error is AxiosError => {
+    return typeof error === 'object' && error !== null && 'isAxiosError' in error && (error as AxiosError).isAxiosError === true;
+};
