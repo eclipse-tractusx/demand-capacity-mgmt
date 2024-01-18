@@ -30,6 +30,82 @@ servers:
 
 paths:
 
+  /cg/ruleset:
+    get:
+      summary: generate the capacity group rulesets
+      operationId: getCapacityGroupRulesets
+      tags:
+        - cgRuleset
+      parameters:
+        - in: query
+          name: cgID
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: got the capacity group rulesets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CGRulesetResponse'
+    post:
+      summary: Modify the capacity group ruleset
+      operationId: modifyCapacityGroupRuleset
+      tags:
+        - cgRuleset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CGRulesetRequest'
+      responses:
+        200:
+          description: Capacity group ruleset modified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CGRulesetResponse'
+
+  /cd/ruleset:
+    get:
+      summary: generate the company rulesets
+      operationId: getCompanyRulesets
+      tags:
+        - cdRuleset
+      parameters:
+        - in: query
+          name: cdID
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: got the company rulesets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CDRulesetResponse'
+    post:
+      summary: Modify the company ruleset
+      operationId: modifyCompanyRuleset
+      tags:
+        - cdRuleset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CDRulesetRequest'
+      responses:
+        200:
+          description: Company ruleset modified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CDRulesetResponse'
+
   /year/report:
     post:
       summary: Generate a year report for a given capacity group ID and date range
@@ -1010,6 +1086,20 @@ paths:
                 $ref: '#/components/schemas/FavoriteResponse'
         404:
           description: Favorite not found
+
+  /rules/enabled:
+    get:
+      tags:
+        - rules
+      summary: Get all enabled rules
+      operationId: getAllEnabledRules
+      responses:
+        200:
+          description: all enabled rules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesResponse'
 
   /rules/:
     get:
@@ -2168,3 +2258,35 @@ components:
         delta:
           type: number
           format: double
+
+    CGRulesetRequest:
+      type: object
+      properties:
+        cgID:
+          type: string
+        percentages:
+          type: string
+
+    CGRulesetResponse:
+      type: object
+      properties:
+        cgID:
+          type: string
+        percentage:
+          type: string
+
+    CDRulesetRequest:
+      type: object
+      properties:
+        cgID:
+          type: string
+        percentages:
+          type: string
+
+    CDRulesetResponse:
+      type: object
+      properties:
+        cgID:
+          type: string
+        percentage:
+          type: string

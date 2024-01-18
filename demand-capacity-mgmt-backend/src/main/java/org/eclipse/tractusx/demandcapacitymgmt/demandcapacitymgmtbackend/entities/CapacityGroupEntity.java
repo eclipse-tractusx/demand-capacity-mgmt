@@ -77,7 +77,4 @@ public class CapacityGroupEntity {
 
     @Column(name = "link_status")
     private EventType linkStatus;
-
-    @Column(name = "ruled")
-    private boolean ruled;
 }
