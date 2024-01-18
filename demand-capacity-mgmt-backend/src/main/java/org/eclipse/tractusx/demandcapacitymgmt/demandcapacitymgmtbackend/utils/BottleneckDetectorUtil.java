@@ -377,7 +377,8 @@ public class BottleneckDetectorUtil implements BottleneckManager {
             yearReport.setYear(year);
             yearReport.setCapacityGroupId(capacityGroupID);
             yearReport.setTotalWeeksCurrentYear(getWeeksInYear(year));
-            yearReport.setRuled(cgs.isRuled());
+
+            //yearReport.setRuled(cgs.isRuled());
 
             List<MonthReportDto> monthReports = new ArrayList<>();
             for (int month = 1; month <= 12; month++) {

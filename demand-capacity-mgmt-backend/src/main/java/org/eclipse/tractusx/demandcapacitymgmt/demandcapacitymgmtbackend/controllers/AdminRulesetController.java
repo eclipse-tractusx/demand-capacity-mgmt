@@ -23,6 +23,11 @@ public class AdminRulesetController implements RulesApi {
     private RulesetService rulesetService;
 
     @Override
+    public ResponseEntity<List<RuleResponse>> getAllEnabledRules() throws Exception {
+        return ResponseEntity.status(200).body(rulesetService.getAllEnabledRules());
+    }
+
+    @Override
     public ResponseEntity<List<RuleResponse>> getAllRules() throws Exception {
         if (Objects.equals(UserUtil.getUserRole(request), Role.ADMIN)) {
             return ResponseEntity.status(200).body(rulesetService.getAllRules());

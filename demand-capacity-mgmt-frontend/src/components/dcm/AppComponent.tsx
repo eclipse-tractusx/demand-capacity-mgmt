@@ -45,6 +45,8 @@ import BottlenecksContextProvider from "../../contexts/BottlenecksContextProvide
 import ThresholdsContextProvider from "../../contexts/ThresholdsContextProvider";
 import YearlyReportContextProvider from "../../contexts/YearlyReportContextProvider";
 import DemandCategoryContextProvider, {DemandCategoryContext} from "../../contexts/DemandCategoryProvider";
+import CapacityGroupsContextProvider from "../../contexts/CapacityGroupsContextProvider";
+import CompanyContextProvider from "../../contexts/CompanyContextProvider";
 
 
 const AppComponent: React.FC = () => {
@@ -172,11 +174,15 @@ const AppComponent: React.FC = () => {
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <ThresholdsContextProvider>
-                                <Layout>
-                                    <AdminPage/>
-                                </Layout>
-                            </ThresholdsContextProvider>
+                            <CompanyContextProvider>
+                                <CapacityGroupsContextProvider>
+                                    <ThresholdsContextProvider>
+                                        <Layout>
+                                            <AdminPage/>
+                                        </Layout>
+                                    </ThresholdsContextProvider>
+                                </CapacityGroupsContextProvider>
+                            </CompanyContextProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>

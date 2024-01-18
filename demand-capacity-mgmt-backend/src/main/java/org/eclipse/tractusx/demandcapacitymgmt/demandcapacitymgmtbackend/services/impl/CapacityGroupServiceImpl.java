@@ -38,10 +38,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
@@ -60,6 +57,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final FavoriteService favoriteService;
     private final BottleneckManagerImpl statusManager;
 
+    private final CapacityGroupRuleSetRepository ruleSetRepository;
     private final UserRepository userRepository;
 
     @Override
@@ -218,7 +216,12 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         singleCapacityGroup.setLinkMaterialDemandIds(response.getLinkMaterialDemandIds());
 
         singleCapacityGroup.setCapacities(convertToCapacityBody(capacityGroupEntity.getCapacityTimeSeriesList()));
-        singleCapacityGroup.setRuled(capacityGroupEntity.isRuled());
+
+        //INDIVIDUAL CG CHECK
+        UUID cgUUID = UUID.fromString(capacityGroupId);
+        Optional<CapacityGroupRuleSetEntity> ruleSetEntityOpt = ruleSetRepository.findByCgID(cgUUID);
+        singleCapacityGroup.setRuled(ruleSetEntityOpt.isPresent());
+
         return singleCapacityGroup;
     }
 
