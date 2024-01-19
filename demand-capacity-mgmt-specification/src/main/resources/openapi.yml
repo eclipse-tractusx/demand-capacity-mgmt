@@ -1131,6 +1131,43 @@ paths:
         200:
           description: Updated rules
 
+    delete:
+      tags:
+        - rules
+      summary: Delete a list of rules
+      operationId: deleteRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleRequest'
+      responses:
+        200:
+          description: Deleted rules
+
+    post:
+      tags:
+        - rules
+      summary: Insert a rule
+      operationId: addRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                percentage:
+                  type: integer
+                  example: 5
+      responses:
+        200:
+          description: Inserted rule
+
+
   /rules/{id}:
     get:
       tags:
@@ -1194,6 +1231,8 @@ components:
           type: integer
         enabled:
           type: boolean
+        percentage:
+          type: integer
 
     RulesResponse:
       type: array
@@ -2214,6 +2253,8 @@ components:
         totalWeeksCurrentYear:
           type: integer
           format: int32
+        enabledPercentages:
+          type: string
         monthReport:
           type: array
           items:

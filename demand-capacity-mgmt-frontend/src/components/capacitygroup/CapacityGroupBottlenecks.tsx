@@ -20,109 +20,104 @@
  *    ********************************************************************************
  */
 
-import React, {useContext, useEffect, useState} from 'react';
-import {Button, Form, Table, Modal} from 'react-bootstrap';
-import {YearlyReportContext} from "../../contexts/YearlyReportContextProvider";
-import {DemandCategoryContext} from '../../contexts/DemandCategoryProvider';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Form, Table, Modal } from 'react-bootstrap';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {subWeeks, addWeeks, formatISO, startOfDay} from 'date-fns';
-import {FaRegCalendarCheck} from 'react-icons/fa';
-import '../../../src/index.css';
-import {ThresholdProp} from "../../interfaces/Threshold_interfaces";
-import {ThresholdsContext} from "../../contexts/ThresholdsContextProvider";
-import {FcComboChart} from "react-icons/fc";
+import { formatISO } from 'date-fns';
+import { FaRegCalendarCheck } from 'react-icons/fa';
+import { FcComboChart } from "react-icons/fc";
 import BottleNeckModalComponent from "./BottleNeckModalComponent";
-
+import { YearlyReportContext } from "../../contexts/YearlyReportContextProvider";
+import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 
 interface WeeklyViewProps {
     capacityGroupID: string | null | undefined;
-    startDate: string; // Assuming ISO format (YYYY-MM-DD)
-    endDate: string; // Assuming ISO format (YYYY-MM-DD)
+    startDate: string;
+    endDate: string;
 }
 
-
-const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({capacityGroupID, startDate, endDate}) => {
-
-    const {yearReports, fetchYearReports} = useContext(YearlyReportContext);
-    const {demandcategories} = useContext(DemandCategoryContext) || {};
-    const {thresholds} = useContext(ThresholdsContext)!;
-    // Use different names for internal date state
+const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({ capacityGroupID, startDate, endDate }) => {
+    const { yearReports, fetchYearReports } = useContext(YearlyReportContext);
+    const { demandcategories } = useContext(DemandCategoryContext)!;
     const [internalStartDate, setInternalStartDate] = useState<Date>(new Date(startDate));
     const [internalEndDate, setInternalEndDate] = useState<Date>(new Date(endDate));
     const [selectedThreshold, setSelectedThreshold] = useState<number | null>(null);
-    const [editableThresholds, setEditableThresholds] = useState<ThresholdProp[]>([]);
-    // Handlers for date change
-    const handleInternalStartDateChange = (date: Date) => {
-        setInternalStartDate(date);
-    };
-
-    const handleInternalEndDateChange = (date: Date) => {
-        setInternalEndDate(date);
-    };
-
-
-    useEffect(() => {
-        if (selectedThreshold !== null) {
-            // Find the threshold object with the selected ID
-            const thresholdObj = editableThresholds.find(threshold => threshold.id === selectedThreshold);
-            if (thresholdObj) {
-                // Extract the percentage from the threshold object
-                const percentage = parseFloat(thresholdObj.percentage);
-
-                // Call fetchYearReportsRuled with the necessary parameters
-                if (capacityGroupID) {
-                    const formattedStartDate = formatISO(internalStartDate, {representation: 'date'});
-                    const formattedEndDate = formatISO(internalEndDate, {representation: 'date'});
-                    fetchYearReports(capacityGroupID, formattedStartDate, formattedEndDate, true, percentage);
-                }
-            }
-        } else {
-            if (capacityGroupID) {
-                const formattedStartDate = formatISO(internalStartDate, {representation: 'date'});
-                const formattedEndDate = formatISO(internalEndDate, {representation: 'date'});
-                fetchYearReports(capacityGroupID, formattedStartDate, formattedEndDate, false, 0);
-            }
-        }
-    }, [selectedThreshold, editableThresholds, capacityGroupID, internalStartDate, internalEndDate, fetchYearReports]);
-
-    useEffect(() => {
-        setEditableThresholds(thresholds);
-    }, [thresholds]);
-
-    useEffect(() => {
-        setSelectedThreshold(null);
-    }, [thresholds]);
-
-    const handleCheckboxChange = (id: number) => {
-        setSelectedThreshold((prevSelectedThreshold) => {
-            if (prevSelectedThreshold === id) {
-                return null;
-            }
-            return id;
-        });
-    };
-
-    const sortedThresholds = [...editableThresholds].sort((a, b) => {
-        return Number(a.percentage) - Number(b.percentage);
-    });
-
-    const chunkThresholds = (thresholds: ThresholdProp[], size: number): ThresholdProp[][] => {
-        return thresholds.reduce((acc: ThresholdProp[][], val: ThresholdProp, i: number) => {
-            let idx = Math.floor(i / size);
-            let page = acc[idx] || (acc[idx] = []);
-            page.push(val);
-            return acc;
-        }, []);
-    }
-
-    const chunkedThresholds = chunkThresholds(sortedThresholds, 5);
-
-
     const [showModal, setShowModal] = useState<boolean>(false);
     const [selectedMonth, setSelectedMonth] = useState<string>('');
     const [selectedWeekDeltaData, setSelectedWeekDeltaData] = useState<{ week: number; delta: number }[]>([]);
-    const [selectedCategoryName, setSelectedCategoryName] = useState<string>(""); // Add the state for selectedCategoryName
+    const [selectedCategoryName, setSelectedCategoryName] = useState<string>("");
+
+    const parseEnabledPercentages = (percentagesString: string): number[] => {
+        return percentagesString
+            .replace(/[{}]/g, '')
+            .split(',')
+            .map(Number)
+            .filter(num => !isNaN(num));
+    };
+
+    const getEnabledPercentages = (): number[] => {
+        const report = yearReports?.find(r => r.capacityGroupId === capacityGroupID);
+        return report ? parseEnabledPercentages(report.enabledPercentages) : [];
+    };
+
+    const handleCheckboxChange = (percentage: number) => {
+        setSelectedThreshold(prevSelected => {
+            if (prevSelected === percentage) {
+                // Unset the selection if the same checkbox is clicked again
+                if (capacityGroupID) {
+                    const formattedStartDate = formatISO(internalStartDate, { representation: 'date' });
+                    const formattedEndDate = formatISO(internalEndDate, { representation: 'date' });
+                    fetchYearReports(capacityGroupID, formattedStartDate, formattedEndDate, false, 0);
+                }
+                return null;
+            } else {
+                // Set the new selection and fetch reports accordingly
+                if (capacityGroupID) {
+                    const formattedStartDate = formatISO(internalStartDate, { representation: 'date' });
+                    const formattedEndDate = formatISO(internalEndDate, { representation: 'date' });
+                    fetchYearReports(capacityGroupID, formattedStartDate, formattedEndDate, true, percentage);
+                }
+                return percentage;
+            }
+        });
+    };
+
+
+    const renderThresholdsSection = () => {
+        const enabledPercentages = getEnabledPercentages();
+        if (enabledPercentages.length === 0) {
+            return null; // Return null if there are no enabled percentages
+        }
+
+        return (
+            <tr>
+                {enabledPercentages.map((percentage, index) => (
+                    <td key={index}>
+                        <Form.Check
+                            type="checkbox"
+                            id={`threshold-${percentage}`}
+                            label={`${percentage} %`}
+                            checked={percentage === selectedThreshold}
+                            onChange={() => handleCheckboxChange(percentage)}
+                        />
+                    </td>
+                ))}
+            </tr>
+        );
+    };
+
+    useEffect(() => {
+        if (capacityGroupID) {
+            const formattedStartDate = formatISO(internalStartDate, { representation: 'date' });
+            const formattedEndDate = formatISO(internalEndDate, { representation: 'date' });
+            fetchYearReports(capacityGroupID, formattedStartDate, formattedEndDate, false, 0);
+        }
+    }, [capacityGroupID, internalStartDate, internalEndDate, fetchYearReports]);
+
+    const handleInternalStartDateChange = (date: Date) => setInternalStartDate(date);
+    const handleInternalEndDateChange = (date: Date) => setInternalEndDate(date);
+
 
     const handleTableCellClick = (selectedMonth: string, selectedWeekDeltaData: any[], categoryName: string) => {
         setSelectedMonth(selectedMonth);
@@ -130,7 +125,6 @@ const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({capacityGroupID, s
         setSelectedCategoryName(categoryName); // Pass the category name to the state
         setShowModal(true);
     };
-
 
     if (!yearReports) {
         return <div>Loading...</div>;
@@ -214,31 +208,19 @@ const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({capacityGroupID, s
     return (
         <div className='container'>
             <div className="container-xl">
-                <div style={{display: "flex"}}>
-                    <FcComboChart size={35}/>
+                <div style={{ display: "flex" }}>
+                    <FcComboChart size={35} />
                     <h3 className="icon-text-padding">Bottleneck thresholds</h3>
                 </div>
-                <div style={{display: "flex", alignContent:"center"}}>
+                <div style={{ display: "flex", alignContent: "center" }}>
                     <p>Thresholds below are provided and enabled by your administrator.</p>
                 </div>
-                <div style={{overflowX: 'auto'}}>
+                <div style={{ overflowX: 'auto' }}>
                     <Table className="table table-bordered table-responsive-lg">
                         <tbody>
-                        {chunkedThresholds.map((chunk, chunkIndex) => (
-                            <tr key={chunkIndex}>
-                                {chunk.map((threshold) => (
-                                    <td key={threshold.id}>
-                                        <Form.Check
-                                            type="checkbox"
-                                            id={`threshold-${threshold.percentage}`}
-                                            label={`${threshold.percentage} %`}
-                                            checked={threshold.id === selectedThreshold}
-                                            onChange={() => handleCheckboxChange(threshold.id)}
-                                        />
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
+                        <tr>
+                            {renderThresholdsSection()}
+                        </tr>
                         </tbody>
                     </Table>
                 </div>

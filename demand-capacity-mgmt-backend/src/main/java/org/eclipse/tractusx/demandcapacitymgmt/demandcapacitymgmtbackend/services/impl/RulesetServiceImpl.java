@@ -1,5 +1,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddRuleRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleResponse;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +69,35 @@ public class RulesetServiceImpl implements RulesetService {
                 rulesetRepository.save(rule);
             }
         }
+    }
+
+    @Override
+    public void deleteRules(List<RuleRequest> rules) {
+        for (RuleRequest ruleRequest : rules) {
+            Optional<Rule> ruleEnt = rulesetRepository.findById(ruleRequest.getId());
+            ruleEnt.ifPresent(rulesetRepository::delete);
+        }
+    }
+
+    @Override
+    public void addRule(AddRuleRequest rule) {
+        // Find the last rule in the database
+        Rule lastRule = rulesetRepository.findTopByOrderByIdDesc();
+
+        // Determine the new id
+        int newId = 1; // Default if no rules exist yet
+        if (lastRule != null) {
+            newId = lastRule.getId() + 1;
+        }
+
+        // Create the new Rule entity with the determined id
+        Rule ruleEntity = new Rule();
+        ruleEntity.setId(newId);
+        ruleEntity.setPercentage(rule.getPercentage());
+        ruleEntity.setEnabled(true);
+
+        // Save the new rule to the database
+        rulesetRepository.save(ruleEntity);
     }
 
     private RuleResponse convertToDto(Rule ruleEnt) {

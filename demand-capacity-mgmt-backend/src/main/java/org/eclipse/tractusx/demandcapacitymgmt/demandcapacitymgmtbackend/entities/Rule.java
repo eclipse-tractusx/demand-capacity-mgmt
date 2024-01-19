@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 public class Rule {
 
     @Id
-    @GeneratedValue
     private int id;
 
     @Column(name = "percentage")

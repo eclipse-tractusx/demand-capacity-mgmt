@@ -46,11 +46,15 @@ public class CompanyRuleSetServiceImpl implements CompanyRuleSetService {
         entity.setCompanyID(cdUUID);
         entity.setRuled_percentage(request.getPercentages());
 
-        CompanyRuleSetEntity savedEntity = repository.save(entity);
-
         CDRulesetResponse response = new CDRulesetResponse();
-        response.setCompanyID(savedEntity.getCompanyID().toString());
-        response.setPercentage(savedEntity.getRuled_percentage());
+        if(entity.getRuled_percentage().equals("{}")){
+            repository.deleteByCompanyID(cdUUID);
+            response.setCompanyID((cdUUID.toString()));
+        } else {
+            CompanyRuleSetEntity savedEntity = repository.save(entity);
+            response.setCompanyID(savedEntity.getCompanyID().toString());
+            response.setPercentage(savedEntity.getRuled_percentage());
+        }
 
         return response;
     }
