@@ -2278,7 +2278,7 @@ components:
     CDRulesetRequest:
       type: object
       properties:
-        cgID:
+        companyID:
           type: string
         percentages:
           type: string
@@ -2286,7 +2286,7 @@ components:
     CDRulesetResponse:
       type: object
       properties:
-        cgID:
+        companyID:
           type: string
         percentage:
           type: string

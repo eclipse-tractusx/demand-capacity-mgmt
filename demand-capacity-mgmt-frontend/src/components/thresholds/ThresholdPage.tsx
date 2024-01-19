@@ -6,13 +6,13 @@ import { CapacityGroupContext } from "../../contexts/CapacityGroupsContextProvid
 import { CompanyContext } from "../../contexts/CompanyContextProvider";
 
 function ThresholdPage() {
-    const { thresholds, enabledThresholds, updateThresholds } = useContext(ThresholdsContext)!;
+    const { thresholds, enabledThresholds, updateThresholds, updateCGThresholds, updateCompanyThresholds } = useContext(ThresholdsContext)!;
     const { companies } = useContext(CompanyContext)!;
     const { capacitygroups } = useContext(CapacityGroupContext)!;
     // State to track the currently active accordion item
     const [activeKey, setActiveKey] = useState<string | null>(null);
     const [editableThresholds, setEditableThresholds] = useState<ThresholdProp[]>([]);
-    const [editableEnabledThresholds, setEditableEnabledThresholds] = useState<ThresholdProp[]>(
+    const [editableEnabledThresholds, setEditableCGThresholds] = useState<ThresholdProp[]>(
         enabledThresholds.map(threshold => ({ ...threshold, enabled: false }))
     );
     const [editableCompanyThresholds, setEditableCompanyThresholds] = useState<ThresholdProp[][]>([]);
@@ -20,6 +20,7 @@ function ThresholdPage() {
     const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<string>("");
     const [isCapacityGroupSelected, setIsCapacityGroupSelected] = useState(false);
     const [selectedCompany, setSelectedCompany] = useState<string>("");
+    const [openItems, setOpenItems] = useState<Set<string>>(new Set());
 
     const chunkThresholds = (thresholds: ThresholdProp[], size: number): ThresholdProp[][] => {
         return thresholds.reduce((acc: ThresholdProp[][], val: ThresholdProp, i: number) => {
@@ -31,14 +32,24 @@ function ThresholdPage() {
     };
 
     const handleAccordionToggle = (eventKey: string) => {
-        setActiveKey(activeKey === eventKey ? null : eventKey);
+        setOpenItems(prevOpenItems => {
+            const newOpenItems = new Set(prevOpenItems);
+            if (newOpenItems.has(eventKey)) {
+                newOpenItems.delete(eventKey);
+            } else {
+                newOpenItems.add(eventKey);
+            }
+            return newOpenItems;
+        });
     };
+    const isItemOpen = (eventKey: string) => openItems.has(eventKey);
+
     let chunkedThresholds = chunkThresholds(editableThresholds, 4);
     let chunkedEnabledThresholds = chunkThresholds(editableEnabledThresholds, 4);
 
     useEffect(() => {
         setEditableThresholds(thresholds);
-        setEditableEnabledThresholds(
+        setEditableCGThresholds(
             enabledThresholds.map(threshold => ({ ...threshold, enabled: false }))
         );
 
@@ -60,14 +71,14 @@ function ThresholdPage() {
     };
 
 
-    const handleEnabledThresholdCheckboxChange = (id: number) => {
+    const handleCGThresholdCheckboxChange = (id: number) => {
         const updatedEnabledThresholds = editableEnabledThresholds.map(threshold => {
             if (threshold.id === id) {
                 return { ...threshold, enabled: !threshold.enabled };
             }
             return threshold;
         });
-        setEditableEnabledThresholds(updatedEnabledThresholds);
+        setEditableCGThresholds(updatedEnabledThresholds);
     };
     const handleCompanyThresholdCheckboxChange = (id: number) => {
         const updatedCompanyThresholds = editableCompanyThresholds.map(chunk =>
@@ -107,14 +118,44 @@ function ThresholdPage() {
         }
     };
 
-    const handleSaveEnabledThresholds = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSaveCGThresholds = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // Logic to save enabled thresholds
+        const selectedPercentages = editableEnabledThresholds
+            .filter(threshold => threshold.enabled)
+            .map(threshold => threshold.percentage)
+            .join(',');
+
+        const requestBody = {
+            cgID: selectedCapacityGroup,
+            percentages: `{${selectedPercentages}}`
+        };
+
+        try {
+            await updateCGThresholds(requestBody);
+            setShowToast(true);
+        } catch (error) {
+            console.error('Error saving CG thresholds:', error);
+        }
     };
 
     const handleSaveCompanyThresholds = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // Logic to save company thresholds
+        const selectedPercentages = editableCompanyThresholds.flat()
+            .filter(threshold => threshold.enabled)
+            .map(threshold => threshold.percentage)
+            .join(',');
+
+        const requestBody = {
+            companyID: selectedCompany,
+            percentages: `{${selectedPercentages}}`
+        };
+
+        try {
+            await updateCompanyThresholds(requestBody);
+            setShowToast(true);
+        } catch (error) {
+            console.error('Error saving company thresholds:', error);
+        }
     };
 
 
@@ -153,7 +194,7 @@ function ThresholdPage() {
                             Thresholds Management
                         </Accordion.Header>
                     </Card.Header>
-                    <Accordion.Collapse eventKey="0">
+                    <Accordion.Collapse eventKey="0" in={isItemOpen('0')}>
                         <Card.Body>
                             <Form onSubmit={handleSaveThresholds}>
                                 {renderTable(chunkedThresholds, handleThresholdCheckboxChange)}
@@ -170,23 +211,23 @@ function ThresholdPage() {
                             Capacity Group Thresholds Management
                         </Accordion.Header>
                     </Card.Header>
-                    <Accordion.Collapse eventKey="1">
+                    <Accordion.Collapse eventKey="1" in={isItemOpen('1')}>
                         <Card.Body>
-                            <Form onSubmit={handleSaveEnabledThresholds}>
+                            <Form onSubmit={handleSaveCGThresholds}>
                                 <Row>
                                     <Col sm={4}>
                                         <Form.Label>Select Capacity Group</Form.Label>
                                         <select onChange={handleSelectChange} value={selectedCapacityGroup} className="form-control">
                                             <option value=""></option>
                                             {capacitygroups.map((group) => (
-                                                <option key={group.internalId} value={group.name}>
+                                                <option key={group.internalId} value={group.internalId}>
                                                     {group.name}
                                                 </option>
                                             ))}
                                         </select>
                                     </Col>
                                 </Row>
-                                {renderTable(chunkedEnabledThresholds, handleEnabledThresholdCheckboxChange)}
+                                {renderTable(chunkedEnabledThresholds, handleCGThresholdCheckboxChange)}
                                 <Button variant="primary" type="submit" className="mt-3" disabled={!isCapacityGroupSelected}>
                                     Save Capacity Group Thresholds
                                 </Button>
@@ -200,7 +241,7 @@ function ThresholdPage() {
                             Company Thresholds Management
                         </Accordion.Header>
                     </Card.Header>
-                    <Accordion.Collapse eventKey="2">
+                    <Accordion.Collapse eventKey="2" in={isItemOpen('2')}>
                         <Card.Body>
                             <Form onSubmit={handleSaveCompanyThresholds}>
                                 <Row>
@@ -209,7 +250,7 @@ function ThresholdPage() {
                                         <select onChange={handleCompanySelectChange} value={selectedCompany} className="form-control">
                                             <option value=""></option>
                                             {companies.map((company) => (
-                                                <option key={company.id} value={company.companyName}>
+                                                <option key={company.id} value={company.id}>
                                                     {company.companyName}
                                                 </option>
                                             ))}

@@ -8,11 +8,24 @@ interface ThresholdsContextData {
     enabledThresholds: ThresholdProp[];
     fetchThresholds: () => Promise<void>;
     updateThresholds: (ruleRequests: RuleRequest[]) => Promise<void>;
+    updateCGThresholds: (cgRequest: CGRequest) => Promise<void>;
+    updateCompanyThresholds: (companyRequest: CompanyRequest) => Promise<void>;
+
 }
 
 interface RuleRequest {
     id: number;
     enabled: boolean;
+}
+
+interface CGRequest {
+    cgID: string;
+    percentages: string;
+}
+
+interface CompanyRequest {
+    companyID: string;
+    percentages: string;
 }
 
 export const ThresholdsContext = createContext<ThresholdsContextData | undefined>(undefined);
@@ -37,19 +50,37 @@ const ThresholdContextProvider: React.FC<React.PropsWithChildren<{}>> = ({ child
     const updateThresholds = async (ruleRequests: RuleRequest[]) => {
         const api = createAPIInstance(access_token);
         try {
-            await api.put('/rules/', ruleRequests);
+            await api.post('/rules/', ruleRequests);
             fetchThresholds(); // Refetch thresholds and enabled thresholds
         } catch (error) {
             console.error('Error updating thresholds:', error);
         }
     };
+    const updateCGThresholds = async (cgRequest: CGRequest) => {
+        const api = createAPIInstance(access_token);
+        try {
+            await api.post('cg/ruleset', cgRequest);
+            fetchThresholds();
+        } catch (error) {
+            console.error('Error updating CG thresholds:', error);
+        }
+    };
 
+    const updateCompanyThresholds = async (companyRequest: CompanyRequest) => {
+        const api = createAPIInstance(access_token);
+        try {
+            await api.put('/company-rules/', companyRequest);
+            fetchThresholds();
+        } catch (error) {
+            console.error('Error updating company thresholds:', error);
+        }
+    };
     useEffect(() => {
         fetchThresholds();
     }, [access_token]);
 
     return (
-        <ThresholdsContext.Provider value={{ thresholds, enabledThresholds, fetchThresholds, updateThresholds }}>
+        <ThresholdsContext.Provider value={{ thresholds, enabledThresholds, fetchThresholds, updateThresholds, updateCGThresholds, updateCompanyThresholds }}>
             {children}
         </ThresholdsContext.Provider>
     );
