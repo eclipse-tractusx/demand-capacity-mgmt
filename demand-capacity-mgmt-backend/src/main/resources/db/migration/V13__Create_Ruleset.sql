@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS admin_ruleset
     percentage int,
     enabled    bool
 );
+CREATE SEQUENCE admin_ruleset_seq START 1;
 
 INSERT INTO admin_ruleset (percentage, enabled)
 VALUES (5, false),

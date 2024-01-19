@@ -22,7 +22,6 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,4 +40,5 @@ public class YearReportDto {
     private int percentage;
     private int totalWeeksCurrentYear;
     private List<MonthReportDto> monthReportDto;
+    private String enabledPercentages;
 }

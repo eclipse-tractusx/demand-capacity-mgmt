@@ -49,6 +49,7 @@ export interface YearReport {
   capacityGroupId: string;
   ruled: boolean;
   percentage: number
+  enabledPercentages: string;
 }
 
 interface YearReportContextValue {

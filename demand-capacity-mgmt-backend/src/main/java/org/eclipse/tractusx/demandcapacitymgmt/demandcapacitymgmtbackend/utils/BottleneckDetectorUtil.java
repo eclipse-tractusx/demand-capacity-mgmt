@@ -36,6 +36,10 @@ public class BottleneckDetectorUtil implements BottleneckManager {
     private final LinkedCapacityGroupMaterialDemandRepository matchedDemandsRepository;
     private final LoggingHistoryRepository loggingRepository;
 
+    private final CapacityGroupRuleSetRepository cgRuleSetRepository;
+
+    private final CompanyRuleSetRepository cdRuleSetRepository;
+
     @Override
     public void calculateTodos(String userID) {
         userRepository
@@ -317,6 +321,7 @@ public class BottleneckDetectorUtil implements BottleneckManager {
         yearReport.setRuled(yearReportDto.isRuled());
         yearReport.setPercentage(yearReportDto.getPercentage());
         yearReport.setTotalWeeksCurrentYear(yearReportDto.getTotalWeeksCurrentYear());
+        yearReport.setEnabledPercentages(yearReportDto.getEnabledPercentages());
 
         if (yearReportDto.getMonthReportDto() != null) {
             List<MonthReport> monthReports = new ArrayList<>();
@@ -378,7 +383,28 @@ public class BottleneckDetectorUtil implements BottleneckManager {
             yearReport.setCapacityGroupId(capacityGroupID);
             yearReport.setTotalWeeksCurrentYear(getWeeksInYear(year));
 
-            //yearReport.setRuled(cgs.isRuled());
+            String enabledPercentages;
+            Optional<CapacityGroupRuleSetEntity> cgRuleSet = cgRuleSetRepository.findByCgID(cgs.getId());
+            if (cgRuleSet.isPresent()) {
+                enabledPercentages = cgRuleSet.get().getRuled_percentage();
+                yearReport.setRuled(true);
+                yearReport.setEnabledPercentages(enabledPercentages);
+            } else {
+                Optional<CompanyRuleSetEntity> companyRuleSet = cdRuleSetRepository.findByCompanyID(cgs.getCustomer().getId());
+                if (companyRuleSet.isPresent()) {
+                    yearReport.setRuled(true);
+                    yearReport.setEnabledPercentages(companyRuleSet.get().getRuled_percentage());
+                } else {
+                    companyRuleSet = cdRuleSetRepository.findByCompanyID(cgs.getSupplier().getId());
+                    if (companyRuleSet.isPresent()) {
+                        yearReport.setRuled(true);
+                        yearReport.setEnabledPercentages(companyRuleSet.get().getRuled_percentage());
+                    } else {
+                        yearReport.setRuled(false);
+                        yearReport.setEnabledPercentages("{}");
+                    }
+                }
+            }
 
             List<MonthReportDto> monthReports = new ArrayList<>();
             for (int month = 1; month <= 12; month++) {

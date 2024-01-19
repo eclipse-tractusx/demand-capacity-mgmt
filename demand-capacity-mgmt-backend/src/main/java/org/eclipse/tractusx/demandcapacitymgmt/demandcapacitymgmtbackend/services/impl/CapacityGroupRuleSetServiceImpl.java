@@ -9,8 +9,8 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupRuleSetService;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -44,12 +44,15 @@ public class CapacityGroupRuleSetServiceImpl implements CapacityGroupRuleSetServ
 
         entity.setCgID(cgUUID);
         entity.setRuled_percentage(request.getPercentages());
-
-        CapacityGroupRuleSetEntity savedEntity = repository.save(entity);
-
         CGRulesetResponse response = new CGRulesetResponse();
-        response.setCgID(savedEntity.getCgID().toString());
-        response.setPercentage(savedEntity.getRuled_percentage());
+        if(entity.getRuled_percentage().equals("{}")){
+            repository.deleteByCgID(cgUUID);
+            response.setCgID(cgUUID.toString());
+        } else {
+            CapacityGroupRuleSetEntity savedEntity = repository.save(entity);
+            response.setCgID(savedEntity.getCgID().toString());
+            response.setPercentage(savedEntity.getRuled_percentage());
+        }
 
         return response;
     }

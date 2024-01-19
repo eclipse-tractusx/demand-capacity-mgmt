@@ -36,16 +36,12 @@ function BottlenecksPage({capacityGroupID, startDate, endDate}: BottlenecksPageP
         <div className="bottlenecks-page">
             <br/>
             <div className="container-fluid">
-                <ThresholdsContextProvider>
                     <CapacityGroupBottlenecks
                         capacityGroupID={capacityGroupID}
                         startDate={startDate}
                         endDate={endDate}
                     />
-                </ThresholdsContextProvider>
             </div>
-
-
         </div>
     );
 }

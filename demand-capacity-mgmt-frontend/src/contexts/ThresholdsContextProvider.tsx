@@ -10,10 +10,12 @@ interface ThresholdsContextData {
     updateThresholds: (ruleRequests: RuleRequest[]) => Promise<void>;
     updateCGThresholds: (cgRequest: CGRequest) => Promise<void>;
     updateCompanyThresholds: (companyRequest: CompanyRequest) => Promise<void>;
+    addNewThreshold: (requestBody: { percentage: number }) => Promise<void>;
+    deleteThresholds: (ruleRequests: RuleRequest[]) => Promise<void>;
 
 }
 
-interface RuleRequest {
+export interface RuleRequest {
     id: number;
     enabled: boolean;
 }
@@ -50,12 +52,24 @@ const ThresholdContextProvider: React.FC<React.PropsWithChildren<{}>> = ({ child
     const updateThresholds = async (ruleRequests: RuleRequest[]) => {
         const api = createAPIInstance(access_token);
         try {
-            await api.post('/rules/', ruleRequests);
-            fetchThresholds(); // Refetch thresholds and enabled thresholds
+            await api.put('/rules/', ruleRequests);
+            fetchThresholds();
         } catch (error) {
             console.error('Error updating thresholds:', error);
         }
     };
+
+    const deleteThresholds = async (ruleRequests: RuleRequest[]) => {
+        const api = createAPIInstance(access_token);
+        try {
+            await api.delete('/rules/', { data: ruleRequests });
+            fetchThresholds();
+        } catch (error) {
+            console.error('Error updating thresholds:', error);
+        }
+    };
+
+
     const updateCGThresholds = async (cgRequest: CGRequest) => {
         const api = createAPIInstance(access_token);
         try {
@@ -69,18 +83,30 @@ const ThresholdContextProvider: React.FC<React.PropsWithChildren<{}>> = ({ child
     const updateCompanyThresholds = async (companyRequest: CompanyRequest) => {
         const api = createAPIInstance(access_token);
         try {
-            await api.put('/company-rules/', companyRequest);
+            await api.post('cd/ruleset', companyRequest);
             fetchThresholds();
         } catch (error) {
             console.error('Error updating company thresholds:', error);
         }
     };
+
+    const addNewThreshold = async (requestBody: { percentage: number }) => {
+        const api = createAPIInstance(access_token);
+        try {
+            // Send the requestBody to the server
+            await api.post('/rules/', requestBody);
+            fetchThresholds();
+        } catch (error) {
+            console.error('Error adding new threshold:', error);
+        }
+    };
+
     useEffect(() => {
         fetchThresholds();
     }, [access_token]);
 
     return (
-        <ThresholdsContext.Provider value={{ thresholds, enabledThresholds, fetchThresholds, updateThresholds, updateCGThresholds, updateCompanyThresholds }}>
+        <ThresholdsContext.Provider value={{ thresholds, enabledThresholds, fetchThresholds, updateThresholds, updateCGThresholds, updateCompanyThresholds, addNewThreshold, deleteThresholds }}>
             {children}
         </ThresholdsContext.Provider>
     );
