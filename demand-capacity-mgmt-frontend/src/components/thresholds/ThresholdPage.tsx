@@ -7,9 +7,9 @@ import { CompanyContext } from "../../contexts/CompanyContextProvider";
 import { RuleRequest } from "../../contexts/ThresholdsContextProvider"; // Import the RuleRequest type
 
 function ThresholdPage() {
-    const { thresholds,deleteThresholds,fetchThresholds,addNewThreshold , enabledThresholds, updateThresholds, updateCGThresholds, updateCompanyThresholds } = useContext(ThresholdsContext)!;
-    const { companies } = useContext(CompanyContext)!;
-    const { capacitygroups } = useContext(CapacityGroupContext)!;
+    const {thresholds, deleteThresholds, fetchThresholds, addNewThreshold, enabledThresholds, updateThresholds, updateCGThresholds, updateCompanyThresholds} = useContext(ThresholdsContext)!;
+    const {companies} = useContext(CompanyContext)!;
+    const {capacitygroups} = useContext(CapacityGroupContext)!;
     const [activeKey, setActiveKey] = useState<string | null>(null);
     const [editableThresholds, setEditableThresholds] = useState<ThresholdProp[]>([]);
     const [editableEnabledThresholds, setEditableCGThresholds] = useState<ThresholdProp[]>([]);
@@ -21,7 +21,7 @@ function ThresholdPage() {
     const [selectedCompany, setSelectedCompany] = useState<string>("");
     const [openItems, setOpenItems] = useState<Set<string>>(new Set());
     const initializeCheckboxes = (thresholds: ThresholdProp[]): ThresholdProp[] => {
-        return thresholds.map(threshold => ({ ...threshold, enabled: false }));
+        return thresholds.map(threshold => ({...threshold, enabled: false}));
     };
 
     useEffect(() => {
@@ -37,7 +37,7 @@ function ThresholdPage() {
     const handleDeleteThresholds = async () => {
         // Get the IDs of selected thresholds to delete
         const selectedThresholds = editableThresholds.filter((threshold) => threshold.enabled);
-        const ruleRequests = selectedThresholds.map(({ id, enabled }) => ({ id, enabled }));
+        const ruleRequests = selectedThresholds.map(({id, enabled}) => ({id, enabled}));
 
         // Call the deleteThresholds method from the context provider
         await deleteThresholds(ruleRequests);
@@ -50,7 +50,7 @@ function ThresholdPage() {
         const numericCustomThreshold = parseFloat(customThreshold);
         if (customThreshold && !isNaN(numericCustomThreshold)) {
             // Create a request body
-            const requestBody = { percentage: numericCustomThreshold };
+            const requestBody = {percentage: numericCustomThreshold};
             // Call the addNewThreshold method with the request body
             await addNewThreshold(requestBody);
             // Fetch thresholds again
@@ -63,7 +63,7 @@ function ThresholdPage() {
 
 
     const handleCheckboxChange = (id: number, setter: React.Dispatch<React.SetStateAction<ThresholdProp[]>>): void => {
-        setter(prev => prev.map(threshold => threshold.id === id ? { ...threshold, enabled: !threshold.enabled } : threshold));
+        setter(prev => prev.map(threshold => threshold.id === id ? {...threshold, enabled: !threshold.enabled} : threshold));
     };
 
     const handleSelectChange = (
@@ -110,7 +110,7 @@ function ThresholdPage() {
         // Convert customThreshold to a number and check if it's a valid number
         const numericCustomThreshold = parseFloat(customThreshold);
         if (customThreshold && !isNaN(numericCustomThreshold)) {
-            const newThreshold = { id: Date.now(), percentage: numericCustomThreshold.toString(), enabled: true };
+            const newThreshold = {id: Date.now(), percentage: numericCustomThreshold.toString(), enabled: true};
             setter(prev => [...prev, newThreshold]);
         }
 
@@ -120,14 +120,12 @@ function ThresholdPage() {
             inputElement.value = '';
         }
 
-        const ruleRequests = getter().map(({ id, enabled }) => ({ id, enabled }));
+        const ruleRequests = getter().map(({id, enabled}) => ({id, enabled}));
         await updater(ruleRequests);
 
         setShowToast(true);
         setter(initializeCheckboxes(getter()));
     };
-
-
 
 
     const renderTable = (thresholds: ThresholdProp[], handler: (id: number) => void) => {
@@ -166,13 +164,15 @@ function ThresholdPage() {
                 {/* Thresholds Management */}
                 <Card>
                     <Card.Header>
-                        <Accordion.Header as={Button} variant="link" eventKey="0" onClick={() => handleAccordionToggle('0')}>
+                        <Accordion.Header as={Button} variant="link" eventKey="0"
+                                          onClick={() => handleAccordionToggle('0')}>
                             Thresholds Management
                         </Accordion.Header>
                     </Card.Header>
                     <Accordion.Collapse eventKey="0">
                         <Card.Body>
-                            <Form onSubmit={(e) => handleSave(e, () => editableThresholds, setEditableThresholds, updateThresholds)}>
+                            <Form
+                                onSubmit={(e) => handleSave(e, () => editableThresholds, setEditableThresholds, updateThresholds)}>
                                 <Row>
                                     <Col sm={8}>
                                         <Form.Label>Add a Custom Threshold Value</Form.Label>
@@ -212,21 +212,24 @@ function ThresholdPage() {
                 {/* Capacity Group Thresholds Management */}
                 <Card>
                     <Card.Header>
-                        <Accordion.Header as={Button} variant="link" eventKey="1" onClick={() => handleAccordionToggle('1')}>
+                        <Accordion.Header as={Button} variant="link" eventKey="1"
+                                          onClick={() => handleAccordionToggle('1')}>
                             Capacity Group Thresholds Management
                         </Accordion.Header>
                     </Card.Header>
                     <Accordion.Collapse eventKey="1">
                         <Card.Body>
-                            <Form onSubmit={(e) => handleSave(e, () => editableEnabledThresholds, setEditableCGThresholds, updateCGThresholdsWrapper)}>
+                            <Form
+                                onSubmit={(e) => handleSave(e, () => editableEnabledThresholds, setEditableCGThresholds, updateCGThresholdsWrapper)}>
                                 <Row>
                                     <Col sm={8}>
                                         <Form.Label>Select Capacity Group</Form.Label>
                                         <Form.Control
                                             as="select"
-                                            onChange={(handleSelectChange(setSelectedCapacityGroup, () => setEditableCGThresholds(editableEnabledThresholds.map(t => ({ ...t, enabled: false }))))) as any}>
+                                            onChange={(handleSelectChange(setSelectedCapacityGroup, () => setEditableCGThresholds(editableEnabledThresholds.map(t => ({...t, enabled: false}))))) as any}>
                                             <option value="">Select a capacity group</option>
-                                            {capacitygroups.map(group => <option key={group.internalId} value={group.internalId}>{group.name}</option>)}
+                                            {capacitygroups.map(group => <option key={group.internalId}
+                                                                                 value={group.internalId}>{group.name}</option>)}
                                         </Form.Control>
                                     </Col>
                                 </Row>
@@ -246,19 +249,23 @@ function ThresholdPage() {
                 {/* Company Thresholds Management */}
                 <Card>
                     <Card.Header>
-                        <Accordion.Header as={Button} variant="link" eventKey="2" onClick={() => handleAccordionToggle('2')}>
+                        <Accordion.Header as={Button} variant="link" eventKey="2"
+                                          onClick={() => handleAccordionToggle('2')}>
                             Company Thresholds Management
                         </Accordion.Header>
                     </Card.Header>
                     <Accordion.Collapse eventKey="2">
                         <Card.Body>
-                            <Form onSubmit={(e) => handleSave(e, () => editableCompanyThresholds, setEditableCompanyThresholds, updateCompanyThresholdsWrapper)}>
+                            <Form
+                                onSubmit={(e) => handleSave(e, () => editableCompanyThresholds, setEditableCompanyThresholds, updateCompanyThresholdsWrapper)}>
                                 <Row>
                                     <Col sm={8}>
                                         <Form.Label>Select Company</Form.Label>
-                                        <Form.Control as="select" onChange={handleSelectChange(setSelectedCompany, () => setEditableCompanyThresholds(editableCompanyThresholds.map(t => ({ ...t, enabled: false }))))}>
+                                        <Form.Control as="select"
+                                                      onChange={handleSelectChange(setSelectedCompany, () => setEditableCompanyThresholds(editableCompanyThresholds.map(t => ({...t, enabled: false}))))}>
                                             <option value="">Select a company</option>
-                                            {companies.map(company => <option key={company.id} value={company.id}>{company.companyName}</option>)}
+                                            {companies.map(company => <option key={company.id}
+                                                                              value={company.id}>{company.companyName}</option>)}
                                         </Form.Control>
                                     </Col>
                                 </Row>
@@ -275,7 +282,8 @@ function ThresholdPage() {
                     </Accordion.Collapse>
                 </Card>
             </Accordion>
-            <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide style={{ position: 'fixed', bottom: 20, right: 20 }}>
+            <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide
+                   style={{position: 'fixed', bottom: 20, right: 20}}>
                 <Toast.Header className="bg-success text-white">
                     <strong className="mr-auto">Success</strong>
                 </Toast.Header>
@@ -283,7 +291,6 @@ function ThresholdPage() {
             </Toast>
         </div>
     );
-
 }
 
 export default ThresholdPage;

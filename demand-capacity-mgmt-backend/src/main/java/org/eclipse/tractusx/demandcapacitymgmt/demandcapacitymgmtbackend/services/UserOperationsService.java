@@ -27,4 +27,6 @@ import java.util.List;
 
 public interface UserOperationsService {
     void updateUser(UserRequest request);
+
+    List<UserResponse> fetchAllUsers();
 }

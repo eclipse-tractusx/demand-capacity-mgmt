@@ -284,4 +284,3 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 }
 
 export default CapacityGroupChronogram;
-

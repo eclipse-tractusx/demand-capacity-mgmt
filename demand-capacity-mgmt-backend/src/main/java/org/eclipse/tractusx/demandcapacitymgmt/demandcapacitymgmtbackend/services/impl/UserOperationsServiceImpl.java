@@ -56,7 +56,6 @@ public class UserOperationsServiceImpl implements UserOperationsService {
             repository.save(user);
         }
     }
-    @Override
     public List<UserResponse> fetchAllUsers() {
         List<UserEntity> users = repository.findAll();
         List<UserResponse> userResponses = new ArrayList<>();

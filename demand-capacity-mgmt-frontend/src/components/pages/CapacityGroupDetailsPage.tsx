@@ -145,7 +145,7 @@ function CapacityGroupDetailsPage() {
                                 materialDemands={materialDemands}
                                 updateParentDateRange={updateParentDateRange}
                             />
-                            <CapacityGroupChronogram capacityGroup={capacityGroup} materialDemands={materialDemands}/>
+                            <CapacityGroupChronogram capacityGroup={capacityGroup} materialDemands={materialDemands} />
                         </Tab>
                         <Tab eventKey="materials" title="Materials">
                             <DemandContextProvider>
