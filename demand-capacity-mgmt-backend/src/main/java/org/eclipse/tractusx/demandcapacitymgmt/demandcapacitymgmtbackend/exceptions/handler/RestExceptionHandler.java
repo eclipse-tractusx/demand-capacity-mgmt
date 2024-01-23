@@ -22,12 +22,9 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.handler;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.ExceptionResponseImpl;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.InternalServerErrorException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -40,26 +37,22 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public final ResponseEntity<Object> handleNotFoundException(NotFoundException ex) {
-        return ResponseEntity.status(ex.getCode()).body(new ExceptionResponseImpl<>(ex));
+        return ResponseEntity.ok().body(new ExceptionResponseImpl(ex.getCode(),ex.lastDigits()));
     }
 
     @ExceptionHandler(BadRequestException.class)
     public final ResponseEntity<Object> handleBadRequestException(BadRequestException ex) {
-        return ResponseEntity.status(ex.getCode()).body(new ExceptionResponseImpl<>(ex));
+        return ResponseEntity.ok().body(new ExceptionResponseImpl(ex.getCode(),ex.lastDigits()));
     }
 
-    @ExceptionHandler(Exception.class) //only used in 500
-    public final ResponseEntity<Object> handleInternalServerErrorException(Exception ex) {
-        return ResponseEntity
-            .status(500)
-            .body(
-                new ExceptionResponseImpl<>(
-                    new InternalServerErrorException(
-                        500,
-                        "An internal server error has occurred",
-                        new ArrayList<>(List.of("Localised error : " + ex.getLocalizedMessage()))
-                    )
-                )
-            );
+    @ExceptionHandler({Exception.class})
+    public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
+        return buildCustomResponseEntity(ex, "An error occurred.");
+    }
+
+
+    private ResponseEntity<Object> buildCustomResponseEntity(Exception ex, String customMessage) {
+        ExceptionResponseImpl response = new ExceptionResponseImpl("","");
+        return ResponseEntity.ok().body(response);
     }
 }

@@ -250,11 +250,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         Optional<CapacityGroupEntity> capacityGroup = capacityGroupRepository.findById(uuid);
 
         if (capacityGroup.isEmpty()) {
-            throw new NotFoundException(
-                404,
-                "The capacity group provided was not found",
-                new ArrayList<>(List.of("UUID provided : " + uuid))
-            );
+            throw new NotFoundException("4","04");
         }
 
         return capacityGroup.get();

@@ -23,10 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
@@ -34,7 +30,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
@@ -43,6 +38,10 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -195,11 +194,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         );
 
         if (weekBasedCapacityGroupEntityOptional.isEmpty()) {
-            throw new NotFoundException(
-                404,
-                "Weekly based capacity group not found",
-                new ArrayList<>(List.of("the capacity group ID provided - " + capacityGroupId))
-            );
+            throw new NotFoundException("4","04");
         }
 
         return weekBasedCapacityGroupEntityOptional.get();
@@ -207,11 +202,7 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
 
     private void validateFields(WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest) {
         if (!UUIDUtil.checkValidUUID(weekBasedCapacityGroupRequest.getCapacityGroupId())) {
-            throw new BadRequestException(
-                400,
-                "The ID provided is not valid, check UUID",
-                new ArrayList<>(List.of("the provided ID - " + weekBasedCapacityGroupRequest.getCapacityGroupId()))
-            );
+            throw new NotFoundException("4","04");
         }
     }
 
