@@ -24,6 +24,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { FavoritePayload, FavoriteResponse, FavoriteType } from '../interfaces/favorite_interfaces';
 import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
 import { useUser } from './UserContext';
 
 interface FavoritesContextData {
@@ -41,6 +42,10 @@ export const FavoritesContext = createContext<FavoritesContextData | undefined>(
 const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
     const [favorites, setFavorites] = useState<FavoriteResponse | null>(null);
 
+    const objectType = '4';
+    const errorCode = '4';
+
+
     const { access_token } = useUser();
 
     const api = createAPIInstance(access_token);
@@ -50,7 +55,7 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
             const response = await api.get('/favorite');
             setFavorites(response.data);
         } catch (error) {
-            console.error('Error fetching event history:', error);
+            customErrorToast(objectType, errorCode, '00')
         }
     };
 
@@ -60,7 +65,7 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
             setFavorites(response.data);
             return response.data;
         } catch (error) {
-            console.error('Error fetching favorites by type:', error);
+            customErrorToast(objectType, errorCode, '70')
             throw error;  // Propagate the error to allow handling in calling functions if necessary
         }
     };
@@ -73,7 +78,7 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
             };
             await api.post('/favorite', payloadData);
         } catch (error) {
-            console.log("Error adding to favorites", error);
+            customErrorToast(objectType, errorCode, '10');
         }
     }
 
@@ -81,7 +86,7 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
         try {
             await api.delete(`/favorite/${favoriteID}`);
         } catch (error) {
-            console.log("Error adding to favorites", error);
+            customErrorToast(objectType, errorCode, '10');
         }
     }
 
