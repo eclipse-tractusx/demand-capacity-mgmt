@@ -25,12 +25,15 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.AddressBookApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookResponse;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusRequest;
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.StatusesResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.AddressBookService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -63,5 +66,14 @@ public class AddressBookController implements AddressBookApi {
     @Override
     public ResponseEntity<AddressBookResponse> postAddressBook(AddressBookRequest addressBookRequest) throws Exception {
         return ResponseEntity.status(200).body(service.postRecord(addressBookRequest));
+    }
+
+    @Override
+    public ResponseEntity<AddressBookRequest> updateAddressBookById(
+        String addressBookId,
+        AddressBookRequest addressBookRequest
+    ) throws Exception {
+        service.updateRecord(addressBookRequest, addressBookId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

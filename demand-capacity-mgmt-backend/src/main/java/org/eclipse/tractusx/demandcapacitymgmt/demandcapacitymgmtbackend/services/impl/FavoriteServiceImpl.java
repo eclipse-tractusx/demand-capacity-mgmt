@@ -25,6 +25,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -153,6 +154,10 @@ public class FavoriteServiceImpl implements FavoriteService {
             AddressBookFavoriteResponse response = new AddressBookFavoriteResponse();
             response.setName(record.getName());
             response.setId(record.getId().toString());
+            //            response.setLandLine(record.getLandLine());
+            //            response.setCellPhone(record.getCellPhone());
+            //            response.setDepartment(record.getDepartment());
+            response.setPicture(record.getPicture());
             response.setContact(record.getContact());
             response.setEmail(record.getEmail());
             response.setCompanyId(response.getCompanyId());
@@ -197,6 +202,27 @@ public class FavoriteServiceImpl implements FavoriteService {
             if (lcgm != null) {
                 response.setStatus(EventType.LINKED.toString());
             } else response.setStatus(EventType.TODO.toString());
+
+            List<DemandSeries> demandSeriesList = materialDemand.getDemandSeries();
+            LocalDate biggestDate = null;
+            LocalDate smallestDate = null;
+            for (DemandSeries demandSeries : demandSeriesList) {
+                List<DemandSeriesValues> demandSeriesValuesList = demandSeries.getDemandSeriesValues();
+
+                for (DemandSeriesValues demandSeriesValues : demandSeriesValuesList) {
+                    LocalDate calendarWeek = demandSeriesValues.getCalendarWeek();
+
+                    if (biggestDate == null || calendarWeek.isAfter(biggestDate)) {
+                        biggestDate = calendarWeek;
+                    }
+
+                    if (smallestDate == null || calendarWeek.isBefore(smallestDate)) {
+                        smallestDate = calendarWeek;
+                    }
+                }
+            }
+            response.setEndDate(biggestDate.toString());
+            response.setStartDate(smallestDate.toString());
             response.setMaterialDescriptionCustomer(materialDemand.getMaterialDescriptionCustomer());
             response.setMaterialNumberCustomer(materialDemand.getMaterialNumberCustomer());
             response.setMaterialNumberSupplier(materialDemand.getMaterialNumberSupplier());

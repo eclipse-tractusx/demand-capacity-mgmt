@@ -42,7 +42,7 @@ const ErrorPage: React.FC = () => {
                         <img src={`/media/error/error(${randomNumber}).png`} alt='erroricon' width="100" height="100" className='d-inline-block align-text-top' />
                         <h1>Oops! Something went wrong.</h1>
                         <p>Sorry, we encountered an error while processing your request.</p>
-                        <a href="/back"
+                        <a href="/"
                             onClick={(e) => {
                                 e.preventDefault();
                                 navigate(-4);

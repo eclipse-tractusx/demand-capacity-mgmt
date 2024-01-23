@@ -242,7 +242,9 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
                         newUserEntity.setRole(role);
                         break;
                     } catch (Exception e) {
-                        Logger.logInfo("roles queried");
+                        Logger.logError(
+                            "Incompatible role! User must have one of the 3 role types 'ADMIN','CUSTOMER','SUPPLIER'"
+                        );
                     }
                 }
             }
@@ -261,7 +263,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         user.setAccessToken(accessToken);
         user.setRefreshToken(refreshToken);
         user.setExpiresIn(expiresIn);
-        user.setCompanyID(user.getCompanyID());
+        user.setCompanyID(userEntity.getCompanyID().toString());
         statusManager.calculateBottleneck(user.getUserID(), false);
         statusManager.calculateTodos(user.getUserID());
         return user;

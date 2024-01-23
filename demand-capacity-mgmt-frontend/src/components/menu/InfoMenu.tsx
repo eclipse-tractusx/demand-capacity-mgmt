@@ -23,16 +23,22 @@
 import Nav from "react-bootstrap/Nav";
 import { FaArrowDown, FaArrowUp, FaHome, FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useInfoMenu } from "../../contexts/InfoMenuContextProvider";
+import {useInfoMenu} from "../../contexts/InfoMenuContextProvider";
+import {useContext, useEffect} from "react";
+import {AlertsContext} from "../../contexts/AlertsContextProvider";
 
 
 function InfoMenu() {
     const { data } = useInfoMenu();
+    const {triggeredAlerts, fetchTriggeredAlertsWithRetry } = useContext(AlertsContext)!;
 
     const navigate = useNavigate();
     const handleNavigation = (path: string) => {
         navigate(path);
     }
+    useEffect(() => {
+        fetchTriggeredAlertsWithRetry();
+    }, []);
 
     const formatData = (data: number | null | undefined): number | string => {
         return data !== null && data !== undefined ? data : '0';
@@ -46,7 +52,7 @@ function InfoMenu() {
 
                 <Nav.Link href="../alerts">Alerts
                     <span className="ms-1 badge rounded-pill text-bg-danger" id="alerts-count">
-                        {formatData(data?.general)}
+                        {formatData(triggeredAlerts.length)}
                     </span>
                 </Nav.Link>
 
