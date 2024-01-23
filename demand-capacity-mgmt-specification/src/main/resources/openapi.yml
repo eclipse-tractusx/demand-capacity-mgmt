@@ -999,6 +999,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UnitMeasure'
+  /unitmeasure/{id}:
+    get:
+      tags:
+        - unitMeasure
+      summary: unitMeasure by ID
+      operationId: getUnitMeasureByID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the unit of measure
+          schema:
+            type: string
+      responses:
+        200:
+          description: UnitMeasureResponse
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/UnitMeasure'
 
   /demandcategory:
     get:
