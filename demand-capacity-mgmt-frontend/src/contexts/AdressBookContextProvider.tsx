@@ -26,6 +26,7 @@ import {
     AddressBookProps
 } from "../interfaces/addressbook_interfaces";
 import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
 import { useUser } from './UserContext';
 
 
@@ -49,6 +50,9 @@ const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
     const maxRetries = 3;
     const api = createAPIInstance(access_token);
 
+    const objectType = '4';
+    const errorCode = '1';
+
     const fetchAddressBookWithRetry = useCallback(async (): Promise<AddressBookProps[]> => {
         setIsLoading(true);
 
@@ -58,14 +62,13 @@ const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
             setAddressBooks(result);
             return result;
         } catch (error) {
-            console.error(`Error fetching Address Books (Retry ${retryCount + 1}):`, error);
-
             if (retryCount < maxRetries - 1) {
                 // If not the last retry, delay for 30 seconds before the next retry
                 await new Promise((resolve) => setTimeout(resolve, 30000));
                 setRetryCount(retryCount + 1); // Increment the retry count
             } else {
                 // If the last retry failed, do not retry further
+                customErrorToast(objectType, errorCode, '00')
                 setRetryCount(0); // Reset the retry count
             }
         } finally {
@@ -82,7 +85,7 @@ const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
             fetchAddressBookWithRetry();
             return response.data;
         } catch (error) {
-            console.error('Error creating address book:', error);
+            customErrorToast(objectType, errorCode, '10')
         }
     };
 
@@ -95,7 +98,7 @@ const AddressBookProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
             fetchAddressBookWithRetry();
             return response.data;
         } catch (error) {
-            console.error('Error creating address book:', error);
+            customErrorToast(objectType, errorCode, '15')
         }
     };
 

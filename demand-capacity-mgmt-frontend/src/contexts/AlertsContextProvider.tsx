@@ -21,15 +21,10 @@
  */
 
 import React, { createContext, useCallback, useEffect, useState } from 'react';
-import {
-    CapacityGroupCreate,
-    CapacityGroupLink,
-    CapacityGroupProp,
-    SingleCapacityGroup
-} from '../interfaces/capacitygroup_interfaces';
+import { ConfiguredAlertProps, TriggeredAlertProps } from "../interfaces/alert_interface";
 import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
 import { useUser } from './UserContext';
-import {ConfiguredAlertProps, TriggeredAlertProps} from "../interfaces/alert_interface";
 
 
 interface AlertsContextData {
@@ -53,6 +48,8 @@ const AlertsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
     const maxRetries = 3;
     const api = createAPIInstance(access_token);
 
+    const objectType = '4';
+    const errorCode = '2';
 
     const fetchTriggeredAlertsWithRetry = useCallback(async () => {
         setIsLoading(true);
@@ -60,17 +57,15 @@ const AlertsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
         try {
             const response = await api.get('/triggeredAlerts', {});
             const result: TriggeredAlertProps[] = response.data;
-            console.error(`TriggeredAlertProps :`, result);
             setTriggeredAlerts(result);
         } catch (error) {
-            console.error(`Error fetching Triggered Alerts (Retry ${retryCount + 1}):`, error);
-
             if (retryCount < maxRetries - 1) {
                 // If not the last retry, delay for 30 seconds before the next retry
                 await new Promise((resolve) => setTimeout(resolve, 30000));
                 setRetryCount(retryCount + 1); // Increment the retry count
             } else {
                 // If the last retry failed, do not retry further
+                customErrorToast(objectType, errorCode, '00')
                 setRetryCount(0); // Reset the retry count
             }
         } finally {
@@ -87,17 +82,14 @@ const AlertsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
             const response = await api.get('/alerts', {});
             const result: ConfiguredAlertProps[] = response.data;
             setConfiguredAlerts(result);
-            console.error(`Error fetching ConfiguredAlerts (Retry ${retryCount + 1}):`, result);
-
         } catch (error) {
-            console.error(`Error fetching ConfiguredAlerts (Retry ${retryCount + 1}):`, error);
-
             if (retryCount < maxRetries - 1) {
                 // If not the last retry, delay for 30 seconds before the next retry
                 await new Promise((resolve) => setTimeout(resolve, 30000));
                 setRetryCount(retryCount + 1); // Increment the retry count
             } else {
                 // If the last retry failed, do not retry further
+                customErrorToast(objectType, errorCode, '00')
                 setRetryCount(0); // Reset the retry count
             }
         } finally {
@@ -121,7 +113,7 @@ const AlertsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
             const response = await api.post('/alerts', newConfiguredAlert);
             return response.data;
         } catch (error) {
-            console.error('Error creating alert:', error);
+            customErrorToast(objectType, errorCode, '10')
         }
     };
 

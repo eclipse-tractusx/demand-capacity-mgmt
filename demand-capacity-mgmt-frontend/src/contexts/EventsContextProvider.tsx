@@ -23,6 +23,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { EventProp } from '../interfaces/event_interfaces';
 import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
 import { useUser } from './UserContext';
 
 interface EventsContextData {
@@ -52,6 +53,9 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const [events, setEvents] = useState<EventProp[]>([]);
   const [archiveEvents, setArchiveEvents] = useState<EventProp[]>([]);
 
+  const objectType = '4';
+  const errorCode = '3';
+
   const fetchEvents = async () => {
     try {
       const api = createAPIInstance(access_token);
@@ -59,7 +63,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       const result: EventProp[] = response.data;
       setEvents(result);
     } catch (error) {
-      console.error('Error fetching event history:', error);
+      customErrorToast(objectType, errorCode, '70')
     }
   };
 
@@ -70,7 +74,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       const result: EventProp[] = response.data;
       setArchiveEvents(result); // Set archiveEvents, not events
     } catch (error) {
-      console.error('Error fetching archived event history:', error);
+      customErrorToast(objectType, errorCode, '71')
     }
   };
 
@@ -104,7 +108,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       const result: EventProp[] = response.data;
       return result;
     } catch (error) {
-      console.error('Error fetching event history:', error);
+      customErrorToast(objectType, errorCode, '75')
       throw error; // Throw the error to handle it in the calling code if necessary
     }
   };
@@ -115,8 +119,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       const api = createAPIInstance(access_token);
       await api.post('/loggingHistory/archivedLog', event);
     } catch (error) {
-      console.error('Error archiving event:', error);
-      throw error;
+      customErrorToast(objectType, errorCode, '11')
     }
   };
 
@@ -126,7 +129,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       await api.delete(`/loggingHistory`);
       fetchEvents();
     } catch (error) {
-      console.error('Error deleting demand:', error);
+      customErrorToast(objectType, errorCode, '90')
     }
   };
 
@@ -136,7 +139,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       await api.delete(`/loggingHistory/archivedLog`);
       fetchEvents();
     } catch (error) {
-      console.error('Error deleting demand:', error);
+      customErrorToast(objectType, errorCode, '90')
     }
   };
 
@@ -146,7 +149,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       await api.delete(`/loggingHistory/${id}`);
       fetchEvents();
     } catch (error) {
-      console.error('Error deleting demand:', error);
+      customErrorToast(objectType, errorCode, '90')
     }
   };
 
@@ -156,7 +159,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
       await api.delete(`/loggingHistory/archivedLog/${id}`);
       fetchEvents();
     } catch (error) {
-      console.error('Error deleting demand:', error);
+      customErrorToast(objectType, errorCode, '90')
     }
   };
 

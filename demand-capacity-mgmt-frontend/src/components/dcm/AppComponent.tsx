@@ -45,13 +45,14 @@ import FavoritesPage from "../pages/FavoritesPage";
 import TodoListPage from '../pages/TodoListPage';
 import UpStatusPage from '../pages/UpStatusPage';
 import Layout from './Layout';
+import ToastContainerComponent from './ToastContainerComponent';
 
 
 const AppComponent: React.FC = () => {
     return (
         <Routes>
-            <Route path="/login" element={<AuthenticationComponent />} />
-            <Route path="*" element={<ErrorPage />} />
+            <Route path="/login" element={<ToastContainerComponent><AuthenticationComponent /></ToastContainerComponent>} />
+            <Route path="*" element={<ToastContainerComponent><ErrorPage /></ToastContainerComponent>} />
 
             <Route path="/" element={
 
@@ -60,10 +61,12 @@ const AppComponent: React.FC = () => {
                         <DemandContextProvider>
                             <CompanyContextProvider>
                                 <AddressBookProvider>
-                                    <Layout>
-                                        <Home />
-                                        <QuickAcessItems />
-                                    </Layout>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <Home />
+                                            <QuickAcessItems />
+                                        </Layout>
+                                    </ToastContainerComponent>
                                 </AddressBookProvider>
                             </CompanyContextProvider>
                         </DemandContextProvider>
@@ -79,11 +82,13 @@ const AppComponent: React.FC = () => {
                             <DemandContextProvider>
                                 <CompanyContextProvider>
                                     <AddressBookProvider>
-                                        <Layout>
-                                            <EventsContextProvider>
-                                                <CapacityGroupDetailsPage />
-                                            </EventsContextProvider>
-                                        </Layout>
+                                        <ToastContainerComponent>
+                                            <Layout>
+                                                <EventsContextProvider>
+                                                    <CapacityGroupDetailsPage />
+                                                </EventsContextProvider>
+                                            </Layout>
+                                        </ToastContainerComponent>
                                     </AddressBookProvider>
                                 </CompanyContextProvider>
                             </DemandContextProvider>
@@ -99,9 +104,11 @@ const AppComponent: React.FC = () => {
                                 <CompanyContextProvider>
                                     <AddressBookProvider>
                                         <AlertsContextProvider>
-                                            <Layout>
-                                                <AlertsPage />
-                                            </Layout>
+                                            <ToastContainerComponent>
+                                                <Layout>
+                                                    <AlertsPage />
+                                                </Layout>
+                                            </ToastContainerComponent>
                                         </AlertsContextProvider>
                                     </AddressBookProvider>
                                 </CompanyContextProvider>
@@ -117,9 +124,11 @@ const AppComponent: React.FC = () => {
                         <DemandContextProvider>
                             <CompanyContextProvider>
                                 <AddressBookProvider>
-                                    <Layout>
-                                        <AddressBookPage />
-                                    </Layout>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <AddressBookPage />
+                                        </Layout>
+                                    </ToastContainerComponent>
                                 </AddressBookProvider>
                             </CompanyContextProvider>
                         </DemandContextProvider>
@@ -132,11 +141,13 @@ const AppComponent: React.FC = () => {
                         <DemandContextProvider>
                             <CompanyContextProvider>
                                 <AddressBookProvider>
-                                    <Layout>
-                                        <EventsContextProvider>
-                                            <UpStatusPage />
-                                        </EventsContextProvider>
-                                    </Layout>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <EventsContextProvider>
+                                                <UpStatusPage />
+                                            </EventsContextProvider>
+                                        </Layout>
+                                    </ToastContainerComponent>
                                 </AddressBookProvider>
                             </CompanyContextProvider>
                         </DemandContextProvider>
@@ -149,11 +160,13 @@ const AppComponent: React.FC = () => {
                         <DemandContextProvider>
                             <CompanyContextProvider>
                                 <AddressBookProvider>
-                                    <Layout>
-                                        <EventsContextProvider>
-                                            <DownStatusPage />
-                                        </EventsContextProvider>
-                                    </Layout>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <EventsContextProvider>
+                                                <DownStatusPage />
+                                            </EventsContextProvider>
+                                        </Layout>
+                                    </ToastContainerComponent>
                                 </AddressBookProvider>
                             </CompanyContextProvider>
                         </DemandContextProvider>
@@ -168,11 +181,13 @@ const AppComponent: React.FC = () => {
                                 <UnitsofMeasureContextContextProvider>
                                     <CompanyContextProvider>
                                         <AddressBookProvider>
-                                            <Layout>
-                                                <EventsContextProvider>
-                                                    <TodoListPage />
-                                                </EventsContextProvider>
-                                            </Layout>
+                                            <ToastContainerComponent>
+                                                <Layout>
+                                                    <EventsContextProvider>
+                                                        <TodoListPage />
+                                                    </EventsContextProvider>
+                                                </Layout>
+                                            </ToastContainerComponent>
                                         </AddressBookProvider>
                                     </CompanyContextProvider>
                                 </UnitsofMeasureContextContextProvider>
@@ -188,11 +203,13 @@ const AppComponent: React.FC = () => {
                         <DemandContextProvider>
                             <CompanyContextProvider>
                                 <AddressBookProvider>
-                                    <Layout>
-                                        <EventsContextProvider>
-                                            <EventsPage />
-                                        </EventsContextProvider>
-                                    </Layout>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <EventsContextProvider>
+                                                <EventsPage />
+                                            </EventsContextProvider>
+                                        </Layout>
+                                    </ToastContainerComponent>
                                 </AddressBookProvider>
                             </CompanyContextProvider>
                         </DemandContextProvider>
@@ -206,9 +223,11 @@ const AppComponent: React.FC = () => {
                         <FavoritesContextProvider>
                             <CompanyContextProvider>
                                 <AddressBookProvider>
-                                    <Layout>
-                                        <FavoritesPage />
-                                    </Layout>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <FavoritesPage />
+                                        </Layout>
+                                    </ToastContainerComponent>
                                 </AddressBookProvider>
                             </CompanyContextProvider>
                         </FavoritesContextProvider>
@@ -222,9 +241,11 @@ const AppComponent: React.FC = () => {
                         <DemandContextProvider>
                             <CompanyContextProvider>
                                 <AddressBookProvider>
-                                    <Layout>
-                                        <AdminPage />
-                                    </Layout>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <AdminPage />
+                                        </Layout>
+                                    </ToastContainerComponent>
                                 </AddressBookProvider>
                             </CompanyContextProvider>
                         </DemandContextProvider>

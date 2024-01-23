@@ -25,6 +25,7 @@ import React, { FunctionComponent, createContext, useCallback, useContext, useEf
 
 import { InfoMenuData } from "../interfaces/infomenu_interfaces";
 import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
 import { AlertsContext } from "./AlertsContextProvider";
 import { CapacityGroupContext } from './CapacityGroupsContextProvider';
 import { DemandContext } from './DemandContextProvider';
@@ -50,6 +51,9 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
     const { events } = useContext(EventsContext) || {};
     const { triggeredAlerts } = useContext(AlertsContext) || {};
 
+    const objectType = '4';
+    const errorCode = '5';
+
     const fetchData = useCallback(async () => {
         try {
             const api = createAPIInstance(access_token);
@@ -57,36 +61,21 @@ export const InfoMenuProvider: FunctionComponent<InfoMenuProviderProps> = ({ chi
             const result: InfoMenuData = response.data;
             setData(result);
         } catch (error) {
-            console.error("Error fetching data: ", error);
+            customErrorToast(objectType, errorCode, '00');
         }
     }, [access_token]);
 
-
     useEffect(() => {
         fetchData();
-        console.log('Top menu triggered due to access_token change');
-    }, [fetchData, access_token]);
+    }, [fetchData, access_token, capacitygroups, demandprops, events, triggeredAlerts]);
 
+    // Update entries every 10 seconds
     useEffect(() => {
-        fetchData();
-        console.log('Top menu triggered due to capacitygroups change');
-    }, [fetchData, capacitygroups]);
+        const intervalId = setInterval(fetchData, 10000);
 
-    useEffect(() => {
-        fetchData();
-        console.log('Top menu triggered due to demandprops change');
-    }, [fetchData, demandprops]);
-
-    useEffect(() => {
-        fetchData();
-        console.log('Top menu triggered due to events change');
-    }, [fetchData, events]);
-
-    useEffect(() => {
-        fetchData();
-        console.log('Top menu triggered due to triggeredAlerts change');
-    }, [fetchData, triggeredAlerts]);
-
+        // Cleanup interval on component unmount
+        return () => clearInterval(intervalId);
+    }, [fetchData]);
 
     return (
         <InfoMenuContext.Provider value={{ data, fetchData }}>

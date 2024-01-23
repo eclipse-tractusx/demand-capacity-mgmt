@@ -23,6 +23,8 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { CompanyData } from '../interfaces/company_interfaces';
 import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
+import { is404Error, isAxiosError, isTimeoutError } from '../util/TypeGuards';
 import { useUser } from "./UserContext";
 
 interface CompanyContextData {
@@ -43,7 +45,11 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   const maxRetries = 3;
   const api = createAPIInstance(access_token);
 
-  const fetchCompaniesWithRetry = useCallback(async (): Promise<CompanyData[]> => {
+  const objectType = '4';
+  const errorCode = '6';
+
+
+  const fetchCompaniesWithRetry = useCallback(async (): Promise<void> => {
     setIsLoading(true);
 
     try {
@@ -51,35 +57,52 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
       const result: CompanyData[] = await response.data;
 
       setCompanies((prevCompanies) => [...prevCompanies, ...result]);
-      return result;
     } catch (error) {
-      console.error(`Error fetching companies (Retry ${retryCount + 1}):`, error);
 
       if (retryCount < maxRetries - 1) {
         await new Promise((resolve) => setTimeout(resolve, 30000));
         setRetryCount((prevRetryCount) => prevRetryCount + 1);
       } else {
         setRetryCount(0);
+        customErrorToast(objectType, errorCode, '00')
       }
     } finally {
       setIsLoading(false);
     }
-    return [];
   }, [retryCount, setCompanies, setIsLoading, setRetryCount, api]);
 
+  const getCompanybyId = async (id: string): Promise<CompanyData | undefined> => {
+    try {
+      const response = await api.get(`/demand/${id}`);
+      return response.data;
+    } catch (error) {
+      if (isTimeoutError(error)) {
+        // This is a timeout error
+        customErrorToast(objectType, errorCode, '00')
+      } else if (is404Error(error) && error.response && error.response.status === 404) {
+        // This is a 404 Internal Server Error
+        customErrorToast(objectType, errorCode, '40')
+      } else if (isAxiosError(error) && error.response && error.response.status === 500) {
+        // This is a 500 Internal Server Error
+        customErrorToast(objectType, errorCode, '50')
+      } else {
+        // Handle other types of errors
+        customErrorToast('5', '0', '0') //This will trigger, Unkown error
+      }
+    }
+  };
+
+  const fetchTopCompanies = async (): Promise<void> => {
+    try {
+      const response = await api.get(`/company/top`);
+      setTopCompanies(response.data);
+      return response.data;
+    } catch (error) {
+      customErrorToast(objectType, errorCode, '70')
+    }
+  };
 
   useEffect(() => {
-    const fetchTopCompanies = async (): Promise<CompanyData> => {
-      try {
-        const response = await api.get(`/company/top`);
-        setTopCompanies(response.data);
-        return response.data;
-      } catch (error) {
-        console.error('Error fetching top companies:', error);
-        throw error;
-      }
-    };
-
     fetchCompaniesWithRetry();
     fetchTopCompanies();
   }, [access_token]);
