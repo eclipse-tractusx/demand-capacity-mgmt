@@ -19,7 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -29,6 +29,7 @@ import Select from 'react-select';
 import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
 import { FavoritesContext } from '../../contexts/FavoritesContextProvider';
 import { UnitsofMeasureContext } from '../../contexts/UnitsOfMeasureContextProvider';
+import { useUser } from '../../contexts/UserContext';
 import CustomOption from '../../interfaces/customoption_interface';
 import { DemandProp } from '../../interfaces/demand_interfaces';
 import { FavoriteType } from '../../interfaces/favorite_interfaces';
@@ -43,6 +44,7 @@ interface CapacityGroupWizardModalProps {
 }
 
 function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: CapacityGroupWizardModalProps) {
+  const { user } = useUser();
   const [step, setStep] = useState(0);
   const [groupName, setGroupName] = useState('');
   const [defaultActualCapacity, setDefaultActualCapacity] = useState('');
@@ -64,7 +66,6 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
 
   // Function to get the unit measure description based on id
   const getUnitMeasureDescription = (unitMeasureId: string) => {
-    console.log(unitMeasureId)
     const unitMeasure = unitsofmeasureContext?.unitsofmeasure.find(unit => unit.id === unitMeasureId);
     return unitMeasure ? `${unitMeasure.dimension} - ${unitMeasure.description} (${unitMeasure.unSymbol})` : 'N/A';
   };
@@ -74,6 +75,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
       setSelectedDemands([...checkedDemands]);
     }
   }, [checkedDemands]);
+
 
   const nextStep = () => {
 
@@ -110,27 +112,55 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
     updatedDemands.splice(index, 1);
     setSelectedDemands(updatedDemands);
   };
+
   const calculateEarliestAndLatestDates = (selectedDemands: DemandProp[]) => {
-    let earliestDate: string = '';
-    let latestDate: string = '';
+    let earliestDate: string | null = null;
+    let latestDate: string | null = null;
 
     selectedDemands.forEach((demand) => {
-      demand.demandSeries?.forEach((series) => {
-        series.demandSeriesValues?.forEach((value) => {
-          const dateStr: string = value?.calendarWeek || '';
-          if (!earliestDate || dateStr < earliestDate) {
-            earliestDate = dateStr;
-          }
-          if (!latestDate || dateStr > latestDate) {
-            latestDate = dateStr;
-          }
+      // Check startDate and endDate for potential earliestDate and latestDate
+      if (demand.startDate) {
+        earliestDate = earliestDate
+          ? new Date(demand.startDate) < new Date(earliestDate)
+            ? demand.startDate
+            : earliestDate
+          : demand.startDate;
+      }
+      if (demand.endDate) {
+        latestDate = latestDate
+          ? new Date(demand.endDate) > new Date(latestDate)
+            ? demand.endDate
+            : latestDate
+          : demand.endDate;
+      }
+
+      // If demandSeries is present, calculate earliestDate and latestDate from demandSeries
+      if (demand.demandSeries) {
+        demand.demandSeries.forEach((series) => {
+          series.demandSeriesValues?.forEach((value) => {
+            const dateStr: string = value?.calendarWeek || '';
+            if (dateStr) {
+              earliestDate = earliestDate
+                ? new Date(dateStr) < new Date(earliestDate)
+                  ? dateStr
+                  : earliestDate
+                : dateStr;
+
+              latestDate = latestDate
+                ? new Date(dateStr) > new Date(latestDate)
+                  ? dateStr
+                  : latestDate
+                : dateStr;
+            }
+          });
         });
-      });
+      }
     });
 
-    return { earliestDate, latestDate };
+    // Use a default value if earliestDate or latestDate is still null
+    const defaultDate: string = "1970-01-01"; // Replace with an appropriate default date
+    return { earliestDate: earliestDate || defaultDate, latestDate: latestDate || defaultDate };
   };
-
 
   function areUnitMeasureIdsEqual(demands: DemandProp[]): boolean {
     if (demands.length <= 1) {
@@ -163,7 +193,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
       startDate: earliestDate,
       endDate: latestDate,
       customer: selectedDemands.length > 0 ? selectedDemands[0].customer.id : '',
-      supplier: selectedDemands.length > 0 ? selectedDemands[0].supplier.id : '',
+      supplier: user?.companyID || '',
       linkMaterialDemandIds: selectedDemands.map((demand) => demand.id),
     };
 
@@ -198,60 +228,32 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
   };
 
   const [options, setOptions] = useState<any[]>([]); // State to store options for Creatable component
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const favoriteIdsSet = new Set<string>(); // Set to store unique favorite material demand IDs
-        let materialDemandOptions: any[] = [];
 
-        // Fetch material demands from favorites
-        const favoritesResponse = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
-        const favoriteMaterialDemands = favoritesResponse?.materialDemands || [];
+  const fetchFavoritesByTypeRef = useRef(fetchFavoritesByType);
+  const fetchData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const favoriteIdsSet = new Set<string>(); // Set to store unique favorite material demand IDs
+      const fetchFavoritesByType = fetchFavoritesByTypeRef.current;
+      let materialDemandOptions: any[] = [];
 
-        // Filter and map favorite material demands to options, ensuring uniqueness based on IDs
-        const favoriteOptions = favoriteMaterialDemands
-          .filter((md: any) => {
-            if (favoriteIdsSet.has(md.id)) {
-              return false; // Skip duplicate favorites
-            }
-            favoriteIdsSet.add(md.id); // Add favorite ID to set
-            return true; // Include only unique favorites
-          })
-          .map((md: any) => {
-            const label = (
-              <div>
-                <LuStar size={12} className="text-warning" />  {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
-              </div>
-            );
-            return {
-              value: md,
-              label: label,
-            };
-          });
+      // Fetch material demands from favorites
+      const favoritesResponse = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
+      const favoriteMaterialDemands = favoritesResponse?.materialDemands || [];
 
-        // Fetch material demands from demands prop
-        const demandMaterialDemands = demands || [];
-
-        // Filter demand material demands to exclude those with IDs present in favorites
-        const filteredDemandOptions = demandMaterialDemands.filter((md: any) => {
-          // Exclude demand if its ID is present in favorites
+      // Filter and map favorite material demands to options, ensuring uniqueness based on IDs
+      const favoriteOptions = favoriteMaterialDemands
+        .filter((md: any) => {
           if (favoriteIdsSet.has(md.id)) {
-            return false;
+            return false; // Skip duplicate favorites
           }
-          // Exclude demand if its linkStatus is neither 'TODO' nor 'UNLINKED'
-          if (md.linkStatus !== 'TODO' && md.linkStatus !== 'UNLINKED') {
-            return false;
-          }
-          // else
-          return true;
-        });
-
-        // Map demand material demands to options
-        const demandOptions = filteredDemandOptions.map((md: any) => {
+          favoriteIdsSet.add(md.id); // Add favorite ID to set
+          return true; // Include only unique favorites
+        })
+        .map((md: any) => {
           const label = (
             <div>
-              {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
+              <LuStar size={12} className="text-warning" />  {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
             </div>
           );
           return {
@@ -260,22 +262,50 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
           };
         });
 
-        // Combine favorite options and demand options
-        materialDemandOptions = [...favoriteOptions, ...demandOptions];
+      // Fetch material demands from demands prop
+      const demandMaterialDemands = demands || [];
 
-        console.log(materialDemandOptions);
+      // Filter demand material demands to exclude those with IDs present in favorites
+      const filteredDemandOptions = demandMaterialDemands.filter((md: any) => {
+        // Exclude demand if its ID is present in favorites
+        if (favoriteIdsSet.has(md.id)) {
+          return false;
+        }
+        // Exclude demand if its linkStatus is neither 'TODO' nor 'UNLINKED'
+        if (md.linkStatus !== 'TODO' && md.linkStatus !== 'UNLINKED') {
+          return false;
+        }
+        // else
+        return true;
+      });
 
-        setOptions(materialDemandOptions); // Update options state with combined material demands
-      } catch (error) {
-        console.error('Error fetching filtered capacity groups:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      // Map demand material demands to options
+      const demandOptions = filteredDemandOptions.map((md: any) => {
+        const label = (
+          <div>
+            {md.materialNumberCustomer || 'N/A'} - {md.materialNumberSupplier || 'N/A'} - {md.materialDescriptionCustomer || 'N/A'}
+          </div>
+        );
+        return {
+          value: md,
+          label: label,
+        };
+      });
+
+      // Combine favorite options and demand options
+      materialDemandOptions = [...favoriteOptions, ...demandOptions];
+
+      setOptions(materialDemandOptions); // Update options state with combined material demands
+    } catch (error) {
+      console.error('Error fetching filtered capacity groups:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [demands, fetchFavoritesByTypeRef]);
+
+  useEffect(() => {
     fetchData();
-
-  }, [demands]);
-
+  }, [fetchData]);
 
   return (
     <>
@@ -289,17 +319,18 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
           <Modal.Title>Capacity Group Wizard</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {isLoading && <> <LoadingCustomMessage message='Creating..' /></>}
+          {isLoading && <> <LoadingCustomMessage message='Please Wait..' /></>}
           {isSuccess ? (
             <div className="alert alert-success" role="alert">
-              Capacity group created.
-              It can now be found on the <a href='/'>Capacity group</a> list.
+              Capacity group created !
+              It can now be found on the <a href='/' onClick={() => window.open(`/details/${createdgroupid}`, '_blank')}> Capacity group</a> list.
+              You can now close this prompt.
             </div>
           ) : (
             <>
               {step === 0 && (
                 <div>
-                  <StepBreadcrumbs currentStep={step} />
+                  <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                   <br />
                   <p>
                     Welcome to the Capacity Group Wizard, this intuitive interface will simplify this task. <br />
@@ -310,7 +341,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               {step === 1 && (
                 <Form>
                   <Form.Group>
-                    <StepBreadcrumbs currentStep={step} />
+                    <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                     <center><h5>Group Details</h5></center>
 
                     <Form.Label className="control-label required-field-label">Capacity Group Name</Form.Label>
@@ -359,7 +390,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               )}
               {step === 2 && (
                 <div>
-                  <StepBreadcrumbs currentStep={step} />
+                  <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                   <center><h5>Demand Linkage</h5></center>
                   {areUnitMeasureIdsEqual(selectedDemands) ? (
                     // No warning if unit measure IDs are equal
@@ -417,7 +448,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
               )}
               {step === 3 && (
                 <div>
-                  <StepBreadcrumbs currentStep={step} />
+                  <StepBreadcrumbs welcome={true} maxSteps={3} currentStep={step} />
                   <center><h5>Review and Submit</h5></center>
                   <br />
                   <div className="row mb-2">

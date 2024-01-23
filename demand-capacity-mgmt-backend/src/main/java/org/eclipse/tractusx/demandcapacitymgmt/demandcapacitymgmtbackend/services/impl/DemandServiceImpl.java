@@ -24,6 +24,11 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import jakarta.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
@@ -39,15 +44,11 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.D
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
+
 
 @RequiredArgsConstructor
 @Service
@@ -73,6 +74,7 @@ public class DemandServiceImpl implements DemandService {
     private final HttpServletRequest request;
     private final StatusesService statusesService;
     private final BottleneckManagerImpl statusManager;
+    private final AlertService alertService;
 
     @Override
     public MaterialDemandResponse createDemand(MaterialDemandRequest materialDemandRequest, String userID) {
@@ -166,11 +168,61 @@ public class DemandServiceImpl implements DemandService {
                     }
                 }
             );
+
+        triggerDemandAlertsIfNeeded(demandId, userID, demand);
+
         demand = materialDemandRepository.save(demand);
         postLogs(demandId, "MATERIAL DEMAND Updated", EventType.GENERAL_EVENT, userID);
         statusManager.calculateBottleneck(userID, true);
         statusManager.calculateTodos(userID);
         return convertDemandResponseDto(demand);
+    }
+
+    private void triggerDemandAlertsIfNeeded(String demandId, String userID, MaterialDemandEntity demand) {
+        List<Double> oldDemandValues = new ArrayList<>(List.of());
+        List<Double> newDemandValues = new ArrayList<>(List.of());
+
+        demand
+            .getDemandSeries()
+            .forEach(
+                demandSeries -> {
+                    demandSeries
+                        .getDemandSeriesValues()
+                        .forEach(
+                            demandSeriesValues -> {
+                                newDemandValues.add(demandSeriesValues.getDemand());
+                            }
+                        );
+                }
+            );
+
+        materialDemandRepository
+            .findById(UUID.fromString(demandId))
+            .get()
+            .getDemandSeries()
+            .forEach(
+                demandSeries1 -> {
+                    demandSeries1
+                        .getDemandSeriesValues()
+                        .forEach(
+                            demandSeriesValues -> {
+                                oldDemandValues.add(demandSeriesValues.getDemand());
+                            }
+                        );
+                }
+            );
+
+        for (int i = 0; i < newDemandValues.size(); i++) {
+            if (!Objects.equals(oldDemandValues.get(i), newDemandValues.get(i))) {
+                alertService.triggerDemandAlertsIfNeeded(
+                    userID,
+                    true,
+                    oldDemandValues.get(i),
+                    newDemandValues.get(i),
+                    demandId
+                );
+            }
+        }
     }
 
     private List<MaterialDemandEntity> getAllDemands() {

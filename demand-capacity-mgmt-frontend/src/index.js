@@ -23,7 +23,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from "react-router-dom";
-import AppComponent from './components/dcm/AppComponent';
+import
+    AppComponent from './components/dcm/AppComponent';
 import AuthenticationComponent from './components/pages/AuthenticationPage';
 import { UserProvider } from "./contexts/UserContext";
 import './custom-bootstrap.scss';

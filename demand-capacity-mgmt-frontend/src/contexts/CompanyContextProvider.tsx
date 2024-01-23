@@ -20,66 +20,130 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useState } from 'react';
+import { CompanyData } from '../interfaces/company_interfaces';
 import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
+import { is404Error, isAxiosError, isTimeoutError } from '../util/TypeGuards';
 import { useUser } from "./UserContext";
 
-export interface Company {
-  id: string,
-  bpn: string
-  companyName: string
-  street: string
-  number: string
-  zipCode: string
-  country: string
-  myCompany: string
-}
-
-
 interface CompanyContextData {
-  companies: Company[];
-  topCompanies: Company[];
+  companies: CompanyData[];
+  topCompanies: CompanyData[];
+  findCompanyByCompanyID: (companyID: string) => CompanyData;
+  findCompanyByBpn: (companyBpn: string) => CompanyData;
 }
 
 export const CompanyContext = createContext<CompanyContextData | undefined>(undefined);
 
 const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
   const { access_token } = useUser();
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [topCompanies, setTopCompanies] = useState<Company[]>([]);
+  const [companies, setCompanies] = useState<CompanyData[]>([]);
+  const [topCompanies, setTopCompanies] = useState<CompanyData[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 3;
   const api = createAPIInstance(access_token);
 
+  const objectType = '4';
+  const errorCode = '6';
+
+
+  const fetchCompaniesWithRetry = useCallback(async (): Promise<void> => {
+    setIsLoading(true);
+
+    try {
+      const response = await api.get('/company', {});
+      const result: CompanyData[] = await response.data;
+
+      setCompanies((prevCompanies) => [...prevCompanies, ...result]);
+    } catch (error) {
+
+      if (retryCount < maxRetries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 30000));
+        setRetryCount((prevRetryCount) => prevRetryCount + 1);
+      } else {
+        setRetryCount(0);
+        customErrorToast(objectType, errorCode, '00')
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [retryCount, setCompanies, setIsLoading, setRetryCount, api]);
+
+  const getCompanybyId = async (id: string): Promise<CompanyData | undefined> => {
+    try {
+      const response = await api.get(`/demand/${id}`);
+      return response.data;
+    } catch (error) {
+      if (isTimeoutError(error)) {
+        // This is a timeout error
+        customErrorToast(objectType, errorCode, '00')
+      } else if (is404Error(error) && error.response && error.response.status === 404) {
+        // This is a 404 Internal Server Error
+        customErrorToast(objectType, errorCode, '40')
+      } else if (isAxiosError(error) && error.response && error.response.status === 500) {
+        // This is a 500 Internal Server Error
+        customErrorToast(objectType, errorCode, '50')
+      } else {
+        // Handle other types of errors
+        customErrorToast('5', '0', '0') //This will trigger, Unkown error
+      }
+    }
+  };
+
+  const fetchTopCompanies = async (): Promise<void> => {
+    try {
+      const response = await api.get(`/company/top`);
+      setTopCompanies(response.data);
+      return response.data;
+    } catch (error) {
+      customErrorToast(objectType, errorCode, '70')
+    }
+  };
+
   useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const response = await api.get('/company', {
-        });
-        const result: Company[] = response.data;
-        setCompanies(result);
-      } catch (error) {
-        console.error('Error fetching companies:', error);
-      }
-    };
-
-    const fetchTopCompanies = async (): Promise<Company> => {
-      try {
-        const response = await api.get(`/company/top`);
-        setTopCompanies(response.data);
-        return response.data;
-      } catch (error) {
-        console.error('Error fetching top companies:', error);
-        throw error;
-      }
-    };
-
-    fetchCompanies();
+    fetchCompaniesWithRetry();
     fetchTopCompanies();
   }, [access_token]);
 
 
 
+  const findCompanyByBpn = (companyBpn: string): CompanyData => {
+    const foundCompany = companies.find(company => company.bpn === companyBpn);
+    return foundCompany || {
+      id: '',
+      companyName: '',
+      bpn: '',
+      street: '',
+      zipCode: '',
+      country: '',
+      number: '',
+      contacts: [],
+      bpnType: '',
+      edc_url: '',
+      isEdcRegistered: false,
+    };
+  };
+  const findCompanyByCompanyID = (companyID: string): CompanyData => {
+    const foundCompany = companies.find(company => company.id === companyID);
+    return foundCompany || {
+      id: '',
+      companyName: '',
+      bpn: '',
+      street: '',
+      zipCode: '',
+      country: '',
+      number: '',
+      contacts: [],
+      bpnType: '',
+      edc_url: '',
+      isEdcRegistered: false,
+    };
+  };
+
   return (
-    <CompanyContext.Provider value={{ companies, topCompanies }}>
+    <CompanyContext.Provider value={{ companies, topCompanies, findCompanyByCompanyID, findCompanyByBpn }}>
       {props.children}
     </CompanyContext.Provider>
   );
