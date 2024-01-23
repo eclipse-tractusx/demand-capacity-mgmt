@@ -40,6 +40,11 @@ public class UserController implements UserOperationsApi {
     private HttpServletRequest request;
 
     @Override
+    public ResponseEntity<List<UserResponse>> fetchAllUsers() throws Exception {
+        return ResponseEntity.status(200).body(service.fetchAllUsers());
+    }
+
+    @Override
     public ResponseEntity<Void> updateAnUser(UserRequest userRequest) throws Exception {
         service.updateUser(userRequest);
         return ResponseEntity.status(201).build();

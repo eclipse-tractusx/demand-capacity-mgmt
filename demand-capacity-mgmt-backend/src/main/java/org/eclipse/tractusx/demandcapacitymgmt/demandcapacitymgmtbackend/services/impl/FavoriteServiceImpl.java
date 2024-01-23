@@ -221,8 +221,6 @@ public class FavoriteServiceImpl implements FavoriteService {
                     }
                 }
             }
-            response.setEndDate(biggestDate.toString());
-            response.setStartDate(smallestDate.toString());
             response.setMaterialDescriptionCustomer(materialDemand.getMaterialDescriptionCustomer());
             response.setMaterialNumberCustomer(materialDemand.getMaterialNumberCustomer());
             response.setMaterialNumberSupplier(materialDemand.getMaterialNumberSupplier());

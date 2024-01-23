@@ -70,5 +70,4 @@ public class GoldenRecordManagerImpl implements GoldenRecordManager {
         repository.save(recordEntity);
         return recordEntity;
     }
-
 }
