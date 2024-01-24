@@ -20,46 +20,44 @@
  *    ********************************************************************************
  */
 
-import React, {useContext, useEffect, useMemo, useState} from 'react';
-import {Button, Tab, Tabs} from 'react-bootstrap';
-import {useNavigate, useParams} from 'react-router-dom';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { Tab, Tabs } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
 import CapacityGroupChronogram from '../../components/capacitygroup/CapacityGroupChronogram';
-import {CapacityGroupContext} from '../../contexts/CapacityGroupsContextProvider';
-import DemandContextProvider, {DemandContext} from '../../contexts/DemandContextProvider';
-import {EventsContext} from '../../contexts/EventsContextProvider';
-import {SingleCapacityGroup} from '../../interfaces/capacitygroup_interfaces';
-import {DemandProp} from "../../interfaces/demand_interfaces";
-import {EventProp} from '../../interfaces/event_interfaces';
+import { CapacityGroupContext } from '../../contexts/CapacityGroupsContextProvider';
+import DemandContextProvider, { DemandContext } from '../../contexts/DemandContextProvider';
+import { EventsContext } from '../../contexts/EventsContextProvider';
+import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
+import { DemandProp } from "../../interfaces/demand_interfaces";
+import { EventProp } from '../../interfaces/event_interfaces';
 import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList';
 import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
-import {LoadingMessage} from '../common/LoadingMessages';
+import { LoadingMessage } from '../common/LoadingMessages';
 import EventsTable from '../events/EventsTable';
-import CapacityGroupBottlenecks from "../capacitygroup/CapacityGroupBottlenecks";
 import BottlenecksPage from "./BottlenecksPage";
 
 function CapacityGroupDetailsPage() {
-    const {id} = useParams();
+    const { id } = useParams();
     const context = useContext(CapacityGroupContext);
 
     if (!context) {
         throw new Error('CapacityGroupDetailsPage must be used within a CapacityGroupsProvider');
     }
 
-    const {getCapacityGroupById} = context;
+    const { getCapacityGroupById } = context;
     const [activeTab, setActiveTab] = useState('overview');
     const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
     const [materialDemands, setMaterialDemands] = useState<DemandProp[] | null>([]);
-    const {fetchFilteredEvents} = useContext(EventsContext)!;
-    const {getDemandbyId} = useContext(DemandContext)!;
+    const { fetchFilteredEvents } = useContext(EventsContext)!;
+    const { getDemandbyId } = useContext(DemandContext)!;
     const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
     const navigate = useNavigate()
 
     const currentYear = new Date().getFullYear();
+
     const [startDate, setStartDate] = useState<Date>(new Date());
     const [endDate, setEndDate] = useState<Date>(new Date());
 
-    const [] = useState<Date>(new Date());
-    const [] = useState<Date>(new Date());
 
     useEffect(() => {
         if (id) {
@@ -103,27 +101,27 @@ function CapacityGroupDetailsPage() {
 
     const memoizedComponent = useMemo(() => {
         if (!capacityGroup) {
-            return <LoadingMessage/>;
+            return <LoadingMessage />;
         }
         function updateParentDateRange(start: Date, end: Date) {
             setStartDate(start);
             setEndDate(end);
         }
 
-        const startDate = new Date(currentYear, 0, 1).toISOString().split('T')[0];
-        const endDate = new Date(currentYear, 11, 31).toISOString().split('T')[0];
+        setStartDate(new Date(currentYear, 0, 1));
+        setEndDate(new Date(currentYear, 11, 31));
 
         return (
             <>
                 <div className="container-xl">
-                    <br/>
+                    <br />
                     <div className="row">
                         <div className="col"></div>
                         <div className="col-4 border d-flex align-items-center justify-content-center"
-                             style={{padding: '05px'}}>
-                                {capacityGroup?.capacityGroupName}
+                            style={{ padding: '05px' }}>
+                            {capacityGroup?.capacityGroupName}
                         </div>
-                        <br/>
+                        <br />
                         <div className="col d-flex justify-content-end">
                         </div>
 
@@ -145,23 +143,23 @@ function CapacityGroupDetailsPage() {
                                 materialDemands={materialDemands}
                                 updateParentDateRange={updateParentDateRange}
                             />
-                            <CapacityGroupChronogram capacityGroup={capacityGroup} materialDemands={materialDemands} />
+                            <CapacityGroupChronogram capacityGroup={capacityGroup} materialDemands={materialDemands} startDate={startDate} endDate={endDate} />
                         </Tab>
                         <Tab eventKey="materials" title="Materials">
                             <DemandContextProvider>
                                 <CapacityGroupDemandsList capacityGroupDemands={capacityGroup?.linkMaterialDemandIds}
-                                                          capacityGroupId={capacityGroup?.capacityGroupId}/>
+                                    capacityGroupId={capacityGroup?.capacityGroupId} />
                             </DemandContextProvider>
                         </Tab>
                         <Tab eventKey="events" title="Events">
-                            <EventsTable events={capacityGroupEvents} isArchive={false}/>
+                            <EventsTable events={capacityGroupEvents} isArchive={false} />
                         </Tab>
                         <Tab eventKey="bottlenecks" title={capacityGroup.ruled ? "Bottlenecks" : null}>
                             <BottlenecksPage
                                 ruled={capacityGroup.ruled}
                                 capacityGroupID={capacityGroup.capacityGroupId}
-                                startDate={startDate}
-                                endDate={endDate}
+                                startDate={startDate.toISOString().split('T')[0]}
+                                endDate={endDate.toISOString().split('T')[0]}
                             />
                         </Tab>
                     </Tabs>
