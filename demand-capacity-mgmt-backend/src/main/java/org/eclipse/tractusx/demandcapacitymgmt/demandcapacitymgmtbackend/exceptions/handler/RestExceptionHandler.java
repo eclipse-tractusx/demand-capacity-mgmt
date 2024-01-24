@@ -25,6 +25,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.except
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.ExceptionResponseImpl;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.InternalServerErrorException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -47,12 +48,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({Exception.class})
     public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
-        return buildCustomResponseEntity(ex, "An error occurred.");
+        if(ex.getMessage().contains("Keycloak")){
+            return buildCustomResponseEntity("4","00");
+        }
+        else return ResponseEntity.ok().body(new ExceptionResponseImpl("0","00"));
     }
 
 
-    private ResponseEntity<Object> buildCustomResponseEntity(Exception ex, String customMessage) {
-        ExceptionResponseImpl response = new ExceptionResponseImpl("","");
+    private ResponseEntity<Object> buildCustomResponseEntity(String code, String lastDigits) {
+        ExceptionResponseImpl response = new ExceptionResponseImpl(code,lastDigits);
         return ResponseEntity.ok().body(response);
     }
 }
