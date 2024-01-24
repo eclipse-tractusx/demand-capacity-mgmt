@@ -32,7 +32,6 @@ import FavoritesContextProvider from "../../contexts/FavoritesContextProvider";
 import ThresholdContextProvider from '../../contexts/ThresholdsContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
-import QuickAcessItems from '../common/QuickAcessItems';
 import AdminPage from '../pages/AdminPage';
 import AddressBookPage from '../pages/AdressBookPage';
 import AlertsPage from '../pages/AlertsPage';
@@ -65,7 +64,6 @@ const AppComponent: React.FC = () => {
                                     <ToastContainerComponent>
                                         <Layout>
                                             <Home />
-                                            <QuickAcessItems />
                                         </Layout>
                                     </ToastContainerComponent>
                                 </AddressBookProvider>
