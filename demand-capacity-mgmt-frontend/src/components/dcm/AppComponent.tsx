@@ -26,11 +26,13 @@ import AddressBookProvider from '../../contexts/AdressBookContextProvider';
 import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
+import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
 import EventsContextProvider from '../../contexts/EventsContextProvider';
 import FavoritesContextProvider from "../../contexts/FavoritesContextProvider";
 import ThresholdContextProvider from '../../contexts/ThresholdsContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
+import YearlyReportContextProvider from '../../contexts/YearlyReportContextProvider';
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
 import AdminPage from '../pages/AdminPage';
 import AddressBookPage from '../pages/AdressBookPage';
@@ -55,7 +57,6 @@ const AppComponent: React.FC = () => {
             <Route path="*" element={<ToastContainerComponent><ErrorPage /></ToastContainerComponent>} />
 
             <Route path="/" element={
-
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
@@ -71,27 +72,28 @@ const AppComponent: React.FC = () => {
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
-
             } />
 
             <Route path="/details/:id" element={
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
-                        <CapacityGroupsProvider>
-                            <DemandContextProvider>
-                                <CompanyContextProvider>
-                                    <AddressBookProvider>
-                                        <ToastContainerComponent>
-                                            <Layout>
-                                                <EventsContextProvider>
-                                                    <CapacityGroupDetailsPage />
-                                                </EventsContextProvider>
-                                            </Layout>
-                                        </ToastContainerComponent>
-                                    </AddressBookProvider>
-                                </CompanyContextProvider>
-                            </DemandContextProvider>
-                        </CapacityGroupsProvider>
+                        <DemandContextProvider>
+                            <ToastContainerComponent>
+                                <Layout>
+                                    <CapacityGroupsProvider>
+                                        <EventsContextProvider>
+                                            <DemandCategoryContextProvider>
+                                                <YearlyReportContextProvider>
+                                                    <ThresholdContextProvider>
+                                                        <CapacityGroupDetailsPage />
+                                                    </ThresholdContextProvider>
+                                                </YearlyReportContextProvider>
+                                            </DemandCategoryContextProvider>
+                                        </EventsContextProvider>
+                                    </CapacityGroupsProvider>
+                                </Layout>
+                            </ToastContainerComponent>
+                        </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
             } />
