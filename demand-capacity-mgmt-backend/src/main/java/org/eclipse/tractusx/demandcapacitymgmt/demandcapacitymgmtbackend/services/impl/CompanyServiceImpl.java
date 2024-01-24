@@ -35,6 +35,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -92,11 +93,7 @@ public class CompanyServiceImpl implements CompanyService {
     public void deleteCompany(UUID id) {
         Optional<CompanyEntity> company = companyRepository.findById(id);
         if (company.isEmpty()) {
-            throw new NotFoundException(
-                404,
-                "Company not found in DB",
-                new ArrayList<>(List.of("ID provided - : " + id))
-            );
+            throw new NotFoundException("","");
         } else {
             companyRepository.delete(company.get());
             postLogs(id.toString(), "delete");
