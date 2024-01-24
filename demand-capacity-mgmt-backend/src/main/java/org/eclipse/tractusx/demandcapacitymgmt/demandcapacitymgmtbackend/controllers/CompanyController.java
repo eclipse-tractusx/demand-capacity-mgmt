@@ -40,12 +40,6 @@ public class CompanyController implements CompanyApi {
     private final CompanyService companyService;
 
     @Override
-    public ResponseEntity<Void> deleteCompanyById(String companyId) throws Exception {
-        companyService.deleteCompany(UUID.fromString(companyId));
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    @Override
     public ResponseEntity<List<CompanyDto>> getCompany() throws Exception {
         List<CompanyDto> companyDtoList = companyService.getAllCompany();
         return ResponseEntity.status(HttpStatus.OK).body(companyDtoList);
@@ -55,11 +49,5 @@ public class CompanyController implements CompanyApi {
     public ResponseEntity<List<CompanyDto>> getTopCompanies() throws Exception {
         List<CompanyDto> companyDtoList = companyService.getTopCompanies();
         return ResponseEntity.status(HttpStatus.OK).body(companyDtoList);
-    }
-
-    @Override
-    public ResponseEntity<CompanyDto> postCompany(CompanyDto companyDto) throws Exception {
-        CompanyDto company = companyService.createCompany(companyDto);
-        return ResponseEntity.status(HttpStatus.OK).body(company);
     }
 }
