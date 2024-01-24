@@ -49,9 +49,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({Exception.class})
     public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
         if(ex.getMessage().contains("Keycloak")){
-            return buildCustomResponseEntity("4","00");
+            return buildCustomResponseEntity500("4","00");
         }
         else return ResponseEntity.ok().body(new ExceptionResponseImpl("0","00"));
+    }
+
+    private ResponseEntity<Object> buildCustomResponseEntity500(String code, String lastDigits) {
+        ExceptionResponseImpl response = new ExceptionResponseImpl(code,lastDigits);
+        return ResponseEntity.status(500).body(response);
     }
 
 
