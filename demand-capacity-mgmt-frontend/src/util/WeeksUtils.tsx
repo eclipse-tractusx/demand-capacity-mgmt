@@ -136,3 +136,9 @@ export const getNextMondayfromToday = () => {
     nextMonday.setDate(today.getDate() + ((1 + 7 - today.getDay()) % 7));
     return nextMonday;
 };
+
+export function toCamelCase(str: string) {
+    const lowerCaseStr = str.toLowerCase();
+    const camelCase = lowerCaseStr.replace(/[-_]+(.)?/g, (_, c) => c ? c.toLowerCase() : '');
+    return camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
+}

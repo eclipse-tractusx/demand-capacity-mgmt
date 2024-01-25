@@ -184,6 +184,15 @@ code {
   border: 1px solid var(--border-color);
 }
 
+.header-cell-btnks {
+  background-color: var(--header-color);
+  text-align: center;
+  min-width: 6rem;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+}
+
+
 .table-data-input {
   margin: 0 !important;
   padding: 0 !important;
@@ -442,6 +451,7 @@ code {
 .table-bordered .bottleneck-red {
   background-color: #dc3545;
 }
+
 /* Board.css */
 
 .board {

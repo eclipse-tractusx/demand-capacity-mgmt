@@ -20,16 +20,17 @@
  *    ********************************************************************************
  */
 
+import { formatISO } from 'date-fns';
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Form, Table, Modal } from 'react-bootstrap';
+import { Form, Table } from 'react-bootstrap';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { formatISO } from 'date-fns';
 import { FaRegCalendarCheck } from 'react-icons/fa';
 import { FcComboChart } from "react-icons/fc";
-import BottleNeckModalComponent from "./BottleNeckModalComponent";
-import { YearlyReportContext } from "../../contexts/YearlyReportContextProvider";
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
+import { YearlyReportContext } from "../../contexts/YearlyReportContextProvider";
+import { toCamelCase } from '../../util/WeeksUtils';
+import BottleNeckModalComponent from "./BottleNeckModalComponent";
 
 interface WeeklyViewProps {
     capacityGroupID: string | null | undefined;
@@ -144,60 +145,72 @@ const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({ capacityGroupID, 
         );
 
         return (
-            <div className="container">
-                <div style={{ overflowX: 'auto' }}>
-                    <table className="table table-bordered table-sm">
+            <div className="table-container">
+                <div className="container">
+                    <table className="vertical-table">
                         <thead>
-                        <tr>
-                            <th>Demand Category</th>
-                            {uniqueYearMonths.map(({ year, month }) => (
-                                <th key={`${year}-${month}`} className="text-center">
-                                    {month} {year}
-                                </th>
-                            ))}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {demandcategories.map(category => (
-                            <tr key={category.id}>
-                                <td>{category.demandCategoryName}</td>
-                                {uniqueYearMonths.map(({ year, month }) => {
-                                    const monthReport = yearReports.find(report => report.year === year)?.monthReport.find(mr => mr.month === month);
-                                    const categoryDeltas = monthReport?.weekReport.flatMap(weekReport =>
-                                        weekReport.categoryDeltas
-                                            .filter(delta => delta.catID === category.id)
-                                            .map(delta => ({ week: weekReport.week, delta: delta.delta, catName: delta.catName }))
-                                    );
-
-                                    let totalDelta = 0;
-                                    let tooltipContent = "";
-                                    let hasCategoryData = false;
-
-                                    categoryDeltas?.forEach(({ delta, week, catName }) => {
-                                        totalDelta += delta;
-                                        tooltipContent += `Week ${week}: ${delta.toFixed(2)}\n`;
-                                        if (week !== undefined && delta !== undefined) { // Check if week and delta exist
-                                            hasCategoryData = true;
-                                        }
-                                    });
-
-                                    const baseColor = totalDelta >= 0 ? '148, 203, 45' : '220, 53, 69';
-                                    const opacity = hasCategoryData ? 0.9 : 0.5;
-                                    const bgColor = `rgba(${baseColor}, ${opacity})`;
-                                    const content = hasCategoryData ? (totalDelta === 0 ? '0' : totalDelta.toFixed(2)) : ""; // Display '' (empty) if no category data
-
+                            <tr>
+                                <th className="sticky-header-cell"></th>
+                                {Array.from(new Set(uniqueYearMonths.map(({ year }) => year))).map((year, index) => {
+                                    const monthsForYear = uniqueYearMonths.filter(({ year: y }) => y === year).map(({ month }) => month);
                                     return (
-                                        <td
-                                            key={`${year}-${month}`}
-                                            style={{ textAlign: 'center', backgroundColor: bgColor, cursor: 'pointer' }}
-                                            onClick={() => handleTableCellClick(`${month} ${year}`, categoryDeltas || [], category.demandCategoryName)}
-                                        >
-                                            {content}
-                                        </td>
+                                        <th key={index} colSpan={monthsForYear.length} className="header-cell">{year}</th>
                                     );
                                 })}
                             </tr>
-                        ))}
+                            <tr>
+                                <th className="sticky-header-cell"></th>
+                                {uniqueYearMonths.map(({ year, month }) => (
+                                    <th key={`${year}-${month}`} className="header-cell-btnks">
+                                        {toCamelCase(month)}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+                            {demandcategories.map(category => (
+                                <tr key={category.id}>
+                                    <td className="sticky-header-cell sticky-header-content"><b>{category.demandCategoryName}</b></td>
+                                    {uniqueYearMonths.map(({ year, month }) => {
+                                        const monthReport = yearReports.find(report => report.year === year)?.monthReport.find(mr => mr.month === month);
+                                        const categoryDeltas = monthReport?.weekReport.flatMap(weekReport =>
+                                            weekReport.categoryDeltas
+                                                .filter(delta => delta.catID === category.id)
+                                                .map(delta => ({ week: weekReport.week, delta: delta.delta, catName: delta.catName }))
+                                        );
+
+                                        let totalDelta = 0;
+                                        let tooltipContent = "";
+                                        let hasCategoryData = false;
+
+                                        categoryDeltas?.forEach(({ delta, week, catName }) => {
+                                            totalDelta += delta;
+                                            tooltipContent += `Week ${week}: ${delta.toFixed(2)}\n`;
+                                            if (week !== undefined && delta !== undefined) { // Check if week and delta exist
+                                                hasCategoryData = true;
+                                            }
+                                        });
+
+                                        const baseColor = totalDelta >= 0 ? '157, 207, 75' : '220, 53, 69';
+                                        const opacity = hasCategoryData ? 0.9 : 0.11;
+                                        const bgColor = `rgba(${baseColor}, ${opacity})`;
+                                        const content = hasCategoryData ? (totalDelta === 0 ? '0' : totalDelta.toFixed(2)) : ""; // Display '' (empty) if no category data
+
+                                        return (
+                                            <td
+                                                key={`${year}-${month}`}
+                                                className="data-cell"
+                                                style={{ textAlign: 'center', backgroundColor: bgColor, cursor: 'pointer' }}
+                                                onClick={() => handleTableCellClick(`${month} ${year}`, categoryDeltas || [], category.demandCategoryName)}
+                                            >
+                                                {content}
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -216,18 +229,18 @@ const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({ capacityGroupID, 
                     <p>Thresholds below are provided and enabled by your administrator.</p>
                 </div>
                 <div style={{ overflowX: 'auto' }}>
-                    <Table className="table table-bordered table-responsive-lg">
+                    <Table className="table table-responsive-lg">
                         <tbody>
-                        <tr>
-                            {renderThresholdsSection()}
-                        </tr>
+                            <tr>
+                                {renderThresholdsSection()}
+                            </tr>
                         </tbody>
                     </Table>
                 </div>
             </div>
             <div className="date-range-container">
                 <div className="pop-out-section">
-                    <div className="text-muted p-1"><FaRegCalendarCheck/> Data Range</div>
+                    <div className="text-muted p-1"><FaRegCalendarCheck /> Data Range</div>
                     <div className="col-12 p-1 d-flex form-group align-items-center">
                         <DatePicker
                             className="form-control"
@@ -274,112 +287,3 @@ const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({ capacityGroupID, 
 
 export default CapacityGroupBottlenecks;
 
-//OLD TABLE VERSION BASED ON SUM VIEW
-
-/*const renderTable = () => {
-    // Create an array of unique years from the backend data
-    const uniqueYears = [...new Set(yearReports.map(report => report.year))];
-
-    return (
-        <div className="container">
-            <div style={{overflowX: 'auto'}}>
-                <table className="table table-bordered table-sm">
-                    <thead>
-                    <tr>
-                        <th></th>
-                        {/!* Empty header for demand categories *!/}
-                        {uniqueYears.map(year => {
-                            const yearData = yearReports.find(report => report.year === year);
-                            if (!yearData) return null;
-
-                            // Calculate the colspan based on the number of weeks in the year report
-                            const weeksInYear = yearData.monthReport.reduce(
-                                (total, month) => total + month.weekReport.length,
-                                0
-                            );
-
-                            return (
-                                <th key={`year-${year}`} colSpan={weeksInYear}
-                                    className="text-center">
-                                    {year}
-                                </th>
-                            );
-                        })}
-                    </tr>
-                    <tr>
-                        <th>Demand Category</th>
-                        {/!* Header for demand categories *!/}
-                        {uniqueYears.map(year => (
-                            yearReports
-                                .filter(report => report.year === year)
-                                .flatMap(report =>
-                                    report.monthReport.flatMap(month => (
-                                        <th className="text-center"
-                                            key={`month-${year}-${month.month}`} colSpan={month.weekReport.length}>
-                                            {month.month}
-                                        </th>
-                                    ))
-                                )
-                        ))}
-                    </tr>
-                    <tr>
-                        <th style={{backgroundColor: 'rgba(128, 128, 128, 0.2)'}}></th>
-                        {/!* Empty header for demand categories *!/}
-                        {uniqueYears.map(year => (
-                            yearReports
-                                .filter(report => report.year === year)
-                                .flatMap(report =>
-                                    report.monthReport.flatMap(month =>
-                                        month.weekReport.map(week => (
-                                            <th
-                                                style={{alignItems: "center"}}
-                                                className="text-center" // Add text-center class to center-align the content
-                                                key={`week-${year}-${month.month}-${week.week}`}
-                                            >
-                                                {week.week}
-                                            </th>
-                                        ))
-                                    )
-                                )
-                        ))}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {demandcategories?.map(category => (
-                        <tr key={category.id}>
-                            <td>{category.demandCategoryName}</td>
-                            {uniqueYears.map(year => (
-                                yearReports
-                                    .filter(report => report.year === year)
-                                    .flatMap(report =>
-                                        report.monthReport.flatMap(month =>
-                                            month.weekReport.map(week => {
-                                                const demandCategoryWeek = week.catID === category.id ? week : null;
-                                                const hasDelta = demandCategoryWeek !== null;
-                                                const bgColor = hasDelta
-                                                    ? demandCategoryWeek.delta >= 0
-                                                        ? 'rgba(148, 203, 45, 0.8)'
-                                                        : 'rgba(220, 53, 69, 0.8)'
-                                                    : '';
-                                                const content = hasDelta ? demandCategoryWeek.delta.toString() : '';
-
-                                                return (
-                                                    <td
-                                                        key={`week-${year}-${month.month}-${week.week}-${category.id}`}
-                                                        style={{textAlign: 'center', backgroundColor: bgColor}}
-                                                    >
-                                                        {content}
-                                                    </td>
-                                                );
-                                            })
-                                        )
-                                    )
-                            ))}
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
-};*/

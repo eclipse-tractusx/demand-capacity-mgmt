@@ -206,7 +206,7 @@ function CapacityGroupWizardModal({ show, onHide, checkedDemands, demands }: Cap
       setDefaultActualCapacity('');
       setDefaultMaximumCapacity('');
     } catch (error) {
-      console.error('Error creating capacity group:', error);
+      setIsSuccess(false);
     } finally {
       setIsLoading(false);
     }
