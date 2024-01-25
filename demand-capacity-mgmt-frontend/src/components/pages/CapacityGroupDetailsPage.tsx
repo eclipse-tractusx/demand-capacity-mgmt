@@ -30,11 +30,12 @@ import { EventsContext } from '../../contexts/EventsContextProvider';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import { DemandProp } from "../../interfaces/demand_interfaces";
 import { EventProp } from '../../interfaces/event_interfaces';
+import { defaultEndDateString, defaultStartDateString } from '../../util/Defaults';
+import CapacityGroupBottlenecks from '../capacitygroup/CapacityGroupBottlenecks';
 import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList';
 import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
 import { LoadingMessage } from '../common/LoadingMessages';
 import EventsTable from '../events/EventsTable';
-import BottlenecksPage from "./BottlenecksPage";
 
 function CapacityGroupDetailsPage() {
     const { id } = useParams();
@@ -53,10 +54,8 @@ function CapacityGroupDetailsPage() {
     const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
     const navigate = useNavigate()
 
-    const currentYear = new Date().getFullYear();
-
-    const [startDate, setStartDate] = useState<Date>(new Date());
-    const [endDate, setEndDate] = useState<Date>(new Date());
+    const [startDate, setStartDate] = useState<Date>(new Date(defaultStartDateString));
+    const [endDate, setEndDate] = useState<Date>(new Date(defaultEndDateString));
 
 
     useEffect(() => {
@@ -108,8 +107,7 @@ function CapacityGroupDetailsPage() {
             setEndDate(end);
         }
 
-        setStartDate(new Date(currentYear, 0, 1));
-        setEndDate(new Date(currentYear, 11, 31));
+
 
         return (
             <>
@@ -154,14 +152,15 @@ function CapacityGroupDetailsPage() {
                         <Tab eventKey="events" title="Events">
                             <EventsTable events={capacityGroupEvents} isArchive={false} />
                         </Tab>
-                        <Tab eventKey="bottlenecks" title={capacityGroup.ruled ? "Bottlenecks" : null}>
-                            <BottlenecksPage
-                                ruled={capacityGroup.ruled}
-                                capacityGroupID={capacityGroup.capacityGroupId}
-                                startDate={startDate.toISOString().split('T')[0]}
-                                endDate={endDate.toISOString().split('T')[0]}
-                            />
-                        </Tab>
+                        {capacityGroup.ruled ? (
+                            <Tab eventKey="bottlenecks" title="Bottlenecks">
+                                <CapacityGroupBottlenecks
+                                    capacityGroupID={capacityGroup.capacityGroupId}
+                                    startDate={startDate.toISOString().split('T')[0]}
+                                    endDate={endDate.toISOString().split('T')[0]}
+                                />
+                            </Tab>
+                        ) : null}
                     </Tabs>
                 </div>
             </>

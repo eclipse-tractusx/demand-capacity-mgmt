@@ -79,19 +79,21 @@ const AppComponent: React.FC = () => {
                     <FavoritesContextProvider>
                         <DemandContextProvider>
                             <ToastContainerComponent>
-                                <Layout>
-                                    <CapacityGroupsProvider>
-                                        <EventsContextProvider>
-                                            <DemandCategoryContextProvider>
-                                                <YearlyReportContextProvider>
-                                                    <ThresholdContextProvider>
-                                                        <CapacityGroupDetailsPage />
-                                                    </ThresholdContextProvider>
-                                                </YearlyReportContextProvider>
-                                            </DemandCategoryContextProvider>
-                                        </EventsContextProvider>
-                                    </CapacityGroupsProvider>
-                                </Layout>
+                                <CompanyContextProvider>
+                                    <Layout>
+                                        <CapacityGroupsProvider>
+                                            <EventsContextProvider>
+                                                <DemandCategoryContextProvider>
+                                                    <YearlyReportContextProvider>
+                                                        <ThresholdContextProvider>
+                                                            <CapacityGroupDetailsPage />
+                                                        </ThresholdContextProvider>
+                                                    </YearlyReportContextProvider>
+                                                </DemandCategoryContextProvider>
+                                            </EventsContextProvider>
+                                        </CapacityGroupsProvider>
+                                    </Layout>
+                                </CompanyContextProvider>
                             </ToastContainerComponent>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
