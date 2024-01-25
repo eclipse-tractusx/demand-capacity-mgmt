@@ -240,7 +240,7 @@ const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({ capacityGroupID, 
             </div>
             <div className="date-range-container">
                 <div className="pop-out-section">
-                    <div className="text-muted p-1"><FaRegCalendarCheck /> Data Range</div>
+                    <div className="text-muted p-1"><FaRegCalendarCheck /> Data Range (select entire months for accurate week readings)</div>
                     <div className="col-12 p-1 d-flex form-group align-items-center">
                         <DatePicker
                             className="form-control"

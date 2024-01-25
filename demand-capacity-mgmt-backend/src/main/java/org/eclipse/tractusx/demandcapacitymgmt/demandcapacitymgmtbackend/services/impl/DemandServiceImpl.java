@@ -212,14 +212,15 @@ public class DemandServiceImpl implements DemandService {
                 }
             );
 
-        for (int i = 0; i < newDemandValues.size(); i++) {
+        int minSize = Math.min(oldDemandValues.size(), newDemandValues.size());
+        for (int i = 0; i < minSize; i++) {
             if (!Objects.equals(oldDemandValues.get(i), newDemandValues.get(i))) {
                 alertService.triggerDemandAlertsIfNeeded(
-                    userID,
-                    true,
-                    oldDemandValues.get(i),
-                    newDemandValues.get(i),
-                    demandId
+                        userID,
+                        true,
+                        oldDemandValues.get(i),
+                        newDemandValues.get(i),
+                        demandId
                 );
             }
         }
