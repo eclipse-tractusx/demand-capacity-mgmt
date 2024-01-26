@@ -137,7 +137,6 @@ public class DemandServiceImpl implements DemandService {
     ) {
         MaterialDemandEntity demand = convertDtoToEntity(materialDemandRequest, demandId);
         List<MaterialDemandEntity> oldMaterialDemands = new ArrayList<>(materialDemandRepository.findAll());
-        List<MaterialDemandEntity> newMaterialDemands = new ArrayList<>();
         demand.setId(UUID.fromString(demandId));
 
         for (MaterialDemandEntity materialDemandEntity : oldMaterialDemands) {
@@ -146,9 +145,6 @@ public class DemandServiceImpl implements DemandService {
                 updateMaterial.setLinkStatus(materialDemandEntity.getLinkStatus());
                 demand.setLinkStatus(materialDemandEntity.getLinkStatus());
                 updateMaterial.setId(materialDemandEntity.getId());
-                newMaterialDemands.add(updateMaterial);
-            } else {
-                newMaterialDemands.add(materialDemandEntity);
             }
         }
         linkedCapacityGroupMaterialDemandRepository
@@ -181,6 +177,9 @@ public class DemandServiceImpl implements DemandService {
     private void triggerDemandAlertsIfNeeded(String demandId, String userID, MaterialDemandEntity demand) {
         List<Double> oldDemandValues = new ArrayList<>(List.of());
         List<Double> newDemandValues = new ArrayList<>(List.of());
+        Map<UUID, List<Double>> oldDemandValuesMap = new HashMap<>();
+        Map<UUID, List<Double>> newDemandValuesMap = new HashMap<>();
+        //        Map<String, int[]> stringArrayMap = new HashMap<>();
 
         demand
             .getDemandSeries()
@@ -193,6 +192,8 @@ public class DemandServiceImpl implements DemandService {
                                 newDemandValues.add(demandSeriesValues.getDemand());
                             }
                         );
+                    newDemandValuesMap.put(demandSeries.getDemandCategory().getId(), newDemandValues.stream().toList());
+                    newDemandValues.clear();
                 }
             );
 
@@ -209,21 +210,30 @@ public class DemandServiceImpl implements DemandService {
                                 oldDemandValues.add(demandSeriesValues.getDemand());
                             }
                         );
+                    oldDemandValuesMap.put(
+                        demandSeries1.getDemandCategory().getId(),
+                        oldDemandValues.stream().toList()
+                    );
+                    oldDemandValues.clear();
                 }
             );
 
-        int minSize = Math.min(oldDemandValues.size(), newDemandValues.size());
-        for (int i = 0; i < minSize; i++) {
-            if (!Objects.equals(oldDemandValues.get(i), newDemandValues.get(i))) {
-                alertService.triggerDemandAlertsIfNeeded(
-                        userID,
-                        true,
-                        oldDemandValues.get(i),
-                        newDemandValues.get(i),
-                        demandId
-                );
+        newDemandValuesMap.forEach(
+            (newDemandKey, newValuesArray) -> {
+                int minSize = Math.min(newValuesArray.size(), oldDemandValuesMap.get(newDemandKey).size());
+                for (int i = 0; i < minSize; i++) {
+                    if (!Objects.equals(oldDemandValuesMap.get(newDemandKey).get(i), newValuesArray.get(i))) {
+                        alertService.triggerDemandAlertsIfNeeded(
+                            userID,
+                            true,
+                            oldDemandValuesMap.get(newDemandKey).get(i),
+                            newValuesArray.get(i),
+                            demandId
+                        );
+                    }
+                }
             }
-        }
+        );
     }
 
     private List<MaterialDemandEntity> getAllDemands() {
@@ -483,6 +493,7 @@ public class DemandServiceImpl implements DemandService {
                     DemandCategoryEntity demandCategory = demandCategoryService.findById(
                         UUIDUtil.generateUUIDFromString(materialDemandSeries.getDemandCategoryId())
                     );
+                    materialDemandSeries.setId(materialDemandSeries.getDemandCategoryId());
                     return enrichDemandSeries(materialDemandSeries, customerEntity, demandCategory);
                 }
             )
@@ -513,6 +524,7 @@ public class DemandServiceImpl implements DemandService {
         return DemandSeries
             .builder()
             .expectedSupplierLocation(materialDemandSeries.getExpectedSupplierLocationId())
+            .id(UUID.fromString(materialDemandSeries.getId()))
             .customerLocation(customerEntity)
             .demandCategory(demandCategory)
             .demandSeriesValues(demandSeriesValues)
