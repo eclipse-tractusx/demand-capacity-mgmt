@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { ThresholdProp } from '../interfaces/threshold_interfaces';
+import { ThresholdProp } from '../interfaces/Threshold_interfaces';
 import createAPIInstance from "../util/Api";
 import { useUser } from "./UserContext";
 
