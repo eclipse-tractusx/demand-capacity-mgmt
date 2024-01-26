@@ -20,10 +20,25 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks;
 
-public interface StatusManager {
-    void calculateBottleneck(String userID, boolean postLog);
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandSeries;
 
-    void calculateTodos(String userID);
+import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class WeekReportDto {
+    private int week;
+    private double delta;
+    private double maxCapacity;
+    private double actCapacity;
+    private List<CategoryDeltaDto> categoryDeltaDtos;
+    private DemandSeries demandSeries;
 }

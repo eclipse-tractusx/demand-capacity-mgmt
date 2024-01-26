@@ -15,26 +15,12 @@
  *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  *    License for the specific language governing permissions and limitations
  *    under the License.
- *
+ *  
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
-import React from 'react';
-import { Modal } from 'react-bootstrap';
-
-type CapacityGroupsModalProps = {
-  show: boolean;
-  handleClose: () => void;
-  children: React.ReactNode;
-};
-
-const CapacityGroupsModal: React.FC<CapacityGroupsModalProps> = ({ show, handleClose, children }) => {
-  return (
-    <Modal show={show} onHide={handleClose}>
-      {children}
-    </Modal>
-  );
-};
-
-export default CapacityGroupsModal;
+export interface ThresholdProp {
+    id: number
+    percentage: string,
+    enabled: boolean
+}

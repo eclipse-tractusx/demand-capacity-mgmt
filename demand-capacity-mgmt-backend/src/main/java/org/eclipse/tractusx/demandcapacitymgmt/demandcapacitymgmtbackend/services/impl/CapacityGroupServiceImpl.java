@@ -42,7 +42,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
-
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -57,8 +56,9 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
     private final StatusesService statusesService;
     private final LoggingHistoryService loggingHistoryService;
     private final FavoriteService favoriteService;
-    private final StatusManagerImpl statusManager;
+    private final BottleneckManagerImpl statusManager;
 
+    private final CapacityGroupRuleSetRepository ruleSetRepository;
     private final UserRepository userRepository;
 
     @Override
@@ -218,6 +218,11 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
 
         singleCapacityGroup.setCapacities(convertToCapacityBody(capacityGroupEntity.getCapacityTimeSeriesList()));
 
+        //INDIVIDUAL CG CHECK
+        UUID cgUUID = UUID.fromString(capacityGroupId);
+        Optional<CapacityGroupRuleSetEntity> ruleSetEntityOpt = ruleSetRepository.findByCgID(cgUUID);
+        singleCapacityGroup.setRuled(ruleSetEntityOpt.isPresent());
+
         return singleCapacityGroup;
     }
 
@@ -246,11 +251,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         Optional<CapacityGroupEntity> capacityGroup = capacityGroupRepository.findById(uuid);
 
         if (capacityGroup.isEmpty()) {
-            throw new NotFoundException(
-                404,
-                "The capacity group provided was not found",
-                new ArrayList<>(List.of("UUID provided : " + uuid))
-            );
+            throw new NotFoundException("4","04");
         }
 
         return capacityGroup.get();
@@ -359,7 +360,6 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
             capacityBody.setActualCapacity(BigDecimal.valueOf(capacityTimeSerie.getActualCapacity()));
             capacityBody.setMaximumCapacity(BigDecimal.valueOf(capacityTimeSerie.getMaximumCapacity()));
             capacityBody.setCapacityId(capacityTimeSerie.getCapacityGroupEntity().getId().toString());
-
             bodys.add(capacityBody);
         }
         return bodys;

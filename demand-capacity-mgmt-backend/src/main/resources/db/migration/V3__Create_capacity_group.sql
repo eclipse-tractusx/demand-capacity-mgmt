@@ -44,9 +44,7 @@ create table capacity_time_series
     maximum_capacity numeric,
     required_amount numeric,
     capacity_group_id uuid constraint capacity_group_id references capacity_group(id),
-    capacity_group_entity_id uuid constraint capacity_group_entity_id references capacity_group(id),
-    ruled BOOLEAN NOT NULL DEFAULT false,
-    week_color VARCHAR DEFAULT 'GREY'
+    capacity_group_entity_id uuid constraint capacity_group_entity_id references capacity_group(id)
 );
 
 create table linked_demand_series

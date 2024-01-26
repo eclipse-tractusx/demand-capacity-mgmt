@@ -44,6 +44,11 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.D
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 
 @RequiredArgsConstructor
 @Service
@@ -68,7 +73,7 @@ public class DemandServiceImpl implements DemandService {
     private final LinkedCapacityGroupMaterialDemandRepository linkedCapacityGroupMaterialDemandRepository;
     private final HttpServletRequest request;
     private final StatusesService statusesService;
-    private final StatusManagerImpl statusManager;
+    private final BottleneckManagerImpl statusManager;
     private final AlertService alertService;
 
     @Override
@@ -207,14 +212,15 @@ public class DemandServiceImpl implements DemandService {
                 }
             );
 
-        for (int i = 0; i < newDemandValues.size(); i++) {
+        int minSize = Math.min(oldDemandValues.size(), newDemandValues.size());
+        for (int i = 0; i < minSize; i++) {
             if (!Objects.equals(oldDemandValues.get(i), newDemandValues.get(i))) {
                 alertService.triggerDemandAlertsIfNeeded(
-                    userID,
-                    true,
-                    oldDemandValues.get(i),
-                    newDemandValues.get(i),
-                    demandId
+                        userID,
+                        true,
+                        oldDemandValues.get(i),
+                        newDemandValues.get(i),
+                        demandId
                 );
             }
         }
@@ -328,11 +334,7 @@ public class DemandServiceImpl implements DemandService {
         Optional<MaterialDemandEntity> demand = materialDemandRepository.findById(uuid);
 
         if (demand.isEmpty()) {
-            throw new NotFoundException(
-                404,
-                "Material demand not found",
-                new ArrayList<>(List.of("provided UUID for material demand was not found. - " + uuid))
-            );
+            throw new NotFoundException("4","04");
         }
 
         return demand.get();
@@ -404,19 +406,11 @@ public class DemandServiceImpl implements DemandService {
 
     private void validateMaterialDemandRequestFields(MaterialDemandRequest materialDemandRequest) {
         if (!UUIDUtil.checkValidUUID(materialDemandRequest.getCustomerId())) {
-            throw new BadRequestException(
-                400,
-                "Not a valid customer ID",
-                new ArrayList<>(List.of(materialDemandRequest.getCustomerId()))
-            );
+            throw new BadRequestException("2","13");
         }
 
         if (!UUIDUtil.checkValidUUID(materialDemandRequest.getSupplierId())) {
-            throw new BadRequestException(
-                400,
-                "Not a valid supplier ID",
-                new ArrayList<>(List.of(materialDemandRequest.getSupplierId()))
-            );
+            throw new BadRequestException("2","14");
         }
 
         materialDemandRequest
@@ -424,18 +418,10 @@ public class DemandServiceImpl implements DemandService {
             .forEach(
                 materialDemandSeries -> {
                     if (!UUIDUtil.checkValidUUID(materialDemandSeries.getCustomerLocationId())) {
-                        throw new BadRequestException(
-                            400,
-                            "Not a valid customer location ID",
-                            new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getCustomerLocationId()))
-                        );
+                        throw new BadRequestException("2","13");
                     }
                     if (!UUIDUtil.checkValidUUID(materialDemandSeries.getDemandCategoryId())) {
-                        throw new BadRequestException(
-                            400,
-                            "Not a valid demand category ID",
-                            new ArrayList<>(List.of("provided ID - " + materialDemandSeries.getDemandCategoryId()))
-                        );
+                        throw new BadRequestException("8","22");
                     }
 
                     List<LocalDateTime> dates = materialDemandSeries
@@ -451,16 +437,7 @@ public class DemandServiceImpl implements DemandService {
                         Boolean.TRUE.equals(!DataConverterUtil.checkListAllMonday(dates)) ||
                         Boolean.TRUE.equals(!DataConverterUtil.checkDatesSequence(dates))
                     ) {
-                        throw new BadRequestException(
-                            400,
-                            "Dates provided failed to verify",
-                            new ArrayList<>(
-                                List.of(
-                                    "Dates need to be all Monday",
-                                    "Dates need to be aligned one week apart (Ex: monday to monday)"
-                                )
-                            )
-                        );
+                        throw new BadRequestException("1","11");
                     }
 
                     materialDemandSeries.getExpectedSupplierLocationId().forEach(UUIDUtil::checkValidUUID);
@@ -479,11 +456,7 @@ public class DemandServiceImpl implements DemandService {
                         .allMatch(expectedSuppliersLocation::contains);
 
                     if (!hasAllCompanies) {
-                        throw new BadRequestException(
-                            400,
-                            "Not a valid company",
-                            new ArrayList<>(List.of("hasCompanies returned false."))
-                        );
+                        throw new BadRequestException("1","12");
                     }
                 }
             );
@@ -498,7 +471,7 @@ public class DemandServiceImpl implements DemandService {
             UUIDUtil.generateUUIDFromString(materialDemandRequest.getCustomerId())
         );
 
-        UnitMeasureEntity unitMeasure = unityOfMeasureService.findById(
+        UnitMeasure unitMeasure = unityOfMeasureService.findById(
             UUID.fromString(materialDemandRequest.getUnitMeasureId())
         );
 
@@ -522,7 +495,7 @@ public class DemandServiceImpl implements DemandService {
             .materialNumberSupplier(materialDemandRequest.getMaterialNumberSupplier())
             .customerId(customerEntity)
             .supplierId(supplierEntity)
-            .unitMeasure(unitMeasure)
+            .unitMeasure(unityOfMeasureService.convertDtoToEntity(unitMeasure))
             .demandSeries(demandSeriesList)
             .changedAt(LocalDateTime.now())
             .build();

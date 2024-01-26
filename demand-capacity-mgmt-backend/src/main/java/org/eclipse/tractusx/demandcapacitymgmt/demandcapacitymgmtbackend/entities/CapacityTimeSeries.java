@@ -25,7 +25,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.WeekColor;
 
 @Entity
 @Table(name = "capacity_time_series")

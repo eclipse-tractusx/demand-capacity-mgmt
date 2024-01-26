@@ -102,7 +102,7 @@ code {
   position: absolute !important;
   z-index: 1;
   top: 50%;
-  left: 5;
+  left: 5px;
   transform: translate(0%, -50%);
 }
 
@@ -183,6 +183,15 @@ code {
   padding: 8px;
   border: 1px solid var(--border-color);
 }
+
+.header-cell-btnks {
+  background-color: var(--header-color);
+  text-align: center;
+  min-width: 6rem;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+}
+
 
 .table-data-input {
   margin: 0 !important;
@@ -429,6 +438,18 @@ code {
   /* Yellow background color for active tab */
   color: #fff !important;
   /* White text color for active tab */
+}
+
+.table-bordered .bottleneck-green {
+  background-color: #94cb2d;
+}
+
+.table-bordered .bottleneck-yellow {
+  background-color: #ffc107;
+}
+
+.table-bordered .bottleneck-red {
+  background-color: #dc3545;
 }
 
 /* Board.css */

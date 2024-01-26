@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import { addWeeks, formatISO, getISOWeek, startOfDay, subWeeks } from 'date-fns';
+import { getISOWeek } from 'date-fns';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
@@ -29,6 +29,7 @@ import '../../../src/index.css';
 import { DemandCategoryContext } from '../../contexts/DemandCategoryProvider';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import { DemandProp } from "../../interfaces/demand_interfaces";
+import { defaultEndDateString, defaultStartDateString } from '../../util/Defaults';
 import { generateWeeksForDateRange, getWeekDates } from '../../util/WeeksUtils';
 
 interface WeeklyViewProps {
@@ -43,10 +44,6 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup,
 }) => {
 
   const { demandcategories } = useContext(DemandCategoryContext) || {};
-
-  const currentDate = startOfDay(new Date());
-  const defaultStartDateString = formatISO(subWeeks(currentDate, 8), { representation: 'date' });
-  const defaultEndDateString = formatISO(addWeeks(currentDate, 53), { representation: 'date' });
 
   const [startDate, setStartDate] = useState<Date>(new Date(defaultStartDateString));
   const [endDate, setEndDate] = useState<Date>(new Date(defaultEndDateString));

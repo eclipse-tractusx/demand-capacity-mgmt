@@ -23,14 +23,16 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UnitMeasure;
-import java.util.List;
-import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UnitMeasureEntity;
 
+import java.util.List;
+import java.util.UUID;
+
 public interface UnityOfMeasureService {
-    UnitMeasureEntity findById(UUID id);
+    UnitMeasure findById(UUID id);
 
     List<UnitMeasure> getAllUnitMeasure();
 
     UnitMeasure convertEntityToDto(UnitMeasureEntity unitMeasureEntity);
+    UnitMeasureEntity convertDtoToEntity(UnitMeasure unitMeasure);
 }
