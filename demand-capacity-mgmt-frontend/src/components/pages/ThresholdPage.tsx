@@ -25,7 +25,7 @@ import { toast } from 'react-toastify';
 import { CapacityGroupContext } from "../../contexts/CapacityGroupsContextProvider";
 import { CompanyContext } from "../../contexts/CompanyContextProvider";
 import { RuleRequest, ThresholdsContext } from "../../contexts/ThresholdsContextProvider";
-import { ThresholdProp } from "../../interfaces/threshold_interfaces";
+import { ThresholdProp } from "../../interfaces/Threshold_interfaces";
 
 function ThresholdPage() {
     const { thresholds, deleteThresholds, fetchThresholds, addNewThreshold, enabledThresholds, updateThresholds, updateCGThresholds, updateCompanyThresholds } = useContext(ThresholdsContext)!;
