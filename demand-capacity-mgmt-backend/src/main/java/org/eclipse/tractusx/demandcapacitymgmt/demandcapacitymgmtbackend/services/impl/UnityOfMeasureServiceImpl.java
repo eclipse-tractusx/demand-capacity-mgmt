@@ -23,11 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UnitMeasure;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UnitMeasureEntity;
@@ -35,6 +30,11 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.excepti
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UnitMeasureRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UnityOfMeasureService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -44,17 +44,13 @@ public class UnityOfMeasureServiceImpl implements UnityOfMeasureService {
     private final UnitMeasureRepository unitMeasureRepository;
 
     @Override
-    public UnitMeasureEntity findById(UUID id) {
+    public UnitMeasure findById(UUID id) {
         Optional<UnitMeasureEntity> unitMeasure = unitMeasureRepository.findById(id);
 
         if (unitMeasure.isEmpty()) {
-            throw new BadRequestException(
-                404,
-                "Unit of measure not found",
-                new ArrayList<>(List.of("unit of measure could not be retrieved by DB"))
-            );
+            throw new BadRequestException("7","23");
         }
-        return unitMeasure.get();
+        else return convertEntityToDto(unitMeasure.get());
     }
 
     @Override
@@ -77,5 +73,20 @@ public class UnityOfMeasureServiceImpl implements UnityOfMeasureService {
         unitMeasure.setCxSymbol(unitMeasureEntity.getCxSymbol());
 
         return unitMeasure;
+    }
+
+    @Override
+    public UnitMeasureEntity convertDtoToEntity(UnitMeasure unitMeasure) {
+        UnitMeasureEntity unitMeasureEntity = new UnitMeasureEntity();
+
+        unitMeasureEntity.setId(UUID.fromString(unitMeasure.getId()));
+        unitMeasureEntity.setDimension(unitMeasure.getDimension());
+        unitMeasureEntity.setUnCode(unitMeasure.getUnCode());
+        unitMeasureEntity.setDescription(unitMeasure.getDescription());
+        unitMeasureEntity.setDescriptionGerman(unitMeasure.getDescriptionGerman());
+        unitMeasureEntity.setUnSymbol(unitMeasure.getUnSymbol());
+        unitMeasureEntity.setCxSymbol(unitMeasure.getCxSymbol());
+
+        return unitMeasureEntity;
     }
 }

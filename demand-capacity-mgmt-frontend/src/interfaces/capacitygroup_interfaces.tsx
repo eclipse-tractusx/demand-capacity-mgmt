@@ -33,7 +33,8 @@ export interface CapacityGroupProp {
   favoritedBy: string
   status: string
   linkStatus: EventType
-  [key: string]: string | number;
+  ruled: boolean
+  [key: string]: string | number | boolean;
 }
 
 interface Address {
@@ -58,6 +59,7 @@ export interface SingleCapacityGroup {
   capacities: Capacities[];
   customer: Address;
   supplier: Address;
+  ruled: boolean;
   capacityGroupId: string;
   linkMaterialDemandIds: string[];
   capacityGroupName: string;

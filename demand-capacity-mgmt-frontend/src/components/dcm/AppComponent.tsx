@@ -26,12 +26,14 @@ import AddressBookProvider from '../../contexts/AdressBookContextProvider';
 import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
+import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
 import EventsContextProvider from '../../contexts/EventsContextProvider';
 import FavoritesContextProvider from "../../contexts/FavoritesContextProvider";
+import ThresholdContextProvider from '../../contexts/ThresholdsContextProvider';
 import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
+import YearlyReportContextProvider from '../../contexts/YearlyReportContextProvider';
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
-import QuickAcessItems from '../common/QuickAcessItems';
 import AdminPage from '../pages/AdminPage';
 import AddressBookPage from '../pages/AdressBookPage';
 import AlertsPage from '../pages/AlertsPage';
@@ -55,7 +57,6 @@ const AppComponent: React.FC = () => {
             <Route path="*" element={<ToastContainerComponent><ErrorPage /></ToastContainerComponent>} />
 
             <Route path="/" element={
-
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
@@ -64,7 +65,6 @@ const AppComponent: React.FC = () => {
                                     <ToastContainerComponent>
                                         <Layout>
                                             <Home />
-                                            <QuickAcessItems />
                                         </Layout>
                                     </ToastContainerComponent>
                                 </AddressBookProvider>
@@ -72,27 +72,30 @@ const AppComponent: React.FC = () => {
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
-
             } />
 
             <Route path="/details/:id" element={
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
-                        <CapacityGroupsProvider>
-                            <DemandContextProvider>
+                        <DemandContextProvider>
+                            <ToastContainerComponent>
                                 <CompanyContextProvider>
-                                    <AddressBookProvider>
-                                        <ToastContainerComponent>
-                                            <Layout>
-                                                <EventsContextProvider>
-                                                    <CapacityGroupDetailsPage />
-                                                </EventsContextProvider>
-                                            </Layout>
-                                        </ToastContainerComponent>
-                                    </AddressBookProvider>
+                                    <Layout>
+                                        <CapacityGroupsProvider>
+                                            <EventsContextProvider>
+                                                <DemandCategoryContextProvider>
+                                                    <YearlyReportContextProvider>
+                                                        <ThresholdContextProvider>
+                                                            <CapacityGroupDetailsPage />
+                                                        </ThresholdContextProvider>
+                                                    </YearlyReportContextProvider>
+                                                </DemandCategoryContextProvider>
+                                            </EventsContextProvider>
+                                        </CapacityGroupsProvider>
+                                    </Layout>
                                 </CompanyContextProvider>
-                            </DemandContextProvider>
-                        </CapacityGroupsProvider>
+                            </ToastContainerComponent>
+                        </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
             } />
@@ -241,11 +244,17 @@ const AppComponent: React.FC = () => {
                         <DemandContextProvider>
                             <CompanyContextProvider>
                                 <AddressBookProvider>
-                                    <ToastContainerComponent>
-                                        <Layout>
-                                            <AdminPage />
-                                        </Layout>
-                                    </ToastContainerComponent>
+                                    <CapacityGroupsProvider>
+                                        <CompanyContextProvider>
+                                            <ThresholdContextProvider>
+                                                <ToastContainerComponent>
+                                                    <Layout>
+                                                        <AdminPage />
+                                                    </Layout>
+                                                </ToastContainerComponent>
+                                            </ThresholdContextProvider>
+                                        </CompanyContextProvider>
+                                    </CapacityGroupsProvider>
                                 </AddressBookProvider>
                             </CompanyContextProvider>
                         </DemandContextProvider>

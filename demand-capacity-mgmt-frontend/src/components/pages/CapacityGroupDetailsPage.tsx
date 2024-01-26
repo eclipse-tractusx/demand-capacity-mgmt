@@ -19,6 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
+
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -29,148 +30,144 @@ import { EventsContext } from '../../contexts/EventsContextProvider';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import { DemandProp } from "../../interfaces/demand_interfaces";
 import { EventProp } from '../../interfaces/event_interfaces';
-import ContactsBoardView from '../addessBook/BoardView';
+import { defaultEndDateString, defaultStartDateString } from '../../util/Defaults';
+import CapacityGroupBottlenecks from '../capacitygroup/CapacityGroupBottlenecks';
 import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList';
 import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
 import { LoadingMessage } from '../common/LoadingMessages';
 import EventsTable from '../events/EventsTable';
 
 function CapacityGroupDetailsPage() {
-  const { id } = useParams();
-  const context = useContext(CapacityGroupContext);
+    const { id } = useParams();
+    const context = useContext(CapacityGroupContext);
 
-  if (!context) {
-    throw new Error('CapacityGroupDetailsPage must be used within a CapacityGroupsProvider');
-  }
+    if (!context) {
+        throw new Error('CapacityGroupDetailsPage must be used within a CapacityGroupsProvider');
+    }
 
-  const { getCapacityGroupById } = context;
-  const [activeTab, setActiveTab] = useState('overview');
-  const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
-  const [materialDemands, setMaterialDemands] = useState<DemandProp[] | null>([]);
-  const [companyids, setCompanyIds] = useState<string[]>([]); // State to store company IDs
-  const { fetchFilteredEvents } = useContext(EventsContext)!;
-  const { getDemandbyId } = useContext(DemandContext)!;
-  const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
-  const navigate = useNavigate()
+    const { getCapacityGroupById } = context;
+    const [activeTab, setActiveTab] = useState('overview');
+    const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
+    const [materialDemands, setMaterialDemands] = useState<DemandProp[] | null>([]);
+    const { fetchFilteredEvents } = useContext(EventsContext)!;
+    const { getDemandbyId } = useContext(DemandContext)!;
+    const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
+    const navigate = useNavigate()
 
-
-  const [startDate, setStartDate] = useState<Date>(new Date());
-  const [endDate, setEndDate] = useState<Date>(new Date());
+    const [startDate, setStartDate] = useState<Date>(new Date(defaultStartDateString));
+    const [endDate, setEndDate] = useState<Date>(new Date(defaultEndDateString));
 
 
-  useEffect(() => {
-    if (id) {
-      (async () => {
-        try {
-          const fetchedCapacityGroup = await getCapacityGroupById(id);
-          if (!fetchedCapacityGroup) {
+    useEffect(() => {
+        if (id) {
+            (async () => {
+                try {
+                    const fetchedCapacityGroup = await getCapacityGroupById(id);
+                    if (!fetchedCapacityGroup) {
 
-            navigate('/invalid');
-            return;
-          }
-          setCapacityGroup(fetchedCapacityGroup || null);
+                        navigate('/invalid');
+                        return;
+                    }
+                    setCapacityGroup(fetchedCapacityGroup || null);
 
-          // Fetching material demands for the capacity group
-          if (fetchedCapacityGroup.linkMaterialDemandIds && fetchedCapacityGroup.linkMaterialDemandIds.length > 0) {
-            const demandPromises = fetchedCapacityGroup.linkMaterialDemandIds.map(demandId => getDemandbyId(demandId));
-            const demands = await Promise.all(demandPromises);
+                    // Fetching material demands for the capacity group
+                    if (fetchedCapacityGroup.linkMaterialDemandIds && fetchedCapacityGroup.linkMaterialDemandIds.length > 0) {
+                        const demandPromises = fetchedCapacityGroup.linkMaterialDemandIds.map(demandId => getDemandbyId(demandId));
+                        const demands = await Promise.all(demandPromises);
 
-            // Extract supplier from fetchedCapacityGroup
-            const supplierId = fetchedCapacityGroup.supplier?.id || '';
+                        // Filter out any potential undefined values before setting the state.
+                        const validDemands = demands.filter(Boolean) as DemandProp[];
 
-            // Extract customer IDs from demands
-            const customerIds = demands.map(demand => demand?.customer.id);
+                        setMaterialDemands(validDemands);
+                    }
 
-            // Filter out any potential undefined values before setting the state.
-            const validDemands = demands.filter(Boolean) as DemandProp[];
-            const allCompanyIds = [supplierId, ...customerIds].filter(Boolean) as string[];
-            setCompanyIds(allCompanyIds);
-            setMaterialDemands(validDemands);
-          }
-
-          const filters = {
-            capacity_group_id: id,
-            start_time: '',
-            end_time: '',
-            event: '',
-            material_demand_id: '',
-          };
-          setcapacityGroupEvents(await fetchFilteredEvents(filters));
-        } catch (error) {
-          console.error('Failed to fetch capacity group:', error);
-          navigate('/error');
+                    const filters = {
+                        capacity_group_id: id,
+                        start_time: '',
+                        end_time: '',
+                        event: '',
+                        material_demand_id: '',
+                    };
+                    setcapacityGroupEvents(await fetchFilteredEvents(filters));
+                } catch (error) {
+                    console.error('Failed to fetch capacity group:', error);
+                    navigate('/error');
+                }
+            })();
         }
-      })();
-    }
-  }, [id, getCapacityGroupById, fetchFilteredEvents, navigate, getDemandbyId]);
-
-  function updateParentDateRange(start: Date, end: Date) {
-    setStartDate(start);
-    setEndDate(end);
-  }
-
-  const memoizedComponent = useMemo(() => {
-    if (!capacityGroup) {
-      return <LoadingMessage />;
-    }
-
-    return (
-      <>
-        <div className="container-xl">
-          <br />
-          <div className="row">
-            <div className="col"></div>
-            <div className="col-6 border d-flex align-items-center justify-content-center" style={{ padding: '10px' }}>
-              {capacityGroup?.capacityGroupId} - {capacityGroup?.capacityGroupName}
-            </div>
-            <div className="col d-flex justify-content-end">
-            </div>
-          </div>
-          <Tabs
-            defaultActiveKey="overview"
-            id="uncontrolled-tab-example"
-            className="mb-3"
-            activeKey={activeTab}
-            onSelect={(tabKey) => {
-              if (typeof tabKey === 'string') {
-                setActiveTab(tabKey);
-              }
-            }}
-          >
-            <Tab eventKey="overview" title="Overview">
-              <CapacityGroupSumView
-                capacityGroup={capacityGroup}
-                materialDemands={materialDemands}
-                updateParentDateRange={updateParentDateRange}
-              />
-              <div id='chart-container'>
-                <CapacityGroupChronogram
-                  capacityGroup={capacityGroup}
-                  materialDemands={materialDemands}
-                  startDate={startDate}
-                  endDate={endDate} />
-              </div>
-            </Tab>
-            <Tab eventKey="materials" title="Materials">
-              <DemandContextProvider>
-                <CapacityGroupDemandsList capacityGroupDemands={capacityGroup?.linkMaterialDemandIds} capacityGroupId={capacityGroup?.capacityGroupId} />
-              </DemandContextProvider>
-            </Tab>
-            <Tab eventKey="events" title="Events">
-              <EventsTable events={capacityGroupEvents} isArchive={false} />
-            </Tab>
-            <Tab eventKey="contacts" title="Contacts">
-              <ContactsBoardView companyids={companyids} isModal={true} />
-            </Tab>
+    }, [id, getCapacityGroupById, fetchFilteredEvents, navigate, getDemandbyId]);
 
 
-          </Tabs>
-        </div>
-      </>
-    );
-  }, [capacityGroup, capacityGroupEvents, materialDemands, activeTab, startDate, endDate]);
+    const memoizedComponent = useMemo(() => {
+        if (!capacityGroup) {
+            return <LoadingMessage />;
+        }
+        function updateParentDateRange(start: Date, end: Date) {
+            setStartDate(start);
+            setEndDate(end);
+        }
 
-  return memoizedComponent;
+
+
+        return (
+            <>
+                <div className="container-xl">
+                    <br />
+                    <div className="row">
+                        <div className="col"></div>
+                        <div className="col-4 border d-flex align-items-center justify-content-center"
+                            style={{ padding: '05px' }}>
+                            {capacityGroup?.capacityGroupName}
+                        </div>
+                        <br />
+                        <div className="col d-flex justify-content-end">
+                        </div>
+
+                    </div>
+                    <Tabs
+                        defaultActiveKey="overview"
+                        id="uncontrolled-tab-example"
+                        className="mb-3"
+                        activeKey={activeTab}
+                        onSelect={(tabKey) => {
+                            if (typeof tabKey === 'string') {
+                                setActiveTab(tabKey);
+                            }
+                        }}
+                    >
+                        <Tab eventKey="overview" title="Overview">
+                            <CapacityGroupSumView
+                                capacityGroup={capacityGroup}
+                                materialDemands={materialDemands}
+                                updateParentDateRange={updateParentDateRange}
+                            />
+                            <CapacityGroupChronogram capacityGroup={capacityGroup} materialDemands={materialDemands} startDate={startDate} endDate={endDate} />
+                        </Tab>
+                        <Tab eventKey="materials" title="Materials">
+                            <DemandContextProvider>
+                                <CapacityGroupDemandsList capacityGroupDemands={capacityGroup?.linkMaterialDemandIds}
+                                    capacityGroupId={capacityGroup?.capacityGroupId} />
+                            </DemandContextProvider>
+                        </Tab>
+                        <Tab eventKey="events" title="Events">
+                            <EventsTable events={capacityGroupEvents} isArchive={false} />
+                        </Tab>
+                        {capacityGroup.ruled ? (
+                            <Tab eventKey="bottlenecks" title="Bottlenecks">
+                                <CapacityGroupBottlenecks
+                                    capacityGroupID={capacityGroup.capacityGroupId}
+                                    startDate={startDate.toISOString().split('T')[0]}
+                                    endDate={endDate.toISOString().split('T')[0]}
+                                />
+                            </Tab>
+                        ) : null}
+                    </Tabs>
+                </div>
+            </>
+        );
+    }, [capacityGroup, capacityGroupEvents, materialDemands, activeTab]);
+
+    return memoizedComponent;
 }
 
 export default CapacityGroupDetailsPage;

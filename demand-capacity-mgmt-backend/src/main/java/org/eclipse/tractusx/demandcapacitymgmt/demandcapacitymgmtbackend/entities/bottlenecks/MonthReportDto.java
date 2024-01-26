@@ -20,11 +20,20 @@
  * *******************************************************************************
  */
 
-package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums;
+package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.bottlenecks;
 
-public enum WeekColor {
-    GREEN,
-    YELLOW,
-    RED,
-    GREY,
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class MonthReportDto {
+    private String month;
+    private List<WeekReportDto> weekReportDto;
 }

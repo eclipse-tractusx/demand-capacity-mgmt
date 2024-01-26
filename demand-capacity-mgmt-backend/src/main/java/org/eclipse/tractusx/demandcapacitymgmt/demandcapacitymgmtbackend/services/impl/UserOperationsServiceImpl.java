@@ -23,6 +23,8 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UserRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UserResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +55,14 @@ public class UserOperationsServiceImpl implements UserOperationsService {
             user.setCompanyID(UUID.fromString(request.getCompanyID()));
             repository.save(user);
         }
+    }
+    public List<UserResponse> fetchAllUsers() {
+        List<UserEntity> users = repository.findAll();
+        List<UserResponse> userResponses = new ArrayList<>();
+        for (UserEntity user : users) {
+            userResponses.add(convertToDto(user));
+        }
+        return userResponses;
     }
 
     private UserResponse convertToDto(UserEntity entity) {

@@ -59,4 +59,5 @@ public class AddressBookRecordEntity {
 
     @Column(name = "picture")
     private String picture;
+
 }

@@ -85,7 +85,5 @@ CREATE TABLE demand_series_values
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     demand_series_id UUID CONSTRAINT demand_series_id REFERENCES demand_series(id),
     calendar_week TIMESTAMP NOT NULL,
-    demand NUMERIC,
-    ruled BOOLEAN NOT NULL DEFAULT false,
-    week_color VARCHAR
+    demand NUMERIC
 );
