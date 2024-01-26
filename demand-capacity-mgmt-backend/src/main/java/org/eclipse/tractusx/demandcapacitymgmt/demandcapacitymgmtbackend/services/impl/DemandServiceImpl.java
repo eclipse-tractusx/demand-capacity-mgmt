@@ -179,7 +179,6 @@ public class DemandServiceImpl implements DemandService {
         List<Double> newDemandValues = new ArrayList<>(List.of());
         Map<UUID, List<Double>> oldDemandValuesMap = new HashMap<>();
         Map<UUID, List<Double>> newDemandValuesMap = new HashMap<>();
-        //        Map<String, int[]> stringArrayMap = new HashMap<>();
 
         demand
             .getDemandSeries()
