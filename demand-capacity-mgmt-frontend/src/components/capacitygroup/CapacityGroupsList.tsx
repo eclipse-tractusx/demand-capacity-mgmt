@@ -21,7 +21,7 @@
  */
 
 
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Button, Col, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaEye, FaRedo } from 'react-icons/fa';
 import { LuStar } from 'react-icons/lu';
@@ -37,6 +37,7 @@ import {
   SingleCapacityGroupFavoriteResponse
 } from "../../interfaces/favorite_interfaces";
 import { getUserGreeting } from '../../interfaces/user_interface';
+import CompanyDetailsInteractionModal from '../common/CompanyDetailsInteractionModal';
 import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
 import Search from '../common/Search';
@@ -53,8 +54,11 @@ const CapacityGroupsList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [capacitygroupsPerPage, setcapacitygroupsPerPage] = useState(20); // Set the default value here
   const { addFavorite, fetchFavoritesByType, deleteFavorite } = useContext(FavoritesContext)!;
-  const { findCompanyByCompanyID } = useContext(CompanyContext)!;
+  const { findCompanyByCompanyID, findCompanyByBpn } = useContext(CompanyContext)!;
   const [favoriteCapacityGroups, setFavoriteCapacityGroups] = useState<string[]>([]);
+  const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [selectedCompanyId, setSelectedCompanyId] = useState('');
+
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -66,7 +70,7 @@ const CapacityGroupsList: React.FC = () => {
       setSortOrder('asc');
     }
   };
-  const fetchFavorites = async () => {
+  const fetchFavorites = useCallback(async () => {
     try {
       const favorites = await fetchFavoritesByType(FavoriteType.CAPACITY_GROUP);
       if (favorites && favorites.capacityGroups) {
@@ -75,13 +79,14 @@ const CapacityGroupsList: React.FC = () => {
     } catch (error) {
       console.error('Error fetching favorites by type in DemandList:', error);
     }
-  };
-  const handleRefreshClick = async () => {
+  }, []);
+
+  const handleRefreshClick = useCallback(async () => {
     await fetchCapacityGroupsWithRetry();
     await fetchFavorites();
-  };
+  }, [fetchCapacityGroupsWithRetry, fetchFavorites]);
 
-  const toggleFavorite = async (capacityGroupID: string) => {
+  const toggleFavorite = useCallback(async (capacityGroupID: string) => {
     if (favoriteCapacityGroups.includes(capacityGroupID)) {
       await deleteFavorite(capacityGroupID)
       setFavoriteCapacityGroups(prev => prev.filter(id => id !== capacityGroupID));
@@ -90,14 +95,19 @@ const CapacityGroupsList: React.FC = () => {
       setFavoriteCapacityGroups(prev => [...prev, capacityGroupID]);
     }
     handleRefreshClick();
-  };
+  }, [favoriteCapacityGroups, handleRefreshClick, addFavorite, deleteFavorite]);
+
+
 
   useEffect(() => {
     fetchFavorites();
-  }, [capacitygroups]);
+  }, [capacitygroups, fetchFavorites]);
 
 
-  const isCapacityGroupFavorite = (capacityGroupID: string) => favoriteCapacityGroups.includes(capacityGroupID);
+  const isCapacityGroupFavorite = useMemo(() => {
+    const isFavorited = (capacityGroupID: string) => favoriteCapacityGroups.includes(capacityGroupID);
+    return isFavorited;
+  }, [favoriteCapacityGroups]);
 
   useMemo(() => {
     let filteredcapacitygroups = [...capacitygroups];
@@ -119,12 +129,6 @@ const CapacityGroupsList: React.FC = () => {
     const favoriteCapacityGroups = filteredcapacitygroups.filter((capacitygroup) => isCapacityGroupFavorite(capacitygroup.internalId));
     const unfavoritedCapacityGroups = filteredcapacitygroups.filter((capacitygroup) => !isCapacityGroupFavorite(capacitygroup.internalId));
 
-    // Sort favorited demands by changedAt timestamp in descending order
-    //favoriteCapacityGroups.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
-
-    // Sort unfavorited demands by changedAt timestamp in descending order
-    //unfavoritedCapacityGroups.sort((a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
-
     // Concatenate favorited and unfavorited demands
     const sortedCapacityGroups = [...favoriteCapacityGroups, ...unfavoritedCapacityGroups];
 
@@ -143,7 +147,7 @@ const CapacityGroupsList: React.FC = () => {
     }
 
     setFilteredCapacityGroups(sortedCapacityGroups);
-  }, [capacitygroups, searchQuery, sortColumn, sortOrder]);
+  }, [capacitygroups, isCapacityGroupFavorite, searchQuery, sortColumn, sortOrder]);
 
   const slicedcapacitygroups = useMemo(() => {
     const indexOfLastCapacityGroup = currentPage * capacitygroupsPerPage;
@@ -200,9 +204,37 @@ const CapacityGroupsList: React.FC = () => {
             </OverlayTrigger></center>
           </td>
           <td>{capacitygroup.name}</td>
-          <td>{capacitygroup.customerBPNL}</td>
-          <td>{capacitygroup.customerName}</td>
-          <td>{capacitygroup.supplierBNPL}</td>
+          {user?.role === 'SUPPLIER' && (
+            <>
+              <td onClick={() => {
+                setIsCompanyModalOpen(true);
+                setSelectedCompanyId(findCompanyByBpn(capacitygroup.customerBPNL).id);
+              }}>
+                <span className='interactable'>
+                  {capacitygroup.customerBPNL}</span></td>
+              <td onClick={() => {
+                setIsCompanyModalOpen(true);
+                setSelectedCompanyId(findCompanyByBpn(capacitygroup.customerBPNL).id);
+              }}><span className='interactable'>
+                  {capacitygroup.customerName}</span></td>
+            </>
+          )}
+
+          {user?.role === 'CUSTOMER' && (
+            <>
+              <td onClick={() => {
+                setIsCompanyModalOpen(true);
+                setSelectedCompanyId(findCompanyByBpn(capacitygroup.supplierBNPL).id);
+              }}><span className='interactable'>
+                  {capacitygroup.supplierBNPL}</span></td>
+              <td onClick={() => {
+                setIsCompanyModalOpen(true);
+                setSelectedCompanyId(findCompanyByBpn(capacitygroup.supplierBNPL).id);
+              }}><span className='interactable'>
+                  {findCompanyByBpn(capacitygroup.supplierBNPL).companyName}</span></td>
+            </>
+          )}
+
           <td>{capacitygroup.numberOfMaterials}</td>
           <td>
             {capacitygroup.linkStatus === EventType.TODO ? (
@@ -240,7 +272,7 @@ const CapacityGroupsList: React.FC = () => {
           </td>
         </tr>
       )),
-    [slicedcapacitygroups]
+    [slicedcapacitygroups, favoriteCapacityGroups, toggleFavorite]
   );
 
   return (
@@ -257,10 +289,8 @@ const CapacityGroupsList: React.FC = () => {
                 <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
               </div>
               <div className="col-sm-1">
-                <Button className='float-end spin-on-hover' variant="primary" onClick={handleRefreshClick}>
-                  <span className="button-content">
-                    <FaRedo className="icon" />
-                  </span>
+                <Button className='mx-1' variant="primary" onClick={handleRefreshClick}>
+                  <FaRedo className="spin-on-hover" />
                 </Button>
               </div>
             </div>
@@ -314,6 +344,11 @@ const CapacityGroupsList: React.FC = () => {
             </div>
           </div>
         </div>
+        <CompanyDetailsInteractionModal
+          isOpen={isCompanyModalOpen}
+          handleClose={() => setIsCompanyModalOpen(false)}
+          companyId={selectedCompanyId}
+        />
       </>
       )}
     </>

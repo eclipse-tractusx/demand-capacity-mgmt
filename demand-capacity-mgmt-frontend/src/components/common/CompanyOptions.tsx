@@ -20,7 +20,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import Select, { ActionMeta, OptionTypeBase } from 'react-select';
 import { CompanyContext } from '../../contexts/CompanyContextProvider';
 import { FavoritesContext } from '../../contexts/FavoritesContextProvider';
@@ -35,15 +35,17 @@ interface CompanyOptionsProps {
 
 
 const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName, onChange }) => {
-  const companiesContextData = useContext(CompanyContext);
   const { fetchFavoritesByType } = useContext(FavoritesContext)!;
-  const { companies, topCompanies } = companiesContextData || {};
+  const { companies, topCompanies } = useContext(CompanyContext)!;
 
   const [companyOptions, setCompanyOptions] = useState<{ value: string; label: string; isFavorite: boolean }[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchFavoritesByTypeRef = useRef(fetchFavoritesByType);
+
   useEffect(() => {
     const fetchData = async () => {
+      const fetchFavoritesByType = fetchFavoritesByTypeRef.current;
       try {
         setLoading(true);
         const response = await fetchFavoritesByType(FavoriteType.COMPANY_BASE_DATA);
@@ -77,7 +79,7 @@ const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName, on
     };
 
     fetchData();
-  }, [companies]);
+  }, [companies, topCompanies, fetchFavoritesByTypeRef]);
 
   const selectedOption = companyOptions.find((option) => option.value === selectedCompanyName) || null;
 
@@ -86,9 +88,11 @@ const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName, on
       if (actionMeta.action === 'select-option') {
         onChange(selectedOption?.value || '');
       }
+      console.log('Company option OnChange');
     },
     [onChange]
   );
+
 
   if (loading) {
     return <div>Loading companies...</div>;

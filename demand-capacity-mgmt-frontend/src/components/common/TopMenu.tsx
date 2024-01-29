@@ -25,9 +25,10 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { FaUserShield } from 'react-icons/fa';
+import { FaAddressBook, FaUserShield } from 'react-icons/fa';
 import { FiLogOut, FiSettings } from 'react-icons/fi';
 import { useNavigate } from "react-router-dom";
+import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import EventsContextProvider from '../../contexts/EventsContextProvider';
@@ -89,34 +90,42 @@ function TopMenuLinks() {
           <div className={`info-menu ${collapsed ? 'move-out' : 'move-in'}`}>
             <DemandCategoryContextProvider>
               <CapacityGroupsProvider>
-                <EventsContextProvider>
-                  <InfoMenuProvider>
-                    <InfoMenu />
-                  </InfoMenuProvider>
-                </EventsContextProvider>
+                <AlertsContextProvider>
+                  <EventsContextProvider>
+                    <InfoMenuProvider>
+                      <InfoMenu />
+                    </InfoMenuProvider>
+                  </EventsContextProvider>
+                </AlertsContextProvider>
               </CapacityGroupsProvider>
             </DemandCategoryContextProvider>
           </div>
 
         </Navbar.Collapse>
         <Navbar.Collapse className="justify-content-end">
-          <Navbar.Text>
+          <Navbar.Text className='p-2'>
             Signed in as:  <span className='text-capitalize'>{getUserName(user)}</span>
             <br />
             <span className='font-weight-light small-menu-text'>Role: <span className='text-capitalize'>{user?.role.toLowerCase()}</span></span>
           </Navbar.Text>
           <OverlayTrigger
             placement="bottom"
+            overlay={<Tooltip id="tooltip">Address Book</Tooltip>}
+          >
+            <Nav.Link href="../addressbook" className="p-2 navbar-nav nav-item"><FaAddressBook /></Nav.Link>
+          </OverlayTrigger>
+          <OverlayTrigger
+            placement="bottom"
             overlay={<Tooltip id="tooltip">User Settings</Tooltip>}
           >
-            <Nav.Link href="#settings" className="p-3 navbar-nav nav-item"><FiSettings /></Nav.Link>
+            <Nav.Link href="../ad" className="p-2 navbar-nav nav-item"><FiSettings /></Nav.Link>
           </OverlayTrigger>
           {user?.role === 'ADMIN' && (
             <OverlayTrigger
               placement="bottom"
               overlay={<Tooltip id="tooltip">Admin Dashboard</Tooltip>}
             >
-              <Nav.Link href="admin" className="p-3 navbar-nav nav-item">
+              <Nav.Link href="admin" className="p-2 navbar-nav nav-item">
                 <FaUserShield />
               </Nav.Link>
             </OverlayTrigger>

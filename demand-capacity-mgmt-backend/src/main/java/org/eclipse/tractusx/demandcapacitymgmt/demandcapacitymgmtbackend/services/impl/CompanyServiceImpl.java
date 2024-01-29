@@ -24,11 +24,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CompanyDto;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.LoggingHistoryRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyEntity;
@@ -40,6 +35,12 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -49,16 +50,33 @@ public class CompanyServiceImpl implements CompanyService {
     private final LoggingHistoryService loggingHistoryService;
 
     @Override
-    public CompanyEntity createCompany() {
-        postLogs();
-        return null;
+    public CompanyDto createCompany(CompanyDto companyDto) {
+        CompanyEntity entity = new CompanyEntity();
+        entity.setCompanyName(companyDto.getCompanyName());
+        entity.setBpn(companyDto.getBpn());
+        entity.setMyCompany(companyDto.getMyCompany());
+        entity.setCountry(companyDto.getCountry());
+        entity.setId(UUID.fromString(companyDto.getId()));
+        entity.setStreet(companyDto.getStreet());
+        entity.setNumber(companyDto.getNumber());
+        entity.setZipCode(companyDto.getZipCode());
+        companyRepository.save(entity);
+        postLogs(entity.getId().toString(), "post");
+
+        return convertEntityToDto(entity);
     }
 
-    private void postLogs() {
+    private void postLogs(String companyId, String action) {
         LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
         loggingHistoryRequest.setObjectType(EventObjectType.COMPANY.name());
         loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
-        loggingHistoryRequest.setEventDescription("Company Created");
+        loggingHistoryRequest.setIsFavorited(false);
+        if ("post".equals(action)) {
+            loggingHistoryRequest.setEventDescription("Company Created - ID: " + companyId);
+        } else if ("delete".equals(action)) {
+            loggingHistoryRequest.setEventDescription("Company Deleted - ID: " + companyId);
+        }
+
         loggingHistoryService.createLog(loggingHistoryRequest);
     }
 
@@ -66,13 +84,20 @@ public class CompanyServiceImpl implements CompanyService {
     public CompanyEntity getCompanyById(UUID id) {
         Optional<CompanyEntity> company = companyRepository.findById(id);
         if (company.isEmpty()) {
-            throw new NotFoundException(
-                404,
-                "Company not found in DB",
-                new ArrayList<>(List.of("ID provided - : " + id))
-            );
+            throw new NotFoundException("6","40");
         } else company.get().setCount(company.get().getCount() + 1);
         return company.get();
+    }
+
+    @Override
+    public void deleteCompany(UUID id) {
+        Optional<CompanyEntity> company = companyRepository.findById(id);
+        if (company.isEmpty()) {
+            throw new NotFoundException("","");
+        } else {
+            companyRepository.delete(company.get());
+            postLogs(id.toString(), "delete");
+        }
     }
 
     @Override
