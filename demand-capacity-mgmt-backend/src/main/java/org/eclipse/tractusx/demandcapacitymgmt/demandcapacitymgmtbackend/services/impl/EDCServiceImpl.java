@@ -28,6 +28,11 @@ public class EDCServiceImpl implements EDCService {
     private String accessToken;
     private Instant tokenExpiration;
 
+    private final String tokenEndpoint = getEnv("TOKEN_ENDPOINT");
+    private final String clientId = getEnv("CLIENT_ID");
+    private final String clientSecret = getEnv("CLIENT_SECRET");
+    private final String grantType = getEnv("GRANT_TYPE");
+
     private static String getEnv(String key) {
         Dotenv dotenv = Dotenv.configure().load();
         return dotenv.get(key);
@@ -43,12 +48,6 @@ public class EDCServiceImpl implements EDCService {
 
     @Override
     public Mono<AccessTokenResponse> getAccessToken() {
-        String tokenEndpoint =
-            "https://centralidp.int.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token";
-        // Set the client credentials
-        String clientId = "sa574";
-        String clientSecret = "Lh0ctCMQQitoS8qxwKVx9BgbwYOhNJns";
-        String grantType = "client_credentials";
 
         WebClient client = WebClient
             .builder()
