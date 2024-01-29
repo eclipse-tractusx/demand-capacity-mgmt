@@ -24,15 +24,15 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { Button, Col, Dropdown, Form, Row } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt } from 'react-icons/fa';
 import { LuStar } from 'react-icons/lu';
-import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import { DemandContext } from '../../contexts/DemandContextProvider';
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
-import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
+import { useUser } from '../../contexts/UserContext';
 import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
 import { EventType } from '../../interfaces/event_interfaces';
 import { FavoriteType, MaterialDemandFavoriteResponse } from "../../interfaces/favorite_interfaces";
 import CapacityGroupAddToExisting from '../capacitygroup/CapacityGroupAddToExisting';
 import CapacityGroupWizardModal from '../capacitygroup/CapacityGroupWizardModal';
+import CompanyDetailsInteractionModal from '../common/CompanyDetailsInteractionModal';
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
 import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
@@ -56,7 +56,7 @@ const DemandList: React.FC<{
   toggleAddToExisting,
   eventTypes = []
 }) => {
-
+    const { user } = useUser();
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
@@ -78,24 +78,18 @@ const DemandList: React.FC<{
 
 
     const [demandsPerPage, setDemandsPerPage] = useState(6); //Only show 5 items by default
-    //const [listedDemands, setListedDemands] = useState<DemandProp[]>([]);
 
-    const fetchFavorites = async () => {
-      try {
-        const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
-        if (favorites && favorites.materialDemands) {
-          setFavoriteDemands(favorites.materialDemands.map((fav: MaterialDemandFavoriteResponse) => fav.id));
-        }
-      } catch (error) {
-        console.error('Error fetching favorites by type in DemandList:', error);
-      }
-    };
+    const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+    const [selectedCompanyId, setSelectedCompanyId] = useState('');
+
+
 
     useEffect(() => {
       setShowWizardModal(showWizard || false);
       fetchDemandProps();
       fetchFavorites();
       setCurrentPage(1);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showWizard, searchQuery]);
 
     const handleSort = (column: string | null) => {
@@ -160,7 +154,21 @@ const DemandList: React.FC<{
 
     const handleCloseDetails = () => setShowDetailsModal(false);
 
-    const isDemandFavorited = (demandId: string) => favoriteDemands.includes(demandId);
+    const isDemandFavorited = useMemo(() => {
+      const isFavorited = (demandId: string) => favoriteDemands.includes(demandId);
+      return isFavorited;
+    }, [favoriteDemands]);
+
+    const fetchFavorites = useCallback(async () => {
+      try {
+        const favorites = await fetchFavoritesByType(FavoriteType.MATERIAL_DEMAND);
+        if (favorites && favorites.materialDemands) {
+          setFavoriteDemands(favorites.materialDemands.map((fav: MaterialDemandFavoriteResponse) => fav.id));
+        }
+      } catch (error) {
+        console.error('Error fetching favorites by type in DemandList:', error);
+      }
+    }, [fetchFavoritesByType, setFavoriteDemands]);
 
     const filteredDemands = useMemo(() => {
       let filteredDemands = [...demandprops];
@@ -220,7 +228,7 @@ const DemandList: React.FC<{
       }
       // Return the sortedDemands instead of filteredDemands
       return sortedDemands;
-    }, [demandprops, searchQuery, sortColumn, sortOrder, eventTypes]);
+    }, [demandprops, searchQuery, isDemandFavorited, sortColumn, sortOrder, eventTypes]);
 
     const slicedDemands = useMemo(() => {
       const indexOfLastDemand = currentPage * demandsPerPage;
@@ -248,17 +256,17 @@ const DemandList: React.FC<{
       [filteredDemands]
     );
 
-    const toggleFavorite = async (demandId: string) => {
+    const toggleFavorite = useCallback(async (demandId: string) => {
       if (favoriteDemands.includes(demandId)) {
-        await deleteFavorite(demandId)
+        await deleteFavorite(demandId);
         setFavoriteDemands(prev => prev.filter(id => id !== demandId));
       } else {
-        await addFavorite(demandId, FavoriteType.MATERIAL_DEMAND)
+        await addFavorite(demandId, FavoriteType.MATERIAL_DEMAND);
         setFavoriteDemands(prev => [...prev, demandId]);
       }
       fetchFavorites();
       fetchDemandProps();
-    };
+    }, [favoriteDemands, deleteFavorite, addFavorite, fetchFavorites, fetchDemandProps]);
 
 
     const demandItems = useMemo(
@@ -290,7 +298,22 @@ const DemandList: React.FC<{
                 </div>
               </Button>
             </td>
-            <td>{demand.customer.bpn}</td>
+            {user?.role === 'SUPPLIER' && (
+              <td onClick={() => {
+                setIsCompanyModalOpen(true);
+                setSelectedCompanyId(demand.customer.id);
+              }}>
+                <span className='interactable'>
+                  {demand.customer.bpn}</span></td>
+            )}
+
+            {user?.role === 'CUSTOMER' && (
+              <td onClick={() => {
+                setIsCompanyModalOpen(true);
+                setSelectedCompanyId(demand.supplier.id);
+              }}><span className='interactable'>
+                  {demand.supplier.bpn}</span></td>
+            )}
             <td>{demand.materialNumberCustomer}</td>
             <td>{demand.materialNumberSupplier}</td>
             <td>
@@ -365,7 +388,7 @@ const DemandList: React.FC<{
             </td>
           </tr>
         )),
-      [slicedDemands, selectedDemands, handleCheckboxChange]
+      [slicedDemands, favoriteDemands, toggleFavorite, selectedDemands, handleCheckboxChange]
     );
 
 
@@ -437,24 +460,24 @@ const DemandList: React.FC<{
               fullscreen="xl"
               selectedDemand={selectedDemand} />
 
-            <CapacityGroupsProvider>
+            <CapacityGroupWizardModal
+              show={showWizardModal}
+              onHide={handleCloseWizardModal}
+              checkedDemands={selectedDemands}
+              demands={filteredDemands}
+            />
 
-              <UnitsofMeasureContextContextProvider>
+            <CapacityGroupAddToExisting
+              show={showAddToExisting}
+              onHide={handleCloseAddToExistingModal}
+              checkedDemands={selectedDemands}
+            />
 
-                <CapacityGroupWizardModal
-                  show={showWizardModal}
-                  onHide={handleCloseWizardModal}
-                  checkedDemands={selectedDemands}
-                  demands={filteredDemands}
-                />
-              </UnitsofMeasureContextContextProvider >
-
-              <CapacityGroupAddToExisting
-                show={showAddToExisting}
-                onHide={handleCloseAddToExistingModal}
-                checkedDemands={selectedDemands}
-              />
-            </CapacityGroupsProvider>
+            <CompanyDetailsInteractionModal
+              isOpen={isCompanyModalOpen}
+              handleClose={() => setIsCompanyModalOpen(false)}
+              companyId={selectedCompanyId}
+            />
           </>
         )}
       </>

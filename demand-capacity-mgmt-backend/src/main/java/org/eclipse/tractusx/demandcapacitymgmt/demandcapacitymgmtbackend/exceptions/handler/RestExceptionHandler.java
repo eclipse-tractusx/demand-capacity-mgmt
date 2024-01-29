@@ -22,8 +22,6 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.handler;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.ExceptionResponseImpl;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
@@ -40,26 +38,30 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public final ResponseEntity<Object> handleNotFoundException(NotFoundException ex) {
-        return ResponseEntity.status(ex.getCode()).body(new ExceptionResponseImpl<>(ex));
+        return ResponseEntity.ok().body(new ExceptionResponseImpl(ex.getCode(),ex.lastDigits()));
     }
 
     @ExceptionHandler(BadRequestException.class)
     public final ResponseEntity<Object> handleBadRequestException(BadRequestException ex) {
-        return ResponseEntity.status(ex.getCode()).body(new ExceptionResponseImpl<>(ex));
+        return ResponseEntity.ok().body(new ExceptionResponseImpl(ex.getCode(),ex.lastDigits()));
     }
 
-    @ExceptionHandler(Exception.class) //only used in 500
-    public final ResponseEntity<Object> handleInternalServerErrorException(Exception ex) {
-        return ResponseEntity
-            .status(500)
-            .body(
-                new ExceptionResponseImpl<>(
-                    new InternalServerErrorException(
-                        500,
-                        "An internal server error has occurred",
-                        new ArrayList<>(List.of("Localised error : " + ex.getLocalizedMessage()))
-                    )
-                )
-            );
+    @ExceptionHandler({Exception.class})
+    public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
+        if(ex.getMessage().contains("Keycloak")){
+            return buildCustomResponseEntity500("4","00");
+        }
+        else return ResponseEntity.ok().body(new ExceptionResponseImpl("0","00"));
+    }
+
+    private ResponseEntity<Object> buildCustomResponseEntity500(String code, String lastDigits) {
+        ExceptionResponseImpl response = new ExceptionResponseImpl(code,lastDigits);
+        return ResponseEntity.status(500).body(response);
+    }
+
+
+    private ResponseEntity<Object> buildCustomResponseEntity(String code, String lastDigits) {
+        ExceptionResponseImpl response = new ExceptionResponseImpl(code,lastDigits);
+        return ResponseEntity.ok().body(response);
     }
 }

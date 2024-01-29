@@ -44,3 +44,4 @@ keycloak/init-db.sql
 keycloak/realm-export.json
 keycloak/
 
+charts/edc/chart/edc.dcm.aes.key

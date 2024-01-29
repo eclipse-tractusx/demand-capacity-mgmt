@@ -19,6 +19,14 @@ $theme1-info: #6c757d;
   /* Override Bootstrap info color */
 }
 
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1200px,
+  xxl: 1650px
+);
+
 // Override Bootstrap variables with custom colors
 $theme-colors: (
   primary: $theme1-primary,
@@ -34,6 +42,7 @@ $theme-colors: (
 @import '~bootstrap/scss/buttons';
 @import '~bootstrap/scss/dropdown';
 @import '~bootstrap/scss/badge';
+@import '~bootstrap/scss/bootstrap';
 
 // Override button text color
 .btn {
