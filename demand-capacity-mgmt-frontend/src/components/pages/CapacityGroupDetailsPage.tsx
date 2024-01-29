@@ -19,7 +19,6 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -30,7 +29,7 @@ import { EventsContext } from '../../contexts/EventsContextProvider';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import { DemandProp } from "../../interfaces/demand_interfaces";
 import { EventProp } from '../../interfaces/event_interfaces';
-import { defaultEndDateString, defaultStartDateString } from '../../util/Defaults';
+import ContactsBoardView from '../addessBook/BoardView';
 import CapacityGroupBottlenecks from '../capacitygroup/CapacityGroupBottlenecks';
 import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList';
 import CapacityGroupSumView from '../capacitygroup/CapacityGroupSumView';
@@ -49,13 +48,15 @@ function CapacityGroupDetailsPage() {
     const [activeTab, setActiveTab] = useState('overview');
     const [capacityGroup, setCapacityGroup] = useState<SingleCapacityGroup | null | undefined>(null);
     const [materialDemands, setMaterialDemands] = useState<DemandProp[] | null>([]);
+    const [companyids, setCompanyIds] = useState<string[]>([]); // State to store company IDs
     const { fetchFilteredEvents } = useContext(EventsContext)!;
     const { getDemandbyId } = useContext(DemandContext)!;
     const [capacityGroupEvents, setcapacityGroupEvents] = useState<EventProp[]>([]);
     const navigate = useNavigate()
 
-    const [startDate, setStartDate] = useState<Date>(new Date(defaultStartDateString));
-    const [endDate, setEndDate] = useState<Date>(new Date(defaultEndDateString));
+
+    const [startDate, setStartDate] = useState<Date>(new Date());
+    const [endDate, setEndDate] = useState<Date>(new Date());
 
 
     useEffect(() => {
@@ -75,9 +76,16 @@ function CapacityGroupDetailsPage() {
                         const demandPromises = fetchedCapacityGroup.linkMaterialDemandIds.map(demandId => getDemandbyId(demandId));
                         const demands = await Promise.all(demandPromises);
 
+                        // Extract supplier from fetchedCapacityGroup
+                        const supplierId = fetchedCapacityGroup.supplier?.id || '';
+
+                        // Extract customer IDs from demands
+                        const customerIds = demands.map(demand => demand?.customer.id);
+
                         // Filter out any potential undefined values before setting the state.
                         const validDemands = demands.filter(Boolean) as DemandProp[];
-
+                        const allCompanyIds = [supplierId, ...customerIds].filter(Boolean) as string[];
+                        setCompanyIds(allCompanyIds);
                         setMaterialDemands(validDemands);
                     }
 
@@ -97,17 +105,15 @@ function CapacityGroupDetailsPage() {
         }
     }, [id, getCapacityGroupById, fetchFilteredEvents, navigate, getDemandbyId]);
 
+    function updateParentDateRange(start: Date, end: Date) {
+        setStartDate(start);
+        setEndDate(end);
+    }
 
     const memoizedComponent = useMemo(() => {
         if (!capacityGroup) {
             return <LoadingMessage />;
         }
-        function updateParentDateRange(start: Date, end: Date) {
-            setStartDate(start);
-            setEndDate(end);
-        }
-
-
 
         return (
             <>
@@ -115,14 +121,11 @@ function CapacityGroupDetailsPage() {
                     <br />
                     <div className="row">
                         <div className="col"></div>
-                        <div className="col-4 border d-flex align-items-center justify-content-center"
-                            style={{ padding: '05px' }}>
-                            {capacityGroup?.capacityGroupName}
+                        <div className="col-6 border d-flex align-items-center justify-content-center" style={{ padding: '10px' }}>
+                            {capacityGroup?.capacityGroupId} - {capacityGroup?.capacityGroupName}
                         </div>
-                        <br />
                         <div className="col d-flex justify-content-end">
                         </div>
-
                     </div>
                     <Tabs
                         defaultActiveKey="overview"
@@ -141,16 +144,24 @@ function CapacityGroupDetailsPage() {
                                 materialDemands={materialDemands}
                                 updateParentDateRange={updateParentDateRange}
                             />
-                            <CapacityGroupChronogram capacityGroup={capacityGroup} materialDemands={materialDemands} startDate={startDate} endDate={endDate} />
+                            <div id='chart-container'>
+                                <CapacityGroupChronogram
+                                    capacityGroup={capacityGroup}
+                                    materialDemands={materialDemands}
+                                    startDate={startDate}
+                                    endDate={endDate} />
+                            </div>
                         </Tab>
                         <Tab eventKey="materials" title="Materials">
                             <DemandContextProvider>
-                                <CapacityGroupDemandsList capacityGroupDemands={capacityGroup?.linkMaterialDemandIds}
-                                    capacityGroupId={capacityGroup?.capacityGroupId} />
+                                <CapacityGroupDemandsList capacityGroupDemands={capacityGroup?.linkMaterialDemandIds} capacityGroupId={capacityGroup?.capacityGroupId} />
                             </DemandContextProvider>
                         </Tab>
                         <Tab eventKey="events" title="Events">
                             <EventsTable events={capacityGroupEvents} isArchive={false} />
+                        </Tab>
+                        <Tab eventKey="contacts" title="Contacts">
+                            <ContactsBoardView companyids={companyids} isModal={true} />
                         </Tab>
                         {capacityGroup.ruled ? (
                             <Tab eventKey="bottlenecks" title="Bottlenecks">
@@ -165,7 +176,7 @@ function CapacityGroupDetailsPage() {
                 </div>
             </>
         );
-    }, [capacityGroup, capacityGroupEvents, materialDemands, activeTab]);
+    }, [capacityGroup, capacityGroupEvents, materialDemands, activeTab, startDate, endDate]);
 
     return memoizedComponent;
 }
