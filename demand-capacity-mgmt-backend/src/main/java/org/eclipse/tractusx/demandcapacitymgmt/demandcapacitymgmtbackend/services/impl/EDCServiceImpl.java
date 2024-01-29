@@ -2,153 +2,251 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
 import javax.xml.catalog.Catalog;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.EDCService;
 import org.springframework.http.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
+import io.github.cdimascio.dotenv.Dotenv;
 
+
+@RequiredArgsConstructor
+@Service
+@Slf4j
 public class EDCServiceImpl implements EDCService {
 
-    private final WebClient webClient = WebClient.create("http://localhost:8081/");
+    private static final String BASE_URL = getEnv("BASE_URL");
+    private final String apiKey = getEnv("API_KEY");
+    private final WebClient webClient = WebClient.create(BASE_URL);
+    private String accessToken;
+    private Instant tokenExpiration;
+
+    private final String tokenEndpoint = getEnv("TOKEN_ENDPOINT");
+    private final String clientId = getEnv("CLIENT_ID");
+    private final String clientSecret = getEnv("CLIENT_SECRET");
+    private final String grantType = getEnv("GRANT_TYPE");
+
+    private static String getEnv(String key) {
+        Dotenv dotenv = Dotenv.configure().load();
+        return dotenv.get(key);
+    }
+
+    public Mono<String> getToken() {
+        if (accessToken != null && !isTokenExpired()) {
+            return Mono.just(accessToken);
+        } else {
+            return getAccessToken().map(AccessTokenResponse::getAccessToken);
+        }
+    }
 
     @Override
-    public Mono<IdResponse> createAsset(AssetInput dto) {
-        return webClient
+    public Mono<AccessTokenResponse> getAccessToken() {
+
+        WebClient client = WebClient
+            .builder()
+            .baseUrl(tokenEndpoint)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+            .build();
+
+        return client
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/v3/assets").build())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(dto))
+            .body(
+                BodyInserters
+                    .fromFormData("grant_type", grantType)
+                    .with("client_id", clientId)
+                    .with("client_secret", clientSecret)
+            )
+            .retrieve()
+            .bodyToMono(AccessTokenResponse.class)
+            .doOnSuccess(
+                response -> {
+                    accessToken = response.getAccessToken();
+                    // Set token expiration time (assuming response provides expiresIn in seconds)
+                    tokenExpiration = Instant.now().plusSeconds(response.getExpiresIn().longValue());
+                }
+            );
+    }
+
+    private boolean isTokenExpired() {
+        return tokenExpiration != null && Instant.now().isAfter(tokenExpiration);
+    }
+
+    private WebClient webClientCreation(String path) {
+        return WebClient.builder().baseUrl(BASE_URL + path).defaultHeader(HttpHeaders.CONTENT_TYPE).build();
+    }
+
+    @Override
+    public Mono<IdResponse> createAsset(AssetEntryNewDto dto) {
+        return webClientCreation("/management/v2/assets")
+            .post()
+            .header("x-api-key", apiKey)
+            .bodyValue(dto)
             .retrieve()
             .bodyToMono(IdResponse.class)
+
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
     }
 
     @Override
-    public Flux<AssetOutput> createAssetRequest(QuerySpec dto) {
-        return webClient
+
+    public List<Asset> createAssetRequest(QuerySpec dto) {
+        return webClientCreation("/management/v2/assets/request")
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/v3/assets/request").build())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(dto))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .bodyToFlux(AssetOutput.class)
-            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
+            .bodyToFlux(Asset.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .collectList()
+            .block(); // Blocking to get the List
+    }
+
+    private void logErrorDetails(Throwable error) {
+        // Log error details
+        System.err.println("Error occurred while making the request: " + error.getMessage());
     }
 
     @Override
-    public Mono<AssetOutput> getAsset(String assetId) {
-        return webClient
+    public Asset getAsset(String assetId) {
+        return webClientCreation("/management/v2/assets/" + assetId)
             .get()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/v3/assets", "{id}").build(assetId))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .toEntity(AssetOutput.class)
-            .flatMap(responseEntity -> Mono.justOrEmpty(responseEntity.getBody()));
+            .bodyToMono(Asset.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block(); // Blocking to get the List
     }
 
     @Override
-    public Mono<Void> deleteAsset(String assetId) {
-        return webClient
+    public Void deleteAsset(String assetId) {
+        webClientCreation("/management/v2/assets/" + assetId)
             .delete()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/v3/assets", "{id}").build(assetId))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .bodyToMono(Void.class);
+            .bodyToMono(Asset.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block();
+        return null;
+
     }
 
     @Override
     public Mono<IdResponse> createPolicy(PolicyDefinitionInput dto) {
-        return webClient
+
+        return webClientCreation("/management/v2/policydefinitions")
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/v2/policydefinitions").build())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(dto))
+            .header("x-api-key", apiKey)
+            .bodyValue(dto)
+
             .retrieve()
             .bodyToMono(IdResponse.class)
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
     }
 
     @Override
-    public Flux<PolicyDefinitionOutput> createPolicyRequest(QuerySpec dto) {
-        return webClient
+    public List<PolicyDefinitionOutput> createPolicyRequest(QuerySpec dto) {
+        return webClientCreation("/management/v2/policydefinitions/request")
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/v2/policydefinitions/request").build())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(dto))
+            .header("x-api-key", apiKey)
             .retrieve()
             .bodyToFlux(PolicyDefinitionOutput.class)
-            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .collectList()
+            .block();
     }
 
     @Override
-    public Mono<PolicyDefinitionOutput> getPolicy(String policyId) {
-        return webClient
+    public PolicyDefinitionOutput getPolicy(String policyId) {
+        return webClientCreation("/management/v2/policydefinitions/" + policyId)
             .get()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/v2/policydefinitions", "{id}").build(policyId))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .toEntity(PolicyDefinitionOutput.class)
-            .flatMap(responseEntity -> Mono.justOrEmpty(responseEntity.getBody()));
+            .bodyToMono(PolicyDefinitionOutput.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block();
     }
 
     @Override
-    public Mono<Void> deletePolicy(String policyId) {
-        return webClient
+    public Void deletePolicy(String policyId) {
+        webClientCreation("/management/v2/policydefinitions/" + policyId)
             .delete()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/v2/policydefinitions", "{id}").build(policyId))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .bodyToMono(Void.class);
+            .bodyToMono(PolicyDefinitionOutput.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block();
+        return null;
     }
 
     @Override
     public Mono<IdResponse> createContractDef(ContractDefinitionInput dto) {
-        return webClient
+
+        return webClientCreation("/management/v2/contractdefinitions")
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/v2/contractdefinitions").build())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(dto))
+            .header("x-api-key", apiKey)
+            .bodyValue(dto)
             .retrieve()
             .bodyToMono(IdResponse.class)
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
     }
 
     @Override
-    public Flux<ContractDefinitionOutput> createContractDefRequest(QuerySpec dto) {
-        return webClient
+    public List<ContractDefinitionOutput> createContractDefRequest(QuerySpec dto) {
+        return webClientCreation("/management/v2/contractdefinitions/request")
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/v2/contractdefinitions/request").build())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(dto))
+            .header("x-api-key", apiKey)
             .retrieve()
             .bodyToFlux(ContractDefinitionOutput.class)
-            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .collectList()
+            .block();
     }
 
     @Override
-    public Mono<ContractDefinitionOutput> getContractDef(String contractDefId) {
-        return webClient
+    public ContractDefinitionOutput getContractDef(String contractDefId) {
+        return webClientCreation("/management/v2/contractdefinitions/" + contractDefId)
             .get()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/v2/contractdefinitions/{id}", "{id}").build(contractDefId))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .toEntity(ContractDefinitionOutput.class)
-            .flatMap(responseEntity -> Mono.justOrEmpty(responseEntity.getBody()));
+            .bodyToMono(ContractDefinitionOutput.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block();
     }
 
     @Override
-    public Mono<Void> deleteContractDef(String contractDefId) {
-        return webClient
+    public Void deleteContractDef(String contractDefId) {
+        webClientCreation("/management/v2/contractdefinitions/" + contractDefId)
             .delete()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/v2/contractdefinitions/{id}", "{id}").build(contractDefId))
+            .header("x-api-key", apiKey)
             .retrieve()
-            .bodyToMono(Void.class);
+            .bodyToMono(ContractDefinitionOutput.class)
+            .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)))
+            .doOnError(this::logErrorDetails)
+            .block();
+        return null;
+
     }
 
     @Override
     public Mono<Catalog> createCatalogRequest(CatalogRequest dto) {
         return webClient
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/v2/catalog/request").build())
+            .uri(uriBuilder -> uriBuilder.path("/management/v2/catalog/request").build())
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(dto))
             .retrieve()
@@ -160,7 +258,7 @@ public class EDCServiceImpl implements EDCService {
     public Mono<IdResponse> createContractNeg(ContractRequest dto) {
         return webClient
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/v2/contractnegotiations").build())
+            .uri(uriBuilder -> uriBuilder.path("/management/v2/contractnegotiations").build())
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(dto))
             .retrieve()
@@ -172,7 +270,7 @@ public class EDCServiceImpl implements EDCService {
     public Flux<ContractNegotiation> createContractNegRequest(QuerySpec dto) {
         return webClient
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/v2/contractnegotiations/request").build())
+            .uri(uriBuilder -> uriBuilder.path("/management/v2/contractnegotiations/request").build())
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(dto))
             .retrieve()
@@ -184,7 +282,7 @@ public class EDCServiceImpl implements EDCService {
     public Mono<IdResponse> createTransferProcess(TransferRequest dto) {
         return webClient
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/v2/transferprocesses").build())
+            .uri(uriBuilder -> uriBuilder.path("/management/v2/transferprocesses").build())
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(dto))
             .retrieve()
@@ -196,7 +294,7 @@ public class EDCServiceImpl implements EDCService {
     public Flux<TransferProcess> createTransferProcessRequest(QuerySpec dto) {
         return webClient
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/v2/transferprocesses/request").build())
+            .uri(uriBuilder -> uriBuilder.path("/management/v2/transferprocesses/request").build())
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(dto))
             .retrieve()
@@ -208,7 +306,10 @@ public class EDCServiceImpl implements EDCService {
     public Mono<TransferProcess> getTransferProcess(String transferProcessId) {
         return webClient
             .get()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/v2/contractdefinitions/{id}", "{id}").build(transferProcessId))
+            .uri(
+                uriBuilder ->
+                    uriBuilder.pathSegment("/management/v2/contractdefinitions/{id}", "{id}").build(transferProcessId)
+            )
             .retrieve()
             .toEntity(TransferProcess.class)
             .flatMap(responseEntity -> Mono.justOrEmpty(responseEntity.getBody()));
@@ -218,7 +319,7 @@ public class EDCServiceImpl implements EDCService {
     public Mono<IdResponse> createEDR(NegotiateEdrRequest dto) {
         return webClient
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/edrs").build())
+            .uri(uriBuilder -> uriBuilder.path("/management/edrs").build())
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(dto))
             .retrieve()
@@ -230,7 +331,7 @@ public class EDCServiceImpl implements EDCService {
     public Mono<DataAddress> getEDR(String edrId) {
         return webClient
             .get()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/edrs", "{id}").build(edrId))
+            .uri(uriBuilder -> uriBuilder.pathSegment("/management/edrs", "{id}").build(edrId))
             .retrieve()
             .toEntity(DataAddress.class)
             .flatMap(responseEntity -> Mono.justOrEmpty(responseEntity.getBody()));
@@ -240,7 +341,7 @@ public class EDCServiceImpl implements EDCService {
     public Mono<Void> deleteEDR(String edrId) {
         return webClient
             .delete()
-            .uri(uriBuilder -> uriBuilder.pathSegment("/edrs", "{id}").build(edrId))
+            .uri(uriBuilder -> uriBuilder.pathSegment("/management/edrs", "{id}").build(edrId))
             .retrieve()
             .bodyToMono(Void.class);
     }
@@ -249,7 +350,7 @@ public class EDCServiceImpl implements EDCService {
     public Mono<AssetRequest> createAASRequest(AssetRequest dto) {
         return webClient
             .post()
-            .uri(uriBuilder -> uriBuilder.path("/aas/request").build())
+            .uri(uriBuilder -> uriBuilder.path("/management/aas/request").build())
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(dto))
             .retrieve()
@@ -264,7 +365,7 @@ public class EDCServiceImpl implements EDCService {
             .uri(
                 uriBuilder ->
                     uriBuilder
-                        .path("/edrs")
+                        .path("/management/edrs")
                         .queryParam("agreementId", agreementId)
                         .queryParam("assetId", assetId)
                         .queryParam("providerId", providerId)

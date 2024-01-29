@@ -1,35 +1,35 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.util.List;
 import javax.xml.catalog.Catalog;
-import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface EDCService {
-    Mono<IdResponse> createAsset(AssetInput dto);
+    Mono<IdResponse> createAsset(AssetEntryNewDto dto);
 
-    Flux<AssetOutput> createAssetRequest(QuerySpec dto);
+    List<Asset> createAssetRequest(QuerySpec dto);
 
-    Mono<AssetOutput> getAsset(String assetId);
+    Asset getAsset(String assetId);
 
-    Mono<Void> deleteAsset(String assetId);
+    Void deleteAsset(String assetId);
 
     Mono<IdResponse> createPolicy(PolicyDefinitionInput dto);
 
-    Flux<PolicyDefinitionOutput> createPolicyRequest(QuerySpec dto);
+    List<PolicyDefinitionOutput> createPolicyRequest(QuerySpec dto);
 
-    Mono<PolicyDefinitionOutput> getPolicy(String policyId);
+    PolicyDefinitionOutput getPolicy(String policyId);
 
-    Mono<Void> deletePolicy(String policyId);
+    Void deletePolicy(String policyId);
 
     Mono<IdResponse> createContractDef(ContractDefinitionInput dto);
 
-    Flux<ContractDefinitionOutput> createContractDefRequest(QuerySpec dto);
+    List<ContractDefinitionOutput> createContractDefRequest(QuerySpec dto);
 
-    Mono<ContractDefinitionOutput> getContractDef(String contractDefId);
+    ContractDefinitionOutput getContractDef(String contractDefId);
 
-    Mono<Void> deleteContractDef(String contractDefId);
+    Void deleteContractDef(String contractDefId);
 
     Mono<Catalog> createCatalogRequest(CatalogRequest dto);
 
@@ -44,6 +44,8 @@ public interface EDCService {
     Mono<TransferProcess> getTransferProcess(String transferProcessId);
 
     Mono<IdResponse> createEDR(NegotiateEdrRequest dto);
+
+    Mono<AccessTokenResponse> getAccessToken();
 
     Mono<DataAddress> getEDR(String edrId);
 
