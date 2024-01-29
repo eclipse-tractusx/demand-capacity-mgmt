@@ -30,6 +30,7 @@ servers:
 
 paths:
 
+
   /cg/ruleset:
     get:
       summary: generate the capacity group rulesets
@@ -67,7 +68,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CGRulesetResponse'
-
   /cd/ruleset:
     get:
       summary: generate the company rulesets
@@ -106,7 +106,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CDRulesetResponse'
 
-  /year/report:
+   /year/report:
     post:
       summary: Generate a year report for a given capacity group ID and date range
       operationId: generateYearReport
@@ -129,6 +129,9 @@ paths:
           description: Bad request
         '500':
           description: Internal server error
+          
+          
+
   /alerts:
     post:
       tags:
@@ -163,8 +166,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AlertResponse'
+                  
+                  
 
-  /triggeredAlerts:
+
+ /triggeredAlerts:
     post:
       tags:
         - alerts
@@ -197,6 +203,245 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TriggeredAlertResponse'
+                  
+    /edc/token:
+    post:
+      tags:
+        - EDC
+      summary: Get Access Token
+      operationId: getAccessToken
+      responses:
+        '200':
+          description: Access token retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenResponse'
+  /edc/asset:
+    post:
+      tags:
+        - EDC
+      summary: create an asset
+      operationId: registerAsset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetEntryNewDto'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+
+  /edc/asset/{asset_id}:
+    get:
+      tags:
+        - EDC
+      summary: get asset by Id
+      operationId: getAssetById
+      parameters:
+        - in: 'path'
+          name: 'asset_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: get asset by Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+    delete:
+      tags:
+        - EDC
+      summary: delete asset by Id
+      operationId: deleteAssetById
+      parameters:
+        - in: 'path'
+          name: 'asset_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete asset with id
+
+  /edc/asset/request:
+    post:
+      tags:
+        - EDC
+      summary: Create an asset
+      operationId: createAssetRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuerySpec'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+  /edc/policy:
+    post:
+      tags:
+        - EDC
+      summary: create a Policy
+      operationId: createPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyDefinitionInput'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+  /edc/policy/request:
+    post:
+      tags:
+        - EDC
+      summary: Create an asset
+      operationId: createPolicyRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuerySpec'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyDefinitionOutput'
+  /edc/policy/{policy_id}:
+    get:
+      tags:
+        - EDC
+      summary: get policy by Id
+      operationId: getPolicyById
+      parameters:
+        - in: 'path'
+          name: 'policy_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: get policy by Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyDefinitionOutput'
+    delete:
+      tags:
+        - EDC
+      summary: delete policy by Id
+      operationId: deletePolicyById
+      parameters:
+        - in: 'path'
+          name: 'policy_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete policy with id
+
+  /edc/contract:
+    post:
+      tags:
+        - EDC
+      summary: create an contract definition
+      operationId: createContract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractDefinitionInput'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+
+  /edc/contract/request:
+    post:
+      tags:
+        - EDC
+      summary: Create an asset
+      operationId: createContractRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuerySpec'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContractDefinitionOutput'
+
+  /edc/contract/{contract_id}:
+    get:
+      tags:
+        - EDC
+      summary: get contract by Id
+      operationId: getContractById
+      parameters:
+        - in: 'path'
+          name: 'contract_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: get contract by Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractDefinitionOutput'
+    delete:
+      tags:
+        - EDC
+      summary: delete contract by Id
+      operationId: deleteContractById
+      parameters:
+        - in: 'path'
+          name: 'contract_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete contract with id
+          
   /token/login:
     post:
       tags:
@@ -2584,39 +2829,56 @@ components:
           type: string
           example: null
       example: null
-    Asset:
+
+    Asset: # Define your Asset schema
       type: object
       properties:
-        createdAt:
-          type: integer
-          format: int64
-          example: null
-        dataAddress:
-          $ref: '#/components/schemas/DataAddress'
-        id:
+        "@id":
           type: string
-          example: null
-        privateProperties:
+          description: The identifier of the asset
+        "@type":
+          type: string
+          description: The type of the asset
+        "edc:properties":
+          $ref: '#/components/schemas/AssetProperties'
+        "@context":
           type: object
           additionalProperties:
-            type: object
-            example: null
-          example: null
-        properties:
-          type: object
-          additionalProperties:
-            type: object
-            example: null
-          example: null
-      example: null
+            type: string
+            description: Context information
+      required:
+        - id
+        - type
+        - properties
+        - context
+
+    AssetProperties: # Define your AssetProperties schema
+      type: object
+      properties:
+        "edc:description":
+          type: string
+          description: The description of the asset
+        "edc:id":
+          type: string
+          description: The identifier of the asset
+        "edc:contenttype":
+          type: string
+          description: The content type of the asset
+      required:
+        - id
+
+
     AssetEntryNewDto:
       type: object
       properties:
+        '@context':
+          type: object
         asset:
-          $ref: '#/components/schemas/Asset'
+          $ref: '#/components/schemas/AssetInput'
         dataAddress:
           $ref: '#/components/schemas/DataAddress'
       example: null
+
     AssetInput:
       type: object
       properties:
@@ -2626,30 +2888,21 @@ components:
         '@type':
           type: string
           example: https://w3id.org/edc/v0.0.1/ns/Asset
-        dataAddress:
-          $ref: '#/components/schemas/DataAddress'
-        privateProperties:
-          type: object
-          additionalProperties:
-            type: object
-            example: null
-          example: null
         properties:
-          type: object
-          additionalProperties:
-            type: object
-            example: null
-          example: null
-      example:
-        '@context':
-          edc: https://w3id.org/edc/v0.0.1/ns/
-        '@id': asset-id
-        properties:
-          key: value
-        privateProperties:
-          privateKey: privateValue
-        dataAddress:
-          type: HttpData
+          $ref: '#/components/schemas/Props'
+
+
+    Props:
+      type: object
+      properties:
+        description:
+          type: string
+
+        contenttype:
+          type: string
+
+
+
     AssetOutput:
       type: object
       properties:
@@ -2858,6 +3111,8 @@ components:
     ContractDefinitionInput:
       type: object
       properties:
+        '@context':
+          type: object
         '@id':
           type: string
           example: null
@@ -2868,10 +3123,7 @@ components:
           type: string
           example: null
         assetsSelector:
-          type: array
-          example: null
-          items:
-            $ref: '#/components/schemas/Criterion'
+          $ref: '#/components/schemas/Criterion'
         contractPolicyId:
           type: string
           example: null
@@ -2881,7 +3133,11 @@ components:
         '@id': definition-id
         accessPolicyId: asset-policy-id
         contractPolicyId: contract-policy-id
-        assetsSelector: []
+        assetsSelector:
+          '@type': CriterionDto
+          operandLeft: https://w3id.org/edc/v0.0.1/ns/id
+          operator: "="
+          operandRight: digital-twin-registry
     ContractDefinitionOutput:
       type: object
       properties:
@@ -2891,29 +3147,23 @@ components:
         '@type':
           type: string
           example: https://w3id.org/edc/v0.0.1/ns/ContractDefinition
-        accessPolicyId:
+        "edc:accessPolicyId":
           type: string
           example: null
-        assetsSelector:
-          type: array
-          example: null
-          items:
-            $ref: '#/components/schemas/Criterion'
-        contractPolicyId:
+        "edc:assetsSelector":
+          type: object
+          additionalProperties:
+            type: string
+            description: Context information
+        "edc:contractPolicyId":
           type: string
           example: null
-        createdAt:
-          type: integer
-          format: int64
-          example: null
-      example:
-        '@context':
-          edc: https://w3id.org/edc/v0.0.1/ns/
-        '@id': definition-id
-        edc:accessPolicyId: asset-policy-id
-        edc:contractPolicyId: contract-policy-id
-        edc:assetsSelector: []
-        edc:createdAt: 1688465655
+        "@context":
+          type: object
+          additionalProperties:
+            type: string
+            description: Context information
+
     ContractNegotiation:
       type: object
       properties:
@@ -3075,8 +3325,19 @@ components:
           example: https://w3id.org/edc/v0.0.1/ns/DataAddress
         type:
           type: string
-          example: null
+        proxyPath:
+          type: string
+        proxyBody:
+          type: string
+        proxyMethod:
+          type: string
+        proxyQueryParams:
+          type: string
+        baseUrl:
+          type: string
       example: null
+
+
     DataFlowRequest:
       type: object
       properties:
@@ -3306,18 +3567,14 @@ components:
     IdResponse:
       type: object
       properties:
+        '@type':
+          type: string
         '@id':
           type: string
-          example: null
-        createdAt:
+        'edc:createdAt':
           type: integer
           format: int64
-          example: null
-      example:
-        '@context':
-          edc: https://w3id.org/edc/v0.0.1/ns/
-        '@id': id-value
-        createdAt: 1688465655
+
     List:
       type: object
       properties:
@@ -3413,9 +3670,12 @@ components:
             rightOperand: value
         prohibition: []
         obligation: []
+
     PolicyDefinitionInput:
       type: object
       properties:
+        '@context':
+          type: object
         '@id':
           type: string
           example: null
@@ -3449,25 +3709,20 @@ components:
         '@type':
           type: string
           example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
-        policy:
+        "edc:createdAt":
+          type: long
+        "edc:policy":
           $ref: '#/components/schemas/Policy'
-      example:
-        '@context':
-          edc: https://w3id.org/edc/v0.0.1/ns/
-        '@id': definition-id
-        policy:
-          '@context': http://www.w3.org/ns/odrl.jsonld
-          '@type': Set
-          uid: http://example.com/policy:1010
-          permission:
-            - target: http://example.com/asset:9898.movie
-              action: display
-              constraint:
-                - leftOperand: spatial
-                  operator: eq
-                  rightOperand: https://www.wikidata.org/wiki/Q183
-                  comment: i.e Germany
-        createdAt: 1688465655
+        "@context":
+          type: object
+          additionalProperties:
+            type: string
+            description: Context information
+      required:
+        - id
+        - type
+        - properties
+        - context
     ProvisionerWebhookRequest:
       type: object
       properties:
@@ -3745,3 +4000,19 @@ components:
           edc: https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/TransferState
         state: STARTED
+
+    AccessTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        expires_in:
+          type: long
+        refresh_expires_in:
+          type: long
+        token_type:
+          type: string
+        not-before-policy:
+          type: long
+        scope:
+          type: string
