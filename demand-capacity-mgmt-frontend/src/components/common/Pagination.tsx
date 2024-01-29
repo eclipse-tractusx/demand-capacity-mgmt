@@ -27,7 +27,6 @@ interface PaginationProps {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   currentItems: any[]; // Update with the correct type for currentItems
   items: any[]; // Update with the correct type for items
-  initialPage?: number; // New prop for initial page
 }
 
 const CustomPagination: React.FC<PaginationProps> = ({
@@ -35,7 +34,6 @@ const CustomPagination: React.FC<PaginationProps> = ({
   setCurrentPage,
   currentItems,
   items,
-  initialPage = 1, // Default initialPage to 1 if not provided
 }) => {
   const numOfPages: number[] = [];
 
@@ -43,7 +41,7 @@ const CustomPagination: React.FC<PaginationProps> = ({
     numOfPages.push(i);
   }
 
-  const [currentButton, setCurrentButton] = useState(initialPage); // Set initialButton state
+  const [currentButton, setCurrentButton] = useState(1);
 
   useEffect(() => {
     setCurrentPage(currentButton);

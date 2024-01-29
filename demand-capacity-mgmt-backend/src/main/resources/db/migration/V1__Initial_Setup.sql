@@ -80,11 +80,10 @@ create table demand_series
     demand_category_code_id uuid constraint demand_category_code_id references demand_category(id)
 );
 
-create table demand_series_values
+CREATE TABLE demand_series_values
 (
-    id uuid DEFAULT uuid_generate_v4() primary key,
-    demand_series_id uuid constraint demand_series_id references demand_series(id),
-    calendar_week timestamp not null,
-    demand numeric
-
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    demand_series_id UUID CONSTRAINT demand_series_id REFERENCES demand_series(id),
+    calendar_week TIMESTAMP NOT NULL,
+    demand NUMERIC
 );

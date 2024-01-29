@@ -30,7 +30,181 @@ servers:
 
 paths:
 
-  /edc/token:
+
+  /cg/ruleset:
+    get:
+      summary: generate the capacity group rulesets
+      operationId: getCapacityGroupRulesets
+      tags:
+        - cgRuleset
+      parameters:
+        - in: query
+          name: cgID
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: got the capacity group rulesets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CGRulesetResponse'
+    post:
+      summary: Modify the capacity group ruleset
+      operationId: modifyCapacityGroupRuleset
+      tags:
+        - cgRuleset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CGRulesetRequest'
+      responses:
+        200:
+          description: Capacity group ruleset modified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CGRulesetResponse'
+  /cd/ruleset:
+    get:
+      summary: generate the company rulesets
+      operationId: getCompanyRulesets
+      tags:
+        - cdRuleset
+      parameters:
+        - in: query
+          name: cdID
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: got the company rulesets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CDRulesetResponse'
+    post:
+      summary: Modify the company ruleset
+      operationId: modifyCompanyRuleset
+      tags:
+        - cdRuleset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CDRulesetRequest'
+      responses:
+        200:
+          description: Company ruleset modified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CDRulesetResponse'
+
+   /year/report:
+    post:
+      summary: Generate a year report for a given capacity group ID and date range
+      operationId: generateYearReport
+      tags:
+        - YearReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/YearReportRequest'
+      responses:
+        '200':
+          description: Successfully created year reports
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/YearReportResponse'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+          
+          
+
+  /alerts:
+    post:
+      tags:
+        - alerts
+      summary: configureAlert
+      operationId: configureAlert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertResponse'
+
+    get:
+      tags:
+        - alerts
+      summary: get alerts
+      operationId: getAlerts
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertResponse'
+                  
+                  
+
+
+ /triggeredAlerts:
+    post:
+      tags:
+        - alerts
+      summary: configureTriggeredAlert
+      operationId: configureTriggeredAlert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggeredAlertRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggeredAlertResponse'
+    get:
+      tags:
+        - alerts
+      summary: get triggered alerts
+      operationId: getTriggeredAlerts
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TriggeredAlertResponse'
+                  
+    /edc/token:
     post:
       tags:
         - EDC
@@ -267,7 +441,7 @@ paths:
       responses:
         200:
           description: Delete contract with id
-
+          
   /token/login:
     post:
       tags:
@@ -507,6 +681,31 @@ paths:
             schema:
               $ref: '#/components/schemas/AddressBookRequest'
 
+  /addressBook/{address_book_id}:
+    put:
+      tags:
+        - addressBook
+      summary: update addressBook by Id
+      operationId: updateAddressBookById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+      parameters:
+        - in: 'path'
+          name: 'address_book_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Update of addressBook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBookRequest'
 
   /loggingHistory/filterLogs:
     get:
@@ -1137,6 +1336,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UnitMeasure'
+  /unitmeasure/{id}:
+    get:
+      tags:
+        - unitMeasure
+      summary: unitMeasure by ID
+      operationId: getUnitMeasureByID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the unit of measure
+          schema:
+            type: string
+      responses:
+        200:
+          description: UnitMeasureResponse
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/UnitMeasure'
 
   /demandcategory:
     get:
@@ -1225,6 +1444,112 @@ paths:
         404:
           description: Favorite not found
 
+  /rules/enabled:
+    get:
+      tags:
+        - rules
+      summary: Get all enabled rules
+      operationId: getAllEnabledRules
+      responses:
+        200:
+          description: all enabled rules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesResponse'
+
+  /rules/:
+    get:
+      tags:
+        - rules
+      summary: Get all rules
+      operationId: getAllRules
+      responses:
+        200:
+          description: all rules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesResponse'
+    put:
+      tags:
+        - rules
+      summary: Update a list of rules
+      operationId: updateRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleRequest'
+      responses:
+        200:
+          description: Updated rules
+
+    delete:
+      tags:
+        - rules
+      summary: Delete a list of rules
+      operationId: deleteRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleRequest'
+      responses:
+        200:
+          description: Deleted rules
+
+    post:
+      tags:
+        - rules
+      summary: Insert a rule
+      operationId: addRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                percentage:
+                  type: integer
+                  example: 5
+      responses:
+        200:
+          description: Inserted rule
+
+
+  /rules/{id}:
+    get:
+      tags:
+        - rules
+      summary: Get a rule
+      operationId: getRule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the rule
+          schema:
+            type: integer
+      responses:
+        200:
+          description: get rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleResponse'
+        404:
+          description: loggingHistory not found
+
+
+
 components:
   schemas:
     UserRequest:
@@ -1243,7 +1568,7 @@ components:
         companyID:
           type: string
         role:
-          $ref: '#/components/schemas/Role'
+          $ref: "#/components/schemas/Role"
 
     UserResponse:
       type: object
@@ -1261,7 +1586,32 @@ components:
         companyID:
           type: string
         role:
-          $ref: '#/components/schemas/Role'
+          $ref: "#/components/schemas/Role"
+
+    RuleResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        percentage:
+          type: integer
+        enabled:
+          type: boolean
+
+    RuleRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        enabled:
+          type: boolean
+        percentage:
+          type: integer
+
+    RulesResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/RuleResponse'
 
     User:
       type: object
@@ -1845,8 +2195,28 @@ components:
           type: string
         directQuery:
           type: boolean
+        addressBook:
+          $ref: "#/components/schemas/AddressBookDto"
 
     AddressBookResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        contact:
+          type: string
+        function:
+          type: string
+        picture:
+          type: string
+
+    AddressBookDto:
       type: object
       properties:
         id:
@@ -1863,7 +2233,7 @@ components:
           type: string
         picture:
           type: string
-          format: byte
+
 
     MaterialDemandFavoriteResponse:
       type: object
@@ -1916,12 +2286,15 @@ components:
           type: string
         name:
           type: string
-        contact:
-          type: string
         email:
+          type: string
+        contact:
           type: string
         function:
           type: string
+        picture:
+          type: string
+
 
     UnitMeasure:
       type: object
@@ -2159,6 +2532,8 @@ components:
           type: string
         capacityGroupName:
           type: string
+        ruled:
+          type: boolean
 
     CapacityBody:
       type: object
@@ -2170,6 +2545,10 @@ components:
         maximumCapacity:
           type: number
         calendarWeek:
+          type: string
+        ruled:
+          type: boolean
+        weekColor:
           type: string
 
 
@@ -2204,6 +2583,236 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AddressBookFavoriteResponse'
+
+    YearReportRequest:
+      type: object
+      required:
+        - cgID
+        - startDate
+        - endDate
+      properties:
+        cgID:
+          type: string
+          description: The capacity group ID for which to generate the report
+        startDate:
+          type: string
+          format: date
+          description: The start date of the report range
+        endDate:
+          type: string
+          format: date
+          description: The end date of the report range
+        ruled:
+          type: boolean
+        percentage:
+          type: integer
+
+    YearReportResponse:
+      type: object
+      properties:
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/YearReport'
+
+
+    YearReport:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+        capacityGroupId:
+          type: string
+        ruled:
+          type: boolean
+        percentage:
+          type: integer
+          format: int32
+        totalWeeksCurrentYear:
+          type: integer
+          format: int32
+        enabledPercentages:
+          type: string
+        monthReport:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthReport'
+
+    MonthReport:
+      type: object
+      properties:
+        month:
+          type: string
+        weekReport:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeekReport'
+
+    WeekReport:
+      type: object
+      properties:
+        week:
+          type: integer
+          format: int32
+        maxCapacity:
+          type: number
+          format: double
+        actCapacity:
+          type: number
+          format: double
+        categoryDeltas:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryDelta'
+
+    CategoryDelta:
+      type: object
+      properties:
+        catID:
+          type: string
+        catName:
+          type: string
+        catCode:
+          type: string
+        delta:
+          type: number
+          format: double
+
+    CGRulesetRequest:
+      type: object
+      properties:
+        cgID:
+          type: string
+        percentages:
+          type: string
+
+    CGRulesetResponse:
+      type: object
+      properties:
+        cgID:
+          type: string
+        percentage:
+          type: string
+
+    CDRulesetRequest:
+      type: object
+      properties:
+        companyID:
+          type: string
+        percentages:
+          type: string
+
+    CDRulesetResponse:
+      type: object
+      properties:
+        companyID:
+          type: string
+        percentage:
+          type: string
+    AlertRequest:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        type:
+          type: string
+        threshold:
+          type: number
+        description:
+          type: string
+        user:
+          type: string
+        dedicatedAlerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DedicatedAlert'
+    TriggeredAlertRequest:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        triggerTimes:
+          type: number
+        triggerTimesInThreeMonths:
+          type: number
+        type:
+          type: string
+        threshold:
+          type: number
+        description:
+          type: string
+        user:
+          type: string
+    AlertResponse:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        type:
+          type: string
+        threshold:
+          type: string
+        description:
+          type: string
+        user:
+          type: string
+        dedicatedAlerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DedicatedAlert'
+    DedicatedAlert:
+      type: object
+      properties:
+        id:
+          type: string
+        objectId:
+          type: string
+        type:
+          type: string
+
+    TriggeredAlertResponse:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        triggerTimes:
+          type: integer
+        triggerTimesInThreeMonths:
+          type: integer
+        type:
+          type: string
+        threshold:
+          type: string
+        description:
+          type: string
+        user:
+          type: string
+
     ApiErrorDetail:
       type: object
       properties:
@@ -3346,11 +3955,11 @@ components:
           additionalProperties:
             type: string
             description: "Deprecated as this field is not used anymore, please use\
-              \ privateProperties instead"
+                \ privateProperties instead"
             example: null
             deprecated: true
           description: "Deprecated as this field is not used anymore, please use privateProperties\
-            \ instead"
+              \ instead"
           example: null
           deprecated: true
         protocol:
