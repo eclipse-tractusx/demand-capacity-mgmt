@@ -22,14 +22,20 @@
 
 import React from 'react';
 import { Route, Routes } from "react-router-dom";
+import AddressBookProvider from '../../contexts/AdressBookContextProvider';
+import AlertsContextProvider from "../../contexts/AlertsContextProvider";
 import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
 import CompanyContextProvider from '../../contexts/CompanyContextProvider';
+import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
 import EventsContextProvider from '../../contexts/EventsContextProvider';
 import FavoritesContextProvider from "../../contexts/FavoritesContextProvider";
+import ThresholdContextProvider from '../../contexts/ThresholdsContextProvider';
+import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
+import YearlyReportContextProvider from '../../contexts/YearlyReportContextProvider';
 import AuthenticatedRoute from "../../util/AuthenticatedRoute";
-import QuickAcessItems from '../common/QuickAcessItems';
 import AdminPage from '../pages/AdminPage';
+import AddressBookPage from '../pages/AdressBookPage';
 import AlertsPage from '../pages/AlertsPage';
 import AuthenticationComponent from '../pages/AuthenticationPage';
 import CapacityGroupDetailsPage from "../pages/CapacityGroupDetailsPage";
@@ -41,42 +47,55 @@ import FavoritesPage from "../pages/FavoritesPage";
 import TodoListPage from '../pages/TodoListPage';
 import UpStatusPage from '../pages/UpStatusPage';
 import Layout from './Layout';
+import ToastContainerComponent from './ToastContainerComponent';
 
 
 const AppComponent: React.FC = () => {
     return (
         <Routes>
-            <Route path="/login" element={<AuthenticationComponent />} />
-            <Route path="*" element={<ErrorPage />} />
+            <Route path="/login" element={<ToastContainerComponent><AuthenticationComponent /></ToastContainerComponent>} />
+            <Route path="*" element={<ToastContainerComponent><ErrorPage /></ToastContainerComponent>} />
 
             <Route path="/" element={
-
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
                             <CompanyContextProvider>
-                                <Layout>
-                                    <Home />
-                                    <QuickAcessItems />
-                                </Layout>
+                                <AddressBookProvider>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <Home />
+                                        </Layout>
+                                    </ToastContainerComponent>
+                                </AddressBookProvider>
                             </CompanyContextProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
-
             } />
 
             <Route path="/details/:id" element={
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
-                                <CapacityGroupsProvider>
-                                    <EventsContextProvider>
-                                        <CapacityGroupDetailsPage />
-                                    </EventsContextProvider>
-                                </CapacityGroupsProvider>
-                            </Layout></DemandContextProvider>
+                            <ToastContainerComponent>
+                                <CompanyContextProvider>
+                                    <Layout>
+                                        <CapacityGroupsProvider>
+                                            <EventsContextProvider>
+                                                <DemandCategoryContextProvider>
+                                                    <YearlyReportContextProvider>
+                                                        <ThresholdContextProvider>
+                                                            <CapacityGroupDetailsPage />
+                                                        </ThresholdContextProvider>
+                                                    </YearlyReportContextProvider>
+                                                </DemandCategoryContextProvider>
+                                            </EventsContextProvider>
+                                        </CapacityGroupsProvider>
+                                    </Layout>
+                                </CompanyContextProvider>
+                            </ToastContainerComponent>
+                        </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
             } />
@@ -84,95 +103,165 @@ const AppComponent: React.FC = () => {
                 <AuthenticatedRoute>
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
-                                <EventsContextProvider>
-                                    <AlertsPage />
-                                </EventsContextProvider>
-                            </Layout>
-                        </DemandContextProvider>
-                    </FavoritesContextProvider>
-                </AuthenticatedRoute>
-            } />
-            <Route path="/up" element={
-                <AuthenticatedRoute>
-                    <FavoritesContextProvider>
-                        <DemandContextProvider>
-                            <Layout>
-                                <EventsContextProvider>
-                                    <UpStatusPage />
-                                </EventsContextProvider>
-                            </Layout>
-                        </DemandContextProvider>
-                    </FavoritesContextProvider>
-                </AuthenticatedRoute>
-            } />
-            <Route path="/down" element={
-                <AuthenticatedRoute>
-                    <FavoritesContextProvider>
-                        <DemandContextProvider>
-                            <Layout>
-                                <EventsContextProvider>
-                                    <DownStatusPage />
-                                </EventsContextProvider>
-                            </Layout>
-                        </DemandContextProvider>
-                    </FavoritesContextProvider>
-                </AuthenticatedRoute>
-            } />
-            <Route path="/todo" element={
-                <AuthenticatedRoute>
-                    <FavoritesContextProvider>
-                        <DemandContextProvider>
-                            <Layout>
-                                <EventsContextProvider>
-                                    <TodoListPage />
-                                </EventsContextProvider>
-                            </Layout>
+                            <CapacityGroupsProvider>
+                                <CompanyContextProvider>
+                                    <AddressBookProvider>
+                                        <AlertsContextProvider>
+                                            <ToastContainerComponent>
+                                                <Layout>
+                                                    <AlertsPage />
+                                                </Layout>
+                                            </ToastContainerComponent>
+                                        </AlertsContextProvider>
+                                    </AddressBookProvider>
+                                </CompanyContextProvider>
+                            </CapacityGroupsProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
                 </AuthenticatedRoute>
             } />
 
-            <Route path="/events" element={
-                <AuthenticatedRoute>
+            < Route path="/addressBook" element={
+                < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
-                                <EventsContextProvider>
-                                    <EventsPage />
-                                </EventsContextProvider>
-                            </Layout>
+                            <CompanyContextProvider>
+                                <AddressBookProvider>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <AddressBookPage />
+                                        </Layout>
+                                    </ToastContainerComponent>
+                                </AddressBookProvider>
+                            </CompanyContextProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
-                </AuthenticatedRoute>
+                </AuthenticatedRoute >
+            } />
+            < Route path="/up" element={
+                < AuthenticatedRoute >
+                    <FavoritesContextProvider>
+                        <DemandContextProvider>
+                            <CompanyContextProvider>
+                                <AddressBookProvider>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <EventsContextProvider>
+                                                <UpStatusPage />
+                                            </EventsContextProvider>
+                                        </Layout>
+                                    </ToastContainerComponent>
+                                </AddressBookProvider>
+                            </CompanyContextProvider>
+                        </DemandContextProvider>
+                    </FavoritesContextProvider>
+                </AuthenticatedRoute >
+            } />
+            < Route path="/down" element={
+                < AuthenticatedRoute >
+                    <FavoritesContextProvider>
+                        <DemandContextProvider>
+                            <CompanyContextProvider>
+                                <AddressBookProvider>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <EventsContextProvider>
+                                                <DownStatusPage />
+                                            </EventsContextProvider>
+                                        </Layout>
+                                    </ToastContainerComponent>
+                                </AddressBookProvider>
+                            </CompanyContextProvider>
+                        </DemandContextProvider>
+                    </FavoritesContextProvider>
+                </AuthenticatedRoute >
+            } />
+            < Route path="/todo" element={
+                < AuthenticatedRoute >
+                    <FavoritesContextProvider>
+                        <DemandContextProvider>
+                            <CapacityGroupsProvider>
+                                <UnitsofMeasureContextContextProvider>
+                                    <CompanyContextProvider>
+                                        <AddressBookProvider>
+                                            <ToastContainerComponent>
+                                                <Layout>
+                                                    <EventsContextProvider>
+                                                        <TodoListPage />
+                                                    </EventsContextProvider>
+                                                </Layout>
+                                            </ToastContainerComponent>
+                                        </AddressBookProvider>
+                                    </CompanyContextProvider>
+                                </UnitsofMeasureContextContextProvider>
+                            </CapacityGroupsProvider>
+                        </DemandContextProvider>
+                    </FavoritesContextProvider>
+                </AuthenticatedRoute >
             } />
 
-            <Route path="/favorites" element={
-                <AuthenticatedRoute>
+            < Route path="/events" element={
+                < AuthenticatedRoute >
+                    <FavoritesContextProvider>
+                        <DemandContextProvider>
+                            <CompanyContextProvider>
+                                <AddressBookProvider>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <EventsContextProvider>
+                                                <EventsPage />
+                                            </EventsContextProvider>
+                                        </Layout>
+                                    </ToastContainerComponent>
+                                </AddressBookProvider>
+                            </CompanyContextProvider>
+                        </DemandContextProvider>
+                    </FavoritesContextProvider>
+                </AuthenticatedRoute >
+            } />
+
+            < Route path="/favorites" element={
+                < AuthenticatedRoute >
                     <DemandContextProvider>
                         <FavoritesContextProvider>
-                            <Layout>
-
-                                <FavoritesPage />
-
-                            </Layout>
+                            <CompanyContextProvider>
+                                <AddressBookProvider>
+                                    <ToastContainerComponent>
+                                        <Layout>
+                                            <FavoritesPage />
+                                        </Layout>
+                                    </ToastContainerComponent>
+                                </AddressBookProvider>
+                            </CompanyContextProvider>
                         </FavoritesContextProvider>
                     </DemandContextProvider>
-                </AuthenticatedRoute>
+                </AuthenticatedRoute >
             } />
 
-            <Route path="/admin" element={
-                <AuthenticatedRoute>
+            < Route path="/admin" element={
+                < AuthenticatedRoute >
                     <FavoritesContextProvider>
                         <DemandContextProvider>
-                            <Layout>
-                                <AdminPage />
-                            </Layout>
+                            <CompanyContextProvider>
+                                <AddressBookProvider>
+                                    <CapacityGroupsProvider>
+                                        <CompanyContextProvider>
+                                            <ThresholdContextProvider>
+                                                <ToastContainerComponent>
+                                                    <Layout>
+                                                        <AdminPage />
+                                                    </Layout>
+                                                </ToastContainerComponent>
+                                            </ThresholdContextProvider>
+                                        </CompanyContextProvider>
+                                    </CapacityGroupsProvider>
+                                </AddressBookProvider>
+                            </CompanyContextProvider>
                         </DemandContextProvider>
                     </FavoritesContextProvider>
-                </AuthenticatedRoute>
+                </AuthenticatedRoute >
             } />
-        </Routes>
+        </Routes >
     );
 }
 

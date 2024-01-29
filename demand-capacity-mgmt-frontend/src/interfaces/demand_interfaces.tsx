@@ -60,6 +60,8 @@ export interface DemandProp {
   changedAt: string
   demandSeries?: DemandSeries[] | undefined;
   linkStatus: EventType
+  startDate?: string; //These are used on the favorite demands, and exist so that DemandProp can be universally used
+  endDate?: string;
 }
 
 export interface DemandSeries {

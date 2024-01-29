@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import io.github.cdimascio.dotenv.Dotenv;
 
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -90,10 +91,12 @@ public class EDCServiceImpl implements EDCService {
             .bodyValue(dto)
             .retrieve()
             .bodyToMono(IdResponse.class)
+
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
     }
 
     @Override
+
     public List<Asset> createAssetRequest(QuerySpec dto) {
         return webClientCreation("/management/v2/assets/request")
             .post()
@@ -134,14 +137,17 @@ public class EDCServiceImpl implements EDCService {
             .doOnError(this::logErrorDetails)
             .block();
         return null;
+
     }
 
     @Override
     public Mono<IdResponse> createPolicy(PolicyDefinitionInput dto) {
+
         return webClientCreation("/management/v2/policydefinitions")
             .post()
             .header("x-api-key", apiKey)
             .bodyValue(dto)
+
             .retrieve()
             .bodyToMono(IdResponse.class)
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
@@ -187,20 +193,13 @@ public class EDCServiceImpl implements EDCService {
 
     @Override
     public Mono<IdResponse> createContractDef(ContractDefinitionInput dto) {
+
         return webClientCreation("/management/v2/contractdefinitions")
             .post()
             .header("x-api-key", apiKey)
             .bodyValue(dto)
             .retrieve()
             .bodyToMono(IdResponse.class)
-            .doOnRequest(
-                request -> {
-                    // Log request details before sending
-
-                    System.out.println("Request Body: " + dto.toString()); // You can customize this based on your DTO structure
-                }
-            )
-            .log()
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
     }
 
@@ -240,6 +239,7 @@ public class EDCServiceImpl implements EDCService {
             .doOnError(this::logErrorDetails)
             .block();
         return null;
+
     }
 
     @Override

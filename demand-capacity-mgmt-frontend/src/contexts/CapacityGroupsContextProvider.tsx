@@ -28,6 +28,8 @@ import {
   SingleCapacityGroup
 } from '../interfaces/capacitygroup_interfaces';
 import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
+import { is404Error, isAxiosError, isTimeoutError } from '../util/TypeGuards';
 import { useUser } from './UserContext';
 
 
@@ -51,6 +53,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   const maxRetries = 3;
   const api = createAPIInstance(access_token);
 
+  const objectType = '2';
 
   const fetchCapacityGroupsWithRetry = useCallback(async () => {
     setIsLoading(true);
@@ -60,8 +63,6 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
       const result: CapacityGroupProp[] = response.data;
       setCapacityGroups(result);
     } catch (error) {
-      console.error(`Error fetching capacitygroups (Retry ${retryCount + 1}):`, error);
-
       if (retryCount < maxRetries - 1) {
         // If not the last retry, delay for 30 seconds before the next retry
         await new Promise((resolve) => setTimeout(resolve, 30000));
@@ -69,6 +70,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
       } else {
         // If the last retry failed, do not retry further
         setRetryCount(0); // Reset the retry count
+        customErrorToast(objectType, '0', '00')
       }
     } finally {
       // Set isLoading to false regardless of success or failure
@@ -90,8 +92,20 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
       const response = await api.get(`/capacityGroup/${id}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching CapacityGroup by id:', error);
-      return undefined;
+      if (isTimeoutError(error)) {
+        // This is a timeout error
+        customErrorToast(objectType, '0', '00')
+      } else if (is404Error(error) && error.response && error.response.status === 404) {
+        // This is a 404 Internal Server Error
+        customErrorToast(objectType, '4', '04')
+      } else if (isAxiosError(error) && error.response && error.response.status === 500) {
+        // This is a 500 Internal Server Error
+        customErrorToast(objectType, '5', '00')
+      } else {
+        // Handle other types of errors
+        customErrorToast('5', '0', '0') //This will trigger, Unkown error
+      }
+      return undefined
     }
   };
 
@@ -101,7 +115,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
       const response = await api.post('/capacityGroup', newCapacityGroup);
       return response.data;
     } catch (error) {
-      console.error('Error creating capacityGroup:', error);
+      customErrorToast(objectType, '1', '00')
     }
   };
 
@@ -110,7 +124,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
       const api = createAPIInstance(access_token);
       await api.post('/capacityGroup/link', linkToCapacityGroup);
     } catch (error) {
-      console.error('Error creating capacityGroup:', error);
+      customErrorToast(objectType, '0', '16')
     }
   };
 

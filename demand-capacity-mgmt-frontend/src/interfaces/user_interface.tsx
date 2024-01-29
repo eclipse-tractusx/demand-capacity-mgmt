@@ -65,7 +65,3 @@ export function getUserName(user: User | null): string {
     return '';
 }
 
-
-
-
-

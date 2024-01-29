@@ -22,6 +22,7 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
+import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddressBookRequest;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,13 +45,28 @@ public class GoldenRecordManagerImpl implements GoldenRecordManager {
     }
 
     @Override
-    public AddressBookRecordEntity createRecord(String query) {
+    public AddressBookRecordEntity createRecord(AddressBookRequest request) {
         AddressBookRecordEntity recordEntity = new AddressBookRecordEntity();
-        recordEntity.setCompanyId(UUID.fromString(query));
-        recordEntity.setName("TEST NAME");
-        recordEntity.setContact("TEST CONTACT");
-        recordEntity.setEmail("TEST EMAIL");
-        recordEntity.setPicture("yeetus".getBytes());
+        recordEntity.setCompanyId(UUID.fromString(request.getQuery()));
+        recordEntity.setName(request.getAddressBook().getName());
+        recordEntity.setContact(request.getAddressBook().getContact());
+        recordEntity.setEmail(request.getAddressBook().getEmail());
+        recordEntity.setPicture(request.getAddressBook().getPicture());
+        recordEntity.setFunction(request.getAddressBook().getFunction());
+        repository.save(recordEntity);
+        return recordEntity;
+    }
+
+    @Override
+    public AddressBookRecordEntity updateRecord(AddressBookRequest request, String id) {
+        AddressBookRecordEntity recordEntity = new AddressBookRecordEntity();
+        recordEntity.setId(UUID.fromString(id));
+        recordEntity.setCompanyId(UUID.fromString(request.getQuery()));
+        recordEntity.setName(request.getAddressBook().getName());
+        recordEntity.setContact(request.getAddressBook().getContact());
+        recordEntity.setEmail(request.getAddressBook().getEmail());
+        recordEntity.setPicture(request.getAddressBook().getPicture());
+        recordEntity.setFunction(request.getAddressBook().getFunction());
         repository.save(recordEntity);
         return recordEntity;
     }

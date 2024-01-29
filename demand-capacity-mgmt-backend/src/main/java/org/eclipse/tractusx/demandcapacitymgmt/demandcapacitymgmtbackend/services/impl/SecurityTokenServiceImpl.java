@@ -54,7 +54,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
 
     private final WebClient keycloakWebClient;
 
-    private final StatusManagerImpl statusManager;
+    private final BottleneckManagerImpl statusManager;
 
     private final UserRepository userRepository;
     private static final String CLIENT_ID = "client_id";
@@ -241,7 +241,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
                         );
                         newUserEntity.setRole(role);
                         break;
-                    } catch (IllegalArgumentException e) {
+                    } catch (Exception e) {
                         Logger.logError(
                             "Incompatible role! User must have one of the 3 role types 'ADMIN','CUSTOMER','SUPPLIER'"
                         );

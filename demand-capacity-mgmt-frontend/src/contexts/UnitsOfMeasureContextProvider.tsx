@@ -22,6 +22,7 @@
 
 import React, { createContext, useEffect, useState } from 'react';
 import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
 import { useUser } from "./UserContext";
 
 export interface UnitMeasure {
@@ -44,6 +45,9 @@ const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>
   const { access_token } = useUser();
   const [unitsofmeasure, setUnitsofMeasure] = useState<UnitMeasure[]>([]);
 
+  const objectType = '4';
+  const errorCode = '7';
+
   useEffect(() => {
     const api = createAPIInstance(access_token);
     const fetchUnitsofMeasure = async () => {
@@ -52,15 +56,12 @@ const UnitsofMeasureContextContextProvider: React.FC<React.PropsWithChildren<{}>
         const result: UnitMeasure[] = response.data;
         setUnitsofMeasure(result);
       } catch (error) {
-        console.error('Error fetching units of measure:', error);
+        customErrorToast(objectType, errorCode, '00')
       }
     };
 
     fetchUnitsofMeasure();
   }, [access_token]);
-
-
-
 
   return (
     <UnitsofMeasureContext.Provider value={{ unitsofmeasure }}>

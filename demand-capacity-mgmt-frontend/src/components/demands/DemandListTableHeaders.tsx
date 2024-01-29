@@ -21,6 +21,7 @@
  */
 
 import { BiCaretDown, BiCaretUp } from 'react-icons/bi';
+import { useUser } from '../../contexts/UserContext';
 
 type DemandsTableProps = {
   sortColumn: string | null;
@@ -31,7 +32,7 @@ type DemandsTableProps = {
 };
 
 const DemandListTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, handleSort, demandItems, hasfavorites }) => {
-
+  const { user } = useUser();
   return (
     <table className="table table-striped table-hover">
       <thead>
@@ -39,12 +40,27 @@ const DemandListTable: React.FC<DemandsTableProps> = ({ sortColumn, sortOrder, h
           {hasfavorites && <th></th>}
           {hasfavorites && <th></th>}
           <th></th>
-          <th onClick={() => handleSort('customer.bpn')}>
-            Company Id{' '}
-            {sortColumn === 'customer.bpn' && sortOrder === 'asc' && <BiCaretUp />}
-            {sortColumn === 'customer.bpn' && sortOrder === 'desc' && <BiCaretDown />}
-            {!sortColumn && <i className="material-icons">...</i>}
-          </th>
+          {user?.role === 'SUPPLIER' && (
+            <>
+              <th onClick={() => handleSort('customer.bpn')}>
+                Customer BPN{' '}
+                {sortColumn === 'customer.bpn' && sortOrder === 'asc' && <BiCaretUp />}
+                {sortColumn === 'customer.bpn' && sortOrder === 'desc' && <BiCaretDown />}
+                {!sortColumn && <i className="material-icons">...</i>}
+              </th>
+            </>
+          )}
+
+          {user?.role === 'CUSTOMER' && (
+            <>
+              <th onClick={() => handleSort('supplier.bpn')}>
+                Supplier BPN{' '}
+                {sortColumn === 'supplier.bpn' && sortOrder === 'asc' && <BiCaretUp />}
+                {sortColumn === 'supplier.bpn' && sortOrder === 'desc' && <BiCaretDown />}
+                {!sortColumn && <i className="material-icons">...</i>}
+              </th>
+            </>
+          )}
           <th onClick={() => handleSort('materialNumberCustomer')}>
             Material No. Customer{' '}
             {sortColumn === 'materialNumberCustomer' && sortOrder === 'asc' && <BiCaretUp />}

@@ -21,13 +21,14 @@
  */
 
 import React, { useState } from 'react';
-import { Button, Col, Form, InputGroup, Row, Toast } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FaKey, FaUser } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { PulseLoader } from "react-spinners"; // Import PacmanLoader component from react-spinners
+import { toast } from 'react-toastify';
 import '../../Auth.css';
 import { useUser } from "../../contexts/UserContext";
-import { User } from "../../interfaces/user_interface";
+import { User } from '../../interfaces/user_interface';
 import { login } from '../../util/Auth';
 
 const AuthenticationComponent: React.FC = () => {
@@ -36,36 +37,52 @@ const AuthenticationComponent: React.FC = () => {
     const navigate = useNavigate();
     const [showRegister, setShowRegister] = useState(false);
     const [loading, setLoading] = useState(false); // State to manage loading state
-    const [showErrorToast, setShowErrorToast] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
     const { setUser, setRefreshToken, setAccessToken, setExpiresIn } = useUser();
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); // Prevent default form submission behavior
+        e.preventDefault();
+
         try {
             setLoading(true);
-            const user: User = await login(username, password, setRefreshToken, setAccessToken, setExpiresIn);
+
+            // Display the pending message
+            const loginPromise = toast.promise(
+                new Promise<User>((resolve, reject) => {
+                    setTimeout(async () => {
+                        try {
+                            // Make the login request after the delay
+                            const user: User = await login(username, password, setRefreshToken, setAccessToken, setExpiresIn);
+                            resolve(user);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    }, 1000); // 1 second delay
+                }),
+                {
+                    pending: 'Logging in...',
+                    success: 'Login successful.',
+                    error: 'Login failed. Please check your credentials.',
+                }
+            );
+
+            // Wait for the loginPromise to resolve or reject
+            const user: User = await loginPromise;
+
+            // If the promise resolves successfully, set user and navigate
             setUser(user);
-            navigate('/');
+            setTimeout(() => {
+                navigate('/');
+            }, 500);
         } catch (error) {
-            console.error("Failed login", error);
-            setErrorMessage("Login failed. Please check your credentials.");
-            setShowErrorToast(true);
+            // This will catch errors from the promise or the login function
         } finally {
             setLoading(false);
         }
-    }
+    };
+
     return (
         <div className="login-page" >
 
-            <Toast className='login-toast'
-                show={showErrorToast}
-                onClose={() => setShowErrorToast(false)} delay={5000} autohide>
-                <Toast.Header>
-                    <strong className="mr-auto">Login Error</strong>
-                </Toast.Header>
-                <Toast.Body>{errorMessage}</Toast.Body>
-            </Toast>
             <Row className="justify-content-center align-items-center min-vh-100 ">
                 <Col xs={12} sm={8} md={6} lg={4}>
                     <div className="form">
