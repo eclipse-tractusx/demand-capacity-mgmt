@@ -15,19 +15,23 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
+import io.github.cdimascio.dotenv.Dotenv;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class EDCServiceImpl implements EDCService {
 
-    private final WebClient webClient = WebClient.create("https://materialpass.int.demo.catena-x.net/BPNL000000000000");
-
-    private static final String BASE_URL = "https://dcm.dev.demo.catena-x.net/BPNL000000000000";
+    private static final String BASE_URL = getEnv("BASE_URL");
+    private final String apiKey = getEnv("API_KEY");
+    private final WebClient webClient = WebClient.create(BASE_URL);
     private String accessToken;
     private Instant tokenExpiration;
 
-    private final String apiKey = "ZWRjX2RjbV9hZXNfZW5ja2V5Cg==";
+    private static String getEnv(String key) {
+        Dotenv dotenv = Dotenv.configure().load();
+        return dotenv.get(key);
+    }
 
     public Mono<String> getToken() {
         if (accessToken != null && !isTokenExpired()) {
