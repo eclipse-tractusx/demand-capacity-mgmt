@@ -42,6 +42,7 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.*;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -251,7 +252,7 @@ public class CapacityGroupServiceImpl implements CapacityGroupService {
         Optional<CapacityGroupEntity> capacityGroup = capacityGroupRepository.findById(uuid);
 
         if (capacityGroup.isEmpty()) {
-            throw new NotFoundException("4","04");
+            throw new NotFoundException("4", "04");
         }
 
         return capacityGroup.get();

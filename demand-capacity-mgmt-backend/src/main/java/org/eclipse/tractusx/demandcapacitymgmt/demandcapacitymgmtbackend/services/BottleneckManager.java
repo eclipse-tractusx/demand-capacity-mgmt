@@ -23,7 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.YearReportResponse;
-
 import java.time.LocalDate;
 
 public interface BottleneckManager {
@@ -31,5 +30,12 @@ public interface BottleneckManager {
 
     void calculateTodos(String userID);
 
-    YearReportResponse generateYearReport(String userID, String capacityGroupID, LocalDate startDate, LocalDate endDate, boolean ruled, int percentage);
+    YearReportResponse generateYearReport(
+        String userID,
+        String capacityGroupID,
+        LocalDate startDate,
+        LocalDate endDate,
+        boolean ruled,
+        int percentage
+    );
 }
