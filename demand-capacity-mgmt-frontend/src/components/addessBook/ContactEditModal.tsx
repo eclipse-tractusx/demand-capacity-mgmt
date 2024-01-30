@@ -76,7 +76,7 @@ const ContactEditModal: React.FC<ContactModalProps> = ({
             // Clear form data when not in edit mode (for new contact)
             setFormData(emptyAddressBook);
         }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const clearPreviewImage = () => {
         setPreviewImage('');

@@ -28,11 +28,9 @@ import { AlertsContext } from "../../contexts/AlertsContextProvider";
 import AlertsTable from "../alerts/AlertsTable";
 import ConfigureAlertModal from "../alerts/ConfigureAlertModal";
 import RulesModal from "../alerts/RulesModal";
-import { LoadingMessage } from "../common/LoadingMessages";
 
 
 function AlertsPage() {
-    const [loading, setLoading] = useState(false);
     const [showRulesModal, setShowRulesModal] = useState(false);
     const { triggeredAlerts, fetchTriggeredAlertsWithRetry } = useContext(AlertsContext)!;
 
@@ -45,11 +43,8 @@ function AlertsPage() {
 
     useEffect(() => {
         fetchTriggeredAlertsWithRetry();
-    }, []);
+    }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
-    if (loading) {
-        return <LoadingMessage />; // Show loading spinner when data is loading
-    }
     return (
         <>
             <br />

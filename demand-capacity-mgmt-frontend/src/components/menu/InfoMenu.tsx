@@ -20,17 +20,17 @@
  *    ********************************************************************************
  */
 
+import { useContext, useEffect } from "react";
 import Nav from "react-bootstrap/Nav";
 import { FaArrowDown, FaArrowUp, FaHome, FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import {useInfoMenu} from "../../contexts/InfoMenuContextProvider";
-import {useContext, useEffect} from "react";
-import {AlertsContext} from "../../contexts/AlertsContextProvider";
+import { AlertsContext } from "../../contexts/AlertsContextProvider";
+import { useInfoMenu } from "../../contexts/InfoMenuContextProvider";
 
 
 function InfoMenu() {
     const { data } = useInfoMenu();
-    const {triggeredAlerts, fetchTriggeredAlertsWithRetry } = useContext(AlertsContext)!;
+    const { triggeredAlerts, fetchTriggeredAlertsWithRetry } = useContext(AlertsContext)!;
 
     const navigate = useNavigate();
     const handleNavigation = (path: string) => {
@@ -38,7 +38,7 @@ function InfoMenu() {
     }
     useEffect(() => {
         fetchTriggeredAlertsWithRetry();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const formatData = (data: number | null | undefined): number | string => {
         return data !== null && data !== undefined ? data : '0';

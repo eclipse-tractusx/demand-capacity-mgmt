@@ -40,7 +40,10 @@ const CompanyDetailsInteractionModal: React.FC<CompanyDetailsModalProps> = ({
 }) => {
 
     const { findCompanyByCompanyID } = useContext(CompanyContext)!;
-    const [favoriteCompanies, setfavoriteCompanies] = useState<string[]>([]);
+    //For future implementation
+    //const [favoriteCompanies, setfavoriteCompanies] = useState<string[]>([]);
+
+    const [favoriteCompanies] = useState<string[]>([]);
 
     return (
         <Modal show={isOpen}

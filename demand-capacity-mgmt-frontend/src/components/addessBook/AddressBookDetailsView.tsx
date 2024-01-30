@@ -65,12 +65,12 @@ const AddressBookDetailsView: React.FC<CompanyDetailsProps> = ({ company, favori
         }
         setisInteractionModal(isModal || false);
         fetchAddressBookWithRetry();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         const filteredAddressBooks = getAddressBooksByCompanyId(company.id);
         setContacts(filteredAddressBooks);
-    }, [addressBooks, company]);
+    }, [addressBooks, company, getAddressBooksByCompanyId]);
 
     const handleAddContact = () => {
         setSelectedContact(null);

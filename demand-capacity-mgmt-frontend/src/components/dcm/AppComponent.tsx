@@ -80,19 +80,21 @@ const AppComponent: React.FC = () => {
                         <DemandContextProvider>
                             <ToastContainerComponent>
                                 <CompanyContextProvider>
-                                    <Layout>
-                                        <CapacityGroupsProvider>
-                                            <EventsContextProvider>
-                                                <DemandCategoryContextProvider>
-                                                    <YearlyReportContextProvider>
-                                                        <ThresholdContextProvider>
-                                                            <CapacityGroupDetailsPage />
-                                                        </ThresholdContextProvider>
-                                                    </YearlyReportContextProvider>
-                                                </DemandCategoryContextProvider>
-                                            </EventsContextProvider>
-                                        </CapacityGroupsProvider>
-                                    </Layout>
+                                    <AddressBookProvider>
+                                        <Layout>
+                                            <CapacityGroupsProvider>
+                                                <EventsContextProvider>
+                                                    <DemandCategoryContextProvider>
+                                                        <YearlyReportContextProvider>
+                                                            <ThresholdContextProvider>
+                                                                <CapacityGroupDetailsPage />
+                                                            </ThresholdContextProvider>
+                                                        </YearlyReportContextProvider>
+                                                    </DemandCategoryContextProvider>
+                                                </EventsContextProvider>
+                                            </CapacityGroupsProvider>
+                                        </Layout>
+                                    </AddressBookProvider>
                                 </CompanyContextProvider>
                             </ToastContainerComponent>
                         </DemandContextProvider>

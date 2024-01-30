@@ -37,31 +37,17 @@ interface FavoriteTableMaterialDemandsProps {
 }
 
 const FavoritesTableCapacityGroup: React.FC<FavoriteTableMaterialDemandsProps> = ({ favcapacitygroups }) => {
-    const [sortField, setSortField] = useState<string>('changedAt');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    const [sortField] = useState<string>('changedAt');
+    const [sortOrder] = useState<'asc' | 'desc'>('asc');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [eventsPerPage, setEventsPerPage] = useState<number>(5);
 
     const { deleteFavorite, fetchFavorites } = useContext(FavoritesContext)!;
 
-    const handleSort = (field: string) => {
-        if (sortField === field) {
-            setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc') as 'asc' | 'desc');
-        } else {
-            setSortField(field);
-            setSortOrder('desc');
-        }
-    };
-
-
     const sortedData = useMemo(() => {
         const sortedArray = [...favcapacitygroups].sort((a, b) => {
             let comparison = 0;
-            // if (sortField === 'changedAt' && a && b.changedAt) {
-            //     const dateA = new Date(a.changedAt).getTime();
-            //     const dateB = new Date(b.changedAt).getTime();
-            //     comparison = dateB - dateA; // Most recent first
-            // } else 
             if (sortField !== 'timestamp' && a[sortField as keyof SingleCapacityGroupFavoriteResponse] && b[sortField as keyof SingleCapacityGroupFavoriteResponse]) {
                 const fieldA = a[sortField as keyof SingleCapacityGroupFavoriteResponse] as string;
                 const fieldB = b[sortField as keyof SingleCapacityGroupFavoriteResponse] as string;
@@ -72,9 +58,6 @@ const FavoritesTableCapacityGroup: React.FC<FavoriteTableMaterialDemandsProps> =
         return sortedArray;
     }, [favcapacitygroups, sortField, sortOrder]);
 
-    const indexOfLastEvent = currentPage * eventsPerPage;
-    const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
-    const currentEvents = sortedData.slice(indexOfFirstEvent, indexOfLastEvent);
     const totalPagesNum = Math.ceil(sortedData.length / eventsPerPage);
 
     const handleUnfavorite = useCallback(
@@ -86,7 +69,7 @@ const FavoritesTableCapacityGroup: React.FC<FavoriteTableMaterialDemandsProps> =
                 console.error('Error Unfavoriting:', error);
             }
         },
-        [favcapacitygroups]
+        [favcapacitygroups, deleteFavorite, fetchFavorites]  // eslint-disable-line react-hooks/exhaustive-deps
     );
 
     return (

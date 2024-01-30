@@ -27,34 +27,23 @@ import {
 } from 'react-icons/fa';
 import { LuStarOff } from "react-icons/lu";
 import { FavoritesContext } from "../../contexts/FavoritesContextProvider";
-import {AddressBookFavoriteResponse, CompanyDtoFavoriteResponse} from '../../interfaces/favorite_interfaces';
+import { AddressBookFavoriteResponse } from '../../interfaces/favorite_interfaces';
 import Pagination from '../common/Pagination';
 interface FavoriteTableCompaniesProps {
     favaddressbook: AddressBookFavoriteResponse[];
 }
 
 const FavoriteTableCompanies: React.FC<FavoriteTableCompaniesProps> = ({ favaddressbook }) => {
-    const [sortField, setSortField] = useState<string>('changedAt');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    const [sortField] = useState<string>('changedAt');
+    const [sortOrder] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [eventsPerPage, setEventsPerPage] = useState<number>(5);
 
     const { deleteFavorite, fetchFavorites } = useContext(FavoritesContext)!;
 
-    const handleSort = useCallback((field: string) => {
-        setSortField(field);
-        setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc') as 'asc' | 'desc');
-    }, []);
-
-
     const sortedData = useMemo(() => {
         const sortedArray = [...favaddressbook].sort((a, b) => {
             let comparison = 0;
-            // if (sortField === 'changedAt' && a.changedAt && b.changedAt) {
-            //     const dateA = new Date(a.changedAt).getTime();
-            //     const dateB = new Date(b.changedAt).getTime();
-            //     comparison = dateB - dateA; // Most recent first
-            // }
             if (sortField !== 'changedAt' && a[sortField as keyof AddressBookFavoriteResponse] && b[sortField as keyof AddressBookFavoriteResponse]) {
                 const fieldA = a[sortField as keyof AddressBookFavoriteResponse];
                 const fieldB = b[sortField as keyof AddressBookFavoriteResponse];
@@ -79,7 +68,7 @@ const FavoriteTableCompanies: React.FC<FavoriteTableCompaniesProps> = ({ favaddr
                 console.error('Error Unfavoriting:', error);
             }
         },
-        [favaddressbook]
+        [deleteFavorite, fetchFavorites]
     );
 
     return (
@@ -87,19 +76,19 @@ const FavoriteTableCompanies: React.FC<FavoriteTableCompaniesProps> = ({ favaddr
             <div className='table-responsive table-overflow-control mt-2'>
                 <table className="table table-striped table-hover">
                     <thead>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th> Address Book Name</th>
-                        <th> Address Book Contact</th>
-                        <th> Address Book Email</th>
-                        <th> Address Book function</th>
-                    </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th> Address Book Name</th>
+                            <th> Address Book Contact</th>
+                            <th> Address Book Email</th>
+                            <th> Address Book function</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {favaddressbook.map((addressBook, index) => (
-                        <tr key={index}>
-                            <td>
+                        {favaddressbook.map((addressBook, index) => (
+                            <tr key={index}>
+                                <td>
                                     <span className='inlinefav'>
                                         <LuStarOff
                                             opacity={0.7}
@@ -109,26 +98,26 @@ const FavoriteTableCompanies: React.FC<FavoriteTableCompaniesProps> = ({ favaddr
                                         />
                                     </span>
 
-                            </td>
-                            <td>
-                                <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip id={`tooltip-copy-${addressBook.companyId}`}>{addressBook.companyId}</Tooltip>}>
-                                    <Button
-                                        variant="outline-info"
-                                        onClick={() => {
-                                            // Function to copy the internalId to the clipboard
-                                            navigator.clipboard.writeText(addressBook.companyId.toString());
-                                        }}
-                                    ><FaCopy />
-                                    </Button></OverlayTrigger>
-                            </td>
-                            <td>{addressBook.name}</td>
-                            <td>{addressBook.contact}</td>
-                            <td>{addressBook.email}</td>
-                            <td>{addressBook.function}</td>
-                        </tr>
-                    ))}
+                                </td>
+                                <td>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip id={`tooltip-copy-${addressBook.companyId}`}>{addressBook.companyId}</Tooltip>}>
+                                        <Button
+                                            variant="outline-info"
+                                            onClick={() => {
+                                                // Function to copy the internalId to the clipboard
+                                                navigator.clipboard.writeText(addressBook.companyId.toString());
+                                            }}
+                                        ><FaCopy />
+                                        </Button></OverlayTrigger>
+                                </td>
+                                <td>{addressBook.name}</td>
+                                <td>{addressBook.contact}</td>
+                                <td>{addressBook.email}</td>
+                                <td>{addressBook.function}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

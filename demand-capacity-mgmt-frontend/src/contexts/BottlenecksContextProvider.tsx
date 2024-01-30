@@ -1,16 +1,14 @@
-import React, { createContext, useEffect, useState } from 'react';
-import {useUser} from "./UserContext";
+import React, { createContext } from 'react';
 
 interface BottleneckContextData {
 
 }
 
 export const BottleneckContext = createContext<BottleneckContextData | undefined>(undefined);
- const BottleneckContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-    const { access_token } = useUser();
+const BottleneckContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
 
     return (
-        <BottleneckContext.Provider value={{ }}>
+        <BottleneckContext.Provider value={{}}>
             {props.children}
         </BottleneckContext.Provider>
     );

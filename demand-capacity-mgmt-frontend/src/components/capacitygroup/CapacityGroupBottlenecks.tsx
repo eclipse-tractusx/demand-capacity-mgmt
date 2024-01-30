@@ -181,13 +181,14 @@ const CapacityGroupBottlenecks: React.FC<WeeklyViewProps> = ({ capacityGroupID, 
                                                 .map(delta => ({ week: weekReport.week, delta: delta.delta, catName: delta.catName }))
                                         );
 
+                                        /* eslint-disable @typescript-eslint/no-unused-vars */
                                         let totalDelta = 0;
-                                        let tooltipContent = "";
+                                        let _tooltipContent = "";
                                         let hasCategoryData = false;
 
                                         categoryDeltas?.forEach(({ delta, week, catName }) => {
                                             totalDelta += delta;
-                                            tooltipContent += `Week ${week}: ${delta.toFixed(2)}\n`;
+                                            _tooltipContent += `Week ${week}: ${delta.toFixed(2)}\n`;
                                             if (week !== undefined && delta !== undefined) { // Check if week and delta exist
                                                 hasCategoryData = true;
                                             }

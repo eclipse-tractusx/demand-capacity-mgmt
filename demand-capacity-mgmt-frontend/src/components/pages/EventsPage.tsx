@@ -152,7 +152,7 @@ function EventsPage() {
         };
 
         fetchData();
-    }, [fetchFilteredEvents]);
+    }, [fetchFilteredEvents]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
 

@@ -35,18 +35,12 @@ interface FavoriteTableMaterialDemandsProps {
 }
 
 const FavoriteTableMaterialDemands: React.FC<FavoriteTableMaterialDemandsProps> = ({ materialdemands }) => {
-    const [sortField, setSortField] = useState<string>('changedAt');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    const [sortField] = useState<string>('changedAt');
+    const [sortOrder] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [eventsPerPage, setEventsPerPage] = useState<number>(5);
 
     const { deleteFavorite, fetchFavorites } = useContext(FavoritesContext)!;
-
-    const handleSort = useCallback((field: string) => {
-        setSortField(field);
-        setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc') as 'asc' | 'desc');
-    }, []);
-
 
     const sortedData = useMemo(() => {
         const sortedArray = [...materialdemands].sort((a, b) => {
@@ -56,11 +50,6 @@ const FavoriteTableMaterialDemands: React.FC<FavoriteTableMaterialDemandsProps> 
                 const dateB = new Date(b.changedAt).getTime();
                 comparison = dateB - dateA; // Most recent first
             }
-            // if (sortField !== 'changedAt' && a[sortField as keyof MaterialDemandFavoriteResponse] && b[sortField as keyof MaterialDemandFavoriteResponse]) {
-            //     const fieldA = a[sortField as keyof MaterialDemandFavoriteResponse];
-            //     const fieldB = b[sortField as keyof MaterialDemandFavoriteResponse];
-            //     comparison = fieldA.localeCompare(fieldB);
-            // }
             return sortOrder === 'asc' ? comparison : -comparison;
         });
         return sortedArray;
@@ -80,7 +69,7 @@ const FavoriteTableMaterialDemands: React.FC<FavoriteTableMaterialDemandsProps> 
                 console.error('Error Unfavoriting:', error);
             }
         },
-        [materialdemands]
+        [deleteFavorite, fetchFavorites]
     );
 
     return (

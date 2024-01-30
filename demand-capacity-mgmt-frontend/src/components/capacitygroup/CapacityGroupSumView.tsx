@@ -191,7 +191,7 @@ const CapacityGroupSumView: React.FC<WeeklyViewProps> = ({ capacityGroup,
   useEffect(() => {
     setWeeksForDateRange(generateWeeksForDateRange(startDate, endDate));
     updateParentDateRange(startDate, endDate);
-  }, [startDate, endDate]);
+  }, [updateParentDateRange, startDate, endDate]);
 
   return (
     <div className='container-xl'>

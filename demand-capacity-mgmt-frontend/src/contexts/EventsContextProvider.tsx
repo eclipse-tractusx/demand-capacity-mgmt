@@ -82,8 +82,7 @@ const EventsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   useEffect(() => {
     fetchEvents();
     fetchArchiveEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [access_token]);
+  }, [access_token]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   const fetchFilteredEvents = async (filters: {

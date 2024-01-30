@@ -21,7 +21,7 @@
  */
 
 
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { FavoritePayload, FavoriteResponse, FavoriteType } from '../interfaces/favorite_interfaces';
 import createAPIInstance from "../util/Api";
 import { customErrorToast } from '../util/ErrorMessagesHandler';
@@ -50,14 +50,14 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
 
     const api = createAPIInstance(access_token);
 
-    const fetchFavorites = async () => {
+    const fetchFavorites = useCallback(async () => {
         try {
             const response = await api.get('/favorite');
             setFavorites(response.data);
         } catch (error) {
             customErrorToast(objectType, errorCode, '00')
         }
-    };
+    }, [api, setFavorites, objectType, errorCode]);
 
     const fetchFavoritesByType = async (type: string): Promise<FavoriteResponse> => {
         try {
@@ -92,13 +92,11 @@ const FavoritesContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) 
 
     useEffect(() => {
         fetchFavorites();
-    }, []);  // Note the empty array, this ensures it runs only once.
+    }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
     const refresh = () => {
         fetchFavorites();
     };
-
-
 
     return (
         <FavoritesContext.Provider value={{ favorites, fetchFavorites, refresh, fetchFavoritesByType, addFavorite, deleteFavorite }}>

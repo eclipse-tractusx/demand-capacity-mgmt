@@ -34,27 +34,16 @@ interface FavoriteTableCompaniesProps {
 }
 
 const FavoriteTableCompanies: React.FC<FavoriteTableCompaniesProps> = ({ favcompanies }) => {
-    const [sortField, setSortField] = useState<string>('changedAt');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    const [sortField] = useState<string>('changedAt');
+    const [sortOrder] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [eventsPerPage, setEventsPerPage] = useState<number>(5);
 
     const { deleteFavorite, fetchFavorites } = useContext(FavoritesContext)!;
 
-    const handleSort = useCallback((field: string) => {
-        setSortField(field);
-        setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc') as 'asc' | 'desc');
-    }, []);
-
-
     const sortedData = useMemo(() => {
         const sortedArray = [...favcompanies].sort((a, b) => {
             let comparison = 0;
-            // if (sortField === 'changedAt' && a.changedAt && b.changedAt) {
-            //     const dateA = new Date(a.changedAt).getTime();
-            //     const dateB = new Date(b.changedAt).getTime();
-            //     comparison = dateB - dateA; // Most recent first
-            // }
             if (sortField !== 'changedAt' && a[sortField as keyof CompanyDtoFavoriteResponse] && b[sortField as keyof CompanyDtoFavoriteResponse]) {
                 const fieldA = a[sortField as keyof CompanyDtoFavoriteResponse];
                 const fieldB = b[sortField as keyof CompanyDtoFavoriteResponse];
@@ -79,7 +68,7 @@ const FavoriteTableCompanies: React.FC<FavoriteTableCompaniesProps> = ({ favcomp
                 console.error('Error Unfavoriting:', error);
             }
         },
-        [favcompanies]
+        [deleteFavorite, fetchFavorites]
     );
 
     return (

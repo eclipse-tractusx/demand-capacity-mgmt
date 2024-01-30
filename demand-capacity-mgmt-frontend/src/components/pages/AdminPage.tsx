@@ -27,12 +27,10 @@ import { FaBell, FaChartLine, FaClock, FaCogs, FaFingerprint, FaHeartbeat, FaKey
 import { FcEngineering, FcQuestions } from 'react-icons/fc';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
-import { LoadingMessage } from '../common/LoadingMessages';
 import ThresholdPage from "./ThresholdPage";
 
 const AdminPage = () => {
     const { user } = useUser();
-    const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('general');
     const [showHelpModal, setShowHelpModal] = useState(false);
 
@@ -42,11 +40,7 @@ const AdminPage = () => {
         if (user?.role !== 'ADMIN') {
             navigate('/error');
         }
-    }, [user]);
-
-    if (loading) {
-        return <LoadingMessage />; // Show loading spinner when data is loading
-    }
+    }, [user, navigate]);
 
     const handleHelpModalClose = () => setShowHelpModal(false);
     const handleQuestionButtonClick = () => setShowHelpModal(true);
