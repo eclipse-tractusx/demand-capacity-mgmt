@@ -34,7 +34,7 @@ import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider
 import EventsContextProvider from '../../contexts/EventsContextProvider';
 import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
 import { useUser } from "../../contexts/UserContext";
-import { getUserName } from '../../interfaces/user_interface';
+import { getUserName } from '../../interfaces/user_interfaces';
 import { logout } from "../../util/Auth";
 import InfoMenu from "../menu/InfoMenu";
 

@@ -48,7 +48,6 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
   const api = createAPIInstance(access_token);
 
   const objectType = '1';
-  let errorCode = '';
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchDemandPropsWithRetry = useMemo(() => async (maxRetries = 3) => {
@@ -78,8 +77,7 @@ const DemandContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
 
   const fetchDemandProps = useCallback(() => {
     fetchDemandPropsWithRetry();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [access_token]);
+  }, [access_token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetchDemandProps();

@@ -29,6 +29,7 @@ import { EventsContext } from '../../contexts/EventsContextProvider';
 import { SingleCapacityGroup } from '../../interfaces/capacitygroup_interfaces';
 import { DemandProp } from "../../interfaces/demand_interfaces";
 import { EventProp } from '../../interfaces/event_interfaces';
+import { defaultEndDateString, defaultStartDateString } from '../../util/Defaults';
 import ContactsBoardView from '../addessBook/BoardView';
 import CapacityGroupBottlenecks from '../capacitygroup/CapacityGroupBottlenecks';
 import CapacityGroupDemandsList from '../capacitygroup/CapacityGroupDemandsList';
@@ -55,8 +56,9 @@ function CapacityGroupDetailsPage() {
     const navigate = useNavigate()
 
 
-    const [startDate, setStartDate] = useState<Date>(new Date());
-    const [endDate, setEndDate] = useState<Date>(new Date());
+
+    const [startDate, setStartDate] = useState<Date>(new Date(defaultStartDateString));
+    const [endDate, setEndDate] = useState<Date>(new Date(defaultEndDateString));
 
 
     useEffect(() => {
@@ -103,7 +105,7 @@ function CapacityGroupDetailsPage() {
                 }
             })();
         }
-    }, [id, getCapacityGroupById, fetchFilteredEvents, navigate, getDemandbyId]);
+    }, [id, getCapacityGroupById, navigate, getDemandbyId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     function updateParentDateRange(start: Date, end: Date) {
         setStartDate(start);
@@ -176,7 +178,7 @@ function CapacityGroupDetailsPage() {
                 </div>
             </>
         );
-    }, [capacityGroup, capacityGroupEvents, materialDemands, activeTab, startDate, endDate]);
+    }, [capacityGroup, capacityGroupEvents, materialDemands, companyids, activeTab, startDate, endDate]);
 
     return memoizedComponent;
 }

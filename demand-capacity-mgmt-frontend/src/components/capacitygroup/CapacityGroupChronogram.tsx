@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart, Brush, CartesianGrid, ComposedChart, Legend, Line, ReferenceArea, Tooltip, XAxis, YAxis } from "recharts";
 import { CapacityGroupData, SingleCapacityGroup } from "../../interfaces/capacitygroup_interfaces";
 import { DemandProp } from "../../interfaces/demand_interfaces";
@@ -69,17 +69,20 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
     const processedCapacities = [...rawCapacities, ...missingCapacities];
 
     // Calculate demand sums by week
-    const demandSumsByWeek: { [key: string]: number } = {};
-    if (materialDemands) {
-        materialDemands.forEach((demand) => {
-            demand.demandSeries?.forEach((demandSeries) => {
-                demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
-                    const week = demandSeriesValue.calendarWeek;
-                    demandSumsByWeek[week] = (demandSumsByWeek[week] || 0) + demandSeriesValue.demand;
+    const demandSumsByWeek = useMemo(() => {
+        const sumsByWeek: { [key: string]: number } = {};
+        if (materialDemands) {
+            materialDemands.forEach((demand) => {
+                demand.demandSeries?.forEach((demandSeries) => {
+                    demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+                        const week = demandSeriesValue.calendarWeek;
+                        sumsByWeek[week] = (sumsByWeek[week] || 0) + demandSeriesValue.demand;
+                    });
                 });
             });
-        });
-    }
+        }
+        return sumsByWeek;
+    }, [materialDemands, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const demandSumsMapRef = useRef<{ [key: string]: number }>({});
 
@@ -108,7 +111,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
                 return d.dateEpoch >= startDate.getTime() && d.dateEpoch <= endDate.getTime();
             }));
         }
-    }, [demandSumsMapRef, startDate, endDate]);
+    }, [demandSumsMapRef, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const weekTickFormatter = (tick: string) => {
         const dateParts = tick.split("-").map((part) => parseInt(part, 10));

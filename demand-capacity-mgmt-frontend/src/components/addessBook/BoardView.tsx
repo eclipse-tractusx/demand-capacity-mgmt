@@ -38,7 +38,8 @@ const ContactsBoardView: React.FC<ContactsBoardViewProps> = ({ companyids, isMod
     const [filteredCompanies, setFilteredCompanies] = useState<CompanyData[]>([]);
 
     //For future implementation
-    const [favoriteCompanies, setfavoriteCompanies] = useState<string[]>([]);
+    //const [favoriteCompanies, setfavoriteCompanies] = useState<string[]>([]);
+    const [favoriteCompanies] = useState<string[]>([]);
 
     useEffect(() => {
         if (companyids && companyids.length > 0) {

@@ -1,5 +1,27 @@
-import React, { createContext, useEffect, useState } from 'react';
-import { ThresholdProp } from '../interfaces/Threshold_interfaces';
+/*
+ *  *******************************************************************************
+ *  Copyright (c) 2023 BMW AG
+ *  Copyright (c) 2023 Contributors to the Eclipse Foundation
+ *
+ *    See the NOTICE file(s) distributed with this work for additional
+ *    information regarding copyright ownership.
+ *
+ *    This program and the accompanying materials are made available under the
+ *    terms of the Apache License, Version 2.0 which is available at
+ *    https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *    License for the specific language governing permissions and limitations
+ *    under the License.
+ *
+ *    SPDX-License-Identifier: Apache-2.0
+ *    ********************************************************************************
+ */
+
+import React, { createContext, useCallback, useEffect, useState } from 'react';
+import { ThresholdProp } from '../interfaces/threshold_interfaces';
 import createAPIInstance from "../util/Api";
 import { useUser } from "./UserContext";
 
@@ -12,7 +34,6 @@ interface ThresholdsContextData {
     updateCompanyThresholds: (companyRequest: CompanyRequest) => Promise<void>;
     addNewThreshold: (requestBody: { percentage: number }) => Promise<void>;
     deleteThresholds: (ruleRequests: RuleRequest[]) => Promise<void>;
-
 }
 
 export interface RuleRequest {
@@ -37,7 +58,7 @@ const ThresholdContextProvider: React.FC<React.PropsWithChildren<{}>> = ({ child
     const [thresholds, setThresholds] = useState<ThresholdProp[]>([]);
     const [enabledThresholds, setEnabledThresholds] = useState<ThresholdProp[]>([]);
 
-    const fetchThresholds = async () => {
+    const fetchThresholds = useCallback(async () => {
         const api = createAPIInstance(access_token);
         try {
             const response = await api.get('/rules/');
@@ -47,7 +68,7 @@ const ThresholdContextProvider: React.FC<React.PropsWithChildren<{}>> = ({ child
         } catch (error) {
             console.error('Error fetching thresholds:', error);
         }
-    };
+    }, [access_token]);
 
     const updateThresholds = async (ruleRequests: RuleRequest[]) => {
         const api = createAPIInstance(access_token);
@@ -103,7 +124,7 @@ const ThresholdContextProvider: React.FC<React.PropsWithChildren<{}>> = ({ child
 
     useEffect(() => {
         fetchThresholds();
-    }, [access_token]);
+    }, [fetchThresholds]);
 
     return (
         <ThresholdsContext.Provider value={{ thresholds, enabledThresholds, fetchThresholds, updateThresholds, updateCGThresholds, updateCompanyThresholds, addNewThreshold, deleteThresholds }}>

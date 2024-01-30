@@ -103,8 +103,7 @@ const AlertsContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => 
             fetchTriggeredAlertsWithRetry();
             fetchConfiguredAlertsWithRetry();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [retryCount, maxRetries]);
+    }, [retryCount, maxRetries]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
     const configureAlert = async (newConfiguredAlert: ConfiguredAlertProps): Promise<ConfiguredAlertProps | undefined> => {

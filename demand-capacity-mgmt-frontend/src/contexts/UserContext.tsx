@@ -21,7 +21,7 @@
  */
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { User } from "../interfaces/user_interface";
+import { User } from "../interfaces/user_interfaces";
 import { refreshToken as fetchNewToken } from "../util/RefreshToken";
 
 interface UserContextProps {

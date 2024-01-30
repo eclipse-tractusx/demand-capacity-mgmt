@@ -84,19 +84,19 @@ const CompanyEditModal: React.FC<CompanyModalProps> = ({
             return;
         }
 
-        const newCompany: CompanyData = {
-            id: formData.id || '',
-            companyName: formData.companyName,
-            bpn: formData.bpn,
-            street: formData.street,
-            zipCode: formData.zipCode,
-            country: formData.country,
-            number: formData.number,
-            contacts: formData.contacts,
-            bpnType: formData.bpnType,
-            edc_url: formData.edc_url,
-            isEdcRegistered: formData.isEdcRegistered,
-        };
+        /* const newCompany: CompanyData = {
+             id: formData.id || '',
+             companyName: formData.companyName,
+             bpn: formData.bpn,
+             street: formData.street,
+             zipCode: formData.zipCode,
+             country: formData.country,
+             number: formData.number,
+             contacts: formData.contacts,
+             bpnType: formData.bpnType,
+             edc_url: formData.edc_url,
+             isEdcRegistered: formData.isEdcRegistered,
+         };*/
 
         try {
             if (isEditMode) {

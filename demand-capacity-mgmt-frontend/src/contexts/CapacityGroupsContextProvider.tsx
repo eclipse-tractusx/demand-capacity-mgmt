@@ -82,8 +82,7 @@ const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
     if (retryCount < maxRetries) {
       fetchCapacityGroupsWithRetry();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [retryCount, maxRetries]);
+  }, [retryCount, maxRetries]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {

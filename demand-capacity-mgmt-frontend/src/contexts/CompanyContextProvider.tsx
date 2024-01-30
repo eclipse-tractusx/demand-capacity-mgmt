@@ -30,9 +30,11 @@ import { useUser } from "./UserContext";
 interface CompanyContextData {
   companies: CompanyData[];
   topCompanies: CompanyData[];
+  getCompanybyId: (companyID: string) => Promise<CompanyData | undefined>; // Update return type
   findCompanyByCompanyID: (companyID: string) => CompanyData;
   findCompanyByBpn: (companyBpn: string) => CompanyData;
 }
+
 
 export const CompanyContext = createContext<CompanyContextData | undefined>(undefined);
 
@@ -40,7 +42,6 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   const { access_token } = useUser();
   const [companies, setCompanies] = useState<CompanyData[]>([]);
   const [topCompanies, setTopCompanies] = useState<CompanyData[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 3;
   const api = createAPIInstance(access_token);
@@ -50,8 +51,6 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
 
 
   const fetchCompaniesWithRetry = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
-
     try {
       const response = await api.get('/company', {});
       const result: CompanyData[] = await response.data;
@@ -66,10 +65,8 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
         setRetryCount(0);
         customErrorToast(objectType, errorCode, '00')
       }
-    } finally {
-      setIsLoading(false);
     }
-  }, [retryCount, setCompanies, setIsLoading, setRetryCount, api]);
+  }, [retryCount, setCompanies, setRetryCount, api]);
 
   const getCompanybyId = async (id: string): Promise<CompanyData | undefined> => {
     try {
@@ -105,7 +102,7 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   useEffect(() => {
     fetchCompaniesWithRetry();
     fetchTopCompanies();
-  }, [access_token]);
+  }, [access_token]);// eslint-disable-line react-hooks/exhaustive-deps
 
 
 
@@ -143,7 +140,7 @@ const CompanyContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) =>
   };
 
   return (
-    <CompanyContext.Provider value={{ companies, topCompanies, findCompanyByCompanyID, findCompanyByBpn }}>
+    <CompanyContext.Provider value={{ companies, topCompanies, findCompanyByCompanyID, getCompanybyId, findCompanyByBpn }}>
       {props.children}
     </CompanyContext.Provider>
   );

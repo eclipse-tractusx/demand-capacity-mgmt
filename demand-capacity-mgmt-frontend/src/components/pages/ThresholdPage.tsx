@@ -25,7 +25,7 @@ import { toast } from 'react-toastify';
 import { CapacityGroupContext } from "../../contexts/CapacityGroupsContextProvider";
 import { CompanyContext } from "../../contexts/CompanyContextProvider";
 import { RuleRequest, ThresholdsContext } from "../../contexts/ThresholdsContextProvider";
-import { ThresholdProp } from "../../interfaces/Threshold_interfaces";
+import { ThresholdProp } from "../../interfaces/threshold_interfaces";
 
 function ThresholdPage() {
     const { thresholds, deleteThresholds, fetchThresholds, addNewThreshold, enabledThresholds, updateThresholds, updateCGThresholds, updateCompanyThresholds } = useContext(ThresholdsContext)!;
@@ -37,9 +37,7 @@ function ThresholdPage() {
     const [editableCompanyThresholds, setEditableCompanyThresholds] = useState<ThresholdProp[]>([]);
     const [customThreshold, setCustomThreshold] = useState<string>('');
     const [selectedCapacityGroup, setSelectedCapacityGroup] = useState<string>("");
-    const [isCapacityGroupSelected, setIsCapacityGroupSelected] = useState(false);
     const [selectedCompany, setSelectedCompany] = useState<string>("");
-    const [openItems, setOpenItems] = useState<Set<string>>(new Set());
     const initializeCheckboxes = (thresholds: ThresholdProp[]): ThresholdProp[] => {
         return thresholds.map(threshold => ({ ...threshold, enabled: false }));
     };

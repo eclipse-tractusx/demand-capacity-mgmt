@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import { User } from "../interfaces/user_interface";
+import { User } from "../interfaces/user_interfaces";
 import AuthApi from '../util/AuthApi';
 
 export const isAuthenticated = async (refresh_token: string | null): Promise<boolean> => {

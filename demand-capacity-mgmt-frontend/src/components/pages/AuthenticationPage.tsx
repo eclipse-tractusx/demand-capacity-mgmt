@@ -28,7 +28,7 @@ import { PulseLoader } from "react-spinners"; // Import PacmanLoader component f
 import { toast } from 'react-toastify';
 import '../../Auth.css';
 import { useUser } from "../../contexts/UserContext";
-import { User } from '../../interfaces/user_interface';
+import { User } from '../../interfaces/user_interfaces';
 import { login } from '../../util/Auth';
 
 const AuthenticationComponent: React.FC = () => {

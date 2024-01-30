@@ -1,3 +1,25 @@
+/*
+ * ******************************************************************************
+ * Copyright (c) 2023 BMW AG
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * *******************************************************************************
+ */
+
 import { FormEvent, useContext, useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
@@ -34,7 +56,6 @@ const ConfigureAlertModal = () => {
     const [selectedCapacityGroups, setSelectedCapacityGroups] = useState<any[]>([]);
     const [demandOptions, setDemandOptions] = useState<any[]>([]); // State to store options for Creatable component
     const [capacityGroupsOptions, setCapacityGroupsOptions] = useState<any[]>([]); // State to store options for Creatable component
-    const [isLoading, setIsLoading] = useState(false);
     const { demandprops } = useContext(DemandContext)!;  // Make sure to get the fetchDemands function from the context.
     const { capacitygroups } = useContext(CapacityGroupContext)!;  // Make sure to get the fetchDemands function from the context.
     const [alertType, setAlertType] = useState('');
@@ -46,7 +67,6 @@ const ConfigureAlertModal = () => {
     const [thresholdError, setThresholdError] = useState<string>('');
     const [thresholdTypeError, setThresholdTypeError] = useState<string>('');
     const [dedicatedAlertsError, setDedicatedAlertsError] = useState<string>('');
-    const [successMessage, setShowSuccessMessage] = useState(false);
 
     const handleFormSubmit = async (e: FormEvent) => {
         let configuredAlertProps = {
@@ -67,14 +87,12 @@ const ConfigureAlertModal = () => {
         } catch (error) {
             console.error('Error creating demand:', error);
         }
-        setShowSuccessMessage(true);
         // refreshConfiguredAlerts();
         //TODO : Saja refresh configured Alerts again
     };
 
     useEffect(() => {
         try {
-            setIsLoading(true);
             const favoriteIdsSet = new Set<string>(); // Set to store unique favorite material demand IDs
             let materialDemandOptions: any[] = [];
             let capacityGroupsOpt: any[] = [];
@@ -131,8 +149,6 @@ const ConfigureAlertModal = () => {
             setCapacityGroupsOptions(capacityGroupsOpt); // Update options state with combined material demands
         } catch (error) {
             console.error('Error fetching filtered capacity groups:', error);
-        } finally {
-            setIsLoading(false);
         }
     }, [demandprops, capacitygroups]);
 
@@ -174,26 +190,26 @@ const ConfigureAlertModal = () => {
     const validateNavigation = () => {
         let dedicatedAlerts1: DedicatedAlert[] = [];
         selectedDemands.map(md => {
-            dedicatedAlerts1.push({
+            return dedicatedAlerts1.push({
                 type: "MATERIAL_DEMAND",
                 objectId: md.id
-            })
+            });
         });
         selectedCapacityGroups.map(cg => {
-            dedicatedAlerts1.push({
+            return dedicatedAlerts1.push({
                 type: "CAPACITY_GROUP",
                 objectId: cg.internalId
-            })
+            });
         });
         const x = dedicatedAlerts1;
 
         setAlertDedicatedAlerts(x);
 
         const errors = {
-            monitoredObject: alertMonitoredObject.length == 0 ? 'Monitored Objects is required.' : '',
-            threshold: step == 3 && !alertThreshold ? 'Threshold is required.' : '',
-            thresholdType: step == 3 && !alertType ? 'Threshold Type is required.' : '',
-            dedicatedAlerts: step == 2 && (alertMonitoredObject == "DEDICATED" && x.length == 0) ? 'Dedicated Alerts is required. ' : '',
+            monitoredObject: alertMonitoredObject.length === 0 ? 'Monitored Objects is required.' : '',
+            threshold: step === 3 && !alertThreshold ? 'Threshold is required.' : '',
+            thresholdType: step === 3 && !alertType ? 'Threshold Type is required.' : '',
+            dedicatedAlerts: step === 2 && (alertMonitoredObject === "DEDICATED" && x.length === 0) ? 'Dedicated Alerts is required. ' : '',
         };
 
         // Set error messages
@@ -216,7 +232,7 @@ const ConfigureAlertModal = () => {
             }
         } else if (formState.type === 'ABSOLUTE') {
             // Validate for ABSOLUTE type
-            if (!isNaN(numericValue) && numericValue != 0) {
+            if (!isNaN(numericValue) && numericValue !== 0) {
                 updatedThresholdError = "";//setThresholdError('');
             } else {
                 // Display an error message or handle invalid input
@@ -225,21 +241,19 @@ const ConfigureAlertModal = () => {
         }
         setThresholdError(updatedThresholdError);
 
-        if ((step == 1 && errors.monitoredObject.length == 0) ||
-            (step == 2 && errors.dedicatedAlerts.length == 0) ||
-            // (step == 4 && thresholdTypeError.length == 0 && thresholdError.length == 0) ||
-            (step == 3 && errors.thresholdType.length == 0 && updatedThresholdError.length == 0)) {
+        if ((step === 1 && errors.monitoredObject.length === 0) ||
+            (step === 2 && errors.dedicatedAlerts.length === 0) ||
+            (step === 3 && errors.thresholdType.length === 0 && updatedThresholdError.length === 0)) {
 
-            if (alertMonitoredObject != "DEDICATED" && step == 1) {
+            if (alertMonitoredObject !== "DEDICATED" && step === 1) {
                 // skip the select Demands step
                 setStep(step + 2);
             } else {
                 setStep(step + 1);
             }
         }
-
-
     }
+
 
     const handleThresholdTypeChange = (value: string) => {
         setFormState((prevFormState) => ({
@@ -304,7 +318,7 @@ const ConfigureAlertModal = () => {
                         </div>}
 
 
-                    {(step === 2 && alertMonitoredObject == "DEDICATED") &&
+                    {(step === 2 && alertMonitoredObject === "DEDICATED") &&
                         <div className="step2">
                             <StepBreadcrumbs welcome={false} maxSteps={4} currentStep={2} />
                             <center><h5>Select Dedicated</h5></center>

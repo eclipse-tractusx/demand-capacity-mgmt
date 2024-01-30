@@ -89,8 +89,7 @@ const DemandList: React.FC<{
       fetchDemandProps();
       fetchFavorites();
       setCurrentPage(1);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [showWizard, searchQuery]);
+    }, [showWizard, searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSort = (column: string | null) => {
       if (sortColumn === column) {
@@ -388,7 +387,7 @@ const DemandList: React.FC<{
             </td>
           </tr>
         )),
-      [slicedDemands, favoriteDemands, toggleFavorite, selectedDemands, handleCheckboxChange]
+      [slicedDemands, favoriteDemands, toggleFavorite, selectedDemands, handleCheckboxChange, user]
     );
 
 

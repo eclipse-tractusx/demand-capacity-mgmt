@@ -36,7 +36,7 @@ import {
   FavoriteType,
   SingleCapacityGroupFavoriteResponse
 } from "../../interfaces/favorite_interfaces";
-import { getUserGreeting } from '../../interfaces/user_interface';
+import { getUserGreeting } from '../../interfaces/user_interfaces';
 import CompanyDetailsInteractionModal from '../common/CompanyDetailsInteractionModal';
 import { LoadingMessage } from '../common/LoadingMessages';
 import Pagination from '../common/Pagination';
@@ -79,7 +79,7 @@ const CapacityGroupsList: React.FC = () => {
     } catch (error) {
       console.error('Error fetching favorites by type in DemandList:', error);
     }
-  }, []);
+  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRefreshClick = useCallback(async () => {
     await fetchCapacityGroupsWithRetry();
@@ -272,7 +272,7 @@ const CapacityGroupsList: React.FC = () => {
           </td>
         </tr>
       )),
-    [slicedcapacitygroups, favoriteCapacityGroups, toggleFavorite]
+    [slicedcapacitygroups, favoriteCapacityGroups, findCompanyByBpn, toggleFavorite, user]
   );
 
   return (
