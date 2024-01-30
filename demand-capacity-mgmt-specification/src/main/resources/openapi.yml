@@ -30,7 +30,6 @@ servers:
 
 paths:
 
-
   /cg/ruleset:
     get:
       summary: generate the capacity group rulesets
@@ -106,7 +105,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CDRulesetResponse'
 
-   /year/report:
+  /year/report:
     post:
       summary: Generate a year report for a given capacity group ID and date range
       operationId: generateYearReport
@@ -133,6 +132,20 @@ paths:
           
 
   /alerts:
+    get:
+      tags:
+        - alerts
+      summary: get alerts
+      operationId: getAlerts
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertResponse'
     post:
       tags:
         - alerts
@@ -151,60 +164,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AlertResponse'
-
-    get:
-      tags:
-        - alerts
-      summary: get alerts
-      operationId: getAlerts
-      responses:
-        200:
-          description: General greeting
+  /triggeredAlerts:
+      post:
+        tags:
+          - alerts
+        summary: configureTriggeredAlert
+        operationId: configureTriggeredAlert
+        requestBody:
+          required: true
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AlertResponse'
-                  
-                  
-
-
- /triggeredAlerts:
-    post:
-      tags:
-        - alerts
-      summary: configureTriggeredAlert
-      operationId: configureTriggeredAlert
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TriggeredAlertRequest'
-      responses:
-        200:
-          description: General greeting
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TriggeredAlertResponse'
-    get:
-      tags:
-        - alerts
-      summary: get triggered alerts
-      operationId: getTriggeredAlerts
-      responses:
-        200:
-          description: General greeting
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
+                $ref: '#/components/schemas/TriggeredAlertRequest'
+        responses:
+          200:
+            description: General greeting
+            content:
+              application/json:
+                schema:
                   $ref: '#/components/schemas/TriggeredAlertResponse'
+      get:
+        tags:
+          - alerts
+        summary: get triggered alerts
+        operationId: getTriggeredAlerts
+        responses:
+          200:
+            description: General greeting
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TriggeredAlertResponse'
                   
-    /edc/token:
+  /edc/token:
     post:
       tags:
         - EDC
@@ -2679,6 +2673,25 @@ components:
           type: number
           format: double
 
+    AccessTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        expires_in:
+          type: number
+          format: long
+        refresh_expires_in:
+          type: number
+          format: long
+        token_type:
+          type: string
+        not-before-policy:
+          type: number
+          format: long
+        scope:
+          type: string
+
     CGRulesetRequest:
       type: object
       properties:
@@ -4000,19 +4013,3 @@ components:
           edc: https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/TransferState
         state: STARTED
-
-    AccessTokenResponse:
-      type: object
-      properties:
-        access_token:
-          type: string
-        expires_in:
-          type: long
-        refresh_expires_in:
-          type: long
-        token_type:
-          type: string
-        not-before-policy:
-          type: long
-        scope:
-          type: string
