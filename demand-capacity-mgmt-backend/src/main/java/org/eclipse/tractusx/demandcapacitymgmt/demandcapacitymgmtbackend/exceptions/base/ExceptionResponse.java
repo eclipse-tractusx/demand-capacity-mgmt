@@ -22,5 +22,4 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base;
 
-public interface ExceptionResponse {
-}
+public interface ExceptionResponse {}

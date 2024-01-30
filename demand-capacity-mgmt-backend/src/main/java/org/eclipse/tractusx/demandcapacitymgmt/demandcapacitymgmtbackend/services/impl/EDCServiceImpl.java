@@ -1,6 +1,29 @@
+/*
+ *  *******************************************************************************
+ *  Copyright (c) 2023 BMW AG
+ *  Copyright (c) 2023 Contributors to the Eclipse Foundation
+ *
+ *    See the NOTICE file(s) distributed with this work for additional
+ *    information regarding copyright ownership.
+ *
+ *    This program and the accompanying materials are made available under the
+ *    terms of the Apache License, Version 2.0 which is available at
+ *    https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *    License for the specific language governing permissions and limitations
+ *    under the License.
+ *
+ *    SPDX-License-Identifier: Apache-2.0
+ *    ********************************************************************************
+ */
+
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import io.github.cdimascio.dotenv.Dotenv;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -15,8 +38,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
-import io.github.cdimascio.dotenv.Dotenv;
-
 
 @RequiredArgsConstructor
 @Service
@@ -49,7 +70,6 @@ public class EDCServiceImpl implements EDCService {
 
     @Override
     public Mono<AccessTokenResponse> getAccessToken() {
-
         WebClient client = WebClient
             .builder()
             .baseUrl(tokenEndpoint)
@@ -91,12 +111,10 @@ public class EDCServiceImpl implements EDCService {
             .bodyValue(dto)
             .retrieve()
             .bodyToMono(IdResponse.class)
-
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
     }
 
     @Override
-
     public List<Asset> createAssetRequest(QuerySpec dto) {
         return webClientCreation("/management/v2/assets/request")
             .post()
@@ -137,17 +155,14 @@ public class EDCServiceImpl implements EDCService {
             .doOnError(this::logErrorDetails)
             .block();
         return null;
-
     }
 
     @Override
     public Mono<IdResponse> createPolicy(PolicyDefinitionInput dto) {
-
         return webClientCreation("/management/v2/policydefinitions")
             .post()
             .header("x-api-key", apiKey)
             .bodyValue(dto)
-
             .retrieve()
             .bodyToMono(IdResponse.class)
             .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(3)));
@@ -193,7 +208,6 @@ public class EDCServiceImpl implements EDCService {
 
     @Override
     public Mono<IdResponse> createContractDef(ContractDefinitionInput dto) {
-
         return webClientCreation("/management/v2/contractdefinitions")
             .post()
             .header("x-api-key", apiKey)
@@ -239,7 +253,6 @@ public class EDCServiceImpl implements EDCService {
             .doOnError(this::logErrorDetails)
             .block();
         return null;
-
     }
 
     @Override
