@@ -28,6 +28,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,11 +48,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.D
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 
 @RequiredArgsConstructor
 @Service
@@ -343,7 +342,7 @@ public class DemandServiceImpl implements DemandService {
         Optional<MaterialDemandEntity> demand = materialDemandRepository.findById(uuid);
 
         if (demand.isEmpty()) {
-            throw new NotFoundException("4","04");
+            throw new NotFoundException("4", "04");
         }
 
         return demand.get();
@@ -415,11 +414,11 @@ public class DemandServiceImpl implements DemandService {
 
     private void validateMaterialDemandRequestFields(MaterialDemandRequest materialDemandRequest) {
         if (!UUIDUtil.checkValidUUID(materialDemandRequest.getCustomerId())) {
-            throw new BadRequestException("2","13");
+            throw new BadRequestException("2", "13");
         }
 
         if (!UUIDUtil.checkValidUUID(materialDemandRequest.getSupplierId())) {
-            throw new BadRequestException("2","14");
+            throw new BadRequestException("2", "14");
         }
 
         materialDemandRequest
@@ -427,10 +426,10 @@ public class DemandServiceImpl implements DemandService {
             .forEach(
                 materialDemandSeries -> {
                     if (!UUIDUtil.checkValidUUID(materialDemandSeries.getCustomerLocationId())) {
-                        throw new BadRequestException("2","13");
+                        throw new BadRequestException("2", "13");
                     }
                     if (!UUIDUtil.checkValidUUID(materialDemandSeries.getDemandCategoryId())) {
-                        throw new BadRequestException("8","22");
+                        throw new BadRequestException("8", "22");
                     }
 
                     List<LocalDateTime> dates = materialDemandSeries
@@ -446,7 +445,7 @@ public class DemandServiceImpl implements DemandService {
                         Boolean.TRUE.equals(!DataConverterUtil.checkListAllMonday(dates)) ||
                         Boolean.TRUE.equals(!DataConverterUtil.checkDatesSequence(dates))
                     ) {
-                        throw new BadRequestException("1","11");
+                        throw new BadRequestException("1", "11");
                     }
 
                     materialDemandSeries.getExpectedSupplierLocationId().forEach(UUIDUtil::checkValidUUID);
@@ -465,7 +464,7 @@ public class DemandServiceImpl implements DemandService {
                         .allMatch(expectedSuppliersLocation::contains);
 
                     if (!hasAllCompanies) {
-                        throw new BadRequestException("1","12");
+                        throw new BadRequestException("1", "12");
                     }
                 }
             );

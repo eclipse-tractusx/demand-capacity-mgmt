@@ -2,6 +2,8 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CGRulesetRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CGRulesetResponse;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupRuleSetEntity;
@@ -9,13 +11,11 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.reposit
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupRuleSetService;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.UUID;
-
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class CapacityGroupRuleSetServiceImpl implements CapacityGroupRuleSetService {
+
     private final CapacityGroupRuleSetRepository repository;
 
     @Override
@@ -39,13 +39,12 @@ public class CapacityGroupRuleSetServiceImpl implements CapacityGroupRuleSetServ
     @Override
     public CGRulesetResponse applyCapacityGroupRuleSets(CGRulesetRequest request) {
         UUID cgUUID = UUID.fromString(request.getCgID());
-        CapacityGroupRuleSetEntity entity = repository.findById(cgUUID)
-                .orElse(new CapacityGroupRuleSetEntity());
+        CapacityGroupRuleSetEntity entity = repository.findById(cgUUID).orElse(new CapacityGroupRuleSetEntity());
 
         entity.setCgID(cgUUID);
         entity.setRuled_percentage(request.getPercentages());
         CGRulesetResponse response = new CGRulesetResponse();
-        if(entity.getRuled_percentage().equals("{}")){
+        if (entity.getRuled_percentage().equals("{}")) {
             repository.deleteByCgID(cgUUID);
             response.setCgID(cgUUID.toString());
         } else {

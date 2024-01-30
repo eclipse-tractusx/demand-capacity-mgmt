@@ -3,16 +3,15 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddRuleRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.Rule;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.RulesetRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.RulesetService;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -43,7 +42,7 @@ public class RulesetServiceImpl implements RulesetService {
         try {
             rulesEnts = rulesetRepository.findAll();
             for (Rule rule : rulesEnts) {
-                if (rule.isEnabled()){
+                if (rule.isEnabled()) {
                     rules.add(convertToDto(rule));
                 }
             }

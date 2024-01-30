@@ -23,6 +23,10 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UnitMeasure;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.UnitMeasureEntity;
@@ -30,11 +34,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.excepti
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.UnitMeasureRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UnityOfMeasureService;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -48,9 +47,8 @@ public class UnityOfMeasureServiceImpl implements UnityOfMeasureService {
         Optional<UnitMeasureEntity> unitMeasure = unitMeasureRepository.findById(id);
 
         if (unitMeasure.isEmpty()) {
-            throw new BadRequestException("7","23");
-        }
-        else return convertEntityToDto(unitMeasure.get());
+            throw new BadRequestException("7", "23");
+        } else return convertEntityToDto(unitMeasure.get());
     }
 
     @Override

@@ -24,9 +24,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.except
 
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.CustomException;
 
-public class InternalServerErrorException
-    extends RuntimeException
-    implements CustomException {
+public class InternalServerErrorException extends RuntimeException implements CustomException {
 
     private final String code;
     private final String lastDigits;
@@ -45,5 +43,4 @@ public class InternalServerErrorException
     public String lastDigits() {
         return lastDigits;
     }
-
 }

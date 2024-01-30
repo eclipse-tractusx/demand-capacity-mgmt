@@ -3,12 +3,11 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.CgRulesetApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CGRulesetRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CGRulesetResponse;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupRuleSetService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -22,7 +21,8 @@ public class CapacityGroupRuleSetController implements CgRulesetApi {
     }
 
     @Override
-    public ResponseEntity<CGRulesetResponse> modifyCapacityGroupRuleset(CGRulesetRequest cgRulesetRequest) throws Exception {
+    public ResponseEntity<CGRulesetResponse> modifyCapacityGroupRuleset(CGRulesetRequest cgRulesetRequest)
+        throws Exception {
         return ResponseEntity.status(200).body(service.applyCapacityGroupRuleSets(cgRulesetRequest));
     }
 }

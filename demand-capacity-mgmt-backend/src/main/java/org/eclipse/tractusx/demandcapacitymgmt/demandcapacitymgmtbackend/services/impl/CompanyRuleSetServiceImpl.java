@@ -2,15 +2,14 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CDRulesetRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CDRulesetResponse;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyRuleSetEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.CompanyRuleSetRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CompanyRuleSetService;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -40,14 +39,13 @@ public class CompanyRuleSetServiceImpl implements CompanyRuleSetService {
     @Override
     public CDRulesetResponse applyCompanyRuleSets(CDRulesetRequest request) {
         UUID cdUUID = UUID.fromString(request.getCompanyID());
-        CompanyRuleSetEntity entity = repository.findById(cdUUID)
-                .orElse(new CompanyRuleSetEntity());
+        CompanyRuleSetEntity entity = repository.findById(cdUUID).orElse(new CompanyRuleSetEntity());
 
         entity.setCompanyID(cdUUID);
         entity.setRuled_percentage(request.getPercentages());
 
         CDRulesetResponse response = new CDRulesetResponse();
-        if(entity.getRuled_percentage().equals("{}")){
+        if (entity.getRuled_percentage().equals("{}")) {
             repository.deleteByCompanyID(cdUUID);
             response.setCompanyID((cdUUID.toString()));
         } else {

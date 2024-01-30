@@ -42,14 +42,17 @@ public class YearReportController implements YearReportApi {
 
     @Override
     public ResponseEntity<YearReportResponse> generateYearReport(YearReportRequest yearReportRequest) throws Exception {
-        return ResponseEntity.status(200).body(
+        return ResponseEntity
+            .status(200)
+            .body(
                 bottleneckManager.generateYearReport(
-                        UserUtil.getUserID(request)
-                        , yearReportRequest.getCgID(),
-                        yearReportRequest.getStartDate(),
-                        yearReportRequest.getEndDate(),
-                        yearReportRequest.getRuled(),
-                        yearReportRequest.getPercentage()
-        ));
+                    UserUtil.getUserID(request),
+                    yearReportRequest.getCgID(),
+                    yearReportRequest.getStartDate(),
+                    yearReportRequest.getEndDate(),
+                    yearReportRequest.getRuled(),
+                    yearReportRequest.getPercentage()
+                )
+            );
     }
 }

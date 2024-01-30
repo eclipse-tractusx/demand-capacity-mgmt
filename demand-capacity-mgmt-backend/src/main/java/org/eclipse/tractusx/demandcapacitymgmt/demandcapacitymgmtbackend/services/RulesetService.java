@@ -3,7 +3,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddRuleRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleResponse;
-
 import java.util.List;
 
 public interface RulesetService {

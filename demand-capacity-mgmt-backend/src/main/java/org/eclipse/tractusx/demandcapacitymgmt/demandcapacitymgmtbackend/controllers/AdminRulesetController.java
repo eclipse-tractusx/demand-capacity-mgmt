@@ -5,15 +5,14 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.AddRuleRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.RuleResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.RulesetService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Objects;
 
 @RestController
 @AllArgsConstructor
