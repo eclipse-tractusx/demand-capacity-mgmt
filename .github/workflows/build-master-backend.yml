@@ -64,7 +64,7 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
-          registry: ${{ .env.REGISTRY }}
+          registry: ${{ ..env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -90,5 +90,5 @@ jobs:
           #push: ${{ github.event_name != 'pull_request' }}
           push: true
           # build tag :latest
-          tags: ${{ steps.meta.outputs.tags }}, ${{ .env.REGISTRY }}/${{ github.repository }}/${{ .env.IMAGE_NAME }}:latest
+          tags: ${{ steps.meta.outputs.tags }}, ${{ ..env.REGISTRY }}/${{ github.repository }}/${{ ..env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}

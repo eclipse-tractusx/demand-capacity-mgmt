@@ -38,30 +38,28 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public final ResponseEntity<Object> handleNotFoundException(NotFoundException ex) {
-        return ResponseEntity.ok().body(new ExceptionResponseImpl(ex.getCode(),ex.lastDigits()));
+        return ResponseEntity.ok().body(new ExceptionResponseImpl(ex.getCode(), ex.lastDigits()));
     }
 
     @ExceptionHandler(BadRequestException.class)
     public final ResponseEntity<Object> handleBadRequestException(BadRequestException ex) {
-        return ResponseEntity.ok().body(new ExceptionResponseImpl(ex.getCode(),ex.lastDigits()));
+        return ResponseEntity.ok().body(new ExceptionResponseImpl(ex.getCode(), ex.lastDigits()));
     }
 
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler({ Exception.class })
     public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
-        if(ex.getMessage().contains("Keycloak")){
-            return buildCustomResponseEntity500("4","00");
-        }
-        else return ResponseEntity.ok().body(new ExceptionResponseImpl("0","00"));
+        if (ex.getMessage().contains("Keycloak")) {
+            return buildCustomResponseEntity500("4", "00");
+        } else return ResponseEntity.ok().body(new ExceptionResponseImpl("0", "00"));
     }
 
     private ResponseEntity<Object> buildCustomResponseEntity500(String code, String lastDigits) {
-        ExceptionResponseImpl response = new ExceptionResponseImpl(code,lastDigits);
+        ExceptionResponseImpl response = new ExceptionResponseImpl(code, lastDigits);
         return ResponseEntity.status(500).body(response);
     }
 
-
     private ResponseEntity<Object> buildCustomResponseEntity(String code, String lastDigits) {
-        ExceptionResponseImpl response = new ExceptionResponseImpl(code,lastDigits);
+        ExceptionResponseImpl response = new ExceptionResponseImpl(code, lastDigits);
         return ResponseEntity.ok().body(response);
     }
 }

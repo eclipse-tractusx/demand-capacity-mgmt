@@ -33,6 +33,7 @@ public class BadRequestException extends RuntimeException implements CustomExcep
         this.code = code;
         this.lastDigits = lastDigits;
     }
+
     @Override
     public String getCode() {
         return code;
@@ -42,5 +43,4 @@ public class BadRequestException extends RuntimeException implements CustomExcep
     public String lastDigits() {
         return lastDigits;
     }
-
 }

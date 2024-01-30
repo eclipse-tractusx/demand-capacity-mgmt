@@ -4,8 +4,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.CDRulesetReques
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CDRulesetResponse;
 
 public interface CompanyRuleSetService {
+    CDRulesetResponse getCompanyRuleSets(String companyID);
 
-     CDRulesetResponse getCompanyRuleSets(String companyID);
-
-     CDRulesetResponse applyCompanyRuleSets(CDRulesetRequest request);
+    CDRulesetResponse applyCompanyRuleSets(CDRulesetRequest request);
 }

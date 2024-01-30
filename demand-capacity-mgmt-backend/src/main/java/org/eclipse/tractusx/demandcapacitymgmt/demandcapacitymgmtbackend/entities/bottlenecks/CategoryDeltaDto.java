@@ -32,6 +32,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDeltaDto {
+
     private String catID;
     private String catName;
     private String catCode;

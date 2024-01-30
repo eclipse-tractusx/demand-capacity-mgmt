@@ -4,8 +4,7 @@ import eclipse.tractusx.demand_capacity_mgmt_specification.model.CGRulesetReques
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.CGRulesetResponse;
 
 public interface CapacityGroupRuleSetService {
+    CGRulesetResponse getCapacityGroupRuleSets(String cgID);
 
-     CGRulesetResponse getCapacityGroupRuleSets(String cgID);
-
-     CGRulesetResponse applyCapacityGroupRuleSets(CGRulesetRequest request);
+    CGRulesetResponse applyCapacityGroupRuleSets(CGRulesetRequest request);
 }

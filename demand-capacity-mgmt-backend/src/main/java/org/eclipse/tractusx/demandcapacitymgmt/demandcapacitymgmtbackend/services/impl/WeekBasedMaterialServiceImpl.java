@@ -23,6 +23,9 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
@@ -36,10 +39,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.service
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
 import org.springframework.stereotype.Service;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -193,8 +192,12 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     }
 
     private void validateFields(WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto) {
-        if (!UUIDUtil.checkValidUUID(weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest().getMaterialDemandId())) {
-            throw new BadRequestException("4","04");
+        if (
+            !UUIDUtil.checkValidUUID(
+                weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest().getMaterialDemandId()
+            )
+        ) {
+            throw new BadRequestException("4", "04");
         }
 
         weekBasedMaterialDemandRequestDto
@@ -209,7 +212,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                                 if (
                                     Boolean.FALSE.equals(DataConverterUtil.itsMonday(demandSeriesDto.getCalendarWeek()))
                                 ) {
-                                    throw new BadRequestException("1","11");
+                                    throw new BadRequestException("1", "11");
                                 }
                             }
                         )

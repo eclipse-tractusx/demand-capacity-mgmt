@@ -23,6 +23,10 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryResponse;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandCategoryEntity;
@@ -30,11 +34,6 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.excepti
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.DemandCategoryRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandCategoryService;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -48,7 +47,7 @@ public class DemandCategoryServiceImpl implements DemandCategoryService {
         Optional<DemandCategoryEntity> demandCategory = demandCategoryRepository.findById(id);
 
         if (demandCategory.isEmpty()) {
-            throw new NotFoundException("8","22");
+            throw new NotFoundException("8", "22");
         }
 
         return demandCategory.get();
