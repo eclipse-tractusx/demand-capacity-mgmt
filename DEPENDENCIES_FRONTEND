@@ -1460,7 +1460,7 @@ npm/npmjs/@sideway/pinpoint/2.0.0, BSD-3-Clause, approved, clearlydefined
 npm/npmjs/@sinclair/typebox/0.24.51, MIT, approved, #3330
 npm/npmjs/@sinclair/typebox/0.27.8, MIT, approved, clearlydefined
 npm/npmjs/@sinonjs/commons/1.8.6, BSD-3-Clause, approved, #4340
-npm/npmjs/@sinonjs/commons/3.0.0, BSD-3-Clause, approved, clearlydefined
+npm/npmjs/@sinonjs/commons/3.0.0, BSD-3-Clause, approved, #12905
 npm/npmjs/@sinonjs/fake-timers/10.3.0, BSD-3-Clause, approved, #9214
 npm/npmjs/@sinonjs/fake-timers/8.1.0, BSD-3-Clause, approved, #2563
 npm/npmjs/@surma/rollup-plugin-off-main-thread/2.2.3, Apache-2.0, approved, #3006
