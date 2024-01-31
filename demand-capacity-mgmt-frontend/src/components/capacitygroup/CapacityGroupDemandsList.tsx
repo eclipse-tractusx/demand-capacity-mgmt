@@ -20,16 +20,17 @@
  *    ********************************************************************************
  */
 
-import React, { useContext, useState, useMemo, useCallback } from 'react';
-import { Button, Form, Col, Row, Dropdown } from 'react-bootstrap';
-import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
-import Pagination from './../common/Pagination';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
+import { Button, Col, Dropdown, Form, Row } from 'react-bootstrap';
 import { FaCopy, FaEllipsisV, FaInfoCircle, FaSearch, FaTrashAlt, FaUnlink } from 'react-icons/fa';
 import { DemandContext } from '../../contexts/DemandContextProvider';
-import DemandDetailsModal from './../common/DemandDetailsModal';
-import DemandListTable from '../demands/DemandListTable';
-import { LoadingMessage } from './../common/LoadingMessages';
+import { DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
+import { EventType } from '../../interfaces/event_interfaces';
 import DangerConfirmationModal, { ConfirmationAction } from '../common/DangerConfirmationModal';
+import DemandDetailsModal from '../demands/DemandDetailsModal';
+import DemandListTable from '../demands/DemandListTableHeaders';
+import { LoadingMessage } from './../common/LoadingMessages';
+import Pagination from './../common/Pagination';
 
 
 const CapacityGroupDemandsList: React.FC<{
@@ -39,7 +40,7 @@ const CapacityGroupDemandsList: React.FC<{
 }> = ({
   searchQuery = '',
   capacityGroupDemands = [],
-  capacityGroupId='',
+  capacityGroupId = '',
 }) => {
 
     const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -48,7 +49,7 @@ const CapacityGroupDemandsList: React.FC<{
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
     const [selectedDemand, setSelectedDemand] = useState<DemandProp | null>(null);
-    const { deleteDemand, unlinkDemand} = useContext(DemandContext)!;
+    const { deleteDemand, unlinkDemand } = useContext(DemandContext)!;
     const { demandprops, fetchDemandProps, isLoading } = useContext(DemandContext)!;  // Make sure to get the fetchDemands function from the context.
 
     const [currentPage, setCurrentPage] = useState(1);//Its updated from showWizard
@@ -92,9 +93,9 @@ const CapacityGroupDemandsList: React.FC<{
     );
 
     const handleUnlinkDemand = useCallback(
-      async (id: string, capacityGroupID:string) => {
+      async (id: string, capacityGroupID: string) => {
         try {
-          await unlinkDemand(id,capacityGroupID);
+          await unlinkDemand(id, capacityGroupID);
         } catch (error) {
           console.error('Error deleting demand:', error);
         }
@@ -105,10 +106,8 @@ const CapacityGroupDemandsList: React.FC<{
     const handleConfirmationWrapper = () => {
       if (selectedItemId && capacityGroupId) {
         if (confirmationAction === ConfirmationAction.Delete) {
-          console.log('NOO')
           handleDeleteDemand(selectedItemId)
         } else if (confirmationAction === ConfirmationAction.Unlink) {
-          console.log('YES')
           handleUnlinkDemand(selectedItemId, capacityGroupId) // Call unlinkDemand function with materialDemandID and capacityGroupID
             .then(() => {
               fetchDemandProps();
@@ -122,9 +121,7 @@ const CapacityGroupDemandsList: React.FC<{
               setSelectedItemId(null);
             });
         }
-        console.log('WTH')
       }
-      console.log('WTF')
     };
 
     const handleCloseDetails = () => setShowDetailsModal(false);
@@ -238,9 +235,21 @@ const CapacityGroupDemandsList: React.FC<{
               ) : 'N/A'}
             </td>
             <td>
-              <span className="badge rounded-pill text-bg-success" id="tag-ok">Up</span>
-              <span className="badge rounded-pill text-bg-warning" id="tag-warning">TODO</span>
-              <span className="badge rounded-pill text-bg-danger" id="tag-danger">Down</span>
+              {demand.linkStatus === EventType.LINKED ? (
+                <span className="badge rounded-pill bg-primary text-white" id="tag-ok">
+                  Linked
+                </span>
+              ) : demand.linkStatus === EventType.TODO ? (
+                <span className="badge rounded-pill bg-warning text-black" id="tag-warning">
+                  TODO
+                </span>
+              ) : demand.linkStatus === EventType.UN_LINKED ? (
+                <span className="badge rounded-pill bg-danger text-white" id="tag-danger">
+                  Unlinked
+                </span>
+              ) : (
+                <span className="badge rounded-pill bg-secondary text-white">N/A</span>
+              )}
             </td>
             <td>
               <Dropdown>
@@ -272,6 +281,7 @@ const CapacityGroupDemandsList: React.FC<{
               sortOrder={sortOrder}
               handleSort={(column: string | null) => handleSort(column)} // Pass the correct parameter type
               demandItems={demandItems}
+              hasfavorites={false}
             />
 
             <div className="container fade">

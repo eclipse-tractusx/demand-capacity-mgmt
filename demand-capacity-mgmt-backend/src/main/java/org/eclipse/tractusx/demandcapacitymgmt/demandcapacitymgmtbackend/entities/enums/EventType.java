@@ -28,5 +28,5 @@ public enum EventType {
     STATUS_IMPROVEMENT,
     STATUS_REDUCTION,
     LINKED,
-    NOT_LINKED,
+    UN_LINKED,
 }

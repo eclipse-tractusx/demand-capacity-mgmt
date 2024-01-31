@@ -25,8 +25,6 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.KeycloakApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.IntrospectTokenResponse;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.User;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.SecurityTokenService;
 import org.springframework.http.ResponseEntity;
@@ -37,25 +35,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecurityTokenController implements KeycloakApi {
 
     private final SecurityTokenService securityTokenService;
-    private HttpServletRequest request;
 
     @Override
-    public ResponseEntity<IntrospectTokenResponse> introspectToken(String authToken) {
-        return ResponseEntity.ok(securityTokenService.introspectToken(request));
+    public ResponseEntity<IntrospectTokenResponse> introspectToken(String refreshToken) {
+        return ResponseEntity.ok(securityTokenService.introspectToken(refreshToken));
     }
 
     @Override
     public ResponseEntity<User> loginToken(String username, String password) {
-        return securityTokenService.generateUserResponseEntity(username, password, request);
+        return securityTokenService.generateUserResponseEntity(username, password);
     }
 
     @Override
-    public ResponseEntity<Void> logoutToken() {
-        return securityTokenService.generateLogoutResponseEntity(request);
+    public ResponseEntity<Void> logoutToken(String refreshToken) {
+        return securityTokenService.generateLogoutResponseEntity(refreshToken);
     }
 
     @Override
     public ResponseEntity<User> refreshToken(String refreshToken) {
-        return securityTokenService.generateUserRefreshedResponseEntity(refreshToken, request);
+        return securityTokenService.generateUserRefreshedResponseEntity(refreshToken);
     }
 }

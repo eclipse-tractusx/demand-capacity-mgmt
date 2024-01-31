@@ -24,8 +24,8 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.UnitMeasureApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.UnitMeasure;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.UnityOfMeasureService;
 import org.springframework.http.HttpStatus;
@@ -41,5 +41,10 @@ public class UnitMeasureController implements UnitMeasureApi {
     @Override
     public ResponseEntity<List<UnitMeasure>> getUnitMeasure() throws Exception {
         return ResponseEntity.status(HttpStatus.OK).body(unityOfMeasureService.getAllUnitMeasure());
+    }
+
+    @Override
+    public ResponseEntity<UnitMeasure> getUnitMeasureByID(String id) throws Exception {
+        return ResponseEntity.status(200).body(unityOfMeasureService.findById(UUID.fromString(id)));
     }
 }
