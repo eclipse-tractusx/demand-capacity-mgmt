@@ -26,9 +26,13 @@ import java.util.List;
 import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CapacityGroupRepository extends JpaRepository<CapacityGroupEntity, UUID> {
+    List<CapacityGroupEntity> findByUserID(@NonNull UUID userID);
+    List<CapacityGroupEntity> findBySupplier_Id(UUID id);
+    List<CapacityGroupEntity> findByCustomer_Id(@NonNull UUID id);
     List<CapacityGroupEntity> findAll();
 }

@@ -19,71 +19,99 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import {
-    ComposedChart,
-    Line,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    Brush, ReferenceArea, BarChart
-} from "recharts";
-import {SingleCapacityGroup} from "../../interfaces/capacitygroup_interfaces";
-import {useEffect, useRef, useState} from "react";
 
-type CapacityGroupChronogramProps = {
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Bar, BarChart, Brush, CartesianGrid, ComposedChart, Legend, Line, ReferenceArea, Tooltip, XAxis, YAxis } from "recharts";
+import { CapacityGroupData, SingleCapacityGroup } from "../../interfaces/capacitygroup_interfaces";
+import { DemandProp } from "../../interfaces/demand_interfaces";
+import { getWeekNumber } from "../../util/WeeksUtils";
+
+
+interface CapacityGroupChronogramProps {
     capacityGroup: SingleCapacityGroup | null | undefined;
-};
-
-const computeLinkedDemandSum = (capacityGroup: SingleCapacityGroup | null | undefined) => {
-    if (!capacityGroup || !capacityGroup.linkMaterialDemandIds) return 0;
-
-
-    return capacityGroup.linkMaterialDemandIds.length;
-};
+    materialDemands: DemandProp[] | null;
+    startDate: Date;
+    endDate: Date;
+}
 
 function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
+    const { capacityGroup, materialDemands, startDate, endDate } = props;
 
     type SelectedRangeType = {
         start: string | null;
         end: string | null;
-    };
-
-
-    const { capacityGroup } = props;
+    }
 
     const rawCapacities = capacityGroup?.capacities || [];
 
 
-    const linkedDemandSum = computeLinkedDemandSum(capacityGroup);
+    // Generate a list of dates between the minDate and maxDate
+    const generatedDates: string[] = [];
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+        generatedDates.push(currentDate.toISOString().split('T')[0]);
+        currentDate.setDate(currentDate.getDate() + 7);
+    }
 
+    // Check for missing dates in the capacities list
+    const missingDates = generatedDates.filter(
+        (date) => !rawCapacities.find((c) => c.calendarWeek === date)
+    );
 
-    // Sorted data by date
-// Sorted data by date
-    const data = rawCapacities.map(d => {
-        // Convert to Date and back to simplified string format
-        const simplifiedDate = new Date(d.calendarWeek).toISOString().split('T')[0];
+    // Create capacity entries with actualCapacity and maximumCapacity as 0 for missing dates
+    const missingCapacities = missingDates.map((date) => ({
+        calendarWeek: date,
+        actualCapacity: 0,
+        maximumCapacity: 0,
+    }));
 
-        return {
-            ...d,
-            Demand: linkedDemandSum,
-            dateEpoch: new Date(simplifiedDate).getTime(),
-            calendarWeek: simplifiedDate
-        };
-    }).sort((a, b) => a.dateEpoch - b.dateEpoch);
+    // Merge missing capacities with the original capacities list
+    const processedCapacities = [...rawCapacities, ...missingCapacities];
 
-    const getWeekNumber = (d: Date) => {
-        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    // Calculate demand sums by week
+    const demandSumsByWeek = useMemo(() => {
+        const sumsByWeek: { [key: string]: number } = {};
+        if (materialDemands) {
+            materialDemands.forEach((demand) => {
+                demand.demandSeries?.forEach((demandSeries) => {
+                    demandSeries.demandSeriesValues.forEach((demandSeriesValue) => {
+                        const week = demandSeriesValue.calendarWeek;
+                        sumsByWeek[week] = (sumsByWeek[week] || 0) + demandSeriesValue.demand;
+                    });
+                });
+            });
+        }
+        return sumsByWeek;
+    }, [materialDemands, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
-        // Convert the dates to milliseconds for the arithmetic operation
-        return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    const demandSumsMapRef = useRef<{ [key: string]: number }>({});
 
-    };
+    useEffect(() => {
+        Object.keys(demandSumsByWeek).forEach((week) => {
+            const simplifiedDate = new Date(week).toISOString().split('T')[0];
+            demandSumsMapRef.current[simplifiedDate] = demandSumsByWeek[week];
+        });
+    }, [demandSumsByWeek, startDate, endDate]);
 
+    const [filteredData, setFilteredData] = useState<CapacityGroupData[]>([]);
+
+    useEffect(() => {
+        if (startDate && endDate) {
+            const newData = processedCapacities.map((d) => {
+                const simplifiedDate = new Date(d.calendarWeek).toISOString().split('T')[0];
+                return {
+                    ...d,
+                    Demand: demandSumsMapRef.current[simplifiedDate] || 0,
+                    dateEpoch: new Date(simplifiedDate).getTime(),
+                    calendarWeek: simplifiedDate,
+                };
+            }).sort((a, b) => a.dateEpoch - b.dateEpoch);
+
+            setFilteredData(newData.filter((d) => {
+                return d.dateEpoch >= startDate.getTime() && d.dateEpoch <= endDate.getTime();
+            }));
+        }
+    }, [demandSumsMapRef, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const weekTickFormatter = (tick: string) => {
         const dateParts = tick.split("-").map((part) => parseInt(part, 10));
@@ -126,7 +154,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
     const [selectedRange, setSelectedRange] = useState<SelectedRangeType>({ start: null, end: null });
     type BrushStartEndIndex = {
         startIndex?: number;
-        endIndex?:number;
+        endIndex?: number;
     };
 
     const timer = useRef(2000);
@@ -143,79 +171,107 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
     useEffect(() => {
         const interval = setInterval(() => {
             if (brushIndexesRef.current?.startIndex !== undefined && brushIndexesRef.current?.endIndex !== undefined) {
-                const start = data[brushIndexesRef.current.startIndex].calendarWeek;
-                const end = data[brushIndexesRef.current.endIndex].calendarWeek;
+                const start = filteredData[brushIndexesRef.current.startIndex].calendarWeek;
+                const end = filteredData[brushIndexesRef.current.endIndex].calendarWeek;
                 setSelectedRange({ start, end });
             }
         }, timer.current);
 
         return () => clearInterval(interval);
-    }, [data]);
+    }, [filteredData]);
+
+    const [containerWidth, setContainerWidth] = useState(0);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const container = document.getElementById('chart-container');
+            if (container) {
+                setContainerWidth(container.clientWidth);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initial width
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
 
     return (
-        <div>
-        <ComposedChart
-            width={1300}
-            height={500}
-            data={data}
+        <div className="container">
+            <ComposedChart
+                width={containerWidth}
+                height={500}
+                data={filteredData}
 
-            margin={{
-                top: 20,
-                right: 80,
-                bottom: 20,
-                left: 20
-            }}
+                margin={{
+                    top: 20,
+                    right: 80,
+                    bottom: 20,
+                    left: 20
+                }}
 
-        >
+            >
 
-            <CartesianGrid stroke="#f5f5f5"/>
-            <XAxis
-                dataKey="calendarWeek"
-                tickFormatter={weekTickFormatter}
-                tick={{ fontSize: '12px' }}  // Adjust font size here
-            />
-            <XAxis
-                dataKey="calendarWeek"
-                axisLine={false}
-                tickLine={false}
-                interval={0}
-                tick={renderMonthTick}
-                height={1}
-                scale="band"
-                xAxisId="month"
-            />
-            <YAxis label={{value: "Amount", angle: -90, position: "insideLeft"}}/>
+                <CartesianGrid stroke="#e6e6e6" />
+                <XAxis
+                    dataKey="calendarWeek"
+                    tickFormatter={weekTickFormatter}
+                    tick={{ fontSize: '12px' }}  // Adjust font size here
+                />
+                <XAxis
+                    dataKey="calendarWeek"
+                    axisLine={false}
+                    tickLine={false}
+                    interval={0}
+                    tick={renderMonthTick}
+                    height={1}
+                    scale="band"
+                    xAxisId="month"
+                />
+                <YAxis label={{ value: "Amount", angle: -90, position: "insideLeft" }} />
 
-            <Tooltip/>
-            <Legend verticalAlign="bottom" height={36} wrapperStyle={{ bottom: -10 }}/>
-
-
-            <Bar dataKey="Demand" barSize={20} fill="#413ea0"/>
-            <Line type="monotone" dataKey="actualCapacity" stroke="#ff7300"/>
-            <Line type="monotone" dataKey="maximumCapacity"  stroke="#8884d8"/>
-            <Brush
-                y={450}
-                dataKey="calendarWeek"
-                height={20}
-                stroke="#8884d8"
-                onChange={handleBrushChange}
-                startIndex={brushIndexesRef.current?.startIndex}
-                endIndex={brushIndexesRef.current?.endIndex}
-            />
+                <Tooltip formatter={(value, name, props) => {
+                    if (name === 'Demand') {
+                        return [value, 'Demand'];
+                    } else if (name === 'actualCapacity') {
+                        return [value, 'Actual Capacity'];
+                    } else if (name === 'maximumCapacity') {
+                        return [value, 'Maximum Capacity'];
+                    }
+                    return [value, '']; // Return an empty string for other cases
+                }} />
+                <Legend verticalAlign="bottom" height={36} wrapperStyle={{ bottom: -10 }} />
 
 
-        </ComposedChart>
+                <Bar dataKey="Demand" barSize={20} fill="#413ea0" />
+                <Line type="monotone" dataKey="actualCapacity" stroke="#ff7300" />
+                <Line type="monotone" dataKey="maximumCapacity" stroke="#7aa725" />
+                <Brush
+                    y={450}
+                    dataKey="calendarWeek"
+                    height={22}
+                    stroke="#8a8a8a"
+                    onChange={handleBrushChange}
+                    startIndex={brushIndexesRef.current?.startIndex}
+                    endIndex={brushIndexesRef.current?.endIndex}
+                />
+
+
+            </ComposedChart>
 
             {/* Mini preview AreaChart */}
             <BarChart
-                width={1300}
+                width={containerWidth}
                 height={100}  // Adjust height as needed
-                data={data}
+                data={filteredData}
                 margin={{
                     top: 5,
                     right: 80,
                     bottom: 20,
-                    left: 20
+                    left: 80
                 }}
             >
                 <CartesianGrid />
@@ -224,7 +280,7 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 
                 {/* Highlighted area based on the brush selection from the main graph */}
                 {selectedRange.start && selectedRange.end && (
-                    <ReferenceArea x1={selectedRange.start} x2={selectedRange.end} fill="rgba(255,0,0,0.2)" />
+                    <ReferenceArea x1={selectedRange.start} x2={selectedRange.end} fill="rgba(148,203,0,0.3)" />
                 )}
             </BarChart>
         </div>
@@ -232,4 +288,3 @@ function CapacityGroupChronogram(props: CapacityGroupChronogramProps) {
 }
 
 export default CapacityGroupChronogram;
-

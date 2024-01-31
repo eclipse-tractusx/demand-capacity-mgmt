@@ -23,10 +23,14 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
 import java.util.UUID;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.DemandCategoryEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LoggingHistoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LoggingHistoryRepository extends JpaRepository<LoggingHistoryEntity, UUID> {}
+public interface LoggingHistoryRepository extends JpaRepository<LoggingHistoryEntity, Integer> {
+    @Query("select l from LoggingHistoryEntity l where l.logID = ?1")
+    LoggingHistoryEntity findByLogID(@NonNull UUID logID);
+}
