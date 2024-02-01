@@ -18,25 +18,59 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
+# stage1 as builder
+FROM node:lts-alpine as builder
 
-
-# Base image
-FROM node:16.15.1
-
-# Set the working directory
 WORKDIR /app
 
-# Copy the app source code
-COPY ../../demand-capacity-mgmt-frontend .
+# Copy the package.json and install dependencies
+COPY package*.json ./
 
-# Install dependencies
-RUN yarn install
+RUN npm install -g npm
 
-# Build the app
-RUN yarn build
+#RUN npm install
+RUN npm install --legacy-peer-deps
 
-# Expose the port that the app will run on
-EXPOSE 3000
+# Copy rest of the files
+COPY . .
 
-# Start the app
-CMD ["yarn", "start"]
+# Build the project
+RUN npm run build
+
+
+FROM nginxinc/nginx-unprivileged:stable-alpine
+
+ARG REPO_COMMIT_ID='REPO_COMMIT_ID'
+ARG REPO_ENDPOINT_URL='REPO_ENDPOINT_URL'
+ENV REPO_COMMIT_ID=${REPO_COMMIT_ID}
+ENV REPO_ENDPOINT_URL=${REPO_ENDPOINT_URL}
+
+USER root
+
+RUN addgroup -g 3000 appgroup \
+	&& adduser -u 10000 -g 3000 -h /home/appuser -D appuser
+
+COPY ./entrypoint.sh /entrypoint.sh
+
+WORKDIR /app
+
+COPY ./.nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+HEALTHCHECK NONE
+
+# add permissions for a user
+RUN chown -R 10000:3000 /app && chmod -R 775 /app/
+RUN chown 10000:3000 /entrypoint.sh && chmod -R 775 /entrypoint.sh
+
+# Install bash for env variables inject script
+RUN apk update && apk add --no-cache bash
+# Make nginx owner of /usr/share/nginx/html/ and change to nginx user
+RUN chown -R 10000:3000 /usr/share/nginx/html/ && chmod -R 775 /usr/share/nginx/html/
+
+USER 10000:3000
+
+EXPOSE 8080
+
+ENTRYPOINT ["sh","/entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
