@@ -55,23 +55,8 @@ The Demand and Capacity Management application streamlines the exchange of deman
 - **Delta Analysis and Threshold Setting:** As demand and capacity data are updated, the application calculates deltas to measure changes in supply-demand dynamics.Suppliers use this information to identify potential bottlenecks, prioritize production schedules, and allocate resources efficiently. Additionally, admins can set thresholds and users can trigger alerts when certain metrics exceed predefined limits, enabling timely intervention and risk mitigation.
 
 ### Workflow diagram
-![Components Architecture](images/Appflow2.jpg "Components Architecture Diagram")
+![Workflow Diagram](images/Appflow2.jpg "Workflow Diagram")
 
-### Prerequisites
-
-* JDK 17 ( or Higher)
-* Maven 'Spring Boot is compatible with Apache Maven 3.5 or above'
-* Company registry on the CatenaX portal
-* EDC Endpoint
-
-
-### How to run
-
-TODO
-
-## Highlevel Architecture Diagram
-
-![Components Architecture](images/Highlevel.jpg "Components Architecture Diagram")
 
 ## Roles And Access 
 
