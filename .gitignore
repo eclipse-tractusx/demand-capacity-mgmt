@@ -39,9 +39,6 @@ target/
 .idea/*
 
 demand-capacity-mgmt-backend/.mvn/wrapper/maven-wrapper.jar
-charts/edc/consumer/charts
-charts/edc/provider/charts
-charts/edc/registry/charts
 
 keycloak/generate-secret.sh
 keycloak/init-db.sql
