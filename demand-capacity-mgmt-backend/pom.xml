@@ -140,7 +140,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -148,7 +147,12 @@
             <plugin>
                 <groupId>org.eclipse.dash</groupId>
                 <artifactId>license-tool-plugin</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.1.0</version>
+                <configuration>
+                    <projectId>automotive.tractusx</projectId>
+                    <summary>../DEPENDENCIES_BACKEND</summary>
+                    <includeScope>test</includeScope>
+                </configuration>
                 <executions>
                     <execution>
                         <id>license-check</id>
@@ -210,10 +214,11 @@
             </releases>
         </repository>
     </repositories>
+
     <pluginRepositories>
         <pluginRepository>
-            <id>dash-licenses-snapshots</id>
-            <url>https://repo.eclipse.org/content/repositories/dash-licenses-snapshots/</url>
+            <id>dash-licenses</id>
+            <url>https://repo.eclipse.org/content/repositories/dash-licenses/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -235,5 +240,4 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
-
 </project>
