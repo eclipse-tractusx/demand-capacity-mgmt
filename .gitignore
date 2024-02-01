@@ -39,6 +39,7 @@ target/
 .idea/*
 
 demand-capacity-mgmt-backend/.mvn/wrapper/maven-wrapper.jar
+
 keycloak/generate-secret.sh
 keycloak/init-db.sql
 keycloak/realm-export.json
