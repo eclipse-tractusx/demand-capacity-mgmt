@@ -1,6 +1,0 @@
-dependencies:
-- name: registry
-  repository: https://eclipse-tractusx.github.io/sldt-digital-twin-registry
-  version: 0.3.23
-digest: sha256:8166c9cdfd9095194f5b10c36a143ee7ef563ab3062bd1d497307ddd16b7ebbf
-generated: "2023-12-20T10:45:07.9713599Z"
