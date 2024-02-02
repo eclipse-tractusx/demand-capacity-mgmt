@@ -1,6 +1,7 @@
 
 
 Demands System:
+
 * Manages functionalities related to material demand and capacity.
 * Provides methods for creating, updating, retrieving, and deleting material demands.
 * Manages demand series, customer, and supplier information, utilizing repositories like MaterialDemandRepository and DemandSeriesRepository for data storage.
@@ -18,6 +19,7 @@ Capacity System:
 
 
 Alerts System:
+
 * Provides functionalities for configuring, triggering, and retrieving alerts.
 * Manages different types of alerts, including global and dedicated alerts.
 * Utilizes repositories (AlertsRepository and TriggeredAlertsRepository) for data storage.
@@ -49,4 +51,13 @@ Favorites System:
 * Utilizes repositories (FavoriteRepository, CapacityGroupRepository, MaterialDemandRepository, LinkedCapacityGroupMaterialDemandRepository, CompanyRepository, LoggingHistoryRepository, and AddressBookRepository) for data storage.
 * Supports operations such as retrieving all favorites, retrieving favorites by type, creating favorites, and deleting favorites.
 * Handles various favorite types, including capacity groups, material demands, companies, events, and address books.
+
+Statuses System: 
+
+* Defining methods for posting, retrieving, and updating user-specific status information.
+* Utilizes the StatusesRepository for database interaction, allowing the storage and retrieval of user-specific status entities.
+* Includes methods such as `postStatuses`, `getAllStatuses`, and `updateStatus` for managing and updating the user's status information.
+
+
+
 
