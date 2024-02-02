@@ -1,11 +1,20 @@
 
 
-Demands System
+Demands System:
 * Manages functionalities related to material demand and capacity.
 * Provides methods for creating, updating, retrieving, and deleting material demands.
 * Manages demand series, customer, and supplier information, utilizing repositories like MaterialDemandRepository and DemandSeriesRepository for data storage.
 * Enforces validation checks on material demand requests to ensure data integrity.
 * Triggers alerts based on changes in demand values and handles alert notifications.
+
+
+Capacity System:
+
+* Handling the creation, retrieval, and linking of capacity groups.
+* Manages the creation of capacity groups, enriching them with details such as customer, supplier, capacity names, and date ranges.
+* Utilizes repositories like MaterialDemandRepository, LinkedCapacityGroupMaterialDemandRepository, and CapacityGroupRepository for data storage.
+* Calculates and updates bottleneck status and to-do lists based on capacity group changes.
+* Integrates with various services such as CompanyService, LoggingHistoryService, FavoriteService, and others to provide comprehensive functionality.
 
 
 Alerts System:
