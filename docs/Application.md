@@ -59,6 +59,15 @@ The Demand and Capacity Management application streamlines the exchange of deman
 
 
 ## Roles And Access 
+Within the Application, distinct roles and access levels are assigned to users, enabling effective management and control over the application's functionalities.
+
+**User:** As a user, individuals typically interact with the application to create demands, update demand values, and verify their accuracy. Users primarily contribute to the demand side of the supply chain by providing input on their requirements and preferences.
+
+**Supplier:** Suppliers play a crucial role in the supply chain by fulfilling demand requirements and allocating resources accordingly. In the application, suppliers have access to features for managing capacity groups, assigning resources, and monitoring production. They utilize the platform to optimize resource utilization, prioritize production runs, and ensure delivery of products to customers.
+
+**Admin:** Admins are responsible for overseeing the overall operation of the application and ensuring compliance with organizational policies and procedures. They have access to administrative tools and controls for configuring system settings, managing user roles and permissions, and setting up thresholds.
+
+
 
 ![Roles and Capabilites](images/RolesAcess.jpg "Roles and Capabilities Diagram")
 
