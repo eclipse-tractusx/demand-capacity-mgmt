@@ -18,26 +18,17 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
-# stage1 as builder
+# Stage 1: Node.js Build
 FROM node:lts-alpine as builder
 
 WORKDIR /app
 
-# Copy the package.json and install dependencies
 COPY package*.json ./
-
-RUN npm install -g npm
-
-#RUN npm install
 RUN npm install --legacy-peer-deps
-
-# Copy rest of the files
 COPY . .
-
-# Build the project
 RUN npm run build
 
-
+# Stage 2: Nginx Serving
 FROM nginxinc/nginx-unprivileged:stable-alpine
 
 ARG REPO_COMMIT_ID='REPO_COMMIT_ID'
@@ -48,29 +39,21 @@ ENV REPO_ENDPOINT_URL=${REPO_ENDPOINT_URL}
 USER root
 
 RUN addgroup -g 3000 appgroup \
-	&& adduser -u 10000 -g 3000 -h /home/appuser -D appuser
+    && adduser -u 10000 -g 3000 -h /home/appuser -D appuser \
+    && chown -R 10000:3000 /var/cache/nginx /var/run /var/log/nginx \
+    && chmod -R 775 /var/cache/nginx /var/run /var/log/nginx
 
 COPY ./entrypoint.sh /entrypoint.sh
 
 WORKDIR /app
 
-COPY ./.nginx/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 HEALTHCHECK NONE
-
-# add permissions for a user
-RUN chown -R 10000:3000 /app && chmod -R 775 /app/
-RUN chown 10000:3000 /entrypoint.sh && chmod -R 775 /entrypoint.sh
-
-# Install bash for env variables inject script
-RUN apk update && apk add --no-cache bash
-# Make nginx owner of /usr/share/nginx/html/ and change to nginx user
-RUN chown -R 10000:3000 /usr/share/nginx/html/ && chmod -R 775 /usr/share/nginx/html/
 
 USER 10000:3000
 
 EXPOSE 8080
 
-ENTRYPOINT ["sh","/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
