@@ -26,7 +26,7 @@
 
 ## AddressBook System:
 
-- Offering functionalities for managing address book records.
+- Offering functionalities for managing address book records for the company information.
 - Handles operations like retrieving, creating, updating, and deleting address book records.
 - Collaborates with the AddressBookRepository for data storage and retrieval.
 - Provides methods to retrieve a single record, all records, create a new record, update an existing record, and delete a record.
@@ -34,7 +34,7 @@
 
 ## Logging History System:
 
-- Providing functionalities for managing logging history.
+- Providing functionalities for managing logging history to log the user actions.
 - Manages logging operations, including creating, retrieving, and deleting logs.
 - Utilizes repositories (LoggingHistoryRepository and ArchivedLogsRepository) for data storage.
 - Collaborates with the FavoriteService for filtering logs based on favorite material demands and capacity groups.
@@ -49,11 +49,11 @@
 - Manages favorites related to capacity groups, material demands, companies, events, and address books.
 - Utilizes repositories (FavoriteRepository, CapacityGroupRepository, MaterialDemandRepository, LinkedCapacityGroupMaterialDemandRepository, CompanyRepository, LoggingHistoryRepository, and AddressBookRepository) for data storage.
 - Supports operations such as retrieving all favorites, retrieving favorites by type, creating favorites, and deleting favorites.
-- Handles various favorite types, including capacity groups, material demands, companies, events, and address books.
+
 
 ## Statuses System: 
 
-- Defining methods for posting, retrieving, and updating user-specific status information.
+- Defining methods for posting, retrieving, and updating status information for the capacity groups and material demands if there is a status improvment or a status deduction.
 - Utilizes the StatusesRepository for database interaction, allowing the storage and retrieval of user-specific status entities.
 - Includes methods such as `postStatuses`, `getAllStatuses`, and `updateStatus` for managing and updating the user's status information.
 
