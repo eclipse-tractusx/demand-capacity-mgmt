@@ -44,10 +44,6 @@ Establishing a collaborative process significantly increases transparency and cr
 * EDC Ednpoint
 
 
-### How to run
-
-To run the project locally
-
 ## Components Architecture Diagram
 
 ![Components Architecture](docs/images/ComponentsArchitecture.jpg "Components Architecture Diagram")

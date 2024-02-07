@@ -5,7 +5,7 @@ Table of contents:
 
 # User Flow
 
-![](images/userflow/login.gif "Login")
+<img src="images/userflow/login.gif?raw=true">
 
 ## Customer
 
@@ -39,9 +39,9 @@ Table of contents:
     3. View pending demands, the supplier can then select them and assign them to a capacity group or create a new one if necessary.
     ![](images/userflow/supplier-todo.png "Edit Demand Values")
         **3a.** If the supplier decides to create a new capacity group, he will need to click on Capacity Group Wizard he will then be presented with a step by step process to create a new capacity group.
-        ![](images/userflow/supplier-wizard.gif "Create capcity group")
+        <img src="images/userflow/supplier-wizard.gif?raw=true">
         **3b.** To add to an existing capacity group, simply click on **Add to existing** and follow the prompt.
-        ![](images/userflow/supplier-addto.gif "Add to existing")
+        <img src="images/userflow/supplier-addto.gif?raw=true">
     4. Now, accessing the newly created capacity group on the dashboard by clicking on the Eye icon.
     ![](images/userflow/supplier-newcreatedcg.png "Acessing Capacity group data")
     5. We can monitor and assign maximum and actual capacity in production lines to the capacity group, in its various categories.
@@ -62,3 +62,14 @@ Table of contents:
     2. Navigate to the "User Management" section.
     3. View existing user roles and permissions.
     4. C
+
+
+## NOTICE
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- Licence Path: https://creativecommons.org/licenses/by/4.0/legalcode
+- Copyright (c) 2022,2023 Contributors to the Eclipse Foundation
+- Copyright (c) 2022, 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+- Source URL: https://github.com/eclipse-tractusx/vas-country-risk-backend
