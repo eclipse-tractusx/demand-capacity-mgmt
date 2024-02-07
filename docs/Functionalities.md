@@ -59,20 +59,17 @@
 
 ## EDC System:
 
-- Responsible for interacting with an external service for managing assets, policies, contracts, and transfer processes. Below are the key features and functionalities of this class:
+Responsible for interacting with an external service for managing assets, policies, contracts, and transfer processes and data. Below are the key features and functionalities of this class:
 - Implements the EDCService interface, defining methods for creating, retrieving, and deleting various entities such as assets, policies, contracts, transfer processes, and EDRs (Endpoint Data References).
-- Utilizes Spring WebFlux's WebClient for making reactive HTTP requests to the external service.
 - Defines methods such as `createAsset`, `createPolicy`, `createContractDef`, `createCatalogRequest`, `createContractNeg`, `createTransferProcess`, `createEDR`, and `createAASRequest` for creating different entities.
 - Includes methods such as `getAsset`, `getPolicy`, `getContractDef`, `getTransferProcess`, `getEDR`, and `getEDRSByParameters` for retrieving entities based on their identifiers or parameters.
 - Provides methods like `deleteAsset`, `deletePolicy`, `deleteContractDef`, `deleteEDR`, and `addOrSubtractTodos` for deleting entities or performing other operations.
 
 ## Company System: 
 
-The `CompanyServiceImpl` class is an implementation of the CompanyService interface, responsible for managing company-related operations such as creating, retrieving, and deleting companies. Below are the key features and functionalities of this class:
+The CompanyService is responsible for managing company-related operations such as creating, retrieving, and deleting companies. Below are the key features and functionalities of this class:
 
-- Implements the CompanyService interface, defining methods for creating, retrieving, and deleting companies, as well as converting between entity and DTO representations.
+- Defining methods for creating, retrieving, and deleting companies.
 - Provides methods such as `createCompany`, `getCompanyById`, `deleteCompany`, `getCompanyIn`, `getAllCompany`, and `getTopCompanies` for performing CRUD (Create, Read, Update, Delete) operations on companies.
 - Defines a private method `postLogs` for posting logging history when a company is created or deleted, using the LoggingHistoryService.
-- Keeps track of the count of company accesses, updating it whenever a company is retrieved.
-
 
