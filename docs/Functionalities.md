@@ -15,7 +15,6 @@
 - Manages the creation of capacity groups, enriching them with details such as customer, supplier, capacity names, and date ranges.
 - Utilizes repositories like MaterialDemandRepository, LinkedCapacityGroupMaterialDemandRepository, and CapacityGroupRepository for data storage.
 - Calculates and updates bottleneck status and to-do lists based on capacity group changes.
-- Integrates with various services such as CompanyService, LoggingHistoryService, FavoriteService, and others to provide comprehensive functionality.
 
 
 ## Alerts System:
