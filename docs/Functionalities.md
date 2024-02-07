@@ -2,11 +2,11 @@
 
 ## Demands System:
 
-* Manages functionalities related to material demand and capacity.
-* Provides methods for creating, updating, retrieving, and deleting material demands.
-* Manages demand series, customer, and supplier information, utilizing repositories like MaterialDemandRepository and DemandSeriesRepository for data storage.
-* Enforces validation checks on material demand requests to ensure data integrity.
-* Triggers alerts based on changes in demand values and handles alert notifications.
+- **Manages functionalities related to material demand and capacity.
+- **Provides methods for creating, updating, retrieving, and deleting material demands.
+- **Manages demand series, customer, and supplier information, utilizing repositories like MaterialDemandRepository and DemandSeriesRepository for data storage.
+- **Enforces validation checks on material demand requests to ensure data integrity.
+- **Triggers alerts based on changes in demand values and handles alert notifications.
 
 
 ## Capacity System:
