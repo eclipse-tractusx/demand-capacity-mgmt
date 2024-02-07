@@ -1,4 +1,4 @@
-1. Code Structure:
+ - **Code Structure:**
 •	Organize code logically into packages, classes, and methods.
 •	Avoid large methods; break them into smaller, focused functions.
 
