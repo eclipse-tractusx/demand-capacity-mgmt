@@ -1,4 +1,7 @@
 Table of contents:
+- [Customer](#customer)
+- [Supplier](#supplier)
+- [Admin](#admin)
 
 # User Flow
 
@@ -40,7 +43,8 @@ Table of contents:
         **3b.** To add to an existing capacity group, simply click on **Add to existing** and follow the prompt.
         ![](images/userflow/supplier-addto.gif "Add to existing")
     4. Now, accessing the newly created capacity group on the dashboard by clicking on the Eye icon.
-    5. We can monitor and assign capacity in production lines to the capacity group, in its various categories.
+    ![](images/userflow/supplier-newcreatedcg.png "Acessing Capacity group data")
+    5. We can monitor and assign maximum and actual capacity in production lines to the capacity group, in its various categories.
 
         **5a.** They can visualize the associated material demands on the **Materials** tab.
         ![](images/userflow/supplier-createdcg2.png "Edit Demand Values")
@@ -50,13 +54,6 @@ Table of contents:
 
         **5c.** The contacts of the associated companies on the **Contacts** tab.
         ![](images/userflow/supplier-createdcg4.png "Edit Demand Values")
-
-- **Allocate Resources:** 
-    1. Access the application dashboard.
-    2. Go to the "Capacity Management" section.
-    3. Select a specific capacity group to manage.
-    4. Allocate resources based on demand forecasts and production requirements.
-    5. Adjust resource allocations as needed to optimize production efficiency.
 
 ## Admin
 
