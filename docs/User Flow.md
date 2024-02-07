@@ -33,10 +33,23 @@ Table of contents:
     1. Access the application dashboard.
     ![](images/userflow/supplier-dashboard.png "")
     2. On the top menu select the **Todo** section, it will show you the count of the demands waiting a supplier interaction .
-    3. View pending demands and assign them to a capacity group or create a new one if necessary.
+    3. View pending demands, the supplier can then select them and assign them to a capacity group or create a new one if necessary.
     ![](images/userflow/supplier-todo.png "Edit Demand Values")
-    4. Assign resources, facilities, or production lines to the capacity group.
-    5. Set production quotas and scheduling parameters for the assigned resources.
+        **3a.** If the supplier decides to create a new capacity group, he will need to click on Capacity Group Wizard he will then be presented with a step by step process to create a new capacity group.
+        ![](images/userflow/supplier-wizard.gif "Create capcity group")
+        **3b.** To add to an existing capacity group, simply click on **Add to existing** and follow the prompt.
+        ![](images/userflow/supplier-addto.gif "Add to existing")
+    4. Now, accessing the newly created capacity group on the dashboard by clicking on the Eye icon.
+    5. We can monitor and assign capacity in production lines to the capacity group, in its various categories.
+
+        **5a.** They can visualize the associated material demands on the **Materials** tab.
+        ![](images/userflow/supplier-createdcg2.png "Edit Demand Values")
+
+        **5b.** The events registered on the Capacity group by acessing the **Events** tab.
+        ![](images/userflow/supplier-createdcg3.png "Edit Demand Values")
+
+        **5c.** The contacts of the associated companies on the **Contacts** tab.
+        ![](images/userflow/supplier-createdcg4.png "Edit Demand Values")
 
 - **Allocate Resources:** 
     1. Access the application dashboard.
