@@ -1,7 +1,6 @@
  - **Code Structure:**
    - Organize code logically into packages, classes, and methods.
-   - Avoid large methods; break them into smaller, focused functions.
-
+   - Avoid large methods; break them into smaller, focused functions.(One function for the single method)
 
  - **Variable Naming:**
    - Use meaningful and descriptive variable names.
@@ -15,8 +14,8 @@
 
  - **File Header Comments:**
    - Each file should begin with a comprehensive header comment block.
-   -  copyright information, license details, and a brief description of the purpose of the file.
-   -  The SPDX-License-Identifier should specify the license type.
+   - Copyright information, license details, and a brief description of the purpose of the file.
+   - The SPDX-License-Identifier should specify the license type.
 
 
  - **Package and Class Comments:**
@@ -29,10 +28,8 @@
 
 
  - **Method Comments and Documentation:**
-   - Include comments for each method describing its purpose.
-   - Document parameters, return types, and any exceptions thrown.
    - Use descriptive method names.
-
+   - Avoid methods with more than one function.
 
  - **Exception Handling:**
    - Implement appropriate exception handling where necessary.
