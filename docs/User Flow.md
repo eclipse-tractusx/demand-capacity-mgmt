@@ -45,6 +45,7 @@ Table of contents:
     4. Now, accessing the newly created capacity group on the dashboard by clicking on the Eye icon.
     ![](images/userflow/supplier-newcreatedcg.png "Acessing Capacity group data")
     5. We can monitor and assign maximum and actual capacity in production lines to the capacity group, in its various categories.
+    ![](images/userflow/supplier-createdcg.png "Edit Demand Values")
 
         **5a.** They can visualize the associated material demands on the **Materials** tab.
         ![](images/userflow/supplier-createdcg2.png "Edit Demand Values")
