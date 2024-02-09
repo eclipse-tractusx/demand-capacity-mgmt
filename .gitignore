@@ -44,5 +44,6 @@ keycloak/generate-secret.sh
 keycloak/init-db.sql
 keycloak/realm-export.json
 keycloak/
+node_modules/
 
 charts/edc/chart/edc.dcm.aes.key
