@@ -16,11 +16,16 @@ Table of contents:
 
 ## Exception Handling
 ### Works
-- 
-- 
+- Returning the front-end a combination of numbers to determine specific error causes.
 
 ### Related 
-    - 
+    - RestExceptionHandler
+    - CustomException
+    - ExceptionResponse
+    - ExceptionResponseImpl
+    - BadRequestException
+    - InternalServerErrorException
+    - NotFoundException
 
 
 
