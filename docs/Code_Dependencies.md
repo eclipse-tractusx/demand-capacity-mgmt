@@ -16,8 +16,8 @@ Table of contents:
 
 ## Material Demands
 ### Works
-- Alert Trigger on Capacity Group update and Material Demand
-- Alert Creation with custom Abolute and Relative values.
+- User can Create, update, delete, retrieve material demands.
+- Triggers alerts based on changes in demand values and handles alert notifications.
 
 ### Related 
     - MaterialDemandEntity
@@ -29,8 +29,8 @@ Table of contents:
 
 ## Capacity Group
 ### Works
-- Alert Trigger on Capacity Group update and Material Demand
-- Alert Creation with custom Abolute and Relative values.
+- User can Create, update, delete, retrieve capacity groups.
+- link maerial demands to capacity groups.
 
 ### Related 
     - CapacityGroupEntity
@@ -41,8 +41,7 @@ Table of contents:
 
 ## Company System
 ### Works
-- Alert Trigger on Capacity Group update and Material Demand
-- Alert Creation with custom Abolute and Relative values.
+- User can Create, update, delete, retrieve capacity groups.
 
 ### Related 
     - CompanyEntity
@@ -53,8 +52,8 @@ Table of contents:
 
 ## AddressBook
 ### Works
-- Alert Trigger on Capacity Group update and Material Demand
-- Alert Creation with custom Abolute and Relative values.
+- User can create, delete, update addressbook.
+- User can retrieve, add, edit contacts information.
 
 ### Related 
     - AddressBookRecordEntity
@@ -66,8 +65,8 @@ Table of contents:
 
 ## Logging History
 ### Works
-- Alert Trigger on Capacity Group update and Material Demand
-- Alert Creation with custom Abolute and Relative values.
+- A log wil be saved to the database when a user movement(ex:demand or CG creation or any other change).
+- Archived logs will be 
 
 ### Related 
     - LoggingHistoryEntity
@@ -78,8 +77,7 @@ Table of contents:
 
 ## Favorites
 ### Works
-- Alert Trigger on Capacity Group update and Material Demand
-- Alert Creation with custom Abolute and Relative values.
+- create favorited items fo CG, material demands, addressbook, company,events...
 
 ### Related 
     - FavoriteEntity
