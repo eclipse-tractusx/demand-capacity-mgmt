@@ -66,7 +66,7 @@ Table of contents:
 ## Logging History
 ### Works
 - A log wil be saved to the database when a user movement(ex:demand or CG creation or any other change).
-- Archived logs will be 
+- User can archive log, and view all the archived logs on a seperate view.
 
 ### Related 
     - LoggingHistoryEntity
@@ -77,7 +77,8 @@ Table of contents:
 
 ## Favorites
 ### Works
-- create favorited items fo CG, material demands, addressbook, company,events...
+- create favorited items fo CG, material demands, addressbook, company, events...
+- User can filter favorites based on its type.
 
 ### Related 
     - FavoriteEntity
@@ -88,7 +89,7 @@ Table of contents:
 
 ## Statuses
 ### Works
-- Alert Trigger on Capacity Group update and Material Demand
+- 
 - Alert Creation with custom Abolute and Relative values.
 
 ### Related 
