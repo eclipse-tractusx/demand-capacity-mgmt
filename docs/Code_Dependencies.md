@@ -74,6 +74,8 @@ Table of contents:
     - LoggingHistoryRepository
     - LoggingHistoryService
     - LoggingHistoryServiceImplementation
+    - ArchivedLogEntity
+    - ArchivedLogsRepository
 
 ## Favorites
 ### Works
@@ -89,8 +91,8 @@ Table of contents:
 
 ## Statuses
 ### Works
-- 
-- Alert Creation with custom Abolute and Relative values.
+- retrieve todos statuses for unlinked demands, status improvement for improved ones, status deduction for declined ones.
+- update, retrieve and post statuses.
 
 ### Related 
     - StatusesEntity
@@ -102,8 +104,7 @@ Table of contents:
 
 ## EDC
 ### Works
-- Alert Trigger on Capacity Group update and Material Demand
-- Alert Creation with custom Abolute and Relative values.
+- Responsible for interfacing with an external service to manage assets, policies, contracts, transfer processes, and data.
 
 ### Related 
     - EDCService
