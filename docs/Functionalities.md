@@ -69,12 +69,12 @@ Table of contents:
 ## EDC System:
 
 Responsible for interacting with an external service for managing assets, policies, contracts, and transfer processes and data. Below are the key features and functionalities of this class:
-- Implements the EDCService interface, defining methods for creating, retrieving, and deleting various entities such as assets, policies, contracts, transfer processes, and EDRs (Endpoint Data References).
-- Defines methods such as `createAsset`, `createPolicy`, `createContractDef`, `createCatalogRequest`, `createContractNeg`, `createTransferProcess`, `createEDR`, and `createAASRequest` for creating different entities.
-- Includes methods such as `getAsset`, `getPolicy`, `getContractDef`, `getTransferProcess`, `getEDR`, and `getEDRSByParameters` for retrieving entities based on their identifiers or parameters.
-- Provides methods like `deleteAsset`, `deletePolicy`, `deleteContractDef`, `deleteEDR`, and `addOrSubtractTodos` for deleting entities or performing other operations.
-- Defines a private method `postLogs` for posting logging history when a company is created or deleted, using the LoggingHistoryService.
+- Implements the EDCService interface, defining methods for creating, retrieving, and deleting various entities such as assets, policies and contracts.
+- Defines methods such as `createAsset`, `createPolicy` and `createContractDef` for creating different entities.
+- Includes methods such as `getAsset`, `getPolicy` and `getContractDef` for retrieving entities based on their identifiers or parameters.
+- Provides methods like `deleteAsset`, `deletePolicy` and `deleteContractDef` for deleting entities or performing other operations.
 - Handles all authorization requirements while connecting to EDC.
+- For more information: https://github.com/eclipse-tractusx/tractusx-edc
 
 
 ## NOTICE
