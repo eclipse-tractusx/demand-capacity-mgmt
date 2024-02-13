@@ -24,7 +24,7 @@ Table of contents:
     2. Go to the "Demand Management" section.
     ![](images/userflow/customer-demandmanagement.png "Demand Management")
     3. Locate the previously created demand.
-    4. Click on the demand to view its details.
+    4. Click on ![](images/userflow/mag.png "Admin") to view its details.
         ![](images/userflow/customer-demandmanagement-edit.png "Edit Demand Values")
     5. Make necessary updates to the demand values on its various categories, by clicking on Edit.
     6. Verify the accuracy of the updated values.
@@ -33,7 +33,7 @@ Table of contents:
 ## Supplier
 
 - **Manage Capacity Groups:** 
-    1. Access the application dashboard.
+    1. Access the application dashboard as a supplier.
     ![](images/userflow/supplier-dashboard.png "")
     2. On the top menu select the **Todo** section, it will show you the count of the demands waiting a supplier interaction .
     3. View pending demands, the supplier can then select them and assign them to a capacity group or create a new one if necessary.
@@ -42,7 +42,7 @@ Table of contents:
         <img src="images/userflow/supplier-wizard.gif?raw=true">
         **3b.** To add to an existing capacity group, simply click on **Add to existing** and follow the prompt.
         <img src="images/userflow/supplier-addto.gif?raw=true">
-    4. Now, accessing the newly created capacity group on the dashboard by clicking on the Eye icon.
+    4. Now, accessing the newly created capacity group on the dashboard by clicking on the ![](images/userflow/eye.png "Admin") icon.
     ![](images/userflow/supplier-newcreatedcg.png "Acessing Capacity group data")
     5. We can monitor and assign maximum and actual capacity in production lines to the capacity group, in its various categories.
     ![](images/userflow/supplier-createdcg.png "Edit Demand Values")
@@ -58,11 +58,16 @@ Table of contents:
 
 ## Admin
 
-- **Manage User Roles and Permissions:** 
-    1. Access the application admin panel.
-    2. Navigate to the "User Management" section.
-    3. View existing user roles and permissions.
-    4. C
+**Admin Panel:**
+1. Access the dashboard as an admin user.
+2. Navigate to the "Admin Panel", by clicking the ![](images/userflow/adm.png "Admin") icon.
+2. Navigate to the "User Management" section.
+3. View existing user roles and permissions.
+4. C
+
+**Configuering Thresholds:**
+1. Access the dashboard as an admin user.
+2. Navigate to the "Admin Panel", by clicking the ![](images/userflow/adm.png "Admin") icon.
 
 
 ## NOTICE
@@ -73,4 +78,4 @@ This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LIC
 - Licence Path: https://creativecommons.org/licenses/by/4.0/legalcode
 - Copyright (c) 2022,2023 Contributors to the Eclipse Foundation
 - Copyright (c) 2022, 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
-- Source URL: https://github.com/eclipse-tractusx/vas-country-risk-backend
+- Source URL: https://github.com/catenax-ng/tx-demand-capacity-mgmt/

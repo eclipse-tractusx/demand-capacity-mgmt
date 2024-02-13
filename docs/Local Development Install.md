@@ -1,7 +1,36 @@
-# DCMFOSS local install for dev
+Table of Contents
 
-## Preface:
-This guide assumes updated windows with docker running, but will try to provide general instructions.
+1. [DCMFOSS Local Development Deployment](#dcmfoss-local-development-deployment)
+   - [Prerequisites](#prerequisites)
+   - [Guide](#guide)
+      - [Cloning the repository](#cloning-the-repository)
+      - [Open in your own IDE of choice](#open-in-your-own-ide-of-choice)
+      - [Docker desktop](#docker-desktop)
+      - [Running containers](#running-containers)
+      - [Running project first time for init configs](#running-project-first-time-for-init-configs)
+      - [Running Keycloak](#running-keycloak)
+      - [Fetching the keycloak client credential](#fetching-the-keycloak-client-credential)
+      - [Configure postman collection requests](#configure-postman-collection-requests)
+      - [Run the front-end](#run-the-front-end)
+   - [Postmand Collection](#Postman-collection)
+   - [Notice](#notice)
+
+
+# DCMFOSS Local Development Deployment
+
+
+## Prerequisites
+
+This guide assumes the following prerequisites are true.
+It was built considering an updated windows build with docker running, but will try to provide general instructions.
+
+- Basic coding knowledge
+- Basic Docker/Kubernetes knowledge
+- Git/Github Desktop
+- NodeJS installed
+- Yarn installed
+- Docker Desktop
+
 
 ## Guide:
 Let's begin local development install!
@@ -9,8 +38,8 @@ Let's begin local development install!
 - ### Cloning the repository
     Clone the repository from the url below
 
-    https://github.com/catenax-ng/tx-demand-capacity-mgmt.git
-    
+      git clone https://github.com/catenax-ng/tx-demand-capacity-mgmt.git
+  
     ![Using Github desktop](images/dev/1.png "Cloning the repo")
 
 - ### Open in your own IDE of choice
@@ -40,7 +69,7 @@ Let's begin local development install!
     
     open a powershell and type 
 
-    **wsl --set-default-version 2**
+      wsl --set-default-version 2
     
     then try again
 
@@ -48,13 +77,13 @@ Let's begin local development install!
 
 - ### Running containers
 
-  with docker running open a poweshell type
+  with docker running open a command terminal
 
-  **docker pull postgres**
+      docker pull postgres
 
   this will download the postgres image, then you need to configure postgres
 
-  **docker run -d --name dcmfPostgres -p 5432:5432 -e POSTGRES_PASSWORD=dcm -e POSTGRES_USER=dcm postgres**
+      docker run -d --name dcmfPostgres -p 5432:5432 -e POSTGRES_PASSWORD=dcm -e POSTGRES_USER=dcm postgres
 
   choose your own credentials of course, please **do not** use credentails shown on the guide.
   now connect to postgres DB either through your IDE or PGADMIN4
@@ -73,21 +102,21 @@ Let's begin local development install!
 - ### Running Keycloak
   open a new cmd file and run 
 
-  **docker run -p 8888:8080 -e KEYCLOAK_ADMIN=YourAdminName -e KEYCLOAK_ADMIN_PASSWORD=YourAdminPassword quay.io/keycloak/keycloak:23.0.6 start-dev**
+      docker run -p 8888:8080 -e KEYCLOAK_ADMIN=YourAdminName -e KEYCLOAK_ADMIN_PASSWORD=YourAdminPassword quay.io/keycloak/keycloak:23.0.6 start-dev
 
-  next go to docker and follow the link on the keycloak container. 
+  Next go to docker and follow the link on the keycloak container. 
 
-  login with admin credentials, under realms, click create new realm
+  Login with admin credentials, under realms, click create new realm
   import the realm-export.json on the keycloak folder.
 
   ![Postgres connection](images/dev/5.png "Docker postgres connection")
   
-  modify users to you heart's content(under the users tabs, credentials for them, assing roles, etc). 
+  Modify users to you heart's content(under the users tabs, credentials for them, assing roles, etc). 
 
   **Remember you need to have a user role on all users, it can be ADMIN, CUSTOMER, SUPPLIER**
   failing to have one of these roles won't let the user login in the app.
 
-  ![keycloak realm json](realm-export.json)
+  [Download keycloak realm json](realm-export.json)
 
 - ### Fetching the keycloak client credential
   before booting the project again navigate to dcmauth client on keycloak panel and copy the client secret under credentials.
@@ -110,15 +139,26 @@ Let's begin local development install!
   ![Postman](images/dev/10.png "Postman config")
 
 - ### Run the front-end
-  when postman is working, you need to open the front end on your IDE of choice and run on a terminal inside the front end folder, make sure you have NodeJS installed on your machine.
+  when postman is working, you need to open the front end on your IDE of choice and run on a terminal inside the front-end folder, make sure you have NodeJS installed on your machine.
 
-  **yarn install** 
+      yarn install --force --legacy-peer-deps
 
-  **yarn start**
+      yarn 
+    
+    or
+
+      npm install --force --legacy-peer-deps
+
+      npm start
 
   the app will be booted on localhost:3000
 
-  ![Postman collection](DCMFOSS_postman.json)
+
+## Postman Collection
+
+[Download Postman collection](DCMFOSS_postman.json)
+
+
 ## NOTICE
 
 This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
@@ -127,4 +167,4 @@ This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LIC
 - Licence Path: https://creativecommons.org/licenses/by/4.0/legalcode
 - Copyright (c) 2022,2023 Contributors to the Eclipse Foundation
 - Copyright (c) 2022, 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
-- Source URL: https://github.com/eclipse-tractusx/vas-country-risk-backend
+- Source URL: https://github.com/catenax-ng/tx-demand-capacity-mgmt/
