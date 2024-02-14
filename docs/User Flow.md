@@ -61,13 +61,12 @@ Table of contents:
 **Admin Panel:**
 1. Access the dashboard as an admin user.
 2. Navigate to the "Admin Panel", by clicking the ![](images/userflow/adm.png "Admin") icon.
-2. Navigate to the "User Management" section.
-3. View existing user roles and permissions.
-4. C
+
 
 **Configuering Thresholds:**
 1. Access the dashboard as an admin user.
 2. Navigate to the "Admin Panel", by clicking the ![](images/userflow/adm.png "Admin") icon.
+3. Navigate to the "Admin Panel", by clicking the ![](images/userflow/adm.png "Admin") icon.
 
 
 ## NOTICE
