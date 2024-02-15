@@ -66,7 +66,12 @@ Table of contents:
 **Configuering Thresholds:**
 1. Access the dashboard as an admin user.
 2. Navigate to the "Admin Panel", by clicking the ![](images/userflow/adm.png "Admin") icon.
-3. Navigate to the "Admin Panel", by clicking the ![](images/userflow/adm.png "Admin") icon.
+3. Inside the **Admin Panel** you need to look at the left menu and click on **Threshold Config** 
+![](images/userflow/thresholds/1.png.png "Admin menu")
+4. Once inside the thresholds config panel, you can add, delete, enable or disable thresholds to your liking. 
+5. You can also enable them for specific companies or capacity groups, or, disable them!.
+
+<img src="images/userflow/thresholds/flow.gif?raw=true">
 
 
 ## NOTICE

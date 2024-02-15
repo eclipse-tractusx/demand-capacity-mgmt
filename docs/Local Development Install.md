@@ -153,6 +153,9 @@ Let's begin local development install!
 
   the app will be booted on localhost:3000
 
+  for a user to correctly login you need to add a company to the DB and add that company to the user
+  Admin needs to have a company, even if a dummy one.
+  otherwise you will get lowerCase error on frontend when trying to read company Ids
 
 ## Postman Collection
 
