@@ -138,6 +138,8 @@ Let's begin local development install!
 
   ![Postman](images/dev/10.png "Postman config")
 
+  if an authorization error occurs, it most likely is the url error of keycloak, newer versions of keycloak you need to remove **/auth/** from the authorization url.
+
 - ### Run the front-end
   when postman is working, you need to open the front end on your IDE of choice and run on a terminal inside the front-end folder, make sure you have NodeJS installed on your machine.
 
