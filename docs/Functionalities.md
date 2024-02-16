@@ -1,4 +1,15 @@
-Table of contents:
+Table of Contents
+
+- [Demands System](#demands-system)
+- [Capacity System](#capacity-system)
+- [Alerts System](#alerts-system)
+- [Company System](#company-system)
+- [AddressBook System](#addressbook-system)
+- [Logging History System](#logging-history-system)
+- [Favorites System](#favorites-system)
+- [Statuses System](#statuses-system)
+- [EDC System](#edc-system)
+- [License Information](#license-information)
 
 # Functionalities
 
@@ -11,6 +22,9 @@ Table of contents:
 - Triggers alerts based on changes in demand values and handles alert notifications.
 - Defines a private method `postLogs` for posting logging history when a material demand is created or deleted, linked or updated using the LoggingHistoryService.
 
+        DCM CX47  -  Data Model Material Demand & Capacity Group - 70% Implemented
+
+        DCM CX48 - 
 
 ## Capacity System:
 

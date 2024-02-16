@@ -1,6 +1,5 @@
-Table of contents:
-
 # Code Dependencies
+
 ## Alerts
 ### Works
 - Alert Trigger on Capacity Group update and Material Demand
