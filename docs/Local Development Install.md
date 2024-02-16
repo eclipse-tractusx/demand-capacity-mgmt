@@ -130,6 +130,10 @@ Let's begin local development install!
   for the other requests on postman you need to alter the authorization tab.
   check the config on the images provided.
 
+  the access token url should be either the backend or in last resort if it fails, this one 
+  **http://localhost:8888/auth/realms/dcm/protocol/openid-connect/token** 
+  if an authorization error occurs, it most likely is the url error of keycloak, newer versions of keycloak you need to remove **/auth/** from the authorization url.
+
   ![Postman](images/dev/7.png "Postman config")
 
   ![Postman](images/dev/8.png "Postman config")
@@ -138,7 +142,7 @@ Let's begin local development install!
 
   ![Postman](images/dev/10.png "Postman config")
 
-  if an authorization error occurs, it most likely is the url error of keycloak, newer versions of keycloak you need to remove **/auth/** from the authorization url.
+ 
 
 - ### Run the front-end
   when postman is working, you need to open the front end on your IDE of choice and run on a terminal inside the front-end folder, make sure you have NodeJS installed on your machine.
