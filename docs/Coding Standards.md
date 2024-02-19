@@ -1,13 +1,13 @@
 Table of contents:
 
-- [Code Structure](#code-structure)
-- [Variable Naming](#variable-naming)
-- [Code Reusability](#code-reusability)
-- [File Header Comments](#file-header-comments)
-- [Package and Class Comments](#package-and-class-comments)
-- [Annotations and Formatting](#annotations-and-formatting)
-- [Method Comments and Documentation](#method-comments-and-documentation)
-- [Exception Handling](#exception-handling)
+  - [Code Structure](#code-structure)
+  - [Variable Naming](#variable-naming)
+  - [Code Reusability](#code-reusability)
+  - [File Header Comments](#file-header-comments)
+  - [Package and Class Comments](#package-and-class-comments)
+  - [Annotations and Formatting](#annotations-and-formatting)
+  - [Method Comments and Documentation](#method-comments-and-documentation)
+  - [Exception Handling](#exception-handling)
 
 
 - **Code Structure:**
