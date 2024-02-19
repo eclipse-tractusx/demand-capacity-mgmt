@@ -1,126 +1,283 @@
+Table of Contents
+
+- [Code Dependencies](#code-dependencies)
+    - [Alerts](#alerts)
+    - [Material Demands](#material-demands)
+    - [Capacity Group](#capacity-group)
+    - [Company System](#company-system)
+    - [AddressBook](#addressbook)
+    - [Logging History](#logging-history)
+    - [Favorites](#favorites)
+    - [Statuses](#statuses)
+    - [EDC](#edc)
+    - [Exception Handling](#exception-handling)
+- [Front-End](#frontend)
+    - [NOTICE](#notice)
+
 # Code Dependencies
 
 ## Alerts
-### Works
-- Alert Trigger on Capacity Group update and Material Demand
-- Alert Creation with custom Abolute and Relative values.
+### Functionality
+- Implements alert triggers for capacity group updates and material demand changes.
+- Allows creation of alerts with custom absolute and relative values.
 
-### Related 
-    - AlertEntity
-    - AlertsController
-    - AlertsRepository
-    - AlertsService
-    - AlertsServiceImplementation
-
+### Related Components
+        - AlertEntity
+        - AlertsController
+        - AlertsRepository
+        - AlertsService
+        - AlertsServiceImplementation
 
 ## Material Demands
-### Works
-- User can Create, update, delete, retrieve material demands.
-- Triggers alerts based on changes in demand values and handles alert notifications.
+### Functionality
+- Enables CRUD operations for material demands.
+- Triggers alerts based on changes in demand values and manages alert notifications.
 
-### Related 
-    - MaterialDemandEntity
-    - DemandController
-    - MaterialDemandRepository
-    - DemandService
-    - DemandServiceImplementation
-
+### Related Components
+        - MaterialDemandEntity
+        - DemandController
+        - MaterialDemandRepository
+        - DemandService
+        - DemandServiceImplementation
 
 ## Capacity Group
-### Works
-- User can Create, update, delete, retrieve capacity groups.
-- link maerial demands to capacity groups.
+### Functionality
+- Supports CRUD operations for capacity groups.
+- Facilitates linking material demands to capacity groups.
 
-### Related 
-    - CapacityGroupEntity
-    - CapacityGroupsController
-    - CapacityGroupRepository
-    - CapacityGroupService
-    - CapacityGroupServiceImplementation
+### Related Components
+        - CapacityGroupEntity
+        - CapacityGroupsController
+        - CapacityGroupRepository
+        - CapacityGroupService
+        - CapacityGroupServiceImplementation
 
 ## Company System
-### Works
-- User can Create, update, delete, retrieve capacity groups.
+### Functionality
+- Enables management of company-related operations.
 
-### Related 
-    - CompanyEntity
-    - CompanyController
-    - CompanyRepository
-    - CompanyService
-    - CompanyServiceImplementation
+### Related Components
+        - CompanyEntity
+        - CompanyController
+        - CompanyRepository
+        - CompanyService
+        - CompanyServiceImplementation
 
 ## AddressBook
-### Works
-- User can create, delete, update addressbook.
-- User can retrieve, add, edit contacts information.
+### Functionality
+- Facilitates management of contacts and address book entries.
 
-### Related 
-    - AddressBookRecordEntity
-    - AddressBookController
-    - AddressBookRepository
-    - AddressBookService
-    - AddressBookServiceImplementation
-
+### Related Components
+        - AddressBookRecordEntity
+        - AddressBookController
+        - AddressBookRepository
+        - AddressBookService
+        - AddressBookServiceImplementation
 
 ## Logging History
-### Works
-- A log wil be saved to the database when a user movement(ex:demand or CG creation or any other change).
-- User can archive log, and view all the archived logs on a seperate view.
+### Functionality
+- Logs user activities and movements.
+- Allows archiving and viewing of logged activities.
 
-### Related 
-    - LoggingHistoryEntity
-    - LoggingHistoryController
-    - LoggingHistoryRepository
-    - LoggingHistoryService
-    - LoggingHistoryServiceImplementation
-    - ArchivedLogEntity
-    - ArchivedLogsRepository
+### Related Components
+        - LoggingHistoryEntity
+        - LoggingHistoryController
+        - LoggingHistoryRepository
+        - LoggingHistoryService
+        - LoggingHistoryServiceImplementation
+        - ArchivedLogEntity
+        - ArchivedLogsRepository
 
 ## Favorites
-### Works
-- create favorited items fo CG, material demands, addressbook, company, events...
-- User can filter favorites based on its type.
+### Functionality
+- Enables users to create and manage favorites for various entities.
+- Supports filtering of favorites based on entity types.
 
-### Related 
-    - FavoriteEntity
-    - FavoriteController
-    - FavoriteRepository
-    - FavoriteService
-    - FavoriteServiceImpl
+### Related Components
+        - FavoriteEntity
+        - FavoriteController
+        - FavoriteRepository
+        - FavoriteService
+        - FavoriteServiceImpl
 
 ## Statuses
-### Works
-- retrieve todos statuses for unlinked demands, status improvement for improved ones, status deduction for declined ones.
-- update, retrieve and post statuses.
+### Functionality
+- Manages status updates for demand items.
+- Facilitates retrieval and management of statuses.
 
-### Related 
-    - StatusesEntity
-    - StatusesController
-    - StatusesRepository
-    - StatusesService
-    - StatusesServiceImplementation    
-
+### Related Components
+        - StatusesEntity
+        - StatusesController
+        - StatusesRepository
+        - StatusesService
+        - StatusesServiceImplementation
 
 ## EDC
-### Works
-- Responsible for interfacing with an external service to manage assets, policies, contracts, transfer processes, and data.
+### Functionality
+- Interfaces with external services for managing assets, policies, contracts, transfers, and data.
 
-### Related 
-    - EDCService
-    - EDCServiceImplementation    
-    
+### Related Components
+        - EDCService
+        - EDCServiceImplementation
+
 ## Exception Handling
-### Works
-- Returning the front-end a combination of numbers to determine specific error causes.
+### Functionality
+- Handles exceptions and error responses in the application.
 
-### Related 
-    - RestExceptionHandler
-    - CustomException
-    - ExceptionResponse
-    - ExceptionResponseImpl
-    - BadRequestException
-    - InternalServerErrorException
-    - NotFoundException
+### Related Components
+        - RestExceptionHandler
+        - CustomException
+        - ExceptionResponse
+        - ExceptionResponseImpl
+        - BadRequestException
+        - InternalServerErrorException
+        - NotFoundException
+
+# FrontEnd
+The **Components** folder holds reusable building blocks of the application's user interface, such as components for managing address books, alerts, capacity groups, and more. Within each component folder, you'll find specific components related to that feature, like forms, tables, and modals. 
+
+The **Contexts** folder contains context providers, which help manage application-wide data and state. 
+
+**Interfaces** define the structure of data used in the application. 
+
+The **Common** directory integrates, most of the commonly used components used throught each pages, such as Search bars and so on.
+
+Finally, the **Util** folder contains utility functions and helpers that assist in various tasks throughout the application. This organized structure is a very simple approach to modularity and coponents, making it easier to navigate and maintain the codebase.
+
+The **DCM**, folder integrates key components that are the base of the application. Such as the *AppLayout.tsx*, that contains the routing system that reidirects between pages,and their contexts that integrates them with their needed **dependencies**, the *Layout.tsx* that contains the base foundation of the whole web structure, with permanent items like the QuickAcessItems and the Menu, and finally the *ToastContainerComponent.tsx* that containes the Toast container, keeping toasts consistent across pages.
+
+A component can be found on the relative folder to wich feature it integrates, consider the following structure:
+
+
+
+```bash
+├───components
+│   ├───addessBook
+│   │       AddressBookDetailsView.tsx
+│   │       BoardView.tsx
+│   │       CompaniesList.tsx
+│   │       CompanyEditModal.tsx
+│   │       ContactCardModal.tsx
+│   │       ContactEditModal.tsx
+│   │       ContactsList.tsx
+│   │
+│   ├───alerts
+│   │       AlertsTable.tsx
+│   │       ConfigureAlertModal.tsx
+│   │       ConfiguredAlertsTable.tsx
+│   │       RulesModal.tsx
+│   │
+│   ├───capacitygroup
+│   │       BottleNeckModalComponent.tsx
+│   │       CapacityGroupAddToExisting.tsx
+│   │       CapacityGroupBottlenecks.tsx
+│   │       CapacityGroupChronogram.tsx
+│   │       CapacityGroupDemandsList.tsx
+│   │       CapacityGroupsList.tsx
+│   │       CapacityGroupsTableHeaders.tsx
+│   │       CapacityGroupSumView.tsx
+│   │       CapacityGroupWizardModal.tsx
+│   │
+│   ├───common
+│   │       AlertMonitoredObjectsOptions.tsx
+│   │       AlertThresholdTypeOptions.tsx
+│   │       CompanyDetailsInteractionModal.tsx
+│   │       CompanyOptions.tsx
+│   │       DangerConfirmationModal.tsx
+│   │       LoadingMessages.tsx
+│   │       Pagination.tsx
+│   │       QuickAcessItems.tsx
+│   │       Search.tsx
+│   │       StepsBreadCrumbs.tsx
+│   │       TopMenu.tsx
+│   │       UnitsofMeasureOptions.tsx
+│   │
+│   ├───dcm
+│   │       AppComponent.tsx
+│   │       Layout.tsx
+│   │       ToastContainerComponent.tsx
+│   │
+│   ├───demands
+│   │       DemandAddForm.tsx
+│   │       DemandCategoryOptions.tsx
+│   │       DemandDetailsModal.tsx
+│   │       DemandEditForm.tsx
+│   │       DemandList.tsx
+│   │       DemandListTableHeaders.tsx
+│   │       DemandManagement.tsx
+│   │       DemandManagementTableHeaders.tsx
+│   │       DemandsOverview.tsx
+│   │
+│   ├───events
+│   │       EventsTable.tsx
+│   │
+│   ├───favorites
+│   │       FavoritesTableAddressBook.tsx
+│   │       FavoritesTableCapacityGroup.tsx
+│   │       FavoritesTableCompanies.tsx
+│   │       FavoritesTableEvents.tsx
+│   │       FavoritesTableMaterialDemands.tsx
+│   │
+│   ├───menu
+│   │       InfoMenu.tsx
+│   │
+│   └───pages
+│           AdminPage.tsx
+│           AdressBookPage.tsx
+│           AlertsPage.tsx
+│           AuthenticationPage.tsx
+│           CapacityGroupDetailsPage.tsx
+│           CapacityGroupPage.tsx
+│           DownStatusPage.tsx
+│           ErrorPage.tsx
+│           EventsPage.tsx
+│           FavoritesPage.tsx
+│           ThresholdPage.tsx
+│           TodoListPage.tsx
+│           UpStatusPage.tsx
+│
+├───contexts
+│       AdressBookContextProvider.tsx
+│       AlertsContextProvider.tsx
+│       BottlenecksContextProvider.tsx
+│       CapacityGroupsContextProvider.tsx
+│       CompanyContextProvider.tsx
+│       DemandCategoryProvider.tsx
+│       DemandContextProvider.tsx
+│       EventsContextProvider.tsx
+│       FavoritesContextProvider.tsx
+│       InfoMenuContextProvider.tsx
+│       ThresholdsContextProvider.tsx
+│       UnitsOfMeasureContextProvider.tsx
+│       UserContext.tsx
+│       YearlyReportContextProvider.tsx
+│
+├───interfaces
+│       addressbook_interfaces.tsx
+│       alert_interface.tsx
+│       capacitygroup_interfaces.tsx
+│       company_interfaces.tsx
+│       customer_interfaces.tsx
+│       customoption_interface.tsx
+│       demand_interfaces.tsx
+│       event_interfaces.tsx
+│       favorite_interfaces.tsx
+│       infomenu_interfaces.tsx
+│       supplier_interfaces.tsx
+│       threshold_interfaces.tsx
+│       user_interfaces.tsx
+│
+└───util
+        Api.tsx
+        Auth.tsx
+        AuthApi.tsx
+        AuthenticatedRoute.tsx
+        Defaults.tsx
+        ErrorMessagesHandler.tsx
+        RefreshToken.tsx
+        TypeGuards.tsx
+        WeeksUtils.tsx
+```
 
 
 

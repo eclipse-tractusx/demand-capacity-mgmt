@@ -1,69 +1,40 @@
-Prerequisites:
-- Ensure you have both Helm and Kind installed.
+Table of Contents
 
-Installing Helm:
+- [Enterprise Data Connector (EDC)](#enterprise-data-connector-edc)
+    - [Catena Portal Guide](#catena-portal-guide)
+    - [Data Retrieval Guide](#data-retrieval-guide)
+- [Application](#application)
+    - [Prerequisites for EDC Integration](#prerequisites-for-edc-integration)
+    - [Installation Guide](#installation-guide)
+    - [API Sample Endpoints](#api-sample-endpoints)
+---
 
-Helm is the package manager for Kubernetes. You can get helm from here: https://github.com/helm/helm/releases
+## Eclipse Dataspace Connector (EDC)
 
--------------------------------------------------------------------------------
+### Catena Portal Guide
 
-Installing Kind:
-
-Kind stands for "Kubernetes in Docker". It's used for running local Kubernetes clusters using Docker containers as nodes. And you can get it from here: https://kind.sigs.k8s.io/docs/user/quick-start/
-
-Now that you have Helm and Kind installed, let's create a cluster, this way we can run the helms charts.
-
-For that we run the following command on a terminal:
-
-    kind create cluster --name {NAME_OF_CLUSTER}
-
-And then you can see your cluster by entering:
-
-    kind get clusters
-
--------------------------------------------------------------------------------
-
-Now that you saw your cluster follow the steps below to install the DCM application.
-
-To install the images we need to run this command on the root folder:
-
-    helm install dcm ./charts/demand-capacity-management 
+To facilitate seamless integration with the Eclipse Dataspace Connector (EDC) and CatenaX portal, please refer to the detailed instructions provided in the [Catena Portal Guide](/docs/catena%20portal%20guide/CatenaPortalGuide.md).
 
 
-Now that you have the application running let's work on the EDC.
+### Data Retrieval Guide
 
--------------------------------------------------------------------------------
-EDC
+Efficient handling of EDC requests and utilization of its RESTful APIs are crucial for optimal data retrieval. Refer to the comprehensive [Data Retrieval Guide](/docs/data%20retrieval%20guide/DataRetrievalGuide.md) for detailed instructions and best practices.
 
-Go to https://portal.int.demo.catena-x.net/
-Search for your portal company and login.
+---
 
-And now we need to create a user for the edc.
+## Application 
 
-Click on the user icon, on the top right -> User Management -> Technical User Management -> Create Technical User
+For the successful deployment and operation of the application, adherence to certain prerequisites and meticulous installation procedures is essential.
 
-Choose the Username, the Description, select Data-space Discovery and then Click Confirm. And you have your user for EDC created!.
+### Prerequisites for EDC Integration
 
--------------------------------------------------------------------------------
+- Proper registration of the company on the CatenaX portal.
+- Setup and configuration of the Eclipse Dataspace Connector according to organizational requirements.
 
-On your IDE go to the folder charts/edc, you will find 3 folders, in each one you will have to edit the file values.yaml with the correct information form the previous step.
+### Installation Guide
 
-Then you can deploy those charts on argoCD.
+Aninstallation guide, tailored specifically for local development environments, is available for reference. 
+Follow the [Local Development Guide](/docs/Local%20Development%20Install.md) for comprehensive instructions on installing and configuring the application.
 
--------------------------------------------------------------------------------
-
-After having the EDC deployed, go back to https://portal.int.demo.catena-x.net/
-
-Click on the user icon, on the top right -> Technical Integration -> Register Connector
-
-Select Connect company connector and then next, fill with the connector name, the utl that the ingress form argo cd, and the two-digit code from your company country, and finally, confirm.
-
-Now you have your edc deployed and registered, have fun!
-
-
-
-
-
-
-
-
+### API Sample Endpoints
+Access Swagger UI for API documentation: [http://localhost:8080/swagger-ui/index.html#/](http://localhost:8080/swagger-ui/index.html#/)

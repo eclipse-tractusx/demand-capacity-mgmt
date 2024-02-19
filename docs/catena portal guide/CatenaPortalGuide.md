@@ -1,6 +1,6 @@
 
 
-## Table of Contents
+Table of Contents
   - [Table of Contents](#table-of-contents)
   - [Starting Point](#starting-point)
   - [Find Your Company](#find-your-company)

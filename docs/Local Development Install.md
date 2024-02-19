@@ -24,12 +24,14 @@ Table of Contents
 This guide assumes the following prerequisites are true.
 It was built considering an updated windows build with docker running, but will try to provide general instructions.
 
-- Basic coding knowledge
-- Basic Docker/Kubernetes knowledge
-- Git/Github Desktop
-- NodeJS installed
-- Yarn installed
-- Docker Desktop
+  - Basic coding knowledge
+  - Basic Docker/Kubernetes knowledge
+  - JDK 17 ( or Higher)
+  - Maven 'Spring Boot is compatible with Apache Maven 3.5 or above'
+  - Git/Github Desktop
+  - NodeJS installed
+  - Yarn installed
+  - Docker Desktop
 
 
 ## Guide:

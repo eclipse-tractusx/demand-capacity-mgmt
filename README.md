@@ -1,59 +1,68 @@
-Table of content:
+Table of Contents
 
 - [Demand and Capacity Management](#demand-and-capacity-management)
-    - [Overview](#ov)
+    - [Overview](#overview)
         - [Resilient Supply Chains](#resilient-supply-chains)
         - [Advantages for Everyone Involved](#advantages-for-everyone-involved)
 - [Application](#application)
-  - [Prerequisites](#prerequisites)
-  - [How to Run](#how-to-run)
-  - [Diagrams]()
-    - [Components Architecture Diagram](#components-architecture-diagram)
-    - [Roles and Capabilities Diagram](#roles-and-capabilites-diagram)
-- [API Sample Endpoints](#api-sample-endpoints)
+    - [About the Application](#about-the-application)
+    - [Prerequisites](#prerequisites)
+    - [Getting Started](#getting-started)
+    - [Functionalities](#functionalities)
+    - [Code Dependencies](#code-dependencies)
+    - [User Flow](#user-flow)
+    - [Error Codes](#error-codes)
+
+---
 
 # Demand and Capacity Management
 
 ## Overview
-Turbulence in the global economy, technological change, and limited availability of resources are impacting industries. Eclipse-Tractus-X, which hosts the components for a Catena-X network, enables a secure exchange of demand and capacity data of all partners involved in the automotive network: from raw material to n-tier suppliers to car manufacturers.
+
+The ever-changing landscape of the global economy, coupled with technological advancements and resource constraints, poses challenges for industries worldwide. Eclipse-Tractus-X, the host of components for a Catena-X network, facilitates a secure exchange of demand and capacity data among all partners within the automotive network, spanning from raw material suppliers to n-tier suppliers to car manufacturers.
 
 ### Resilient Supply Chains
 
-Demand and capacity management (BKM) is based on a collaborative process. Those who are part of the Catena-X network can securely share their demand and capacity data with other collaborators: with suppliers just as much as with automotive manufacturers and recyclers. The Catena-X ecosystem offers protected spaces with a common view of the data released. This enables the partners to react at an early stage to changes in plans and deviations and to jointly find a solution based on the situation.
+Demand and Capacity Management (DCM) operates on a collaborative basis within the Catena-X network. Participants securely share their demand and capacity data, fostering collaboration among suppliers, automotive manufacturers, and recyclers. This ecosystem offers protected spaces with a shared view of data, enabling proactive responses to plan changes and deviations, fostering joint problem-solving.
 
-Establishing a collaborative process significantly increases transparency and creates a more robust and resilient supply chain.
+Establishing such collaborative processes significantly enhances transparency and resilience within supply chains.
 
 ### Advantages for Everyone Involved
 
-- Improved planning reliability and accuracy;
-- Increased transparency about the demand and capacity situation as well as their fluctuations;
-- Early detection of problems and the ability to avoid capacity bottlenecks;
-- Less under/overproduction through better utilization;
-- Reduced costs by avoiding expensive re-planning and improved material procurement;
-- Increased delivery reliability and customer satisfaction.
-
+- Enhanced planning reliability and accuracy
+- Increased transparency regarding demand and capacity, including fluctuations
+- Early detection and avoidance of capacity bottlenecks
+- Reduced under/overproduction through improved resource utilization
+- Cost reduction by minimizing expensive re-planning and optimizing material procurement
+- Improved delivery reliability and customer satisfaction
 
 # Application
 
+For detailed information about the application, refer to [Application.md](/docs/Application.md).
 
-### Prerequisites
+## Prerequisites
 
-* JDK 17 ( or Higher)
-* Maven 'Spring Boot is compatible with Apache Maven 3.5 or above'
-* Company registry on the CatenaX portal
-* EDC Ednpoint
+Ensure all necessary prerequisites are met before proceeding with the application setup.
 
+## Getting Started
 
-## Components Architecture Diagram
+Refer to [Install.md](/INSTALL.md) for comprehensive documentation on running the application.
 
-![Components Architecture](docs/images/ComponentsArchitecture.jpg "Components Architecture Diagram")
+## Functionalities
 
-## Roles And Capabilites Diagram
+Explore the list of implemented functionalities aligned with CatenaX standards, along with an overview of their implementation progress, in [Functionalities.md](/docs/Functionalities.md).
 
-![Roles and Capabilites](docs/images/PersonasAndCapabilities.jpg "Roles and Capabilities Diagram")
+## Code Dependencies
 
+For development purposes, a comprehensive list of files and their relationships with functionalities can be found in [Code_Dependencies.md](/docs/Code_Dependencies.md). 
+Adherence to predefined [Coding Standards](/docs/Coding%20Standards.md) is crucial.
 
+## User Flow
 
-## API sample endpoints
+Understand the application's user flow by referring to [User Flow.md](/docs/User%20Flow.md).
 
-* Swagger UI: `http://localhost:8080/swagger-ui/index.html#/`
+## Error Codes
+
+Refer to [Application Error Codes_v1.1.xlsx](/docs/Application%20Error%20Codes_v1.1.xlsx) for an overview of application error codes and their structure.
+
+<img src="images/userflow/login.gif?raw=true">

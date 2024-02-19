@@ -1,4 +1,4 @@
- Table of contents:
+Table of contents:
 
 - [Code Structure](#code-structure)
 - [Variable Naming](#variable-naming)

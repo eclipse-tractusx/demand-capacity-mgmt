@@ -1,6 +1,5 @@
 
-
-## Table of Contents
+Table of Contents
 - [ Catena-X Data Retrieval Guide](#-catena-x-data-retrieval-guide)
   - [Table of Contents](#table-of-contents)
   - [Starting Point](#starting-point)
