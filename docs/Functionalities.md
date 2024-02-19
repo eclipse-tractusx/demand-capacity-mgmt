@@ -13,6 +13,46 @@ Table of Contents
 
 # Functionalities
 
+
+## Overview
+NIS: Feature was not part of that particular standard version
+
+NV: Not Verified
+
+xyz%: Completion ratio in relation to the corresponding standard version
+
+
+ 
+| Feature / Standard Version  | 23.09  | 24.03 | 24.05 | Feature not based on Standard |
+|:-|:-|:-|:-|:-|
+| Exchange MaterialDemand & WeekBasedCapacityGroup | 100% | NV | NV |
+| Link MaterialDemand & WeekBasedCapacityGroup | 100% | 100% | NV |
+| Compare MaterialDemand & WeekBasedCapacityGroup | 100% | 100% | NV |
+| Supplier: Consume MaterialDemand | 100% | 100% | NV |
+| Supplier: Provide WeekBasedCapacityGroup | 100% | 25% | NV |
+| Supplier: Process MaterialDemand | 100% | 100% | NV |
+| Supplier: Process WeekBasedCapacityGroup | 100% | 50% | NV |
+| Customer: Consume WeekBasedCapacityGroup | 100% | 50% | NV |
+| Customer: Provide MaterialDemand | 100% | 75% | NV |
+| Customer: Process MaterialDemand | 100% | 75% | NV |
+| Customer: Process WeekBasedCapacityGroup | 100% | 50% | NV |
+| Customer & Supplier: Provide, Consume & Process Nesting of WeekBasedCapacityGroup | NIS | 25% | 0% |
+| Customer & Supplier: Provide, Consume & Process Load Factors | NIS | 25% | 0% |
+| Customer & Supplier: Provide, Consume & Process Simulated Delta-Production | NIS | 25% | 0% |
+| Customer & Supplier: Provide, Consume & Process RequestForUpdate | NIS | 0% | 0% |
+| Customer & Supplier: Provide, Consume & Process IdBasedComment | NIS | 0% | 0% |
+| Customer & Supplier: Provide, Consume & Process Deactivation of WeekBasedCapacityGroup & MaterialDemand | NIS | NIS | 0% |
+| Customer & Supplier: Provide, Consume & Process Supply Chain Disruption Notification | NIS| NIS | 0% |
+| Customer & Supplier: Provide, Consume & Process Agreed Capacity | NIS| NIS | 0% |
+| Customer & Supplier: Provide, Consume & Demand Volatility | NIS| NIS | 0% |
+|Local Adress Book| NIS| NIS | NIS | 90%|
+| Capacity Groups and Material Demand - Alerts | NIS| NIS | NIS | 65% |
+| Event Logging and History| NIS| NIS | NIS | 90% |
+| Favorites | NIS| NIS | NIS | 80% |
+| Admin Panel | NIS| NIS | NIS | 20% |
+
+---
+
 ## Demands System:
 
 - Manages functionalities related to material demand management.
