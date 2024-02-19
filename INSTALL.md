@@ -1,13 +1,12 @@
 Table of Contents
 
-- [Enterprise Data Connector (EDC)](#enterprise-data-connector-edc)
+- [Eclipse Dataspace Connector (EDC)](#enterprise-data-connector-edc)
     - [Catena Portal Guide](#catena-portal-guide)
     - [Data Retrieval Guide](#data-retrieval-guide)
 - [Application](#application)
     - [Prerequisites for EDC Integration](#prerequisites-for-edc-integration)
     - [Installation Guide](#installation-guide)
     - [API Sample Endpoints](#api-sample-endpoints)
----
 
 ## Eclipse Dataspace Connector (EDC)
 
@@ -20,7 +19,6 @@ To facilitate seamless integration with the Eclipse Dataspace Connector (EDC) an
 
 Efficient handling of EDC requests and utilization of its RESTful APIs are crucial for optimal data retrieval. Refer to the comprehensive [Data Retrieval Guide](/docs/data%20retrieval%20guide/DataRetrievalGuide.md) for detailed instructions and best practices.
 
----
 
 ## Application 
 

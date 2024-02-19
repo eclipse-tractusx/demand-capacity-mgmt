@@ -13,7 +13,6 @@ Table of Contents
     - [User Flow](#user-flow)
     - [Error Codes](#error-codes)
 
----
 
 # Demand and Capacity Management
 
@@ -65,4 +64,4 @@ Understand the application's user flow by referring to [User Flow.md](/docs/User
 
 Refer to [Application Error Codes_v1.1.xlsx](/docs/Application%20Error%20Codes_v1.1.xlsx) for an overview of application error codes and their structure.
 
-<img src="images/userflow/login.gif?raw=true">
+<img src="docs/images/userflow/login.gif?raw=true">
