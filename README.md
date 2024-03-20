@@ -4,7 +4,7 @@ Turbulence in the global economy, technological change, and limited availability
 
 # Resilient supply chains
 
-Demand and capacity management (BKM) is based on a collaborative process. Those who are part of the Catena-X network can securely share their demand and capacity data with other collaborators: with suppliers just as much as with automotive manufacturers and recyclers.
+Demand and capacity management (DCM) is based on a collaborative process. Those who are part of the Catena-X network can securely share their demand and capacity data with other collaborators: with suppliers just as much as with automotive manufacturers and recyclers.
 
 The Catena-X ecosystem offers protected spaces with a common view of the data released. This enables the partners to react at an early stage to changes in plans and deviations and to jointly find a solution based on the situation.
 
