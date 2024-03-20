@@ -24,13 +24,13 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.servic
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
 import java.util.List;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 
 public interface CapacityGroupService {
-    CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest);
+    CapacityGroupResponse createCapacityGroup(CapacityGroupRequest capacityGroupRequest, String userID);
 
-    void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest);
+    void linkCapacityGroupToMaterialDemand(LinkCGDSRequest linkCGDSRequest, String userID);
 
-    CapacityGroupResponse getCapacityGroupById(String CapacityGroupId);
-
-    List<CapacityGroupDefaultViewResponse> getAll();
+    SingleCapacityGroup getCapacityGroupById(String CapacityGroupId);
+    List<CapacityGroupDefaultViewResponse> getAll(String userID, Role role);
 }

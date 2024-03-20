@@ -20,7 +20,7 @@
  *    ********************************************************************************
  */
 
-import { DemandProp } from "./demand_interfaces"
+import { EventType } from "./event_interfaces"
 
 export interface CapacityGroupProp {
   internalId: string
@@ -32,8 +32,10 @@ export interface CapacityGroupProp {
   numberOfMaterials: number
   favoritedBy: string
   status: string
-  [key: string]: string | number;
-  }
+  linkStatus: EventType
+  ruled: boolean
+  [key: string]: string | number | boolean;
+}
 
 interface Address {
   id: string;
@@ -46,28 +48,21 @@ interface Address {
   myCompany: string;
 }
 
-interface UnitOfMeasure {
-  id: string;
-  codeValue: string;
-  displayValue: string;
-}
-
-interface Capacities{
-  actualCapacity: bigint,
-  maximumCapacity: bigint;
+interface Capacities {
+  capacityId: string,
+  actualCapacity: number,
+  maximumCapacity: number;
   calendarWeek: string
 }
 
 export interface SingleCapacityGroup {
   capacities: Capacities[];
-  supplierLocations: Address[];
   customer: Address;
   supplier: Address;
+  ruled: boolean;
   capacityGroupId: string;
   linkMaterialDemandIds: string[];
-  unitOfMeasure: UnitOfMeasure;
-  changeAt: string;
-  capacitygroupname: string;
+  capacityGroupName: string;
 }
 
 export interface CapacityGroupCreate {
@@ -83,5 +78,14 @@ export interface CapacityGroupCreate {
 
 export interface CapacityGroupLink {
   capacityGroupID: string
-  linkedMaterialDemandID: string[]
+  linkMaterialDemandIds: string[]
+}
+
+
+export interface CapacityGroupData {
+  calendarWeek: string;
+  actualCapacity: number;
+  maximumCapacity: number;
+  Demand: number;
+  dateEpoch: number;
 }

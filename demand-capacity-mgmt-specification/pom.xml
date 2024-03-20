@@ -85,23 +85,19 @@
             <artifactId>javax.annotation-api</artifactId>
             <version>1.3.2</version>
         </dependency>
-
     </dependencies>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>dash-licenses-snapshots</id>
-            <url>https://repo.eclipse.org/content/repositories/dash-licenses-snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.eclipse.dash</groupId>
                 <artifactId>license-tool-plugin</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.1.0</version>
+                <configuration>
+                    <projectId>automotive.tractusx</projectId>
+                    <summary>../DEPENDENCIES_SPECIFICATION</summary>
+                    <includeScope>test</includeScope>
+                </configuration>
                 <executions>
                     <execution>
                         <id>license-check</id>
@@ -158,5 +154,13 @@
         </plugins>
     </build>
 
-
+    <pluginRepositories>
+        <pluginRepository>
+            <id>dash-licenses</id>
+            <url>https://repo.eclipse.org/content/repositories/dash-licenses/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 </project>

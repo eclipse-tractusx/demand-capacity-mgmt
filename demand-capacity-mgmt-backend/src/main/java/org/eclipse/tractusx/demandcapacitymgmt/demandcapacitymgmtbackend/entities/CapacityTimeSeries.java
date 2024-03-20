@@ -23,12 +23,8 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "capacity_time_series")
@@ -44,7 +40,7 @@ public class CapacityTimeSeries {
     private UUID id;
 
     @Column(name = "calendar_week", nullable = false)
-    private LocalDateTime calendarWeek;
+    private String calendarWeek;
 
     @Column(name = "actual_capacity", nullable = false)
     private Double actualCapacity;
@@ -52,7 +48,8 @@ public class CapacityTimeSeries {
     @Column(name = "maximum_capacity", nullable = false)
     private Double maximumCapacity;
 
-    @ManyToOne
-    @JoinColumn(name = "capacity_group_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     private CapacityGroupEntity capacityGroupEntity;
 }

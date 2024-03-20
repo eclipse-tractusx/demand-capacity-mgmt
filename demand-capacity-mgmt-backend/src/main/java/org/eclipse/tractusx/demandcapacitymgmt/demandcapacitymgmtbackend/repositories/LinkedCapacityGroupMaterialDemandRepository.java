@@ -28,13 +28,24 @@ import java.util.List;
 import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.LinkedCapacityGroupMaterialDemandEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LinkedCapacityGroupMaterialDemandRepository
     extends JpaRepository<LinkedCapacityGroupMaterialDemandEntity, UUID> {
+    LinkedCapacityGroupMaterialDemandEntity findByMaterialDemandID(UUID materialDemandID);
+    List<LinkedCapacityGroupMaterialDemandEntity> findByCapacityGroupID(@NonNull UUID capacityGroupID);
+
+    @Query("select count(l) from LinkedCapacityGroupMaterialDemandEntity l where l.materialDemandID = ?1")
+    long countLinkedDemands(UUID materialDemandID);
+
     @Transactional
     void deleteByCapacityGroupIDAndMaterialDemandID(UUID capacityGroup, UUID materialDemandID);
+
+    @Transactional
+    void deleteByMaterialDemandID(UUID materialDemandID);
 
     List<LinkedCapacityGroupMaterialDemandEntity> findLinkedCapacityGroupMaterialDemandEntitiesByCapacityGroupID(
         UUID capacityGroup

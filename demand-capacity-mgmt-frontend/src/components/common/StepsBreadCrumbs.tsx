@@ -22,11 +22,21 @@
 import React from 'react';
 
 interface StepBreadcrumbsProps {
+  welcome: boolean;
+  maxSteps: number;
   currentStep: number;
 }
 
-const StepBreadcrumbs: React.FC<StepBreadcrumbsProps> = ({ currentStep }) => {
-  const steps = ['Welcome', 'Step 1', 'Step 2', 'Step 3'];
+const StepBreadcrumbs: React.FC<StepBreadcrumbsProps> = ({ welcome, maxSteps, currentStep }) => {
+  const steps = [];
+
+  if (welcome) {
+    steps.push('Welcome');
+  }
+
+  for (let i = 1; i <= maxSteps; i++) {
+    steps.push(`Step ${i}`);
+  }
 
   return (
     <center>
@@ -34,7 +44,7 @@ const StepBreadcrumbs: React.FC<StepBreadcrumbsProps> = ({ currentStep }) => {
         {steps.map((stepLabel, index) => (
           <React.Fragment key={index}>
             {index > 0 && <span className='separator'>{' > '}</span>}
-            <span className={`step ${currentStep === index ? 'active-step' : ''}`}>
+            <span className={`step ${currentStep === index + (welcome ? 0 : 1) ? 'active-step' : ''}`}>
               {stepLabel}
             </span>
           </React.Fragment>
@@ -45,3 +55,4 @@ const StepBreadcrumbs: React.FC<StepBreadcrumbsProps> = ({ currentStep }) => {
 };
 
 export default StepBreadcrumbs;
+

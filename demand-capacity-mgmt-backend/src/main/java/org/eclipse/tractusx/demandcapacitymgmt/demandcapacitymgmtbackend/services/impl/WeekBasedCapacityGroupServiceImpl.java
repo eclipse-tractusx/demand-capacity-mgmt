@@ -23,21 +23,20 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.*;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CapacityGroupEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedCapacityGroupEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.NotFoundException;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.MaterialDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
@@ -48,99 +47,88 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroupService {
 
-    private final StatusesRepository statusesRepository;
-
     private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
-
-    private final CapacityGroupService capacityGroupService;
 
     private final MaterialDemandRepository materialDemandRepository;
 
-    private static List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroups;
-    private static List<WeekBasedCapacityGroupDtoResponse> newWeekBasedCapacityGroups;
-
-    private final WeekBasedMaterialDemandRepository weekBasedMaterialDemandRepository;
+    private final LoggingHistoryService loggingHistoryService;
 
     @Override
-    public void createWeekBasedCapacityGroup(List<WeekBasedCapacityGroupDtoRequest> weekBasedCapacityGroupRequestList) {
+    public void createWeekBasedCapacityGroup(
+        List<WeekBasedCapacityGroupDtoRequest> weekBasedCapacityGroupRequestList,
+        String userID
+    ) {
         weekBasedCapacityGroupRequestList.forEach(
             weekBasedCapacityGroupRequest -> {
                 validateFields(weekBasedCapacityGroupRequest.getWeekBasedCapacityGroupRequest());
                 WeekBasedCapacityGroupEntity weekBasedCapacityGroup = convertEntity(
                     weekBasedCapacityGroupRequest.getWeekBasedCapacityGroupRequest()
                 );
+                postLogs(weekBasedCapacityGroup.getId().toString());
                 weekBasedCapacityGroupRepository.save(weekBasedCapacityGroup);
             }
         );
-        oldWeekBasedCapacityGroups =
-            DataConverterUtil.convertToWeekBasedCapacityGroupDtoList(weekBasedCapacityGroupRepository.findAll());
-        updateStatus();
     }
 
-    public void updateStatus() {
-        if (statusesRepository != null) {
-            List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemands = DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(
-                weekBasedMaterialDemandRepository.findAll()
-            );
-            if (newWeekBasedCapacityGroups == null) {
-                newWeekBasedCapacityGroups = List.of();
-            }
-            final StatusesService statusesService = new StatusesServiceImpl(
-                statusesRepository,
-                oldWeekBasedMaterialDemands,
-                oldWeekBasedMaterialDemands,
-                oldWeekBasedCapacityGroups,
-                newWeekBasedCapacityGroups
-            );
-            statusesService.updateStatus();
-        }
+    private void postLogs(String weekBasedCapacityGroupId) {
+        LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
+        loggingHistoryRequest.setObjectType(EventObjectType.WEEKLY_BASED_CAPACITY_GROUP.name());
+        loggingHistoryRequest.setMaterialDemandId(weekBasedCapacityGroupId);
+        loggingHistoryRequest.setIsFavorited(false);
+        loggingHistoryRequest.setEventDescription("WEEKLY_BASED_CAPACITY_GROUP Created");
+        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
+        loggingHistoryService.createLog(loggingHistoryRequest);
     }
 
     @Override
     public void receiveWeekBasedCapacityGroup() {
-        List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository.getAllByViewed(
-            false
-        );
+        try {
+            List<WeekBasedCapacityGroupEntity> weekBasedCapacityGroupEntities = weekBasedCapacityGroupRepository.getAllByViewed(
+                false
+            );
 
-        weekBasedCapacityGroupEntities.forEach(
-            weekBasedCapacityGroupEntity -> {
-                WeekBasedCapacityGroupRequest weekBasedCapacityGroup = weekBasedCapacityGroupEntity.getWeekBasedCapacityGroup();
+            weekBasedCapacityGroupEntities.forEach(
+                weekBasedCapacityGroupEntity -> {
+                    WeekBasedCapacityGroupRequest weekBasedCapacityGroup = weekBasedCapacityGroupEntity.getWeekBasedCapacityGroup();
 
-                if (weekBasedCapacityGroup != null) {
-                    List<LinkedDemandSeriesRequest> likedDemandSeriesList = weekBasedCapacityGroup.getLinkedDemandSeries();
+                    if (weekBasedCapacityGroup != null) {
+                        List<LinkedDemandSeriesRequest> likedDemandSeriesList = weekBasedCapacityGroup.getLinkedDemandSeries();
 
-                    if (likedDemandSeriesList != null) {
-                        for (LinkedDemandSeriesRequest likedDemandSeries : likedDemandSeriesList) {
-                            String materialNumberCustomer = likedDemandSeries.getMaterialNumberCustomer();
-                            String customerLocation = likedDemandSeries.getCustomerLocation();
-                            String demandCategoryCode = likedDemandSeries.getDemandCategory().getDemandCategory();
+                        if (likedDemandSeriesList != null) {
+                            for (LinkedDemandSeriesRequest likedDemandSeries : likedDemandSeriesList) {
+                                String materialNumberCustomer = likedDemandSeries.getMaterialNumberCustomer();
+                                String customerLocation = likedDemandSeries.getCustomerLocation();
+                                String demandCategoryCode = likedDemandSeries.getDemandCategory().getDemandCategory();
 
-                            List<MaterialDemandEntity> matchingDemands = materialDemandRepository.findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
-                                materialNumberCustomer,
-                                customerLocation,
-                                demandCategoryCode
-                            );
+                                List<MaterialDemandEntity> matchingDemands = materialDemandRepository.findAllByMaterialNumberCustomerAndDemandSeriesCustomerLocationAndDemandCategory(
+                                    materialNumberCustomer,
+                                    customerLocation,
+                                    demandCategoryCode
+                                );
 
-                            matchingDemands.forEach(
-                                materialDemandEntity ->
-                                    materialDemandEntity
-                                        .getDemandSeries()
-                                        .forEach(
-                                            demandSeries -> {
-                                                demandSeries.setCapacityGroupId(
-                                                    weekBasedCapacityGroup.getCapacityGroupId()
-                                                );
-                                            }
-                                        )
-                            );
+                                matchingDemands.forEach(
+                                    materialDemandEntity ->
+                                        materialDemandEntity
+                                            .getDemandSeries()
+                                            .forEach(
+                                                demandSeries -> {
+                                                    demandSeries.setCapacityGroupId(
+                                                        weekBasedCapacityGroup.getCapacityGroupId()
+                                                    );
+                                                }
+                                            )
+                                );
 
-                            materialDemandRepository.saveAll(matchingDemands);
+                                materialDemandRepository.saveAll(matchingDemands);
+                            }
                         }
                     }
                 }
-            }
-        );
-        //        updateStatus(); TODO: remove the comment when the EDC is ready
+            );
+            // updateStatus(); TODO: remove the comment when the EDC is ready
+        } catch (Exception e) {
+            //Probably sql initialize error here.
+        }
     }
 
     @Override
@@ -152,50 +140,26 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
     public void sendWeekBasedCapacityGroup() {}
 
     @Override
-    public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity) {
+    public void createWeekBasedCapacityGroupRequestFromEntity(CapacityGroupEntity capacityGroupEntity, String userID) {
         WeekBasedCapacityGroupRequest basedCapacityGroupRequest = new WeekBasedCapacityGroupRequest();
 
         basedCapacityGroupRequest.setCapacityGroupId(capacityGroupEntity.getId().toString());
-        //        basedCapacityGroupRequest.setUnityOfMeasure(capacityGroupEntity.getUnitMeasure().getCodeValue());
         basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomer().getBpn());
-        //        basedCapacityGroupRequest.setCustomer(capacityGroupEntity.getCustomerId().getBpn());
         basedCapacityGroupRequest.setSupplier(capacityGroupEntity.getSupplier().getBpn());
         basedCapacityGroupRequest.setName(capacityGroupEntity.getCapacityGroupName());
-        //        basedCapacityGroupRequest.setChangedAt(capacityGroupEntity.getChangedAt().toString());
-        //        basedCapacityGroupRequest.setSupplierLocations(capacityGroupEntity.getSupplierLocation());
-
-        //        List<LinkedDemandSeriesRequest> linkedDemandSeries = capacityGroupEntity
-        //            .getLinkedDemandSeries()
-        //            .stream()
-        //            .map(WeekBasedCapacityGroupServiceImpl::getLinkedDemandSeries)
-        //            .toList();
-        //        basedCapacityGroupRequest.setLinkedDemandSeries(linkedDemandSeries);
-        //
-        //        List<CapacitiesDto> capacitiesDtos = capacityGroupEntity
-        //            .getCapacityTimeSeries()
-        //            .stream()
-        //            .map(WeekBasedCapacityGroupServiceImpl::getCapacitiesDto)
-        //            .toList();
-        //
-        //        basedCapacityGroupRequest.setCapacities(capacitiesDtos);
-        updateStatus();
     }
 
     @Override
     public WeekBasedCapacityGroupDtoResponse updateWeekBasedCapacityGroup(
         String id,
-        WeekBasedCapacityGroupDtoRequest weekBasedCapacityGroupRequest
+        WeekBasedCapacityGroupDtoRequest weekBasedCapacityGroupRequest,
+        String userID
     ) {
-        oldWeekBasedCapacityGroups =
-            DataConverterUtil.convertToWeekBasedCapacityGroupDtoList(weekBasedCapacityGroupRepository.findAll());
         WeekBasedCapacityGroupEntity weekBasedCapacityGroupEntity = convertWeekMaterialDemandToEntity(
             weekBasedCapacityGroupRequest
         );
         weekBasedCapacityGroupEntity.setId(UUID.fromString(id));
         weekBasedCapacityGroupEntity = weekBasedCapacityGroupRepository.save(weekBasedCapacityGroupEntity);
-        newWeekBasedCapacityGroups =
-            DataConverterUtil.convertToWeekBasedCapacityGroupDtoList(weekBasedCapacityGroupRepository.findAll());
-        updateStatus();
         return convertToWeekBasedCapacityGroupDto(weekBasedCapacityGroupEntity);
     }
 
@@ -209,16 +173,6 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         weekBasedCapacityGroupEntity.setViewed(weekBasedCapacityGroupResponses.getViewed());
 
         return weekBasedCapacityGroupEntity;
-    }
-
-    @Override
-    public List<WeekBasedCapacityGroupDtoResponse> getOldWeekBasedCapacityGroups() {
-        return oldWeekBasedCapacityGroups;
-    }
-
-    @Override
-    public List<WeekBasedCapacityGroupDtoResponse> getUpdatedWeekBasedCapacityGroups() {
-        return newWeekBasedCapacityGroups;
     }
 
     private WeekBasedCapacityGroupDtoResponse convertToWeekBasedCapacityGroupDto(
@@ -239,46 +193,15 @@ public class WeekBasedCapacityGroupServiceImpl implements WeekBasedCapacityGroup
         );
 
         if (weekBasedCapacityGroupEntityOptional.isEmpty()) {
-            throw new NotFoundException(
-                404,
-                "Weekly based capacity group not found",
-                new ArrayList<>(List.of("the capacity group ID provided - " + capacityGroupId))
-            );
+            throw new NotFoundException("4", "04");
         }
 
         return weekBasedCapacityGroupEntityOptional.get();
     }
 
-    private static CapacitiesDto getCapacitiesDto(CapacityTimeSeries capacityTimeSeries) {
-        CapacitiesDto capacitiesDto = new CapacitiesDto();
-
-        capacitiesDto.setActualCapacity(capacityTimeSeries.getActualCapacity().toString());
-        capacitiesDto.setMaximumCapacity(capacitiesDto.getMaximumCapacity());
-        capacitiesDto.setCalendarWeek(capacitiesDto.getCalendarWeek());
-
-        return capacitiesDto;
-    }
-
-    private static LinkedDemandSeriesRequest getLinkedDemandSeries(LinkedDemandSeries linkedDemandSeries1) {
-        LinkedDemandSeriesRequest linkedDemandSeriesRequest = new LinkedDemandSeriesRequest();
-        DemandCategoryDto demandCategoryDto = new DemandCategoryDto();
-        demandCategoryDto.setDemandCategory(linkedDemandSeries1.getDemandCategory().getDemandCategoryCode());
-
-        linkedDemandSeriesRequest.setDemandCategory(demandCategoryDto);
-        linkedDemandSeriesRequest.setCustomerLocation(linkedDemandSeries1.getCustomerId().getBpn());
-        linkedDemandSeriesRequest.setMaterialNumberCustomer(linkedDemandSeries1.getMaterialNumberCustomer());
-        linkedDemandSeriesRequest.setMaterialNumberSupplier(linkedDemandSeries1.getMaterialNumberSupplier());
-
-        return linkedDemandSeriesRequest;
-    }
-
     private void validateFields(WeekBasedCapacityGroupRequest weekBasedCapacityGroupRequest) {
         if (!UUIDUtil.checkValidUUID(weekBasedCapacityGroupRequest.getCapacityGroupId())) {
-            throw new BadRequestException(
-                400,
-                "The ID provided is not valid, check UUID",
-                new ArrayList<>(List.of("the provided ID - " + weekBasedCapacityGroupRequest.getCapacityGroupId()))
-            );
+            throw new NotFoundException("4", "04");
         }
     }
 

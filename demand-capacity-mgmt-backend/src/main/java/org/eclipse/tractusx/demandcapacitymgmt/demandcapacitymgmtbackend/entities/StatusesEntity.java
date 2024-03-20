@@ -28,53 +28,32 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "statuses")
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class StatusesEntity {
 
     @Id
-    //    @SequenceGenerator(name = "status_id_sequence", sequenceName = "status_id_sequence")
-    //    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "status_id_sequence")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    //    @Type(type = "uuid-char") // This is important for PostgreSQL
-    @Column(columnDefinition = "uuid")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "todos", referencedColumnName = "id")
-    private StatusObjectEntity todos;
+    @Column(name = "user_id", unique = true)
+    private UUID userID;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "status_improvment", referencedColumnName = "id")
-    private StatusObjectEntity statusImprovment;
+    @Column(name = "todos_count")
+    private int todosCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "status_degredation", referencedColumnName = "id")
-    private StatusObjectEntity statusDegredation;
+    @Column(name = "status_improvement_count")
+    private int statusImprovementCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "general", referencedColumnName = "id")
-    private StatusObjectEntity general;
+    @Column(name = "status_degradation_count")
+    private int statusDegradationCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_todos", referencedColumnName = "id")
-    private StatusObjectEntity overAllTodos;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_status_improvment", referencedColumnName = "id")
-    private StatusObjectEntity overAllStatusImprovment;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_status_degredation", referencedColumnName = "id")
-    private StatusObjectEntity overAllStatusDegredation;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "overall_general", referencedColumnName = "id")
-    private StatusObjectEntity overAllGeneral;
+    @Column(name = "general_count")
+    private int generalCount;
 }

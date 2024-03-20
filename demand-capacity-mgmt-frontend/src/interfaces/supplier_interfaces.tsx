@@ -30,14 +30,14 @@ export interface Supplier {
   myCompany: string
 }
 
-  
-  export interface ExpectedSupplierLocation {
-    id: string
-    bpn: string
-    companyName: string
-    street: string
-    number: string
-    zipCode: string
-    country: string
-    myCompany: string
-  }
+
+export interface ExpectedSupplierLocation {
+  id: string
+  bpn: string
+  companyName: string
+  street: string
+  number: string
+  zipCode: string
+  country: string
+  myCompany: string
+}

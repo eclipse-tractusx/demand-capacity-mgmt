@@ -28,13 +28,17 @@ import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.CompanyEntity;
 
 public interface CompanyService {
-    CompanyEntity createCompany();
+    CompanyDto createCompany(CompanyDto companyDto);
 
     CompanyEntity getCompanyById(UUID id);
+
+    void deleteCompany(UUID id);
 
     List<CompanyEntity> getCompanyIn(List<UUID> uuidList);
 
     CompanyDto convertEntityToDto(CompanyEntity companyEntity);
 
     List<CompanyDto> getAllCompany();
+
+    List<CompanyDto> getTopCompanies();
 }

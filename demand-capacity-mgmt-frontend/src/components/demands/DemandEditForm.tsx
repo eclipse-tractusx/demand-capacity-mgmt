@@ -19,14 +19,16 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { useContext, useState, useEffect } from 'react';
-import { Form, Button, Col, Row } from 'react-bootstrap';
-import { DemandContext } from '../../contexts/DemandContextProvider';
-import { Demand, DemandSeriesValue, DemandProp, DemandSeries } from '../../interfaces/demand_interfaces';
-import CompanyOptions from '../common/CompanyOptions';
-import UnitsOfMeasureOptions from '../common/UnitsofMeasureOptions';
-import Spinner from 'react-bootstrap/Spinner';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Col, Form, Row } from 'react-bootstrap';
 import { FiSave } from 'react-icons/fi';
+import CompanyContextProvider from '../../contexts/CompanyContextProvider';
+import { DemandContext } from '../../contexts/DemandContextProvider';
+import UnitsofMeasureContextContextProvider from '../../contexts/UnitsOfMeasureContextProvider';
+import { Demand, DemandProp, DemandSeries, DemandSeriesValue } from '../../interfaces/demand_interfaces';
+import CompanyOptions from '../common/CompanyOptions';
+import { LoadingGatheringDataMessage } from '../common/LoadingMessages';
+import UnitsOfMeasureOptions from '../common/UnitsofMeasureOptions';
 
 function convertToDemand(demandProp: DemandProp): Demand {
   const {
@@ -63,6 +65,7 @@ function convertToDemand(demandProp: DemandProp): Demand {
 
   return convertedDemand;
 }
+
 
 
 
@@ -116,38 +119,27 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand, onCloseModal }) => {
                   calendarWeek: value.calendarWeek.split('T')[0], // Extract date portion from datetime string
                 })),
               }))
-              : fieldName === 'unitMeasureId'
-                ? { id: newValue } // Wrap unitMeasureId in an object with id property
-                : fieldName === 'supplier'
-                  ? { id: newValue } // Wrap supplier in an object with id property
-                  : fieldName === 'startDate' || fieldName === 'endDate'
-                    ? newValue.split('T')[0] // Extract date portion from datetime string
-                    : newValue,
+              : fieldName === 'startDate' || fieldName === 'endDate'
+                ? newValue.split('T')[0] // Extract date portion from datetime string
+                : newValue,
         }
         : undefined
     );
   };
 
-
-  const handleUnitMeasureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedUnitMeasureId = e.target.value;
-    handleFieldChange('unitMeasureId', { id: selectedUnitMeasureId });
+  const handleUnitMeasureChange = (value: string) => {
+    // Call handleFieldChange with the appropriate parameters
+    handleFieldChange('unitMeasureId', { id: value });
   };
 
-  const handleSupplierChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedSupplierId = e.target.value;
-    handleFieldChange('supplier', { id: selectedSupplierId });
+  const handleSupplierChange = (value: string) => {
+    // Call handleFieldChange with the appropriate parameters
+    handleFieldChange('supplier', { id: value });
   };
-
-
-
-
 
   if (!demand) {
     return (
-      <Spinner animation="border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </Spinner>
+      <LoadingGatheringDataMessage />
     );
   }
 
@@ -184,29 +176,17 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand, onCloseModal }) => {
       <Row className="mb-3">
         <Form.Group className="form-group required" as={Col}>
           <Form.Label className="control-label required-field-label">Unit of Measure</Form.Label>
-          <Form.Select
-            name="unitMeasureId"
-            id="unitMeasureId"
-            value={demand.unitMeasureId.id || ''}
-            onChange={handleUnitMeasureChange}
-            required
-          >
-            <UnitsOfMeasureOptions selectedUnitMeasureId={demand.unitMeasureId.id} />
-          </Form.Select>
+          <UnitsofMeasureContextContextProvider>
+            <UnitsOfMeasureOptions selectedUnitMeasureId={demand.unitMeasureId.id} onChange={handleUnitMeasureChange} />
+          </UnitsofMeasureContextContextProvider>
         </Form.Group>
       </Row>
+
       <Form.Group className="mb-3 form-group required">
         <Form.Label className="control-label required-field-label">Supplier</Form.Label>
-        <Form.Select
-          aria-label="Default select example"
-          name="supplierId"
-          id="supplierId"
-          value={demand.supplier.id || ''}
-          onChange={handleSupplierChange}
-          required
-        >
-          <CompanyOptions selectedCompanyName={demand.supplier.companyName} />
-        </Form.Select>
+        <CompanyContextProvider>
+          <CompanyOptions selectedCompanyName={demand.supplier.id} onChange={handleSupplierChange} />
+        </CompanyContextProvider>
       </Form.Group>
 
       <Form.Group className="mb-3 form-group required">
@@ -275,7 +255,7 @@ const EditForm: React.FC<EditFormProps> = ({ theDemand, onCloseModal }) => {
 
       <Button variant="primary" type="submit">
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <FiSave size={23} /> Save Changes
+          <FiSave size={23} style={{ margin: " 0 12 0 0px" }} /> Save Changes
         </div>
       </Button>
     </Form>

@@ -54,6 +54,9 @@ public class UserEntity {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "company_id")
+    private UUID companyID;
+
     @Column(name = "role", columnDefinition = "varchar")
     @Enumerated(EnumType.STRING)
     private Role role;

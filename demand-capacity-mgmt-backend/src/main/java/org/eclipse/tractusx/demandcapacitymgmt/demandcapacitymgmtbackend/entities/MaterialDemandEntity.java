@@ -29,9 +29,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.*;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.MaterialDemandStatus;
 
 @Entity
+@Cacheable(false)
 @Table(name = "material_demand")
 @Data
 @Builder
@@ -78,4 +80,7 @@ public class MaterialDemandEntity {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private MaterialDemandStatus status;
+
+    @Column(name = "link_status")
+    private EventType linkStatus;
 }

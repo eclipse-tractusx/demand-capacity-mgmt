@@ -19,7 +19,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BounceLoader, GridLoader } from 'react-spinners';
 
 const useLoader = (initialColor: string) => {
@@ -106,7 +106,7 @@ const LoadingMessage = () => {
     'Please wait',
     'Fetching items',
     'Syncing objects',
-    'Almost there',
+    'Almost there!',
     'Hold on a moment',
     'Preparing data',
     'Calculating results',
@@ -141,4 +141,5 @@ const LoadingMessage = () => {
   );
 };
 
-export { LoadingGatheringDataMessage, LoadingMessage, LoadingCustomMessage };
+export { LoadingCustomMessage, LoadingGatheringDataMessage, LoadingMessage };
+

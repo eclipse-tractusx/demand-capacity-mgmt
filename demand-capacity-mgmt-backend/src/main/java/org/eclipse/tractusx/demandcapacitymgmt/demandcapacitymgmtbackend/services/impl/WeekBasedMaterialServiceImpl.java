@@ -23,7 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -31,13 +30,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.WeekBasedMaterialDemandEntity;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventObjectType;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.EventType;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type.BadRequestException;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.StatusesRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedCapacityGroupRepository;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories.WeekBasedMaterialDemandRepository;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LinkDemandService;
-import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.StatusesService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.LoggingHistoryService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedMaterialService;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.DataConverterUtil;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UUIDUtil;
@@ -49,18 +46,15 @@ import org.springframework.stereotype.Service;
 public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
 
     private final WeekBasedMaterialDemandRepository weekBasedMaterialDemandRepository;
-
-    private final LinkDemandService linkDemandService;
-
-    private final StatusesRepository statusesRepository;
+    private final LoggingHistoryService loggingHistoryService;
     private List<WeekBasedMaterialDemandResponseDto> oldWeekBasedMaterialDemands;
     private List<WeekBasedMaterialDemandResponseDto> newWeekBasedMaterialDemands;
-    private final WeekBasedCapacityGroupRepository weekBasedCapacityGroupRepository;
-
-    private final DemandService demandService;
 
     @Override
-    public void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDtoList) {
+    public void createWeekBasedMaterial(
+        List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDtoList,
+        String userID
+    ) {
         oldWeekBasedMaterialDemands =
             DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
         weekBasedMaterialDemandRequestDtoList.forEach(
@@ -70,12 +64,24 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                 WeekBasedMaterialDemandEntity weekBasedMaterialDemand = convertEntity(
                     weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest()
                 );
+                postLogs(weekBasedMaterialDemand.getId().toString());
                 weekBasedMaterialDemandRepository.save(weekBasedMaterialDemand);
             }
         );
         newWeekBasedMaterialDemands =
             DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
-        updateStatus();
+    }
+
+    private void postLogs(String weekBasedMaterialDemandId) {
+        LoggingHistoryRequest loggingHistoryRequest = new LoggingHistoryRequest();
+        loggingHistoryRequest.setObjectType(EventObjectType.WEEKLY_MATERIAL_DEMAND.name());
+        loggingHistoryRequest.setMaterialDemandId(weekBasedMaterialDemandId);
+        loggingHistoryRequest.setIsFavorited(false);
+        loggingHistoryRequest.setEventDescription("WEEKLY_MATERIAL_DEMAND Created");
+        //TODO: Add Event
+        loggingHistoryRequest.setEventType(EventType.GENERAL_EVENT.toString());
+
+        loggingHistoryService.createLog(loggingHistoryRequest);
     }
 
     @Override
@@ -86,9 +92,6 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
         List<WeekBasedMaterialDemandEntity> weekBasedMaterialDemandEntities = weekBasedMaterialDemandRepository.getAllByViewed(
             false
         );
-        //  updateStatus(); TODO: remove the comment when the EDC is ready
-
-        linkDemandService.createLinkDemands(weekBasedMaterialDemandEntities);
     }
 
     @Override
@@ -112,30 +115,11 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
         return responseDto;
     }
 
-    public void updateStatus() {
-        if (statusesRepository != null) {
-            List<WeekBasedCapacityGroupDtoResponse> oldWeekBasedCapacityGroups = DataConverterUtil.convertToWeekBasedCapacityGroupDtoList(
-                weekBasedCapacityGroupRepository.findAll()
-            );
-
-            if (newWeekBasedMaterialDemands == null) {
-                newWeekBasedMaterialDemands = List.of();
-            }
-            final StatusesService statusesService = new StatusesServiceImpl(
-                statusesRepository,
-                oldWeekBasedMaterialDemands,
-                newWeekBasedMaterialDemands,
-                oldWeekBasedCapacityGroups,
-                oldWeekBasedCapacityGroups
-            );
-            statusesService.updateStatus();
-        }
-    }
-
     @Override
     public WeekBasedMaterialDemandResponseDto updateWeekBasedMaterial(
         String id,
-        WeekBasedMaterialDemandRequestDto weekBasedCapacityGroupRequest
+        WeekBasedMaterialDemandRequestDto weekBasedCapacityGroupRequest,
+        String userID
     ) {
         oldWeekBasedMaterialDemands =
             DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
@@ -146,7 +130,6 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
         weekBasedCapacityGroupEntity = weekBasedMaterialDemandRepository.save(weekBasedCapacityGroupEntity);
         newWeekBasedMaterialDemands =
             DataConverterUtil.convertToWeekBasedMaterialDemandDtoList(weekBasedMaterialDemandRepository.findAll());
-        updateStatus();
         return convertToWeekBasedCapacityGroupDto(weekBasedCapacityGroupEntity);
     }
 
@@ -167,7 +150,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
     }
 
     @Override
-    public void createWeekBasedMaterialRequestFromEntity(MaterialDemandEntity materialDemandEntity) {
+    public void createWeekBasedMaterialRequestFromEntity(MaterialDemandEntity materialDemandEntity, String userID) {
         List<DemandWeekSeriesDto> demandWeekSeriesDtoList = new LinkedList<>();
 
         materialDemandEntity
@@ -206,7 +189,6 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                     demandWeekSeriesDtoList.add(demandWeekSeriesDto);
                 }
             );
-        updateStatus();
     }
 
     private void validateFields(WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto) {
@@ -215,13 +197,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                 weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest().getMaterialDemandId()
             )
         ) {
-            throw new BadRequestException(
-                400,
-                "Not a valid materialDemand ID",
-                new ArrayList<>(
-                    List.of(weekBasedMaterialDemandRequestDto.getWeekBasedMaterialDemandRequest().getMaterialDemandId())
-                )
-            );
+            throw new BadRequestException("4", "04");
         }
 
         weekBasedMaterialDemandRequestDto
@@ -236,11 +212,7 @@ public class WeekBasedMaterialServiceImpl implements WeekBasedMaterialService {
                                 if (
                                     Boolean.FALSE.equals(DataConverterUtil.itsMonday(demandSeriesDto.getCalendarWeek()))
                                 ) {
-                                    throw new BadRequestException(
-                                        400,
-                                        "Not a valid date",
-                                        new ArrayList<>(List.of("Date was now a Monday"))
-                                    );
+                                    throw new BadRequestException("1", "11");
                                 }
                             }
                         )

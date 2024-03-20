@@ -25,10 +25,7 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entiti
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "demand_series_values")
@@ -44,6 +41,8 @@ public class DemandSeriesValues {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private DemandSeries demandSeries;
 
     @Column(name = "calendar_week", nullable = false)

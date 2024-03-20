@@ -19,13 +19,13 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
+import { useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
 import { FaChartLine, FaLink } from 'react-icons/fa';
 import { FcComboChart } from 'react-icons/fc';
-import { Modal, Button } from 'react-bootstrap';
-import { useState } from 'react';
-import DemandManagement from '../demands/DemandManagement';
 import DemandContextProvider from '../../contexts/DemandContextProvider';
 import '../../index.css';
+import DemandManagement from '../demands/DemandManagement';
 
 function QuickAcessItems() {
 
@@ -36,7 +36,7 @@ function QuickAcessItems() {
 
   return (
     <>
-      <div className="float-left" style={{ position: 'absolute', top: '50%', left: 5, transform: 'translate(0%, -50%)' }}>
+      <div className="floating-fixed-buttons">
         <Button variant="primary" className=' m-1 display-4' onClick={handleShow} ><FaChartLine /></Button>
         <br />
         <Button variant="primary" className=' m-1 display-4'><FaLink /></Button>
@@ -55,11 +55,11 @@ function QuickAcessItems() {
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <FcComboChart size={35} /><h3 className='icon-text-padding'> Demand Management View</h3>
               </div>
-              </Modal.Title>
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <DemandContextProvider>
-              <DemandManagement/>
+              <DemandManagement />
             </DemandContextProvider>
           </Modal.Body>
 

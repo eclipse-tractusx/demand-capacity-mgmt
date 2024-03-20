@@ -21,16 +21,9 @@
 spring:
   security:
     oauth2:
-      resourceserver:
+      resource-server:
         jwt:
-          issuer-uri: http://localhost:8888/auth/realms/dcm
-  jpa:
-    hibernate:
-      ddl-auto: update
-    database: POSTGRESQL
-    show-sql: true
-    hibernate:
-      ddl-auto: update
+          issuer-uri: http://localhost:8888/realms/dcm
 
   datasource:
     url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
@@ -48,10 +41,6 @@ spring:
     password: ${DCM_DATASOURCE_PASS:dcm}
     schemas: migrations
     locations: classpath:db/migration/postgresql
-
-management:
-  security:
-    enable:false
     
 keycloak:
   baseUrl: http://localhost:8888

@@ -23,7 +23,6 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.impl;
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.DemandCategoryResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,11 +47,7 @@ public class DemandCategoryServiceImpl implements DemandCategoryService {
         Optional<DemandCategoryEntity> demandCategory = demandCategoryRepository.findById(id);
 
         if (demandCategory.isEmpty()) {
-            throw new NotFoundException(
-                404,
-                "Demand category not found",
-                new ArrayList<>(List.of("provided UUID did not match any records. - " + id))
-            );
+            throw new NotFoundException("8", "22");
         }
 
         return demandCategory.get();

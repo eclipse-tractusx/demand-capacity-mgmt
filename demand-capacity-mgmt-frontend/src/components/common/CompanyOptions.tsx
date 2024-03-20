@@ -1,3 +1,4 @@
+
 /*
  *  *******************************************************************************
  *  Copyright (c) 2023 BMW AG
@@ -19,31 +20,99 @@
  *    SPDX-License-Identifier: Apache-2.0
  *    ********************************************************************************
  */
-
-import React, { useContext } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import Select, { ActionMeta, OptionTypeBase } from 'react-select';
 import { CompanyContext } from '../../contexts/CompanyContextProvider';
+import { FavoritesContext } from '../../contexts/FavoritesContextProvider';
+import CustomOption from '../../interfaces/customoption_interface';
+import { CompanyDtoFavoriteResponse, FavoriteType } from '../../interfaces/favorite_interfaces';
+
 
 interface CompanyOptionsProps {
   selectedCompanyName: string;
+  onChange: (value: string) => void;
 }
 
-const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName }) => {
-  const companiesContextData = useContext(CompanyContext);
-  const { companies } = companiesContextData || {};
 
-  // Use the companies array to fill the <select> options
+const CompanyOptions: React.FC<CompanyOptionsProps> = ({ selectedCompanyName, onChange }) => {
+  const { fetchFavoritesByType } = useContext(FavoritesContext)!;
+  const { companies, topCompanies } = useContext(CompanyContext)!;
+
+  const [companyOptions, setCompanyOptions] = useState<{ value: string; label: string; isFavorite: boolean }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchFavoritesByTypeRef = useRef(fetchFavoritesByType);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchFavoritesByType = fetchFavoritesByTypeRef.current;
+      try {
+        setLoading(true);
+        const response = await fetchFavoritesByType(FavoriteType.COMPANY_BASE_DATA);
+        const favoriteCompanyIds = new Set(response?.companies?.map((company: CompanyDtoFavoriteResponse) => company.id) || []);
+        const topCompanyIds = new Set(topCompanies?.map((company) => company.id) || []);
+        const allCompanyIds = new Set(companies?.map((company) => company.id) || []);
+
+
+        // Find unique company IDs by filtering out favorites that are also in regular options
+        const uniqueCompanyIds = Array.from(new Set([...favoriteCompanyIds, ...topCompanyIds, ...allCompanyIds]));
+
+        const newCompanyOptions = uniqueCompanyIds.map((companyId) => {
+          const company = companies?.find((c) => c.id === companyId);
+          const isFavorite = favoriteCompanyIds.has(companyId);
+          const isTop = topCompanyIds.has(companyId);
+
+          return {
+            value: companyId,
+            label: `${company?.bpn || ''} | ${company?.companyName || ''}`.trim(),
+            isFavorite: isFavorite,
+            isTop: isTop,
+          };
+        });
+
+        setCompanyOptions(newCompanyOptions);
+      } catch (error) {
+        console.error('Error fetching company options:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [companies, topCompanies, fetchFavoritesByTypeRef]);
+
+  const selectedOption = companyOptions.find((option) => option.value === selectedCompanyName) || null;
+
+  const handleSelectChange = useCallback(
+    (selectedOption: { value: string; label: string; isFavorite: boolean } | null, actionMeta: ActionMeta<OptionTypeBase>) => {
+      if (actionMeta.action === 'select-option') {
+        onChange(selectedOption?.value || '');
+      }
+      console.log('Company option OnChange');
+    },
+    [onChange]
+  );
+
+
+  if (loading) {
+    return <div>Loading companies...</div>;
+  }
+
   return (
-    <>
-      <option disabled={true} value="">
-        --Choose an option--
-      </option>
-      {companies &&
-        companies.map((company) => (
-          <option key={company.id} value={company.id} selected={company.companyName === selectedCompanyName}>
-            {company.companyName}
-          </option>
-        ))}
-    </>
+    <Select
+      name="supplierId"
+      id="supplierId"
+      options={companyOptions}
+      value={selectedOption}
+      onChange={handleSelectChange}
+      placeholder="--Choose an option--"
+      noOptionsMessage={() => "No suppliers match criteria"}
+      required
+      isSearchable
+      components={{
+        Option: (props: any) => <CustomOption {...props} isFavorite={props.data.isFavorite} isTop={props.data.isTop} />,
+      }}
+    />
   );
 };
 

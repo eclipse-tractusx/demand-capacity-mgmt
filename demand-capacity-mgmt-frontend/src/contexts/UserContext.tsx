@@ -20,13 +20,19 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useContext, useState } from 'react';
-import {User} from "../interfaces/UserInterface";
-
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { User } from "../interfaces/user_interfaces";
+import { refreshToken as fetchNewToken } from "../util/RefreshToken";
 
 interface UserContextProps {
     user: User | null;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
+    refresh_token: string | null;
+    access_token: string | null;
+    expiresIn: number | null;
+    setRefreshToken: React.Dispatch<React.SetStateAction<string | null>>;
+    setAccessToken: React.Dispatch<React.SetStateAction<string | null>>;
+    setExpiresIn: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
@@ -34,10 +40,77 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 interface UserProviderProps {
     children: React.ReactNode;
 }
-
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
-    return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+    const storedUser = localStorage.getItem('user');
+    const [user, setUser] = useState<User | null>(storedUser ? JSON.parse(storedUser) : null);
+
+    const [refresh_token, setRefreshToken] = useState<string | null>(() => localStorage.getItem('refresh_token') || null);
+    const [access_token, setAccessToken] = useState<string | null>(() => localStorage.getItem('access_token') || null);
+    const [expiresIn, setExpiresIn] = useState<number | null>(() => Number(localStorage.getItem('expiresIn')) || null);
+
+    const refreshToken = useCallback(async () => {
+        if (refresh_token) {
+            try {
+                const response = await fetchNewToken(refresh_token);
+                const newTokenData = response.data;
+                setAccessToken(newTokenData.access_token);
+                setExpiresIn(newTokenData.expiresIn);
+                setRefreshToken(newTokenData.refresh_token);
+            } catch (error) {
+                console.error("Failed to refresh token", error);
+            }
+        }
+    }, [refresh_token]);
+
+    useEffect(() => {
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('user');
+        }
+    }, [user]);
+
+    // Storing to sessionStorage when the state changes
+    useEffect(() => {
+        if (refresh_token) {
+            localStorage.setItem('refresh_token', refresh_token);
+        }
+    }, [refresh_token]);
+
+    useEffect(() => {
+        if (access_token) {
+            localStorage.setItem('access_token', access_token);
+        }
+    }, [access_token]);
+
+    useEffect(() => {
+        if (expiresIn) {
+            localStorage.setItem('expiresIn', expiresIn.toString());
+        }
+    }, [expiresIn]);
+
+    useEffect(() => {
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+        if (expiresIn) {
+            // Set the timeout to call the refreshToken function just before the token expires
+            // We subtract a few seconds to ensure the token is refreshed before it actually expires
+            timeoutId = setTimeout(refreshToken, (expiresIn - 10) * 1000);  // expiresIn is in seconds, so we convert it to milliseconds
+        }
+
+        // Clear the timeout when the component is unmounted or if expiresIn changes
+        return () => {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+        };
+    }, [expiresIn, refresh_token, refreshToken]);
+
+    return (
+        <UserContext.Provider value={{ user, setUser, refresh_token, setRefreshToken, access_token, setAccessToken, expiresIn, setExpiresIn }}>
+            {children}
+        </UserContext.Provider>
+    );
 }
 
 export const useUser = (): UserContextProps => {

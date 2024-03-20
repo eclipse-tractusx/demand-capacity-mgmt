@@ -20,28 +20,122 @@
  *    ********************************************************************************
  */
 
+import { useEffect, useState } from 'react';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { FiSettings,FiLogOut } from 'react-icons/fi';
+import { FaAddressBook, FaUserShield } from 'react-icons/fa';
+import { FiLogOut, FiSettings } from 'react-icons/fi';
+import { useNavigate } from "react-router-dom";
+import AlertsContextProvider from "../../contexts/AlertsContextProvider";
+import CapacityGroupsProvider from '../../contexts/CapacityGroupsContextProvider';
+import DemandCategoryContextProvider from '../../contexts/DemandCategoryProvider';
+import EventsContextProvider from '../../contexts/EventsContextProvider';
+import { InfoMenuProvider } from '../../contexts/InfoMenuContextProvider';
+import { useUser } from "../../contexts/UserContext";
+import { getUserName } from '../../interfaces/user_interfaces';
+import { logout } from "../../util/Auth";
 import InfoMenu from "../menu/InfoMenu";
 
-
 function TopMenuLinks() {
+  const { user, refresh_token, setUser } = useUser();
+  const navigate = useNavigate();
+  const [collapsed, setCollapsed] = useState(() => {
+    // Load the state from local storage, defaulting to false if it doesn't exist
+    return localStorage.getItem('navbarCollapsed') === 'true';
+  });
+
+  useEffect(() => {
+    // Save the state to local storage whenever it changes
+    localStorage.setItem('navbarCollapsed', JSON.stringify(collapsed));
+  }, [collapsed]);
+
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('expiresIn');
+      await logout(refresh_token);
+      setUser(null); // Clear user data stored in context
+      navigate('/login'); // Redirect the user to the login page
+    } catch (error) {
+      console.error('Error during logout', error);
+    }
+  }
+
+  const handleNavbarClick = () => {
+    setCollapsed(!collapsed);
+  };
+
   return (
-    <Navbar expand="lg" className="navbar navbar-expand-sm bg-dark navbar-dark">
+
+    <Navbar
+      expand="lg"
+      className={`navbar navbar-expand-sm bg-dark navbar-dark`}
+    >
       <Container>
-        <Navbar.Brand  ><img srcSet='/media/logo.png' alt="Logo" width="30" height="24" className='d-inline-block align-text-top'/> - CompanyName</Navbar.Brand>
+
+
+        <Navbar.Brand onClick={handleNavbarClick} >
+          <div className="logo-container">
+            <img srcSet="/media/logos/cx-short.svg" alt="Logo" width="30" height="auto" className='mx-2' />
+            <h6 className={collapsed ? 'slide-out' : 'slide-in'}>
+              Demand Capacity Management
+            </h6>
+          </div>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <InfoMenu/>
+        <Navbar.Collapse id="basic-navbar-nav" >
+          <div className={`info-menu ${collapsed ? 'move-out' : 'move-in'}`}>
+            <DemandCategoryContextProvider>
+              <CapacityGroupsProvider>
+                <AlertsContextProvider>
+                  <EventsContextProvider>
+                    <InfoMenuProvider>
+                      <InfoMenu />
+                    </InfoMenuProvider>
+                  </EventsContextProvider>
+                </AlertsContextProvider>
+              </CapacityGroupsProvider>
+            </DemandCategoryContextProvider>
+          </div>
+
         </Navbar.Collapse>
         <Navbar.Collapse className="justify-content-end">
-          <Navbar.Text>
-            Signed in as: <a href="#login">USERID</a>
+          <Navbar.Text className='p-2'>
+            Signed in as:  <span className='text-capitalize'>{getUserName(user)}</span>
+            <br />
+            <span className='font-weight-light small-menu-text'>Role: <span className='text-capitalize'>{user?.role.toLowerCase()}</span></span>
           </Navbar.Text>
-          <Nav.Link href="#settings" className="p-3 navbar-nav nav-item"><FiSettings/></Nav.Link>
-          <Nav.Link href="#logout" className="p-2 navbar-nav nav-item"><FiLogOut/></Nav.Link>
+          <OverlayTrigger
+            placement="bottom"
+            overlay={<Tooltip id="tooltip">Address Book</Tooltip>}
+          >
+            <Nav.Link href="../addressbook" className="p-2 navbar-nav nav-item"><FaAddressBook /></Nav.Link>
+          </OverlayTrigger>
+          <OverlayTrigger
+            placement="bottom"
+            overlay={<Tooltip id="tooltip">User Settings</Tooltip>}
+          >
+            <Nav.Link href="../ad" className="p-2 navbar-nav nav-item"><FiSettings /></Nav.Link>
+          </OverlayTrigger>
+          {user?.role === 'ADMIN' && (
+            <OverlayTrigger
+              placement="bottom"
+              overlay={<Tooltip id="tooltip">Admin Dashboard</Tooltip>}
+            >
+              <Nav.Link href="admin" className="p-2 navbar-nav nav-item">
+                <FaUserShield />
+              </Nav.Link>
+            </OverlayTrigger>
+          )}
+          <OverlayTrigger
+            placement="bottom"
+            overlay={<Tooltip id="tooltip">Logout</Tooltip>}
+          >
+            <Nav.Link onClick={handleLogout} className="p-2 navbar-nav nav-item"><FiLogOut /></Nav.Link>
+          </OverlayTrigger>
         </Navbar.Collapse>
       </Container>
     </Navbar>

@@ -20,8 +20,9 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useState, useEffect } from 'react';
-import api from "../util/Api";
+import React, { createContext, useEffect, useState } from 'react';
+import createAPIInstance from "../util/Api";
+import { useUser } from "./UserContext";
 
 export interface DemandCategory {
   id: string
@@ -36,16 +37,14 @@ interface DemandContextData {
 export const DemandCategoryContext = createContext<DemandContextData | undefined>(undefined);
 
 const DemandCategoryContextProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-
+  const { access_token } = useUser();
   const [demandcategories, setDemandCategory] = useState<DemandCategory[]>([]);
 
   useEffect(() => {
+    const api = createAPIInstance(access_token);
     const fetchDemandCategories = async () => {
       try {
         const response = await api.get('/demandcategory', {
-          params: {
-            project_id: 1, // Adjust the project ID parameter as needed
-          },
         });
         const result: DemandCategory[] = response.data;
         setDemandCategory(result);
@@ -53,14 +52,14 @@ const DemandCategoryContextProvider: React.FC<React.PropsWithChildren<{}>> = (pr
         console.error('Error fetching demands:', error);
       }
     };
-  
+
     fetchDemandCategories();
-  }, []);
-  
+  }, [access_token]);
+
 
 
   return (
-    <DemandCategoryContext.Provider value={{ demandcategories}}>
+    <DemandCategoryContext.Provider value={{ demandcategories }}>
       {props.children}
     </DemandCategoryContext.Provider>
   );

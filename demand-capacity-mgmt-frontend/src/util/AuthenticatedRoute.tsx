@@ -20,27 +20,33 @@
  *    ********************************************************************************
  */
 
-import {ReactNode, useEffect, useState} from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useUser } from '../contexts/UserContext';
 import { isAuthenticated } from './Auth';
 
 interface AuthenticatedRouteProps {
-    children: ReactNode;
+    children: React.ReactNode;
 }
 
 const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ children }) => {
     const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+    const { refresh_token } = useUser();
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
         const checkAuthentication = async () => {
-            const authenticated = await isAuthenticated();
-            setIsAuthed(authenticated);
+            if (refresh_token) {
+                const authenticated = await isAuthenticated(refresh_token);
+                setIsAuthed(authenticated);
+            } else {
+                setIsAuthed(false);
+            }
         };
 
         checkAuthentication();
-    }, []);
+    }, [refresh_token]);
 
     useEffect(() => {
         if (isAuthed === false) {
@@ -53,9 +59,4 @@ const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ children }) => 
     return <>{children}</>;
 };
 
-
 export default AuthenticatedRoute;
-
-
-
-
