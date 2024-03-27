@@ -9,13 +9,21 @@ Table of Contents
     
   - [NOTICE](#notice)
 
+## Eclipse Tractus-X Portal User Guide
+https://github.com/eclipse-tractusx/portal-assets/blob/v1.8.0/docs/user
+
+## DCM FOSS specific quickstart guide
+
+<details>
+  <summary>Click me to expand</summary>
+
 ## Starting Point
 
 Before anything else, your company needs to registered on the Catena Portal, for that you can create an issues here: https://github.com/eclipse-tractusx/portal-frontend-registration
 
 ## Find Your Company
 
-When you go to the Portal website, (https://portal.int.demo.catena-x.net/) you will find this screen:
+When you go to the Portal website that is relevant to you, (e.g. https://portal.cofinity-x.com/) you will find a screen similar to this:
 
 ![Portal Page](media/portal.png)
 
@@ -82,6 +90,7 @@ Finally select `confirm`.
 
 And your connector is now registered.
 
+</details>
 
 ## NOTICE
 
