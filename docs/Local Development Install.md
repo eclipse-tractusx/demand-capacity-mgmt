@@ -40,7 +40,7 @@ Let's begin local development install!
 - ### Cloning the repository
     Clone the repository from the url below
 
-      git clone https://github.com/eclipse-tractusx/tx-demand-capacity-mgmt.git
+      git clone https://github.com/eclipse-tractusx/demand-capacity-mgmt.git
   
     ![Using Github desktop](images/dev/1.png "Cloning the repo")
 
