@@ -59,7 +59,13 @@ Let's begin local development install!
 
 - ### Docker desktop
 
-    Before you run the project we need to setup Postgres and Keycloak.
+  Please refer to the official docker desktop installation guide: https://docs.docker.com/desktop/  
+  Please refer to the official WSL Documentation: https://learn.microsoft.com/en-us/windows/wsl/
+
+  <details>
+  <summary>Click me to expand quickstart guide</summary>
+
+      Before you run the project we need to setup Postgres and Keycloak.
     Let's begin with installing docker(if you are running windows make sure to use WSL2).
     After installing docker on your machine lets install postgres.
     if you get an error of Hyper V make sure **virtualization is enabled on your motherboard
@@ -76,13 +82,13 @@ Let's begin local development install!
     then try again
 
     ![Docker Desktop](images/dev/3.png "Docker install")
-
+  </details>
 - ### Running containers
 
   with docker running open a command terminal
 
-      docker pull postgres
-
+      docker pull postgres:16.1
+    
   this will download the postgres image, then you need to configure postgres
 
       docker run -d --name dcmfPostgres -p 5432:5432 -e POSTGRES_PASSWORD=dcm -e POSTGRES_USER=dcm postgres
