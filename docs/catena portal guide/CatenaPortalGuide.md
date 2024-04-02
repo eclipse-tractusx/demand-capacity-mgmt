@@ -23,7 +23,7 @@ Before anything else, your company needs to registered on the Catena Portal, for
 
 ## Find Your Company
 
-When you go to the Portal website that is relevant to you, (e.g. https://portal.cofinity-x.com/) you will find a screen similar to this:
+When you go to the Portal website that is relevant to you, you will find a screen similar to this:
 
 ![Portal Page](media/portal.png)
 

@@ -155,12 +155,6 @@ Let's begin local development install!
 - ### Run the front-end
   when postman is working, you need to open the front end on your IDE of choice and run on a terminal inside the front-end folder, make sure you have NodeJS installed on your machine.
 
-      yarn install --force --legacy-peer-deps
-
-      yarn 
-    
-    or
-
       npm install --force --legacy-peer-deps
 
       npm start
