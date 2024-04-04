@@ -85,7 +85,7 @@ After that, a new form will appear:
 
 ![Portal Register Connector Second Window](media/register-connector.png)
 
-Fill the forms with a `COnnector Name`, a `Connector URL/EndPoint` (Must be https) and a `Two Digit country code` (Must be in capital letters).
+Fill the forms with a `Connector Name`, a `Connector URL/EndPoint` (Must be https) and a `Two Digit country code` (Must be in capital letters).
 Finally select `confirm`.
 
 And your connector is now registered.
