@@ -19,7 +19,13 @@ https://github.com/eclipse-tractusx/portal-assets/blob/v1.8.0/docs/user
 
 ## Starting Point
 
-Before anything else, your company needs to registered on the Catena Portal, for that you can create an issues here: https://github.com/eclipse-tractusx/portal-frontend-registration
+In order to participate in the Demand and Capacity Management usecase within a dataspace your company must be known within the dataspace. This usually involves registering with an operational company, granting you access to a dataspace portal.
+
+As of April 2024 the following OpCos and their respective portals are known:
+
+| OpCo|Portal |
+|----|----|
+|https://www.cofinity-x.com/|https://portal.cofinity-x.com/|
 
 ## Find Your Company
 
