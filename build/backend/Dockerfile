@@ -19,40 +19,23 @@
 #   ********************************************************************************
 
 
-FROM maven:3.9.0-eclipse-temurin-19 as build
+FROM maven:3.8.7-eclipse-temurin-17 as build
 
-COPY .. ./
+RUN mkdir /app
+WORKDIR /app
 
-RUN mvn clean install
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-RUN mvn package
+COPY src/ /app/src/
+RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:19-jdk-jammy
+FROM eclipse-temurin:17-jre-alpine
 
-ARG USERNAME=dftuser
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
+RUN mkdir /opt/app
+COPY --from=build /app/target/*.jar /opt/app/demand-capacity-mgmt-backend.jar
 
-RUN apt-get update && apt-get install --no-install-recommends \
-    && groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
-    && apt-get update \
-    && apt-get install -y sudo \
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME \
-    && rm -rf /var/lib/apt/lists/*
+ENTRYPOINT ["sh", "-c", " java ${JAVA_OPTS} -jar /opt/app/demand-capacity-mgmt-backend.jar ${0} ${@}"]
 
-
-USER $USERNAME
-
-WORKDIR /home/user/dftuser/dftapp
-
-
-COPY --from=build demand-capacity-mgmt-backend/target/*.jar ./app.jar
-
-
-EXPOSE 8080
-
-CMD ["java", "-jar", "./app.jar","--spring.profile=${PROFILE}"]
 
 

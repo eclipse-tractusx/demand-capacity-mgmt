@@ -20,8 +20,10 @@
  *    ********************************************************************************
  */
 
- body {
+body {
   margin: 0;
+  min-height: 100vh;
+  /* Ensures body covers at least the full height of the viewport */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -29,31 +31,136 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.footer {
+  color: #333;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-}
-
-.custom-modal {
-  max-width: 1500px !important; /* Adjust the width as needed */
-}
-
-.required-field-label::after {
-  content: "*";
-  color: red;
-  margin-left: 4px; /* Add some spacing between the label text and the asterisk */
 }
 
 :root {
   --header-color: #f1f1f1;
   --label-margin: 8px;
   --border-color: #ccc;
-  --danger-red:#dc3545;
+  --danger-red: #dc3545;
 }
 
+/*Layout Containers*/
+.root-container {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.overflow-control-container {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* TopMenu */
+.small-menu-text {
+  font-size: 0.8rem;
+}
+
+.logo-container {
+  display: flex;
+  margin-top: 0.5rem;
+  align-items: center;
+}
+
+.slide-out {
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: transform 0.3s ease-out, opacity 0.1s ease;
+}
+
+.slide-in {
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform 0.3s ease-out, opacity 0.1s ease;
+}
+
+.move-out {
+  transform: translateX(-35%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.move-in {
+  transform: translateX(0%);
+  transition: transform 0.3s ease-in-out;
+}
+
+/*Quick Acess Itmes*/
+.floating-fixed-buttons {
+  color: black;
+  position: absolute !important;
+  z-index: 1;
+  top: 50%;
+  left: 5px;
+  transform: translate(0%, -50%);
+}
+
+/*Data Range Selectors*/
+
+.data-range-container {
+  display: flex;
+  /* Adjust this height as needed */
+}
+
+.pop-out-section {
+  padding: 10px;
+}
+
+.text-muted {
+  color: #6c757d;
+  /* Adjust text color */
+  font-size: 14px;
+}
+
+/*Demand Management Modal*/
+.custom-modal {
+  max-width: 1500px !important;
+  /* Adjust the width as needed */
+}
+
+.company_info_details {
+  font-size: large;
+  text-decoration: underline;
+}
+
+/*Forms*/
+.required-field-label::after {
+  content: "*";
+  color: red;
+  margin-left: 4px;
+  /* Add some spacing between the label text and the asterisk */
+}
+
+.invalid-feedback {
+  color: red;
+}
+
+.error-message {
+  color: red;
+  display: contents !important;
+  font-size: small;
+}
+
+/*Sum View Tables*/
 .table-container {
   overflow-x: auto;
   max-width: 100%;
+}
+
+.table-overflow-control {
+  overflow-y: auto;
+  height: 38rem;
 }
 
 .vertical-table-container {
@@ -64,7 +171,7 @@ code {
 
 .vertical-table {
   border-collapse: collapse;
-  border: 1px solid  var(--border-color);
+  border: 1px solid var(--border-color);
   width: 80%;
   max-width: 800px;
   margin: 0 auto;
@@ -74,8 +181,17 @@ code {
   background-color: var(--header-color);
   text-align: center;
   padding: 8px;
-  border: 1px solid  var(--border-color);
+  border: 1px solid var(--border-color);
 }
+
+.header-cell-btnks {
+  background-color: var(--header-color);
+  text-align: center;
+  min-width: 6rem;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+}
+
 
 .table-data-input {
   margin: 0 !important;
@@ -85,7 +201,7 @@ code {
   max-width: 20px !important;
 }
 
-.week-header-cell{
+.week-header-cell {
   min-width: 35px;
 }
 
@@ -97,7 +213,6 @@ code {
   position: sticky;
   padding: 0;
   left: 0;
-  z-index: 1;
 }
 
 .sticky-header-content {
@@ -106,8 +221,8 @@ code {
   align-items: center;
   box-sizing: border-box;
   border-left: 1px solid var(--border-color);
-  border-right: 1px solid  var(--border-color);
-  border-bottom: 1px solid  var(--border-color);
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   padding: var(--label-margin);
 }
 
@@ -116,32 +231,65 @@ code {
 
 }
 
-.table-header-nested-text-child{
+.table-header-nested-text-child {
   justify-content: flex-end;
 }
 
 .data-cell {
   text-align: center;
-  border: 1px solid  var(--border-color);
+  border: 1px solid var(--border-color);
 }
 
-.table-checkbox{
-  -ms-transform: scale(1.5); /* IE */
-  -moz-transform: scale(1.5); /* FF */
-  -webkit-transform: scale(1.5); /* Safari and Chrome */
-  -o-transform: scale(1.5); /* Opera */
+.bg-light-green {
+  background-color: #94cb2d94;
+  /* Pastel green */
+  color: black;
+  /* Inset box shadow */
+}
+
+.bg-light-red {
+  background-color: #ff837a;
+  /* Pastel red */
+  color: black;
+}
+
+.interactable {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.interactable:hover {
+  color: #ffc107;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.table-checkbox {
+  display: flex;
+  margin-top: 0.7rem;
+  margin-left: 50%;
+  -ms-transform: scale(1.5);
+  -moz-transform: scale(1.5);
+  -webkit-transform: scale(1.5);
+  -o-transform: scale(1.5);
+}
+
+.inlinefav {
+  margin-top: 0.25rem;
+  margin-left: 0.7em;
+  display: flex;
 }
 
 .red-delete-item {
-  color: var(--danger-red) !important; 
+  color: var(--danger-red) !important;
 }
 
 .red-delete-item:hover {
-  background-color: var(--danger-red)!important;
-  color: white !important; 
+  background-color: var(--danger-red) !important;
+  color: white !important;
 }
 
-.icon-text-padding{
+.icon-text-padding {
   padding-left: 0.5rem;
 }
 
@@ -151,17 +299,70 @@ code {
   text-decoration-thickness: 4px;
 }
 
+.clip_board_icon {
+  color: #94cb2d !important;
+}
+
+.border-bottom {
+  border-top: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
+  /* Add a line to the bottom of each row */
+}
+
+
+.clip_board_icon:hover {
+  color: orange !important;
+}
+
+.custom-table {
+  background-color: transparent !important;
+}
+
+.custom-table tbody tr {
+  background-color: transparent;
+}
+
+.custom-table tbody tr:not(:last-child) {
+  border-bottom: 1px solid #dee2e6;
+  /* Add a line between rows */
+}
+
+.fixed-width {
+  width: 100px;
+  /* Set a fixed width for each td */
+}
+
 /*Shake Animation*/
 .shake-input {
   animation: shake 0.5s;
 }
 
 @keyframes shake {
-  0% { transform: translateX(0); }
-  10%, 20% { transform: translateX(-5px); }
-  30%, 40% { transform: translateX(5px); }
-  50%, 60%, 70%, 80% { transform: translateX(-5px); }
-  90%, 100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+
+  10%,
+  20% {
+    transform: translateX(-5px);
+  }
+
+  30%,
+  40% {
+    transform: translateX(5px);
+  }
+
+  50%,
+  60%,
+  70%,
+  80% {
+    transform: translateX(-5px);
+  }
+
+  90%,
+  100% {
+    transform: translateX(0);
+  }
 }
 
 /*Breadcrumbs animation*/
@@ -172,15 +373,180 @@ code {
 .active-step:after {
   content: '';
   position: absolute;
-  bottom: -5px; /* Adjust the position based on your design */
+  bottom: -5px;
+  /* Adjust the position based on your design */
   left: 50%;
   transform: translateX(-50%);
   width: 0;
-  height: 2px; /* The height of the indicator line */
-  background-color: #007bff; /* Color of the indicator line */
+  height: 2px;
+  /* The height of the indicator line */
+  background-color: #007bff;
+  /* Color of the indicator line */
   transition: width 0.3s ease;
 }
 
 .active-step.active:after {
-  width: 100%; /* Width of the indicator line when the step is active */
+  width: 100%;
+  /* Width of the indicator line when the step is active */
+}
+
+
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-on-hover {
+  animation: spin 1s ease-in-out;
+  transform-origin: center;
+}
+
+/* Admin Panel */
+.tabs-column {
+  background-color: #f0f0f0;
+  height: 80vh;
+  padding: 15px;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+
+.admin-nav-link {
+  position: relative;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  /* Add a bottom border to create the line effect */
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+  /* Add a soft shadow to create a separation effect */
+  color: #333 !important;
+  /* Dark grey text color */
+  margin-right: -0.7rem;
+}
+
+.admin-nav-link:last-child {
+  border-bottom: none;
+  /* Remove the bottom border for the last nav-link */
+}
+
+.admin-nav-link.active {
+  background-color: #94cb2d !important;
+  /* Yellow background color for active tab */
+  color: #fff !important;
+  /* White text color for active tab */
+}
+
+.table-bordered .bottleneck-green {
+  background-color: #94cb2d;
+}
+
+.table-bordered .bottleneck-yellow {
+  background-color: #ffc107;
+}
+
+.table-bordered .bottleneck-red {
+  background-color: #dc3545;
+}
+
+/* Board.css */
+
+.board {
+  display: flex;
+  height: 37.2vmax;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.contact-table {
+  height: 34.2vh;
+  margin-top: -1.5%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+
+.task-list {
+  overflow-y: auto;
+  flex: 1;
+  border-right: 1px solid #ccc;
+}
+
+.task-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.task-list li {
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.task-list li:hover {
+  background-color: #f5f5f5;
+}
+
+.task-detail {
+  flex: 2;
+  margin: 1rem;
+}
+
+.glitter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background-size: 400% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.glitter::before,
+.glitter::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  animation: sparkle 1.5s infinite linear alternate;
+}
+
+.glitter::before {
+  top: 50%;
+  left: 25%;
+  animation-delay: 0.5s;
+}
+
+.glitter::after {
+  top: 70%;
+  left: 75%;
+  animation-delay: 1s;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 400% 0;
+  }
+}
+
+@keyframes sparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }

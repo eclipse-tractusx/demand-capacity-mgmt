@@ -24,9 +24,11 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.DemandApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.DemandService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,10 +39,26 @@ public class DemandController implements DemandApi {
 
     private final DemandService demandService;
 
+    private HttpServletRequest request;
+
     @Override
     public ResponseEntity<Void> deleteDemandsById(String demandId) {
-        demandService.deleteDemandById(demandId);
+        String userID = UserUtil.getUserID(request);
+        demandService.deleteDemandById(demandId, userID);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Override
+    public ResponseEntity<List<MaterialDemandSeriesResponse>> getDemandSeries() throws Exception {
+        //TODO REMOVE.
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<List<MaterialDemandSeriesResponse>> getDemandSeriesByMaterialDemand(String materialDemandId)
+        throws Exception {
+        //TODO REMOVE.
+        return null;
     }
 
     @Override
@@ -68,13 +86,15 @@ public class DemandController implements DemandApi {
     @Override
     public ResponseEntity<Void> unlinkedDemandSeriesComposites(DemandSeriesUnlinkRequest demandSeriesUnlinkRequest)
         throws Exception {
-        demandService.unlinkComposites(demandSeriesUnlinkRequest);
+        String userID = UserUtil.getUserID(request);
+        demandService.unlinkComposites(demandSeriesUnlinkRequest, userID);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
     public ResponseEntity<MaterialDemandResponse> postDemand(MaterialDemandRequest materialDemandRequest) {
-        MaterialDemandResponse responseDto = demandService.createDemand(materialDemandRequest);
+        String userID = UserUtil.getUserID(request);
+        MaterialDemandResponse responseDto = demandService.createDemand(materialDemandRequest, userID);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
@@ -83,7 +103,8 @@ public class DemandController implements DemandApi {
         String demandId,
         MaterialDemandRequest materialDemandRequest
     ) {
-        MaterialDemandResponse responseDto = demandService.updateDemand(demandId, materialDemandRequest);
+        String userID = UserUtil.getUserID(request);
+        MaterialDemandResponse responseDto = demandService.updateDemand(demandId, materialDemandRequest, userID);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

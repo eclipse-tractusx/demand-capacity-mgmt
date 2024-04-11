@@ -39,12 +39,24 @@
     <properties>
         <java.version>17</java.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
-        <sonar.organization>catenax-ng</sonar.organization>
+        <sonar.organization>eclipse-tractusx</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <spring-cloud.version>2020.0.3-SNAPSHOT</spring-cloud.version>
 
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>java-dotenv</artifactId>
+            <version>5.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>3.1.5</version>
+        </dependency>
+
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
@@ -128,7 +140,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -136,7 +147,12 @@
             <plugin>
                 <groupId>org.eclipse.dash</groupId>
                 <artifactId>license-tool-plugin</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.1.0</version>
+                <configuration>
+                    <projectId>automotive.tractusx</projectId>
+                    <summary>../DEPENDENCIES_BACKEND</summary>
+                    <includeScope>test</includeScope>
+                </configuration>
                 <executions>
                     <execution>
                         <id>license-check</id>
@@ -179,6 +195,28 @@
                 </configuration>
             </plugin>
         </plugins>
+        <resources>
+            <!-- add basic application properties -->
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <includes>
+                    <include>application.properties</include>
+                </includes>
+                <targetPath>BOOT-INF/classes/</targetPath>
+            </resource>
+            <!-- add legal information to META-INF -->
+            <resource>
+                <directory>${project.basedir}/</directory>
+                <includes>
+                    <include>README.md</include>
+                    <include>LICENSE</include>
+                    <include>NOTICE.md</include>
+                    <include>DEPENDENCIES</include>
+                    <include>SECURITY.md</include>
+                </includes>
+                <targetPath>META-INF</targetPath>
+            </resource>
+        </resources>
     </build>
     <repositories>
         <repository>
@@ -198,10 +236,11 @@
             </releases>
         </repository>
     </repositories>
+
     <pluginRepositories>
         <pluginRepository>
-            <id>dash-licenses-snapshots</id>
-            <url>https://repo.eclipse.org/content/repositories/dash-licenses-snapshots/</url>
+            <id>dash-licenses</id>
+            <url>https://repo.eclipse.org/content/repositories/dash-licenses/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -223,5 +262,4 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
-
 </project>

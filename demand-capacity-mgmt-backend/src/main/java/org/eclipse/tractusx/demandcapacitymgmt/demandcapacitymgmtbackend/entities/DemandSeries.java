@@ -61,6 +61,8 @@ public class DemandSeries {
 
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinColumn(name = "demand_series_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<DemandSeriesValues> demandSeriesValues;
 
     @ToString.Exclude

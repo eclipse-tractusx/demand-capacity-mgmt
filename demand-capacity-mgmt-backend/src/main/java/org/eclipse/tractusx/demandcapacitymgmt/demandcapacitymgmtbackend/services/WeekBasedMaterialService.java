@@ -28,7 +28,10 @@ import java.util.List;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
 
 public interface WeekBasedMaterialService {
-    void createWeekBasedMaterial(List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDto);
+    void createWeekBasedMaterial(
+        List<WeekBasedMaterialDemandRequestDto> weekBasedMaterialDemandRequestDto,
+        String userID
+    );
     void sendWeekBasedMaterial();
     void receiveWeekBasedMaterial();
 
@@ -37,8 +40,9 @@ public interface WeekBasedMaterialService {
     List<WeekBasedMaterialDemandResponseDto> getUpdatedWeekBasedMaterialDemands();
     WeekBasedMaterialDemandResponseDto updateWeekBasedMaterial(
         String id,
-        WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto
+        WeekBasedMaterialDemandRequestDto weekBasedMaterialDemandRequestDto,
+        String userID
     );
 
-    void createWeekBasedMaterialRequestFromEntity(MaterialDemandEntity materialDemandEntity);
+    void createWeekBasedMaterialRequestFromEntity(MaterialDemandEntity materialDemandEntity, String userID);
 }

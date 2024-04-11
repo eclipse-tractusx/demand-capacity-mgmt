@@ -23,6 +23,7 @@
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities;
 
 import jakarta.persistence.*;
+import java.sql.Timestamp;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,16 +40,20 @@ import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entitie
 public class FavoriteEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
     @Column(columnDefinition = "uuid", updatable = false, name = "user_id")
-    private UUID id;
+    private UUID userID;
 
     @Column(columnDefinition = "uuid", name = "favorite_id")
     private UUID favoriteId;
 
-    @Column(columnDefinition = "uuid", name = "favorite_type_id")
-    private UUID favoriteTypeId;
-
     @Column(name = "f_type", columnDefinition = "varchar")
     @Enumerated(EnumType.STRING)
     private FavoriteType type;
+
+    @Column(name = "favorited_at")
+    private Timestamp favorited_at;
 }

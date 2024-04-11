@@ -18,25 +18,42 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
+# Stage 1: Node.js Build
+FROM node:lts-alpine as builder
 
-
-# Base image
-FROM node:16.15.1
-
-# Set the working directory
 WORKDIR /app
 
-# Copy the app source code
-COPY ../../demand-capacity-mgmt-frontend .
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
+COPY . .
+RUN npm run build
 
-# Install dependencies
-RUN yarn install
+# Stage 2: Nginx Serving
+FROM nginxinc/nginx-unprivileged:stable-alpine
 
-# Build the app
-RUN yarn build
+ARG REPO_COMMIT_ID='REPO_COMMIT_ID'
+ARG REPO_ENDPOINT_URL='REPO_ENDPOINT_URL'
+ENV REPO_COMMIT_ID=${REPO_COMMIT_ID}
+ENV REPO_ENDPOINT_URL=${REPO_ENDPOINT_URL}
 
-# Expose the port that the app will run on
-EXPOSE 3000
+USER root
 
-# Start the app
-CMD ["yarn", "start"]
+RUN addgroup -g 3000 appgroup \
+    && adduser -u 10000 -g 3000 -h /home/appuser -D appuser \
+    && chown -R 10000:3000 /var/cache/nginx /var/run /var/log/nginx \
+    && chmod -R 775 /var/cache/nginx /var/run /var/log/nginx
+
+COPY ./entrypoint.sh /entrypoint.sh
+
+WORKDIR /app
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+HEALTHCHECK NONE
+
+USER 10000:3000
+
+EXPOSE 8080
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]

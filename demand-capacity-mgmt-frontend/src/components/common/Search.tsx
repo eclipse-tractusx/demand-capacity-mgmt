@@ -22,6 +22,7 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { FaSearch } from 'react-icons/fa';
 
 type DemandsSearchProps = {
   searchQuery: string;
@@ -31,18 +32,18 @@ type DemandsSearchProps = {
 const DemandsSearch: React.FC<DemandsSearchProps> = ({ searchQuery, setSearchQuery }) => {
   return (
 
-<Form className="d-flex align-items-center">
-  <Form.Control
-    type="search"
-    placeholder="Search"
-    className="me-1"
-    aria-label="Search"
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-  />
-  <Button variant="outline-secondary">Search</Button>
-</Form>
-    
+    <Form className="d-flex align-items-center">
+      <Form.Control
+        type="search"
+        placeholder="Search"
+        className="me-1"
+        aria-label="Search"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      <Button variant="outline-secondary"><FaSearch size={18} /></Button>
+    </Form>
+
   );
 };
 

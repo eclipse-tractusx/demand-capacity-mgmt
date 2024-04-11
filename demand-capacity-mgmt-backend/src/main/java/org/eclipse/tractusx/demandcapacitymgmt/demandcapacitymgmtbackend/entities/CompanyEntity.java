@@ -65,4 +65,7 @@ public class CompanyEntity {
 
     @Column(name = "edc_url")
     private String edcUrl;
+
+    @Column(name = "counter")
+    private long count;
 }

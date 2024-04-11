@@ -29,6 +29,413 @@ servers:
 
 
 paths:
+
+  /cg/ruleset:
+    get:
+      summary: generate the capacity group rulesets
+      operationId: getCapacityGroupRulesets
+      tags:
+        - cgRuleset
+      parameters:
+        - in: query
+          name: cgID
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: got the capacity group rulesets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CGRulesetResponse'
+    post:
+      summary: Modify the capacity group ruleset
+      operationId: modifyCapacityGroupRuleset
+      tags:
+        - cgRuleset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CGRulesetRequest'
+      responses:
+        200:
+          description: Capacity group ruleset modified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CGRulesetResponse'
+  /cd/ruleset:
+    get:
+      summary: generate the company rulesets
+      operationId: getCompanyRulesets
+      tags:
+        - cdRuleset
+      parameters:
+        - in: query
+          name: cdID
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: got the company rulesets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CDRulesetResponse'
+    post:
+      summary: Modify the company ruleset
+      operationId: modifyCompanyRuleset
+      tags:
+        - cdRuleset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CDRulesetRequest'
+      responses:
+        200:
+          description: Company ruleset modified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CDRulesetResponse'
+
+  /year/report:
+    post:
+      summary: Generate a year report for a given capacity group ID and date range
+      operationId: generateYearReport
+      tags:
+        - YearReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/YearReportRequest'
+      responses:
+        '200':
+          description: Successfully created year reports
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/YearReportResponse'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+          
+          
+
+  /alerts:
+    get:
+      tags:
+        - alerts
+      summary: get alerts
+      operationId: getAlerts
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertResponse'
+    post:
+      tags:
+        - alerts
+      summary: configureAlert
+      operationId: configureAlert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertRequest'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertResponse'
+  /triggeredAlerts:
+      post:
+        tags:
+          - alerts
+        summary: configureTriggeredAlert
+        operationId: configureTriggeredAlert
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggeredAlertRequest'
+        responses:
+          200:
+            description: General greeting
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/TriggeredAlertResponse'
+      get:
+        tags:
+          - alerts
+        summary: get triggered alerts
+        operationId: getTriggeredAlerts
+        responses:
+          200:
+            description: General greeting
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TriggeredAlertResponse'
+                  
+  /edc/token:
+    post:
+      tags:
+        - EDC
+      summary: Get Access Token
+      operationId: getAccessToken
+      responses:
+        '200':
+          description: Access token retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenResponse'
+  /edc/asset:
+    post:
+      tags:
+        - EDC
+      summary: create an asset
+      operationId: registerAsset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetEntryNewDto'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+
+  /edc/asset/{asset_id}:
+    get:
+      tags:
+        - EDC
+      summary: get asset by Id
+      operationId: getAssetById
+      parameters:
+        - in: 'path'
+          name: 'asset_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: get asset by Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+    delete:
+      tags:
+        - EDC
+      summary: delete asset by Id
+      operationId: deleteAssetById
+      parameters:
+        - in: 'path'
+          name: 'asset_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete asset with id
+
+  /edc/asset/request:
+    post:
+      tags:
+        - EDC
+      summary: Create an asset
+      operationId: createAssetRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuerySpec'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+  /edc/policy:
+    post:
+      tags:
+        - EDC
+      summary: create a Policy
+      operationId: createPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyDefinitionInput'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+  /edc/policy/request:
+    post:
+      tags:
+        - EDC
+      summary: Create an asset
+      operationId: createPolicyRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuerySpec'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyDefinitionOutput'
+  /edc/policy/{policy_id}:
+    get:
+      tags:
+        - EDC
+      summary: get policy by Id
+      operationId: getPolicyById
+      parameters:
+        - in: 'path'
+          name: 'policy_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: get policy by Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyDefinitionOutput'
+    delete:
+      tags:
+        - EDC
+      summary: delete policy by Id
+      operationId: deletePolicyById
+      parameters:
+        - in: 'path'
+          name: 'policy_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete policy with id
+
+  /edc/contract:
+    post:
+      tags:
+        - EDC
+      summary: create an contract definition
+      operationId: createContract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractDefinitionInput'
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+
+  /edc/contract/request:
+    post:
+      tags:
+        - EDC
+      summary: Create an asset
+      operationId: createContractRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuerySpec'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContractDefinitionOutput'
+
+  /edc/contract/{contract_id}:
+    get:
+      tags:
+        - EDC
+      summary: get contract by Id
+      operationId: getContractById
+      parameters:
+        - in: 'path'
+          name: 'contract_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: get contract by Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractDefinitionOutput'
+    delete:
+      tags:
+        - EDC
+      summary: delete contract by Id
+      operationId: deleteContractById
+      parameters:
+        - in: 'path'
+          name: 'contract_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Delete contract with id
+          
   /token/login:
     post:
       tags:
@@ -86,9 +493,75 @@ paths:
         - Keycloak
       summary: Logout (Token)
       operationId: logoutToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+              required:
+                - refresh_token
       responses:
         200:
           description: Successfully logged out
+
+  /token/introspect:
+    post:
+      tags:
+        - Keycloak
+      summary: Introspect token
+      operationId: introspectToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+              required:
+                - refresh_token
+      responses:
+        200:
+          description: Token introspection result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntrospectTokenResponse'
+
+  /user:
+    put:
+      tags:
+        - userOperations
+      summary: edit a user
+      operationId: update an user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        201:
+          description: General Greeting
+    get:
+      tags:
+        - userOperations
+      summary: get all users
+      operationId: fetch all users
+      responses:
+        200:
+          description: General Greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
 
   /loggingHistory:
     post:
@@ -109,7 +582,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoggingHistoryResponse'
-
     delete:
       tags:
         - loggingHistory
@@ -135,7 +607,99 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LoggingHistoryResponse'
+  /addressBook:
+    get:
+      tags:
+        - addressBook
+      summary: get all companies
+      operationId: getAllAddressBooks
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressBookResponse'
+    post:
+      tags:
+        - addressBook
+      summary: post a record
+      operationId: postAddressBook
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBookResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+    delete:
+      tags:
+        - addressBook
+      summary: delete a record
+      operationId: deleteAddressBook
+      responses:
+        201:
+          description: General greeting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
 
+  /addressBook/query:
+    get:
+      tags:
+        - addressBook
+      summary: get companies
+      operationId: getAddressBook
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBookResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+
+  /addressBook/{address_book_id}:
+    put:
+      tags:
+        - addressBook
+      summary: update addressBook by Id
+      operationId: updateAddressBookById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBookRequest'
+      parameters:
+        - in: 'path'
+          name: 'address_book_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Update of addressBook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBookRequest'
 
   /loggingHistory/filterLogs:
     get:
@@ -295,28 +859,6 @@ paths:
                   $ref: '#/components/schemas/LoggingHistoryResponse'
         404:
           description: loggingHistory not found
-
-
-  /token/introspect:
-    post:
-      tags:
-        - Keycloak
-      summary: Introspect token
-      operationId: introspectToken
-      parameters:
-        - in: cookie
-          name: auth_token
-          schema:
-            type: string
-          required: true
-          description: Authentication token
-      responses:
-        200:
-          description: Token introspection result
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IntrospectTokenResponse'
   /statuses:
     post:
       tags:
@@ -412,7 +954,44 @@ paths:
                 items:
                   $ref: '#/components/schemas/MaterialDemandResponse'
 
+  /demand/series/{material_demand_id}:
+    get:
+      tags:
+        - Demand
+      summary: get list of demand series by material demand id
+      operationId: getDemandSeriesByMaterialDemand
+      parameters:
+        - in: 'path'
+          name: 'material_demand_id'
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaterialDemandSeriesResponse'
+
   /demand/series:
+    get:
+      tags:
+        - Demand
+      summary: get list of demand series
+      operationId: getDemandSeries
+      responses:
+        200:
+          description: General greeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaterialDemandSeriesResponse'
+
     post:
       tags:
         - Demand
@@ -432,6 +1011,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DemandSeriesCompositeResponse'
+
   /demand/series/unlink:
     post:
       tags:
@@ -575,7 +1155,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CapacityGroupResponse'
+                $ref: '#/components/schemas/SingleCapacityGroup'
 
 
   /weekbasedcapacitygroup:
@@ -719,6 +1299,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CompanyDto'
+  /company/top:
+    get:
+      tags:
+        - company
+      summary: company
+      operationId: getTopCompanies
+      responses:
+        200:
+          description: CompanyResponse
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CompanyDto'
 
   /unitmeasure:
     get:
@@ -734,6 +1329,26 @@ paths:
               schema:
                 type: array
                 items:
+                  $ref: '#/components/schemas/UnitMeasure'
+  /unitmeasure/{id}:
+    get:
+      tags:
+        - unitMeasure
+      summary: unitMeasure by ID
+      operationId: getUnitMeasureByID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the unit of measure
+          schema:
+            type: string
+      responses:
+        200:
+          description: UnitMeasureResponse
+          content:
+            application/json:
+              schema:
                   $ref: '#/components/schemas/UnitMeasure'
 
   /demandcategory:
@@ -759,13 +1374,12 @@ paths:
       operationId: getFavorite
       responses:
         200:
-          description: favorite response array
+          description: Combined response with three arrays
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FavoriteResponse'
+                $ref: '#/components/schemas/FavoriteResponse'
+
     post:
       tags:
         - favorite
@@ -780,41 +1394,9 @@ paths:
       responses:
         200:
           description: Favorite created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FavoriteResponse'
-    put:
-      tags:
-        - favorite
-      summary: Update a Favorite
-      operationId: updateFavorite
-      parameters:
-        - name: id
-          in: query
-          required: true
-          description: ID of the favorite to update
-          schema:
-            type: string
-        - name: type
-          in: query
-          required: true
-          description: type of the favorite to update
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FavoriteRequest'
-      responses:
-        200:
-          description: Favorite updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FavoriteResponse'
+
+
+  /favorite/{id}:
     delete:
       tags:
         - favorite
@@ -822,7 +1404,7 @@ paths:
       operationId: deleteFavoriteById
       parameters:
         - name: id
-          in: query
+          in: path
           required: true
           description: ID of the favorite to delete
           schema:
@@ -832,7 +1414,6 @@ paths:
           description: Favorite deleted successfully
         404:
           description: Favorite not found
-
 
   /favorite/{type}:
     get:
@@ -849,18 +1430,183 @@ paths:
             type: string
       responses:
         200:
-          description: Favorite found
+          description: Combined response with three arrays
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FavoriteResponse'
+                $ref: '#/components/schemas/FavoriteResponse'
         404:
           description: Favorite not found
 
+  /rules/enabled:
+    get:
+      tags:
+        - rules
+      summary: Get all enabled rules
+      operationId: getAllEnabledRules
+      responses:
+        200:
+          description: all enabled rules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesResponse'
+
+  /rules/:
+    get:
+      tags:
+        - rules
+      summary: Get all rules
+      operationId: getAllRules
+      responses:
+        200:
+          description: all rules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesResponse'
+    put:
+      tags:
+        - rules
+      summary: Update a list of rules
+      operationId: updateRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleRequest'
+      responses:
+        200:
+          description: Updated rules
+
+    delete:
+      tags:
+        - rules
+      summary: Delete a list of rules
+      operationId: deleteRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleRequest'
+      responses:
+        200:
+          description: Deleted rules
+
+    post:
+      tags:
+        - rules
+      summary: Insert a rule
+      operationId: addRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                percentage:
+                  type: integer
+                  example: 5
+      responses:
+        200:
+          description: Inserted rule
+
+
+  /rules/{id}:
+    get:
+      tags:
+        - rules
+      summary: Get a rule
+      operationId: getRule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the rule
+          schema:
+            type: integer
+      responses:
+        200:
+          description: get rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleResponse'
+        404:
+          description: loggingHistory not found
+
+
+
 components:
   schemas:
+    UserRequest:
+      type: object
+      properties:
+        userID:
+          type: string
+        name:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        companyID:
+          type: string
+        role:
+          $ref: "#/components/schemas/Role"
+
+    UserResponse:
+      type: object
+      properties:
+        userID:
+          type: string
+        name:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        companyID:
+          type: string
+        role:
+          $ref: "#/components/schemas/Role"
+
+    RuleResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        percentage:
+          type: integer
+        enabled:
+          type: boolean
+
+    RuleRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        enabled:
+          type: boolean
+        percentage:
+          type: integer
+
+    RulesResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/RuleResponse'
+
     User:
       type: object
       properties:
@@ -874,13 +1620,22 @@ components:
           type: string
         username:
           type: string
+        companyID:
+          type: string
         role:
           $ref: '#/components/schemas/Role'
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expiresIn:
+          type: integer
     Role:
       type: string
       enum:
         - CUSTOMER
         - SUPPLIER
+        - ADMIN
     TokenResponse:
       type: object
       properties:
@@ -897,52 +1652,28 @@ components:
       properties:
         active:
           type: boolean
-
     StatusesResponse:
       type: object
       properties:
         general:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         todos:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         statusImprovement:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         statusDegredation:
-          $ref: '#/components/schemas/StatusDto'
-        overall_general:
-          $ref: '#/components/schemas/StatusDto'
-        overall_todos:
-          $ref: '#/components/schemas/StatusDto'
-        overall_statusImprovement:
-          $ref: '#/components/schemas/StatusDto'
-        overall_statusDegredation:
-          $ref: '#/components/schemas/StatusDto'
-
+          type: integer
 
     StatusRequest:
       type: object
       properties:
         general:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         todos:
-          $ref: '#/components/schemas/StatusDto'
+          type: integer
         statusImprovement:
-          $ref: '#/components/schemas/StatusDto'
-        statusDegredation:
-          $ref: '#/components/schemas/StatusDto'
-        overall_general:
-          $ref: '#/components/schemas/StatusDto'
-        overall_todos:
-          $ref: '#/components/schemas/StatusDto'
-        overall_statusImprovement:
-          $ref: '#/components/schemas/StatusDto'
-        overall_statusDegredation:
-          $ref: '#/components/schemas/StatusDto'
-
-    StatusDto:
-      type: object
-      properties:
-        count:
+          type: integer
+        statusDegradation:
           type: integer
 
     DemandRequestDto:
@@ -997,7 +1728,6 @@ components:
             format: uuid
           description: 'Array of UUIDs representing linked material demand IDs.'
 
-
     DemandResponseDto:
       type: object
       properties:
@@ -1033,6 +1763,8 @@ components:
       type: object
       properties:
         id:
+          type: integer
+        logID:
           type: string
         userAccount:
           type: string
@@ -1056,6 +1788,8 @@ components:
       type: object
       properties:
         id:
+          type: integer
+        logID:
           type: string
         userAccount:
           type: string
@@ -1078,6 +1812,8 @@ components:
       type: object
       properties:
         id:
+          type: integer
+        logID:
           type: string
         userAccount:
           type: string
@@ -1100,6 +1836,8 @@ components:
       type: object
       properties:
         id:
+          type: integer
+        logID:
           type: string
         userAccount:
           type: string
@@ -1310,6 +2048,8 @@ components:
     MaterialDemandRequest:
       type: object
       properties:
+        id:
+          type: string
         materialDescriptionCustomer:
           type: string
         materialNumberCustomer:
@@ -1330,6 +2070,8 @@ components:
     MaterialDemandSeries:
       type: object
       properties:
+        id:
+          type: string
         customerLocationId:
           type: string
         expectedSupplierLocationId:
@@ -1342,6 +2084,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesValue'
+        capacityGroupId:
+          type: string
+        materialDemand:
+          type: string
+
+
 
     MaterialDemandSeriesValue:
       type: object
@@ -1374,6 +2122,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesResponse'
+        linkStatus:
+          type: string
+
 
     CompanyDto:
       type: object
@@ -1394,6 +2145,150 @@ components:
           type: string
         myCompany:
           type: string
+
+    CompanyDtoFavoriteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        bpn:
+          type: string
+        companyName:
+          type: string
+        zipCode:
+          type: string
+        country:
+          type: string
+        myCompany:
+          type: string
+        favorited_at:
+          type: string
+
+    EventFavoriteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        logID:
+          type: string
+        eventType:
+          type: string
+        timeCreated:
+          type: string
+        userAccount:
+          type: string
+        description:
+          type: string
+        favorited_at:
+          type: string
+
+    AddressBookRequest:
+      type: object
+      properties:
+        query:
+          type: string
+        directQuery:
+          type: boolean
+        addressBook:
+          $ref: "#/components/schemas/AddressBookDto"
+
+    AddressBookResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        contact:
+          type: string
+        function:
+          type: string
+        picture:
+          type: string
+
+    AddressBookDto:
+      type: object
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        name:
+          type: string
+        contact:
+          type: string
+        email:
+          type: string
+        function:
+          type: string
+        picture:
+          type: string
+
+
+    MaterialDemandFavoriteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        materialDescriptionCustomer:
+          type: string
+        materialNumberCustomer:
+          type: string
+        materialNumberSupplier:
+          type: string
+        customer:
+          $ref: '#/components/schemas/CompanyDto'
+        supplier:
+          $ref: '#/components/schemas/CompanyDto'
+        status:
+          type: string
+        unitOfMeasure:
+          type: string
+        changedAt:
+          type: string
+        favorited_at:
+          type: string
+
+    SingleCapacityGroupFavoriteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        customer:
+          $ref: '#/components/schemas/CompanyDto'
+        supplier:
+          $ref: '#/components/schemas/CompanyDto'
+        capacityGroupId:
+          type: string
+        status:
+          type: string
+        capacityGroupName:
+          type: string
+        favorited_at:
+          type: string
+
+    AddressBookFavoriteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        contact:
+          type: string
+        function:
+          type: string
+        picture:
+          type: string
+
 
     UnitMeasure:
       type: object
@@ -1416,6 +2311,8 @@ components:
     MaterialDemandSeriesResponse:
       type: object
       properties:
+        id:
+          type: string
         customerLocation:
           $ref: '#/components/schemas/CompanyDto'
         expectedSupplierLocation:
@@ -1428,6 +2325,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MaterialDemandSeriesValue'
+        materialDemandId:
+          type: string
 
     DemandSeriesCompositeResponse:
       type: object
@@ -1568,13 +2467,15 @@ components:
           type: string
         status:
           type: string
+        linkStatus:
+          type: string
 
     LinkCGDSRequest:
       type: object
       properties:
         capacityGroupID:
           type: string
-        linkedMaterialDemandID:
+        linkMaterialDemandIds:
           type: array
           items:
             type: string
@@ -1599,11 +2500,51 @@ components:
           type: string
         supplier:
           type: string
-        linkDemandSeriesID:
+        linkMaterialDemandIds:
           type: array
           items:
             type: string
             format: uuid
+
+    SingleCapacityGroup:
+      type: object
+      properties:
+        customer:
+          $ref: '#/components/schemas/CompanyDto'
+        supplier:
+          $ref: '#/components/schemas/CompanyDto'
+        capacities:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapacityBody'
+        linkMaterialDemandIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        capacityGroupId:
+          type: string
+        capacityGroupName:
+          type: string
+        ruled:
+          type: boolean
+
+    CapacityBody:
+      type: object
+      properties:
+        capacityId:
+          type: string
+        actualCapacity:
+          type: number
+        maximumCapacity:
+          type: number
+        calendarWeek:
+          type: string
+        ruled:
+          type: boolean
+        weekColor:
+          type: string
+
 
     FavoriteRequest:
       type: object
@@ -1612,15 +2553,1463 @@ components:
           type: string
         fType:
           type: string
-        fTypeId:
-          type: string
 
     FavoriteResponse:
       type: object
       properties:
-        favoriteId:
+        capacityGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/SingleCapacityGroupFavoriteResponse'
+        materialDemands:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialDemandFavoriteResponse'
+        companies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyDtoFavoriteResponse'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventFavoriteResponse'
+        addressBooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressBookFavoriteResponse'
+
+    YearReportRequest:
+      type: object
+      required:
+        - cgID
+        - startDate
+        - endDate
+      properties:
+        cgID:
           type: string
-        fType:
+          description: The capacity group ID for which to generate the report
+        startDate:
           type: string
-        fTypeId:
+          format: date
+          description: The start date of the report range
+        endDate:
           type: string
+          format: date
+          description: The end date of the report range
+        ruled:
+          type: boolean
+        percentage:
+          type: integer
+
+    YearReportResponse:
+      type: object
+      properties:
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/YearReport'
+
+
+    YearReport:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+        capacityGroupId:
+          type: string
+        ruled:
+          type: boolean
+        percentage:
+          type: integer
+          format: int32
+        totalWeeksCurrentYear:
+          type: integer
+          format: int32
+        enabledPercentages:
+          type: string
+        monthReport:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthReport'
+
+    MonthReport:
+      type: object
+      properties:
+        month:
+          type: string
+        weekReport:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeekReport'
+
+    WeekReport:
+      type: object
+      properties:
+        week:
+          type: integer
+          format: int32
+        maxCapacity:
+          type: number
+          format: double
+        actCapacity:
+          type: number
+          format: double
+        categoryDeltas:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryDelta'
+
+    CategoryDelta:
+      type: object
+      properties:
+        catID:
+          type: string
+        catName:
+          type: string
+        catCode:
+          type: string
+        delta:
+          type: number
+          format: double
+
+    AccessTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        expires_in:
+          type: number
+          format: long
+        refresh_expires_in:
+          type: number
+          format: long
+        token_type:
+          type: string
+        not-before-policy:
+          type: number
+          format: long
+        scope:
+          type: string
+
+    CGRulesetRequest:
+      type: object
+      properties:
+        cgID:
+          type: string
+        percentages:
+          type: string
+
+    CGRulesetResponse:
+      type: object
+      properties:
+        cgID:
+          type: string
+        percentage:
+          type: string
+
+    CDRulesetRequest:
+      type: object
+      properties:
+        companyID:
+          type: string
+        percentages:
+          type: string
+
+    CDRulesetResponse:
+      type: object
+      properties:
+        companyID:
+          type: string
+        percentage:
+          type: string
+    AlertRequest:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        type:
+          type: string
+        threshold:
+          type: number
+        description:
+          type: string
+        user:
+          type: string
+        dedicatedAlerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DedicatedAlert'
+    TriggeredAlertRequest:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        triggerTimes:
+          type: number
+        triggerTimesInThreeMonths:
+          type: number
+        type:
+          type: string
+        threshold:
+          type: number
+        description:
+          type: string
+        user:
+          type: string
+    AlertResponse:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        type:
+          type: string
+        threshold:
+          type: string
+        description:
+          type: string
+        user:
+          type: string
+        dedicatedAlerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DedicatedAlert'
+    DedicatedAlert:
+      type: object
+      properties:
+        id:
+          type: string
+        objectId:
+          type: string
+        type:
+          type: string
+
+    TriggeredAlertResponse:
+      type: object
+      properties:
+        alertId:
+          type: string
+        alertName:
+          type: string
+        monitoredObjects:
+          type: string
+        created:
+          type: string
+        triggerTimes:
+          type: integer
+        triggerTimesInThreeMonths:
+          type: integer
+        type:
+          type: string
+        threshold:
+          type: string
+        description:
+          type: string
+        user:
+          type: string
+
+    ApiErrorDetail:
+      type: object
+      properties:
+        invalidValue:
+          type: object
+          example: null
+        message:
+          type: string
+          example: null
+        path:
+          type: string
+          example: null
+        type:
+          type: string
+          example: null
+      example: null
+
+    Asset: # Define your Asset schema
+      type: object
+      properties:
+        "@id":
+          type: string
+          description: The identifier of the asset
+        "@type":
+          type: string
+          description: The type of the asset
+        "edc:properties":
+          $ref: '#/components/schemas/AssetProperties'
+        "@context":
+          type: object
+          additionalProperties:
+            type: string
+            description: Context information
+      required:
+        - id
+        - type
+        - properties
+        - context
+
+    AssetProperties: # Define your AssetProperties schema
+      type: object
+      properties:
+        "edc:description":
+          type: string
+          description: The description of the asset
+        "edc:id":
+          type: string
+          description: The identifier of the asset
+        "edc:contenttype":
+          type: string
+          description: The content type of the asset
+      required:
+        - id
+
+
+    AssetEntryNewDto:
+      type: object
+      properties:
+        '@context':
+          type: object
+        asset:
+          $ref: '#/components/schemas/AssetInput'
+        dataAddress:
+          $ref: '#/components/schemas/DataAddress'
+      example: null
+
+    AssetInput:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/Asset
+        properties:
+          $ref: '#/components/schemas/Props'
+
+
+    Props:
+      type: object
+      properties:
+        description:
+          type: string
+
+        contenttype:
+          type: string
+
+
+
+    AssetOutput:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/Asset
+        createdAt:
+          type: integer
+          format: int64
+          example: null
+        dataAddress:
+          $ref: '#/components/schemas/DataAddress'
+        privateProperties:
+          type: object
+          additionalProperties:
+            type: object
+            example: null
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: object
+            example: null
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@id': asset-id
+        edc:properties:
+          edc:key: value
+        edc:privateProperties:
+          edc:privateKey: privateValue
+        edc:dataAddress:
+          edc:type: HttpData
+        edc:createdAt: 1688465655
+    AssetRequest:
+      type: object
+      properties:
+        assetId:
+          type: string
+          example: null
+        endpointUrl:
+          type: string
+          example: null
+        pathSegments:
+          type: string
+          example: null
+        providerId:
+          type: string
+          example: null
+        queryParams:
+          type: string
+          example: null
+        transferProcessId:
+          type: string
+          example: null
+      example: null
+    CallbackAddress:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/CallbackAddress
+        authCodeId:
+          type: string
+          example: null
+        authKey:
+          type: string
+          example: null
+        events:
+          uniqueItems: true
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+        transactional:
+          type: boolean
+          example: null
+        uri:
+          type: string
+          example: null
+      example: null
+    Catalog:
+      type: object
+      description: DCAT catalog
+      example:
+        '@id': 7df65569-8c59-4013-b1c0-fa14f6641bf2
+        '@type': dcat:Catalog
+        dcat:dataset:
+          '@id': bcca61be-e82e-4da6-bfec-9716a56cef35
+          '@type': dcat:Dataset
+          odrl:hasPolicy:
+            '@id': OGU0ZTMzMGMtODQ2ZS00ZWMxLThmOGQtNWQxNWM0NmI2NmY4:YmNjYTYxYmUtZTgyZS00ZGE2LWJmZWMtOTcxNmE1NmNlZjM1:NDY2ZTZhMmEtNjQ1Yy00ZGQ0LWFlZDktMjdjNGJkZTU4MDNj
+            '@type': odrl:Set
+            odrl:permission:
+              odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
+              odrl:action:
+                odrl:type: http://www.w3.org/ns/odrl/2/use
+              odrl:constraint:
+                odrl:and:
+                  - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
+                    odrl:operator:
+                      '@id': odrl:gteq
+                    odrl:rightOperand: 2023-07-07T07:19:58.585601395Z
+                  - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
+                    odrl:operator:
+                      '@id': odrl:lteq
+                    odrl:rightOperand: 2023-07-12T07:19:58.585601395Z
+            odrl:prohibition: []
+            odrl:obligation: []
+            odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
+          dcat:distribution:
+            - '@type': dcat:Distribution
+              dct:format:
+                '@id': HttpData
+              dcat:accessService: 5e839777-d93e-4785-8972-1005f51cf367
+          edc:description: description
+          edc:id: bcca61be-e82e-4da6-bfec-9716a56cef35
+        dcat:service:
+          '@id': 5e839777-d93e-4785-8972-1005f51cf367
+          '@type': dcat:DataService
+          dct:terms: connector
+          dct:endpointUrl: http://localhost:16806/protocol
+        edc:participantId: urn:connector:provider
+        '@context':
+          dct: https://purl.org/dc/terms/
+          edc: https://w3id.org/edc/v0.0.1/ns/
+          dcat: https://www.w3.org/ns/dcat/
+          odrl: http://www.w3.org/ns/odrl/2/
+          dspace: https://w3id.org/dspace/v0.8/
+    CatalogRequest:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/CatalogRequest
+        counterPartyAddress:
+          type: string
+          example: null
+        protocol:
+          type: string
+          example: null
+        providerUrl:
+          type: string
+          description: please use counterPartyAddress instead
+          example: null
+          deprecated: true
+        querySpec:
+          $ref: '#/components/schemas/QuerySpec'
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': CatalogRequest
+        counterPartyAddress: http://provider-address
+        protocol: dataspace-protocol-http
+        querySpec:
+          offset: 0
+          limit: 50
+          sortOrder: DESC
+          sortField: fieldName
+          filterExpression: []
+    ContractAgreement:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractAgreement
+        assetId:
+          type: string
+          example: null
+        consumerId:
+          type: string
+          example: null
+        contractSigningDate:
+          type: integer
+          format: int64
+          example: null
+        policy:
+          $ref: '#/components/schemas/Policy'
+        providerId:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/ContractAgreement
+        '@id': negotiation-id
+        providerId: provider-id
+        consumerId: consumer-id
+        assetId: asset-id
+        contractSigningDate: 1688465655
+        policy:
+          '@context': http://www.w3.org/ns/odrl.jsonld
+          '@type': Set
+          '@id': offer-id
+          permission:
+            - target: asset-id
+              action: display
+    ContractDefinitionInput:
+      type: object
+      properties:
+        '@context':
+          type: object
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractDefinition
+        accessPolicyId:
+          type: string
+          example: null
+        assetsSelector:
+          $ref: '#/components/schemas/Criterion'
+        contractPolicyId:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@id': definition-id
+        accessPolicyId: asset-policy-id
+        contractPolicyId: contract-policy-id
+        assetsSelector:
+          '@type': CriterionDto
+          operandLeft: https://w3id.org/edc/v0.0.1/ns/id
+          operator: "="
+          operandRight: digital-twin-registry
+    ContractDefinitionOutput:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractDefinition
+        "edc:accessPolicyId":
+          type: string
+          example: null
+        "edc:assetsSelector":
+          type: object
+          additionalProperties:
+            type: string
+            description: Context information
+        "edc:contractPolicyId":
+          type: string
+          example: null
+        "@context":
+          type: object
+          additionalProperties:
+            type: string
+            description: Context information
+
+    ContractNegotiation:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractNegotiation
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddress'
+        contractAgreementId:
+          type: string
+          example: null
+        counterPartyAddress:
+          type: string
+          example: null
+        counterPartyId:
+          type: string
+          example: null
+        errorDetail:
+          type: string
+          example: null
+        protocol:
+          type: string
+          example: null
+        state:
+          type: string
+          example: null
+        type:
+          type: string
+          example: null
+          enum:
+            - CONSUMER
+            - PROVIDER
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/ContractNegotiation
+        '@id': negotiation-id
+        type: PROVIDER
+        protocol: dataspace-protocol-http
+        counterPartyId: counter-party-id
+        counterPartyAddress: http://counter/party/address
+        state: VERIFIED
+        contractAgreementId: contract:agreement:id
+        errorDetail: eventual-error-detail
+        createdAt: 1688465655
+        callbackAddresses:
+          - transactional: false
+            uri: http://callback/url
+            events:
+              - contract.negotiation
+              - transfer.process
+            authKey: auth-key
+            authCodeId: auth-code-id
+    ContractOfferDescription:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractOfferDescription
+        assetId:
+          type: string
+          example: null
+        offerId:
+          type: string
+          example: null
+        policy:
+          $ref: '#/components/schemas/Policy'
+      example: null
+    ContractRequest:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/ContractRequest
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddress'
+        connectorAddress:
+          type: string
+          example: null
+        connectorId:
+          type: string
+          description: please use providerId instead
+          example: null
+          deprecated: true
+        consumerId:
+          type: string
+          description: this field is not used anymore
+          example: null
+          deprecated: true
+        offer:
+          $ref: '#/components/schemas/ContractOfferDescription'
+        protocol:
+          type: string
+          example: null
+        providerId:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/ContractRequest
+        connectorAddress: http://provider-address
+        protocol: dataspace-protocol-http
+        providerId: provider-id
+        offer:
+          offerId: offer-id
+          assetId: asset-id
+          policy:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@type': Set
+            '@id': offer-id
+            permission:
+              - target: asset-id
+                action: display
+        callbackAddresses:
+          - transactional: false
+            uri: http://callback/url
+            events:
+              - contract.negotiation
+              - transfer.process
+            authKey: auth-key
+            authCodeId: auth-code-id
+    Criterion:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/Criterion
+        operandLeft:
+          type: object
+          example: null
+        operandRight:
+          type: object
+          example: null
+        operator:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': Criterion
+        operandLeft: fieldName
+        operator: =
+        operandRight: some value
+    DataAddress:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/DataAddress
+        type:
+          type: string
+        proxyPath:
+          type: string
+        proxyBody:
+          type: string
+        proxyMethod:
+          type: string
+        proxyQueryParams:
+          type: string
+        baseUrl:
+          type: string
+      example: null
+
+
+    DataFlowRequest:
+      type: object
+      properties:
+        callbackAddress:
+          type: string
+          format: url
+          example: null
+        destinationDataAddress:
+          $ref: '#/components/schemas/DataAddress'
+        id:
+          type: string
+          example: null
+        processId:
+          type: string
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+        sourceDataAddress:
+          $ref: '#/components/schemas/DataAddress'
+        traceContext:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+        trackable:
+          type: boolean
+          example: null
+      example: null
+    DataPlaneInstanceSchema:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
+        allowedDestTypes:
+          uniqueItems: true
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+        allowedSourceTypes:
+          uniqueItems: true
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+        lastActive:
+          type: integer
+          format: int64
+          example: null
+        turnCount:
+          type: integer
+          format: int32
+          example: null
+        url:
+          type: string
+          format: url
+          example: null
+      example:
+        '@id': your-dataplane-id
+        url: http://somewhere.com:1234/api/v1
+        allowedSourceTypes:
+          - source-type1
+          - source-type2
+        allowedDestTypes:
+          - your-dest-type
+    Dataset:
+      type: object
+      description: DCAT dataset
+      example:
+        '@id': bcca61be-e82e-4da6-bfec-9716a56cef35
+        '@type': dcat:Dataset
+        odrl:hasPolicy:
+          '@id': OGU0ZTMzMGMtODQ2ZS00ZWMxLThmOGQtNWQxNWM0NmI2NmY4:YmNjYTYxYmUtZTgyZS00ZGE2LWJmZWMtOTcxNmE1NmNlZjM1:NDY2ZTZhMmEtNjQ1Yy00ZGQ0LWFlZDktMjdjNGJkZTU4MDNj
+          '@type': odrl:Set
+          odrl:permission:
+            odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
+            odrl:action:
+              odrl:type: http://www.w3.org/ns/odrl/2/use
+            odrl:constraint:
+              odrl:and:
+                - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
+                  odrl:operator:
+                    '@id': odrl:gteq
+                  odrl:rightOperand: 2023-07-07T07:19:58.585601395Z
+                - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
+                  odrl:operator:
+                    '@id': odrl:lteq
+                  odrl:rightOperand: 2023-07-12T07:19:58.585601395Z
+          odrl:prohibition: []
+          odrl:obligation: []
+          odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
+        dcat:distribution:
+          - '@type': dcat:Distribution
+            dct:format:
+              '@id': HttpData
+            dcat:accessService: 5e839777-d93e-4785-8972-1005f51cf367
+        edc:description: description
+        edc:id: bcca61be-e82e-4da6-bfec-9716a56cef35
+        '@context':
+          dct: https://purl.org/dc/terms/
+          edc: https://w3id.org/edc/v0.0.1/ns/
+          dcat: https://www.w3.org/ns/dcat/
+          odrl: http://www.w3.org/ns/odrl/2/
+          dspace: https://w3id.org/dspace/v0.8/
+    DatasetRequest:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/CatalogRequest
+        counterPartyAddress:
+          type: string
+          example: null
+        protocol:
+          type: string
+          example: null
+        querySpec:
+          $ref: '#/components/schemas/QuerySpec'
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': DatasetRequest
+        '@id': dataset-id
+        counterPartyAddress: http://counter-party-address
+        protocol: dataspace-protocol-http
+    DeprovisionedResource:
+      type: object
+      properties:
+        error:
+          type: boolean
+          example: null
+        errorMessage:
+          type: string
+          example: null
+        inProcess:
+          type: boolean
+          example: null
+        provisionedResourceId:
+          type: string
+          example: null
+      example: null
+    EndpointDataReferenceEntry:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: EndpointDataReferenceEntry
+        agreementId:
+          type: string
+          example: null
+        assetId:
+          type: string
+          example: null
+        edrState:
+          type: string
+          example: null
+        expirationDate:
+          type: integer
+          format: int64
+          example: null
+        providerId:
+          type: string
+          example: null
+      example:
+        '@type': tx:EndpointDataReferenceEntry
+        edc:agreementId: MQ==:MQ==:ZTY3MzQ4YWEtNTdmZC00YzA0LTg2ZmQtMGMxNzk0MWM3OTkw
+        edc:transferProcessId: 78a66945-d638-4c0a-be71-b35a0318a410
+        edc:assetId: "1"
+        edc:providerId: BPNL00DATAP00001
+        tx:edrState: NEGOTIATED
+        tx:expirationDate: 1690811364000
+        '@context':
+          dct: https://purl.org/dc/terms/
+          tx: https://w3id.org/tractusx/v0.0.1/ns/
+          edc: https://w3id.org/edc/v0.0.1/ns/
+          dcat: https://www.w3.org/ns/dcat/
+          odrl: http://www.w3.org/ns/odrl/2/
+          dspace: https://w3id.org/dspace/v0.8/
+    Failure:
+      type: object
+      properties:
+        failureDetail:
+          type: string
+          example: null
+        messages:
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+      example: null
+    HealthCheckResult:
+      type: object
+      properties:
+        component:
+          type: string
+          example: null
+        failure:
+          $ref: '#/components/schemas/Failure'
+        isHealthy:
+          type: boolean
+          example: null
+      example: null
+    HealthStatus:
+      type: object
+      properties:
+        componentResults:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/HealthCheckResult'
+        isSystemHealthy:
+          type: boolean
+          example: null
+      example: null
+    IdResponse:
+      type: object
+      properties:
+        '@type':
+          type: string
+        '@id':
+          type: string
+        'edc:createdAt':
+          type: integer
+          format: int64
+
+    List:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        groups:
+          uniqueItems: true
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+      example:
+        '@context':
+          tx: https://w3id.org/tractusx/v0.0.1/ns/
+        '@id': tx:BPN000001234
+        tx:groups:
+          - group1
+          - group2
+          - group3
+    NegotiateEdrRequest:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/tractusx/v0.0.1/ns/NegotiateEdrRequestDto
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddress'
+        connectorAddress:
+          type: string
+          example: null
+        connectorId:
+          type: string
+          description: please use providerId instead
+          example: null
+          deprecated: true
+        offer:
+          $ref: '#/components/schemas/ContractOfferDescription'
+        protocol:
+          type: string
+          example: null
+        providerId:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': NegotiateEdrRequestDto
+        connectorAddress: http://provider-address
+        protocol: dataspace-protocol-http
+        providerId: provider-id
+        offer:
+          offerId: offer-id
+          assetId: asset-id
+          policy:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@type': Set
+            '@id': offer-id
+            permission:
+              - target: asset-id
+                action: display
+        callbackAddresses:
+          - transactional: false
+            uri: http://callback/url
+            events:
+              - contract.negotiation
+              - transfer.process
+    NegotiationState:
+      type: object
+      properties:
+        state:
+          type: string
+          example: null
+      example: null
+    Policy:
+      type: object
+      description: ODRL policy
+      example:
+        '@context': http://www.w3.org/ns/odrl.jsonld
+        '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
+        '@type': odrl:Set
+        permission:
+          target: http://example.com/asset:9898.movie
+          action:
+            type: http://www.w3.org/ns/odrl/2/use
+          constraint:
+            leftOperand: https://w3id.org/edc/v0.0.1/ns/left
+            operator: eq
+            rightOperand: value
+        prohibition: []
+        obligation: []
+
+    PolicyDefinitionInput:
+      type: object
+      properties:
+        '@context':
+          type: object
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
+        policy:
+          $ref: '#/components/schemas/Policy'
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@id': definition-id
+        policy:
+          '@context': http://www.w3.org/ns/odrl.jsonld
+          '@type': Set
+          uid: http://example.com/policy:1010
+          permission:
+            - target: http://example.com/asset:9898.movie
+              action: display
+              constraint:
+                - leftOperand: spatial
+                  operator: eq
+                  rightOperand: https://www.wikidata.org/wiki/Q183
+                  comment: i.e Germany
+    PolicyDefinitionOutput:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
+        "edc:createdAt":
+          type: long
+        "edc:policy":
+          $ref: '#/components/schemas/Policy'
+        "@context":
+          type: object
+          additionalProperties:
+            type: string
+            description: Context information
+      required:
+        - id
+        - type
+        - properties
+        - context
+    ProvisionerWebhookRequest:
+      type: object
+      properties:
+        apiKeyJwt:
+          type: string
+          example: null
+        assetId:
+          type: string
+          example: null
+        contentDataAddress:
+          $ref: '#/components/schemas/DataAddress'
+        hasToken:
+          type: boolean
+          example: null
+        resourceDefinitionId:
+          type: string
+          example: null
+        resourceName:
+          type: string
+          example: null
+      example: null
+    QuerySpec:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/QuerySpec
+        filterExpression:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/Criterion'
+        limit:
+          type: integer
+          format: int32
+          example: null
+        offset:
+          type: integer
+          format: int32
+          example: null
+        sortField:
+          type: string
+          example: null
+        sortOrder:
+          type: string
+          example: null
+          enum:
+            - ASC
+            - DESC
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': QuerySpec
+        offset: 5
+        limit: 10
+        sortOrder: DESC
+        sortField: fieldName
+        filterExpression: []
+    SelectionRequestSchema:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/SelectionRequest
+        destination:
+          $ref: '#/components/schemas/DataAddress'
+        source:
+          $ref: '#/components/schemas/DataAddress'
+        strategy:
+          type: string
+          example: null
+      example:
+        source:
+          '@type': https://w3id.org/edc/v0.0.1/ns/DataAddress
+          type: test-src1
+        destination:
+          '@type': https://w3id.org/edc/v0.0.1/ns/DataAddress
+          type: test-dst2
+        strategy: you_custom_strategy
+    TerminateNegotiationSchema:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/TerminateNegotiation
+        reason:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TerminateNegotiation
+        '@id': negotiation-id
+        reason: a reason to terminate
+    TerminateTransfer:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/TransferState
+        state:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TerminateTransfer
+        reason: a reason to terminate
+    TransferProcess:
+      type: object
+      properties:
+        '@id':
+          type: string
+          example: null
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/TransferProcess
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddress'
+        contractAgreementId:
+          type: string
+          example: null
+        counterPartyAddress:
+          type: string
+          example: null
+        counterPartyId:
+          type: string
+          example: null
+        errorDetail:
+          type: string
+          example: null
+        privateProperties:
+          type: object
+          additionalProperties:
+            type: object
+            example: null
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+            deprecated: true
+          example: null
+          deprecated: true
+        protocol:
+          type: string
+          example: null
+        state:
+          type: string
+          example: null
+        type:
+          type: string
+          example: null
+          enum:
+            - CONSUMER
+            - PROVIDER
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferProcess
+        '@id': process-id
+        correlationId: correlation-id
+        type: PROVIDER
+        state: STARTED
+        stateTimestamp: 1688465655
+        assetId: asset-id
+        connectorId: connectorId
+        contractId: contractId
+        dataDestination:
+          type: data-destination-type
+        privateProperties:
+          private-key: private-value
+        errorDetail: eventual-error-detail
+        createdAt: 1688465655
+        callbackAddresses:
+          - transactional: false
+            uri: http://callback/url
+            events:
+              - contract.negotiation
+              - transfer.process
+            authKey: auth-key
+            authCodeId: auth-code-id
+    TransferProcessFailStateDto:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          example: null
+      example: null
+    TransferRequest:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/TransferRequest
+        assetId:
+          type: string
+          example: null
+        callbackAddresses:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/CallbackAddress'
+        connectorAddress:
+          type: string
+          example: null
+        connectorId:
+          type: string
+          example: null
+        contractId:
+          type: string
+          example: null
+        dataDestination:
+          $ref: '#/components/schemas/DataAddress'
+        privateProperties:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: "Deprecated as this field is not used anymore, please use\
+                \ privateProperties instead"
+            example: null
+            deprecated: true
+          description: "Deprecated as this field is not used anymore, please use privateProperties\
+              \ instead"
+          example: null
+          deprecated: true
+        protocol:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferRequest
+        protocol: dataspace-protocol-http
+        connectorAddress: http://provider-address
+        connectorId: provider-id
+        contractId: contract-id
+        assetId: asset-id
+        dataDestination:
+          type: data-destination-type
+        privateProperties:
+          private-key: private-value
+        callbackAddresses:
+          - transactional: false
+            uri: http://callback/url
+            events:
+              - contract.negotiation
+              - transfer.process
+            authKey: auth-key
+            authCodeId: auth-code-id
+    TransferState:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/TransferState
+        state:
+          type: string
+          example: null
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferState
+        state: STARTED

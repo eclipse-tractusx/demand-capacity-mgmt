@@ -20,23 +20,53 @@
  *    ********************************************************************************
  */
 
-import { FcBearish} from "react-icons/fc";
-import DemandList from "../common/DemandList";
-
-
+import { useContext, useEffect, useState } from "react";
+import { FcBearish } from "react-icons/fc";
+import { EventsContext } from "../../contexts/EventsContextProvider";
+import { EventProp, EventType } from "../../interfaces/event_interfaces";
+import { LoadingMessage } from "../common/LoadingMessages";
+import EventsTable from "../events/EventsTable";
 
 function DownStatusPage() {
 
+
+    const { fetchFilteredEvents } = useContext(EventsContext)!;
+    const [filteredEvents, setFilteredEvents] = useState<EventProp[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                // Fetch events based on the selected event type
+                const filteredEvents = await fetchFilteredEvents({
+                    event: EventType.STATUS_REDUCTION,
+                });
+                setFilteredEvents(filteredEvents);
+            } catch (error) {
+                console.error('Error fetching filtered events:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData(); // Call the fetchData function when the component mounts
+    }, [fetchFilteredEvents]);
+
+    if (loading) {
+        return <LoadingMessage />; // Show loading spinner when data is loading
+    }
+
     return (
         <>
-        <br />
+            <br />
             <div className="container-xl">
-            <div style={{ display: "flex",  }}>
-                <FcBearish size={35} /><h3 className="icon-text-padding">Negative</h3>
-            </div>
+                <div style={{ display: "flex", }}>
+                    <FcBearish size={35} /><h3 className="icon-text-padding">Negative</h3>
+                </div>
                 <div className="table">
                     <div className="table-wrapper">
-                    <DemandList />
+                        <EventsTable events={filteredEvents} isArchive={false} />
                     </div>
                 </div>
             </div>
