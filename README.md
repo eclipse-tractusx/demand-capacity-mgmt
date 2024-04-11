@@ -19,6 +19,7 @@ Table of Contents
 ## Overview
 
 The ever-changing landscape of the global economy, coupled with technological advancements and resource constraints, poses challenges for industries worldwide. Eclipse-Tractus-X, the host of components for a Catena-X network, facilitates a secure exchange of demand and capacity data among all partners within the automotive network, spanning from raw material suppliers to n-tier suppliers to car manufacturers.
+Demand and capacity management (DCM) is based on a collaborative process. Those who are part of the Catena-X network can securely share their demand and capacity data with other collaborators: with suppliers just as much as with automotive manufacturers and recyclers.
 
 ### Resilient Supply Chains
 
