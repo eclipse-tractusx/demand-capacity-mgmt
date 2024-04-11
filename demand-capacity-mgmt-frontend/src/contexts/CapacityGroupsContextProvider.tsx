@@ -20,98 +20,118 @@
  *    ********************************************************************************
  */
 
-import React, { createContext, useState, useEffect } from 'react';
-import api from '../util/Api';
-import axios from 'axios';
-import {CapacityGroupProp, CapacityGroupCreate, CapacityGroupLink, SingleCapacityGroup} from '../interfaces/capacitygroup_interfaces';
-
+import React, { createContext, useCallback, useEffect, useState } from 'react';
+import {
+  CapacityGroupCreate,
+  CapacityGroupLink,
+  CapacityGroupProp,
+  SingleCapacityGroup
+} from '../interfaces/capacitygroup_interfaces';
+import createAPIInstance from "../util/Api";
+import { customErrorToast } from '../util/ErrorMessagesHandler';
+import { is404Error, isAxiosError, isTimeoutError } from '../util/TypeGuards';
+import { useUser } from './UserContext';
 
 
 interface CapacityGroupContextData {
   capacitygroups: CapacityGroupProp[];
-  getCapacityGroupById: (id: string) =>Promise<SingleCapacityGroup | undefined>;
+  fetchCapacityGroupsWithRetry: () => Promise<void>;
+  getCapacityGroupById: (id: string) => Promise<SingleCapacityGroup | undefined>;
   isLoading: boolean;
-  createCapacityGroup: (newCapacityGroup: CapacityGroupCreate) => Promise<void>;
-  linkToCapacityGroup: (linkToCapacityGroup: CapacityGroupLink)=> Promise<void>;
+  createCapacityGroup: (newCapacityGroup: CapacityGroupCreate) => Promise<SingleCapacityGroup | undefined>;
+  linkToCapacityGroup: (linkToCapacityGroup: CapacityGroupLink) => Promise<void>;
 }
 
 export const CapacityGroupContext = createContext<CapacityGroupContextData | undefined>(undefined);
 
 
 const CapacityGroupsProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
-  
-
+  const { access_token } = useUser();
   const [capacitygroups, setCapacityGroups] = useState<CapacityGroupProp[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-
-useEffect(() => {
   const maxRetries = 3;
+  const api = createAPIInstance(access_token);
 
-  const fetchCapacityGroupsWithRetry = async () => {
+  const objectType = '2';
+
+  const fetchCapacityGroupsWithRetry = useCallback(async () => {
     setIsLoading(true);
 
-      try {
-        const response = await axios.get('/capacityGroup', {});
-        const result: CapacityGroupProp[] = response.data;
-        setCapacityGroups(result);
-        setIsLoading(false); // Set isLoading to false on success
-        setRetryCount(0); // Reset the retry count on success
-        return; // Exit the loop on success
-      } catch (error) {
-        console.error(`Error fetching capacitygroups (Retry ${retryCount + 1}):`, error);
-
-        if (retryCount < maxRetries - 1) {
-          // If not the last retry, delay for 30 seconds before the next retry
-          await new Promise((resolve) => setTimeout(resolve, 30000));
-          setRetryCount(retryCount + 1); // Increment the retry count
-        } else {
-          // If the last retry failed, set isLoading to false and do not retry further
-          setIsLoading(false);
-          setRetryCount(0); // Reset the retry count
-        }
+    try {
+      const response = await api.get('/capacityGroup', {});
+      const result: CapacityGroupProp[] = response.data;
+      setCapacityGroups(result);
+    } catch (error) {
+      if (retryCount < maxRetries - 1) {
+        // If not the last retry, delay for 30 seconds before the next retry
+        await new Promise((resolve) => setTimeout(resolve, 30000));
+        setRetryCount(retryCount + 1); // Increment the retry count
+      } else {
+        // If the last retry failed, do not retry further
+        setRetryCount(0); // Reset the retry count
+        customErrorToast(objectType, '0', '00')
       }
+    } finally {
+      // Set isLoading to false regardless of success or failure
+      setIsLoading(false);
+    }
+  }, [retryCount, setCapacityGroups, setIsLoading, setRetryCount, api]);
 
-  };
+  useEffect(() => {
+    if (retryCount < maxRetries) {
+      fetchCapacityGroupsWithRetry();
+    }
+  }, [retryCount, maxRetries]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  fetchCapacityGroupsWithRetry();
-}, [retryCount]);
-  
 
   const getCapacityGroupById = async (id: string): Promise<SingleCapacityGroup | undefined> => {
+    const api = createAPIInstance(access_token);
     try {
       const response = await api.get(`/capacityGroup/${id}`);
-      const fetchedCapacityGroup: SingleCapacityGroup = response.data;
-      return fetchedCapacityGroup;
+      return response.data;
     } catch (error) {
-      console.error('Error fetching CapacityGroup by id:', error);
-      return undefined;
+      if (isTimeoutError(error)) {
+        // This is a timeout error
+        customErrorToast(objectType, '0', '00')
+      } else if (is404Error(error) && error.response && error.response.status === 404) {
+        // This is a 404 Internal Server Error
+        customErrorToast(objectType, '4', '04')
+      } else if (isAxiosError(error) && error.response && error.response.status === 500) {
+        // This is a 500 Internal Server Error
+        customErrorToast(objectType, '5', '00')
+      } else {
+        // Handle other types of errors
+        customErrorToast('5', '0', '0') //This will trigger, Unkown error
+      }
+      return undefined
     }
   };
 
-  const createCapacityGroup = async (newCapacityGroup: CapacityGroupCreate) => {
+  const createCapacityGroup = async (newCapacityGroup: CapacityGroupCreate): Promise<SingleCapacityGroup | undefined> => {
     try {
-      console.log(newCapacityGroup);
-      const response = await axios.post('/capacityGroup', newCapacityGroup);
-      console.log(response)
+      const api = createAPIInstance(access_token);
+      const response = await api.post('/capacityGroup', newCapacityGroup);
+      return response.data;
     } catch (error) {
-      console.error('Error creating capacityGroup:', error);
+      customErrorToast(objectType, '1', '00')
     }
   };
 
   const linkToCapacityGroup = async (linkToCapacityGroup: CapacityGroupLink) => {
     try {
-      await axios.post('/capacityGroup/link', linkToCapacityGroup); 
+      const api = createAPIInstance(access_token);
+      await api.post('/capacityGroup/link', linkToCapacityGroup);
     } catch (error) {
-      console.error('Error creating capacityGroup:', error);
+      customErrorToast(objectType, '0', '16')
     }
   };
 
   return (
-      <CapacityGroupContext.Provider value={{capacitygroups, getCapacityGroupById, isLoading,createCapacityGroup, linkToCapacityGroup}}>
-        {props.children}
-      </CapacityGroupContext.Provider>
+    <CapacityGroupContext.Provider value={{ capacitygroups, fetchCapacityGroupsWithRetry, getCapacityGroupById, isLoading, createCapacityGroup, linkToCapacityGroup }}>
+      {props.children}
+    </CapacityGroupContext.Provider>
   );
 };
 
-    export default CapacityGroupsProvider;
+export default CapacityGroupsProvider;

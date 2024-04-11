@@ -25,11 +25,11 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.WeekBasedCapacityGroupApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupDtoRequest;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupDtoResponse;
-import eclipse.tractusx.demand_capacity_mgmt_specification.model.WeekBasedCapacityGroupRequest;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.WeekBasedCapacityGroupService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class WeekBasedCapacityGroupController implements WeekBasedCapacityGroupApi {
 
     private final WeekBasedCapacityGroupService weekBasedCapacityGroupService;
+    private HttpServletRequest request;
 
     @Override
     public ResponseEntity<List<WeekBasedCapacityGroupDtoResponse>> getWeekBasedCapacityGroup() {
@@ -50,7 +51,8 @@ public class WeekBasedCapacityGroupController implements WeekBasedCapacityGroupA
     public ResponseEntity<Void> postWeekBasedCapacityGroup(
         List<WeekBasedCapacityGroupDtoRequest> weekBasedCapacityGroupRequest
     ) {
-        weekBasedCapacityGroupService.createWeekBasedCapacityGroup(weekBasedCapacityGroupRequest);
+        String userID = UserUtil.getUserID(request);
+        weekBasedCapacityGroupService.createWeekBasedCapacityGroup(weekBasedCapacityGroupRequest, userID);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -59,9 +61,11 @@ public class WeekBasedCapacityGroupController implements WeekBasedCapacityGroupA
         String weekBasedCapacityId,
         WeekBasedCapacityGroupDtoRequest weekBasedCapacityGroupRequest
     ) {
+        String userID = UserUtil.getUserID(request);
         WeekBasedCapacityGroupDtoResponse responseDto = weekBasedCapacityGroupService.updateWeekBasedCapacityGroup(
             weekBasedCapacityId,
-            weekBasedCapacityGroupRequest
+            weekBasedCapacityGroupRequest,
+            userID
         );
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }

@@ -22,6 +22,7 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.repositories;
 
+import jakarta.persistence.Cacheable;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.MaterialDemandEntity;
@@ -31,7 +32,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Cacheable(false)
 public interface MaterialDemandRepository extends JpaRepository<MaterialDemandEntity, UUID> {
+    List<MaterialDemandEntity> findBySupplierId_Id(UUID id);
+
+    @Query("select m from MaterialDemandEntity m where m.customerId.id = ?1")
+    List<MaterialDemandEntity> findByCustomerId_Id(UUID id);
+
     List<MaterialDemandEntity> findAllByStatus(MaterialDemandStatus status);
 
     @Query(

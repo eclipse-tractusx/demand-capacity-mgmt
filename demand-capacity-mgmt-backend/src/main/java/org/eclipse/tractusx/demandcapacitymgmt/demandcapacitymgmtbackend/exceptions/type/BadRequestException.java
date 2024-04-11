@@ -22,33 +22,25 @@
 
 package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.type;
 
-import java.util.List;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.exceptions.base.CustomException;
 
-public class BadRequestException extends RuntimeException implements CustomException<BadRequestException> {
+public class BadRequestException extends RuntimeException implements CustomException {
 
-    private final int code;
-    private final String message;
-    private final List<String> details;
+    private final String code;
+    private final String lastDigits;
 
-    public BadRequestException(int code, String message, List<String> details) {
+    public BadRequestException(String code, String lastDigits) {
         this.code = code;
-        this.message = message;
-        this.details = details;
+        this.lastDigits = lastDigits;
     }
 
     @Override
-    public String getMessage() {
-        return message;
-    }
-
-    @Override
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
     @Override
-    public List<String> getDetails() {
-        return details;
+    public String lastDigits() {
+        return lastDigits;
     }
 }

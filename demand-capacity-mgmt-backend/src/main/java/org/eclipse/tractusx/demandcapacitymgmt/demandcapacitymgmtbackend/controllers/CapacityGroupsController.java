@@ -24,9 +24,12 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.contro
 
 import eclipse.tractusx.demand_capacity_mgmt_specification.api.CapacityGroupApi;
 import eclipse.tractusx.demand_capacity_mgmt_specification.model.*;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.entities.enums.Role;
 import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.services.CapacityGroupService;
+import org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.utils.UserUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,28 +39,33 @@ import org.springframework.web.bind.annotation.RestController;
 public class CapacityGroupsController implements CapacityGroupApi {
 
     private CapacityGroupService service;
+    private HttpServletRequest request;
 
     @Override
     public ResponseEntity<List<CapacityGroupDefaultViewResponse>> getCapacityGroups() {
-        List<CapacityGroupDefaultViewResponse> capacityGroupDefaultViewResponses = service.getAll();
+        String userID = UserUtil.getUserID(request);
+        Role userRole = UserUtil.getUserRole(request);
+        List<CapacityGroupDefaultViewResponse> capacityGroupDefaultViewResponses = service.getAll(userID, userRole);
         return ResponseEntity.status(HttpStatus.OK).body(capacityGroupDefaultViewResponses);
     }
 
     @Override
-    public ResponseEntity<CapacityGroupResponse> getCapacityGroupById(String capacityGroupId) {
-        CapacityGroupResponse capacityGroupResponse = service.getCapacityGroupById(capacityGroupId);
+    public ResponseEntity<SingleCapacityGroup> getCapacityGroupById(String capacityGroupId) {
+        SingleCapacityGroup capacityGroupResponse = service.getCapacityGroupById(capacityGroupId);
         return ResponseEntity.status(HttpStatus.OK).body(capacityGroupResponse);
     }
 
     @Override
     public ResponseEntity<CapacityGroupResponse> postCapacityGroup(CapacityGroupRequest capacityGroupRequest) {
-        CapacityGroupResponse capacityGroupResponse = service.createCapacityGroup(capacityGroupRequest);
+        String userID = UserUtil.getUserID(request);
+        CapacityGroupResponse capacityGroupResponse = service.createCapacityGroup(capacityGroupRequest, userID);
         return ResponseEntity.status(HttpStatus.OK).body(capacityGroupResponse);
     }
 
     @Override
     public ResponseEntity<Void> postLinkedCapacityGroupDemand(LinkCGDSRequest linkCGDSRequest) throws Exception {
-        service.linkCapacityGroupToMaterialDemand(linkCGDSRequest);
+        String userID = UserUtil.getUserID(request);
+        service.linkCapacityGroupToMaterialDemand(linkCGDSRequest, userID);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

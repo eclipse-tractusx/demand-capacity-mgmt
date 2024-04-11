@@ -42,9 +42,9 @@ jobs:
       - name: Install Dependencies
         run: |
           cd ./demand-capacity-mgmt-frontend 
-          yarn
+          npm install --save --legacy-peer-deps
 
       - name: Build Library and Portal
         run: |
           cd ./demand-capacity-mgmt-frontend 
-          yarn build
+          npm run build
