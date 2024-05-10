@@ -165,9 +165,9 @@
             <plugin>
                 <groupId>com.hubspot.maven.plugins</groupId>
                 <artifactId>prettier-maven-plugin</artifactId>
-                <version>0.13</version>
+                <version>0.22</version>
                 <configuration>
-                    <prettierJavaVersion>1.0.2</prettierJavaVersion>
+                    <prettierJavaVersion>2.6.0</prettierJavaVersion>
                     <printWidth>120</printWidth>
                     <tabWidth>4</tabWidth>
                     <ignoreConfigFile>true</ignoreConfigFile>
@@ -200,7 +200,7 @@
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>
                 <includes>
-                    <include>application.properties</include>
+                    <include>application.yml</include>
                 </includes>
                 <targetPath>BOOT-INF/classes/</targetPath>
             </resource>
@@ -215,6 +215,11 @@
                     <include>SECURITY.md</include>
                 </includes>
                 <targetPath>META-INF</targetPath>
+            </resource>
+            <!-- add content of resources folder -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
             </resource>
         </resources>
     </build>
