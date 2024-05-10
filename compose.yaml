@@ -34,7 +34,7 @@ services:
     image: quay.io/keycloak/keycloak:24.0.2
     entrypoint: ["/opt/keycloak/bin/kc.sh", "start-dev", "--import-realm"]
     ports:
-      - "8888:8080"
+      - "28080:8080"
 
 volumes:
   mydb:
