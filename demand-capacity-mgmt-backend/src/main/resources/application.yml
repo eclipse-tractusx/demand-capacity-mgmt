@@ -23,7 +23,7 @@ spring:
     oauth2:
       resource-server:
         jwt:
-          issuer-uri: http://localhost:8888/realms/dcm
+          issuer-uri: ${keycloak.baseUrl}/realms/${keycloak.realm}
 
   datasource:
     url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:15432}/${DCM_DATASOURCE_NAME:dcm}
@@ -41,9 +41,9 @@ spring:
     password: ${DCM_DATASOURCE_PASS:dcm}
     schemas: migrations
     locations: classpath:db/migration
-    
+
 keycloak:
-  baseUrl: http://localhost:8888
+  baseUrl: http://localhost:28080
   realm: dcm
   clientId: dcmauth
   clientSecret: ${DCMSECR:test}
