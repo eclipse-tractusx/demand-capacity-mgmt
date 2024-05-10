@@ -40,13 +40,13 @@ spring:
     user: ${DCM_DATASOURCE_USER:dcm}
     password: ${DCM_DATASOURCE_PASS:dcm}
     schemas: migrations
-    locations: classpath:db/migration/postgresql
+    locations: classpath:db/migration
     
 keycloak:
   baseUrl: http://localhost:8888
   realm: dcm
   clientId: dcmauth
-  clientSecret: ${DCMSECR}
+  clientSecret: ${DCMSECR:test}
   grant_type_token: password
   grant_type_refresh_token : refresh_token
 
