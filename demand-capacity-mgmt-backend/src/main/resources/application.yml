@@ -18,6 +18,19 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
+app:
+  name: Demand and Capacity Management
+  description: Demand and Capacity Management project
+  version: 1
+  port: ${APP_PORT:8080}
+  security:
+    enabled: ${SECURITY_ENABLE:true}
+    realm: ${KEYCLOAK_REALM_NAME:dcm}
+    auth-server-url: ${KEYCLOAK_AUTH_URL:http://localhost:28080}
+    auth-url: ${app.security.auth-server-url}/realms/${app.security.realm}/protocol/openid-connect/auth
+    token-url: ${app.security.auth-server-url}/realms/${app.security.realm}/protocol/openid-connect/token
+    refresh-token-url: ${KEYCLOAK_TOKEN_URL}
+
 spring:
   security:
     oauth2:
@@ -50,3 +63,14 @@ keycloak:
   grant_type_token: password
   grant_type_refresh_token : refresh_token
 
+springdoc:
+  swagger-ui:
+    oauth:
+      clientId: ${KEYCLOAK_CLIENT_ID:dcmauth}
+    disable-swagger-default-url: true
+    path: /ui/swagger-ui
+    show-common-extensions: true
+    csrf:
+      enabled: true
+  api-docs:
+    path: /docs/api-docs
