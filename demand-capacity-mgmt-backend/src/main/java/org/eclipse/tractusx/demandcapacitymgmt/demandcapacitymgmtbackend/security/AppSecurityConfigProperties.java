@@ -2,11 +2,9 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.securi
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("app.security")
+@ConfigurationProperties("app.openapi.security")
 public record AppSecurityConfigProperties(
     Boolean enabled,
-    String realm,
-    String authServerUrl,
     String authUrl,
     String tokenUrl,
     String refreshTokenUrl

@@ -19,17 +19,15 @@
 #   ********************************************************************************
 
 app:
-  name: Demand and Capacity Management
-  description: Demand and Capacity Management project
-  version: 1
-  port: ${APP_PORT:8080}
-  security:
-    enabled: ${SECURITY_ENABLE:true}
-    realm: ${KEYCLOAK_REALM_NAME:dcm}
-    auth-server-url: ${KEYCLOAK_AUTH_URL:http://localhost:28080}
-    auth-url: ${app.security.auth-server-url}/realms/${app.security.realm}/protocol/openid-connect/auth
-    token-url: ${app.security.auth-server-url}/realms/${app.security.realm}/protocol/openid-connect/token
-    refresh-token-url: ${KEYCLOAK_TOKEN_URL}
+  openapi:
+    name: Demand and Capacity Management
+    description: Demand and Capacity Management project
+    version: 1
+    security:
+      enabled: ${SECURITY_ENABLE:true}
+      auth-url: ${keycloak.baseUrl}/realms/${keycloak.realm}/protocol/openid-connect/auth
+      token-url: ${keycloak.baseUrl}/realms/${keycloak.realm}/protocol/openid-connect/token
+      refresh-token-url: ${KEYCLOAK_TOKEN_URL}
 
 spring:
   security:
@@ -56,9 +54,9 @@ spring:
     locations: classpath:db/migration
 
 keycloak:
-  baseUrl: ${app.security.auth-server-url}
-  realm: ${app.security.realm}
-  clientId: dcmauth
+  baseUrl: ${KEYCLOAK_BASE_URL:http://localhost:28080}
+  realm: ${KEYCLOAK_REALM_NAME:dcm}
+  clientId: ${KEYCLOAK_CLIENT_ID:dcmauth}
   clientSecret: ${DCMSECR:test}
   grant_type_token: password
   grant_type_refresh_token : refresh_token
@@ -66,7 +64,7 @@ keycloak:
 springdoc:
   swagger-ui:
     oauth:
-      clientId: ${KEYCLOAK_CLIENT_ID:dcmauth}
+      clientId: ${keycloak.clientId}
     disable-swagger-default-url: true
     path: /ui/swagger-ui
     show-common-extensions: true
