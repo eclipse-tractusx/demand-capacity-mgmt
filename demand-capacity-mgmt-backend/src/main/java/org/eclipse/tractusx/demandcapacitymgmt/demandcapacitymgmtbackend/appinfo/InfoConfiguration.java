@@ -5,5 +5,5 @@ package org.eclipse.tractusx.demandcapacitymgmt.demandcapacitymgmtbackend.appinf
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "app")
+@ConfigurationProperties(prefix = "app.openapi")
 public record InfoConfiguration(String name, String description, String version) {}
