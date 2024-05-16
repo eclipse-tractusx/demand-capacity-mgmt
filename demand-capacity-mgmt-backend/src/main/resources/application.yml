@@ -37,7 +37,7 @@ spring:
           issuer-uri: ${keycloak.baseUrl}/realms/${keycloak.realm}
 
   datasource:
-    url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:15432}/${DCM_DATASOURCE_NAME:dcm}
+    url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
     username: ${DCM_DATASOURCE_USER:dcm}
     password: ${DCM_DATASOURCE_PASS:dcm}
     driverClassName: org.postgresql.Driver
@@ -47,7 +47,7 @@ spring:
 
   flyway:
     enabled: true
-    url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:15432}/${DCM_DATASOURCE_NAME:dcm}
+    url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
     user: ${DCM_DATASOURCE_USER:dcm}
     password: ${DCM_DATASOURCE_PASS:dcm}
     schemas: migrations
