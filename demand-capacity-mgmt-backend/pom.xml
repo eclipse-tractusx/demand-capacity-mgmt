@@ -114,7 +114,16 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
+
+		<!-- https://mvnrepository.c	om/artifact/io.netty/netty-resolver-dns-native-macos -->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-resolver-dns-native-macos</artifactId>
+			<version>4.1.109.Final</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
             <groupId>org.eclipse.tractusx.demand-capacity-mgmt-specification</groupId>
             <artifactId>demand-capacity-mgmt-specification</artifactId>
             <version>1.0-SNAPSHOT</version>
