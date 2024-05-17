@@ -73,7 +73,7 @@ public class MaterialDemandEntity {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @OneToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
     @JoinColumn(name = "material_demand_id")
     private List<DemandSeries> demandSeries;
 
