@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
 
-	//ExceptionHandler(Exception.class)
+	@ExceptionHandler(Exception.class)
 	ProblemDetail handleException(Exception e) {
 		log.error("Error ", e);
 		String errorMsg = ExceptionUtils.getMessage(e);
