@@ -70,8 +70,6 @@ public class SecurityConfig {
                         "/token/introspect"
                     )
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/docs/api-docs/**", "/ui/swagger-ui/**")
-                    .permitAll()
                     .anyRequest()
                     .authenticated()
         );
