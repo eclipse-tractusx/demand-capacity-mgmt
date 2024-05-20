@@ -1,25 +1,22 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
-  - package-ecosystem: "maven" # See documentation for possible values
-    directory: "/demand-capacity-mgmt-backend" # Location of package manifests
+  - package-ecosystem: "maven"
+    directory: "/demand-capacity-mgmt-backend"
     schedule:
       interval: "daily"
-  - package-ecosystem: "maven" # See documentation for possible values
-    directory: "/demand-capacity-mgmt-specification" # Location of package manifests
+    open-pull-requests-limit: 5
+  - package-ecosystem: "maven"
+    directory: "/demand-capacity-mgmt-specification"
     schedule:
       interval: "daily"
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/demand-capacity-mgmt-frontend" # Location of package manifests
+    open-pull-requests-limit: 5
+  - package-ecosystem: "npm"
+    directory: "/demand-capacity-mgmt-frontend"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 5
   - package-ecosystem: "docker"
-    # Look for a `Dockerfile` in the `root` directory
     directory: "/"
-    # Check for updates once a week
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 5
