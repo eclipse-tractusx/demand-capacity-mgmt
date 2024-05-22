@@ -85,41 +85,21 @@ Let's begin local development install!
   </details>
 - ### Running containers
 
-  with docker running open a command terminal
+  This project includes integrated support for Spring Boot Docker Compose, facilitating the setup of Keycloak and PostgreSQL without manual intervention.
 
-      docker pull postgres:16.1
-    
-  this will download the postgres image, then you need to configure postgres
+  You won't need to manually start containers or configure settings. The application will reference the `compose.yaml` file located at the root of the project.
 
-      docker run -d --name dcmfPostgres -p 5432:5432 -e POSTGRES_PASSWORD=dcm -e POSTGRES_USER=dcm postgres
+  Feel free to adjust configurations (such as ports and credentials) in the `compose.yaml` file to suit your requirements.
 
-  choose your own credentials of course, please **do not** use credentails shown on the guide.
-  now connect to postgres DB either through your IDE or PGADMIN4
+  When the application starts, it automatically creates a PostgreSQL container with the provided environment credentials. Additionally, a new database for Keycloak is set up.
 
-  ![Docker desktop postgres container](images/dev/4.png "Docker postgres")
+  On startup, the application also creates a Keycloak container based on the configurations in the Compose file. Initial configurations, including the creation of realms, clients, and users, are performed using the `dcm_realm.json` file.
 
-  ![Postgres connection](images/dev/5.png "Docker postgres connection")
+  ![Docker desktop running containers](images/dev/11.png)
 
-- ### Running project first time for init configs
-  execute all flyaway scripts on the postgres dcm schema.
-  and create a keycloak schema (for later use by keycloak)
-  . Run the project. 
-  and
-  when you see "Completed initialization in 1ms" stop the project. 
+  Further you can login with keycloak admin credentials configured in `compose.yaml` and modify users to you heart's content(under the users tabs, credentials for them, assing roles, etc)
 
-- ### Running Keycloak
-  open a new cmd file and run 
-
-      docker run -p 8888:8080 -e KEYCLOAK_ADMIN=YourAdminName -e KEYCLOAK_ADMIN_PASSWORD=YourAdminPassword quay.io/keycloak/keycloak:23.0.6 start-dev
-
-  Next go to docker and follow the link on the keycloak container. 
-
-  Login with admin credentials, under realms, click create new realm
-  import the realm-export.json on the keycloak folder.
-
-  ![Postgres connection](images/dev/5.png "Docker postgres connection")
-  
-  Modify users to you heart's content(under the users tabs, credentials for them, assing roles, etc). 
+  Ref: https://spring.io/blog/2023/06/21/docker-compose-support-in-spring-boot-3-1
 
   **Remember you need to have a user role on all users, it can be ADMIN, CUSTOMER, SUPPLIER**
   failing to have one of these roles won't let the user login in the app.
