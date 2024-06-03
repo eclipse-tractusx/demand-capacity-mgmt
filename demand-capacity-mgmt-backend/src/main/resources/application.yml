@@ -18,12 +18,23 @@
 #   SPDX-License-Identifier: Apache-2.0
 #   ********************************************************************************
 
+app:
+  openapi:
+    name: Demand and Capacity Management
+    description: Demand and Capacity Management project
+    version: 1
+    security:
+      enabled: ${SECURITY_ENABLE:true}
+      auth-url: ${keycloak.baseUrl}/realms/${keycloak.realm}/protocol/openid-connect/auth
+      token-url: ${keycloak.baseUrl}/realms/${keycloak.realm}/protocol/openid-connect/token
+      refresh-token-url: ${KEYCLOAK_TOKEN_URL}
+
 spring:
   security:
     oauth2:
       resource-server:
         jwt:
-          issuer-uri: http://localhost:8888/realms/dcm
+          issuer-uri: ${keycloak.baseUrl}/realms/${keycloak.realm}
 
   datasource:
     url: jdbc:postgresql://${DCM_DATASOURCE_HOST:localhost:5432}/${DCM_DATASOURCE_NAME:dcm}
@@ -40,13 +51,24 @@ spring:
     user: ${DCM_DATASOURCE_USER:dcm}
     password: ${DCM_DATASOURCE_PASS:dcm}
     schemas: migrations
-    locations: classpath:db/migration/postgresql
+    locations: classpath:db/migration
     
 keycloak:
-  baseUrl: http://localhost:8888
-  realm: dcm
-  clientId: dcmauth
-  clientSecret: ${DCMSECR}
+  baseUrl: ${KEYCLOAK_BASE_URL:http://localhost:28080}
+  realm: ${KEYCLOAK_REALM_NAME:dcm}
+  clientId: ${KEYCLOAK_CLIENT_ID:dcmauth}
+  clientSecret: ${DCMSECR:test}
   grant_type_token: password
   grant_type_refresh_token : refresh_token
 
+springdoc:
+  swagger-ui:
+    oauth:
+      clientId: ${keycloak.clientId}
+    disable-swagger-default-url: true
+    path: /ui/swagger-ui
+    show-common-extensions: true
+    csrf:
+      enabled: true
+  api-docs:
+    path: /docs/api-docs
