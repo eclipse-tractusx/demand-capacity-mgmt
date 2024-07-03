@@ -84,7 +84,7 @@ Let's begin local development install!
     ![Docker Desktop](images/dev/3.png "Docker install")
   </details>
 
-- ### Running environment locally
+### Backend environment setup
 There is a script called `local-setup.sh` located in the project root directory.
 If you use a UNIX based system, you can simply run the script by executing the following commands:
 
@@ -107,37 +107,49 @@ chmod +x ./dev/create_keycloak_db.sh
 ```sh
 docker compose up -d
 ```
+> On this step, the execution creates a Keycloak container based on the configurations in the compose.yaml file. Initial configurations, including the creation of realms, clients, and users, are performed using the `dcm_realm.json` file.
+    [Download keycloak realm json](realm-export.json)
+
 4 - Install frontend dependencies
 ```sh
+cd demand-capacity-mgmt-frontend
 npm install --force --legacy-peer-deps
 ```
-5 - Configure local environment variable pertaining the client secret for application.yaml (keycloak > clientSecret)
+5 - Automatically configures local environment variable pertaining the client secret for application.yaml (keycloak > clientSecret)
+
+> For manual setup, navigate to dcmauth client on keycloak panel and copy the client secret under credentials.
+  Open your application.yaml and place it on the dcmsecr section. After that, run the project and in postman you should be able to login on the token endpoint with the credentials you modified on keycloak!
 
 6 - Start the backend application
 ```sh
 java -jar demand-capacity-mgmt-backend/target/demand-capacity-mgmt-backend-0.0.1-SNAPSHOT.jar
 ```
 
-Alternatively, you can follow all the above steps in sequence.
+**Alternatively, you can manually follow all the above steps in sequence.**
 
-> On step 3, the execution creates a Keycloak container based on the configurations in the compose.yaml file. Initial configurations, including the creation of realms, clients, and users, are performed using the `dcm_realm.json` file.
-
-> For step 5, navigate to dcmauth client on keycloak panel and copy the client secret under credentials.
-  open your application.yaml and place it on the dcmsecr section. After that run the project and in postman you should be able to login on the token endpoint with the credentials you modified on keycloak!
-
-  You can access keycload on `http://localhost:28080/` and login with keycloak admin credentials configured in `compose.yaml` and modify users to you heart's content (under the users tabs, credentials for them, assing roles, etc)
+  You can access keycloak on `http://localhost:28080/` and login with admin credentials configured in `compose.yaml` and modify users to you heart's content (under the users tabs, credentials for them, assing roles, etc)
 
   **Remember you need to have a user role on all users, it can be ADMIN, CUSTOMER, SUPPLIER**
   failing to have one of these roles won't let the user login in the app.
 
-- ### Fetching the keycloak client credential
-  After that run the project and in postman you should be able to login on the token endpoint with the credentials you modified on keycloak!
+ ### Frontend environment setup
+ If you have run step 4 from [Backend environment setup](#backend-environment-setup), then frontend dependencies should be already installed. Now, you can run: 
 
-    [Download keycloak realm json](realm-export.json)
+  ```sh
+  npm start
+  ```
+
+  the app will be booted on localhost:3000
+
+  > For a user to correctly login you need to add a company to the DB and add that company to the user
+  Admin needs to have a company, even if a dummy one.
+  otherwise you will get lowerCase error on frontend when trying to read company Ids
+
+### Configure postman collection requests!
+  Now, using postman, you should be able to login on the token endpoint with the credentials you modified on keycloak!
 
   ![Postman](images/dev/6.png "Postman login")
 
-- ### Configure postman collection requests!
   for the other requests on postman you need to alter the authorization tab.
   check the config on the images provided.
 
@@ -153,20 +165,6 @@ Alternatively, you can follow all the above steps in sequence.
 
   ![Postman](images/dev/10.png "Postman config")
 
- 
-
-- ### Run the front-end
-  After executing `local-setup.sh` script, all frontend dependencies should be already installed. Now, you can run: 
-
-  ```sh
-  npm start
-  ```
-
-  the app will be booted on localhost:3000
-
-  > For a user to correctly login you need to add a company to the DB and add that company to the user
-  Admin needs to have a company, even if a dummy one.
-  otherwise you will get lowerCase error on frontend when trying to read company Ids
 
 ## Postman Collection
 

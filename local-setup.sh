@@ -32,7 +32,7 @@ start_docker_containers() {
 
 install_frontend_dependencies() {
   echo "Installing frontend dependencies..."
-  cd demand-capacity-mgmt-frontend || handle_error "Failed to change directory to demand-capacity-mgmt-frontend"
+  cd demand-capacity-mgmt-frontend
   npm install --force --legacy-peer-deps
   cd ..
 }
