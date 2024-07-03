@@ -83,34 +83,57 @@ Let's begin local development install!
 
     ![Docker Desktop](images/dev/3.png "Docker install")
   </details>
-- ### Running containers
 
-  This project includes integrated support for Spring Boot Docker Compose, facilitating the setup of Keycloak and PostgreSQL without manual intervention.
+- ### Running environment locally
+There is a script called `local-setup.sh` located in the project root directory.
+If you use a UNIX based system, you can simply run the script by executing the following commands:
 
-  You won't need to manually start containers or configure settings. The application will reference the `compose.yaml` file located at the root of the project.
+```sh
+chmod +x local-setup.sh
+source local-setup.sh
+```
 
-  Feel free to adjust configurations (such as ports and credentials) in the `compose.yaml` file to suit your requirements.
+The execution will:
 
-  When the application starts, it automatically creates a PostgreSQL container with the provided environment credentials. Additionally, a new database for Keycloak is set up.
+1 - Clean and Install maven dependencies
+```sh
+mvn clean install 
+```
+2 - Assign execution permissions to `create_keycloak_db.sh`
+```sh
+chmod +x ./dev/create_keycloak_db.sh
+```
+3 - Start docker containers for postgres and keycloak
+```sh
+docker compose up -d
+```
+4 - Install frontend dependencies
+```sh
+npm install --force --legacy-peer-deps
+```
+5 - Configure local environment variable pertaining the client secret for application.yaml (keycloak > clientSecret)
 
-  On startup, the application also creates a Keycloak container based on the configurations in the Compose file. Initial configurations, including the creation of realms, clients, and users, are performed using the `dcm_realm.json` file.
+6 - Start the backend application
+```sh
+java -jar demand-capacity-mgmt-backend/target/demand-capacity-mgmt-backend-0.0.1-SNAPSHOT.jar
+```
 
-  ![Docker desktop running containers](images/dev/11.png)
+Alternatively, you can follow all the above steps in sequence.
 
-  Further you can login with keycloak admin credentials configured in `compose.yaml` and modify users to you heart's content(under the users tabs, credentials for them, assing roles, etc)
+> On step 3, the execution creates a Keycloak container based on the configurations in the compose.yaml file. Initial configurations, including the creation of realms, clients, and users, are performed using the `dcm_realm.json` file.
 
-  Ref: https://spring.io/blog/2023/06/21/docker-compose-support-in-spring-boot-3-1
+> For step 5, navigate to dcmauth client on keycloak panel and copy the client secret under credentials.
+  open your application.yaml and place it on the dcmsecr section. After that run the project and in postman you should be able to login on the token endpoint with the credentials you modified on keycloak!
+
+  You can access keycload on `http://localhost:28080/` and login with keycloak admin credentials configured in `compose.yaml` and modify users to you heart's content (under the users tabs, credentials for them, assing roles, etc)
 
   **Remember you need to have a user role on all users, it can be ADMIN, CUSTOMER, SUPPLIER**
   failing to have one of these roles won't let the user login in the app.
 
-  [Download keycloak realm json](realm-export.json)
-
 - ### Fetching the keycloak client credential
-  before booting the project again navigate to dcmauth client on keycloak panel and copy the client secret under credentials.
-  open your application.yaml and place it on the dcmsecr section.
-  
-  after that run the project and in postman you should be able to login on the token endpoint with the credentials you modified on keycloak!
+  After that run the project and in postman you should be able to login on the token endpoint with the credentials you modified on keycloak!
+
+    [Download keycloak realm json](realm-export.json)
 
   ![Postman](images/dev/6.png "Postman login")
 
@@ -133,15 +156,15 @@ Let's begin local development install!
  
 
 - ### Run the front-end
-  when postman is working, you need to open the front end on your IDE of choice and run on a terminal inside the front-end folder, make sure you have NodeJS installed on your machine.
+  After executing `local-setup.sh` script, all frontend dependencies should be already installed. Now, you can run: 
 
-      npm install --force --legacy-peer-deps
-
-      npm start
+  ```sh
+  npm start
+  ```
 
   the app will be booted on localhost:3000
 
-  for a user to correctly login you need to add a company to the DB and add that company to the user
+  > For a user to correctly login you need to add a company to the DB and add that company to the user
   Admin needs to have a company, even if a dummy one.
   otherwise you will get lowerCase error on frontend when trying to read company Ids
 
