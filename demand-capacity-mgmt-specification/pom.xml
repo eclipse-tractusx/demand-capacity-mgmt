@@ -48,7 +48,7 @@
         <codegen.model.page.name>eclipse.tractusx.demand-capacity-mgmt-specification.model</codegen.model.page.name>
         <swagger-annotations.version>2.2.8</swagger-annotations.version>
         <jackson-databind-nullable.version>0.2.4</jackson-databind-nullable.version>
-        <openapi-generator-maven-plugin.version>6.2.1</openapi-generator-maven-plugin.version>
+        <openapi-generator-maven-plugin.version>7.7.0</openapi-generator-maven-plugin.version>
 
         <codegen.server.package.name>eclipse.tractusx.demand-capacity-mgmt-specification.server</codegen.server.package.name>
         <codegen.client.package.name>eclipse.tractusx.demand-capacity-mgmt-specification.client</codegen.client.package.name>
