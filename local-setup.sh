@@ -20,7 +20,7 @@
 #!/bin/bash
 
 # Function to kill any process running on port 8080
-kill_existing_java_process() {
+kill_existing_process() {
   local PID
   PID=$(lsof -t -i:8080)
   if [ -n "$PID" ]; then
@@ -52,7 +52,7 @@ start_docker_containers() {
 install_frontend_dependencies() {
   echo "Installing frontend dependencies..."
   cd demand-capacity-mgmt-frontend
-  npm install --force --legacy-peer-deps
+  npm install --legacy-peer-deps
   cd ..
 }
 
@@ -67,7 +67,7 @@ start_backend() {
 
 main() {
   check_docker_running
-  kill_existing_java_process
+  kill_existing_process
   maven_clean_install
   set_executable_permissions
   start_docker_containers
