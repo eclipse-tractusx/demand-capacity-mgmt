@@ -145,6 +145,13 @@ java -jar demand-capacity-mgmt-backend/target/demand-capacity-mgmt-backend-0.0.1
   Admin needs to have a company, even if a dummy one.
   otherwise you will get lowerCase error on frontend when trying to read company Ids
 
+  Existing migrations will add 3 users in the database (with corresponding roles and authorizations already configured on keycload DCM real) which you can use in your local setup:
+
+  - username: dcm_admin; password: test
+  - username: customer; password: test
+  - username: supplier; password: test
+
+
 ### Configure postman collection requests!
   Now, using postman, you should be able to login on the token endpoint with the credentials you modified on keycloak!
 

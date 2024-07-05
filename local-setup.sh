@@ -66,7 +66,6 @@ start_backend() {
 }
 
 main() {
-  check_docker_running
   kill_existing_process
   maven_clean_install
   set_executable_permissions
