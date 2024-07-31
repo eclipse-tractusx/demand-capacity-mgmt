@@ -2,7 +2,7 @@
 <!--
   ~  *******************************************************************************
   ~  Copyright (c) 2023 BMW AG
-  ~  Copyright (c) 2023 Contributors to the Eclipse Foundation
+  ~  Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
   ~
   ~    See the NOTICE file(s) distributed with this work for additional
   ~    information regarding copyright ownership.
@@ -44,14 +44,16 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
-        <codegen.api.package.name>eclipse.tractusx.demand-capacity-mgmt-specification.api</codegen.api.package.name>
-        <codegen.model.page.name>eclipse.tractusx.demand-capacity-mgmt-specification.model</codegen.model.page.name>
+		<codegen.api.package.name>eclipse.tractusx.demandcapacitymgm.specification.api</codegen.api.package.name>
+		<codegen.model.page.name>eclipse.tractusx.demandcapacitymgm.specification.model</codegen.model.page.name>
         <swagger-annotations.version>2.2.8</swagger-annotations.version>
         <jackson-databind-nullable.version>0.2.4</jackson-databind-nullable.version>
         <openapi-generator-maven-plugin.version>6.2.1</openapi-generator-maven-plugin.version>
 
-        <codegen.server.package.name>eclipse.tractusx.demand-capacity-mgmt-specification.server</codegen.server.package.name>
-        <codegen.client.package.name>eclipse.tractusx.demand-capacity-mgmt-specification.client</codegen.client.package.name>
+		<codegen.server.package.name>eclipse.tractusx.demandcapacitymgm.specification.server
+		</codegen.server.package.name>
+		<codegen.client.package.name>eclipse.tractusx.demandcapacitymgm.specification.client
+		</codegen.client.package.name>
     </properties>
 
     <dependencies>
