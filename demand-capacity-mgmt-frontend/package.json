@@ -75,7 +75,7 @@
     "@babel/template": "^7.22.5",
     "@types/keycloak-js": "^3.4.1",
     "@types/react-datepicker": "^4.11.2",
-    "@types/react-native": "^0.72.2",
+    "@types/react-native": "^0.73.0",
     "@types/react-select": "^4.0.18",
     "@types/react-test-renderer": "^18.0.0",
     "react-bootstrap": "^2.8.0",
